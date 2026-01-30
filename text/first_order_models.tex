@@ -5,7 +5,7 @@
 \begin{definition}\label{def:fol_theory}\mimprovised
   We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
 
-  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \cat{Th}(\Gamma) \).
+  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \cat{Th}(\Gamma) \), and say that \( \Gamma \) \term{axiomatizes} \( \op*{Th}(\Gamma) \).
 
   \begin{thmenum}
     \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
@@ -16,7 +16,9 @@
 
     \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a category of (syntactic or semantic) theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
 
-    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
+    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \vdash_\Sigma \varphi \) implies \( \Delta \vdash_\Theta \op*{Sen}(t)(\varphi) \).
+
+    Sufficiency is obvious for both semantic entailment and natural deduction, so it usually suffices to check that \( \Delta \vdash_\Theta \op*{Sen}(t)(\varphi) \) implies \( \Gamma \vdash_\Sigma \varphi \).
 
     \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \op*{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
 
@@ -79,7 +81,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:def:fol_theory_model_functor}
-  The \hyperref[def:fol_theory_model_functor/obj]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) has the following basic properties:
+  The \hyperref[def:fol_theory_model_functor]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:fol_theory_model_functor/reduct_faithful} For every theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), the corresponding reduct functor \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \) is \hyperref[def:functor_invertibility/faithful]{faithful}.
   \end{thmenum}
@@ -102,6 +104,141 @@
 \begin{defproof}
   \Cref{thm:def:fol_theory_model_functor/reduct_faithful} implies that the reduct functors are faithful, and the proof for \( U \) is even simpler, so the implicit requirement of faithfulness from \cref{def:concrete_category} is satisfied.
 \end{defproof}
+
+\begin{example}\label{ex:def:fol_theory_model_functor}
+  We list examples related to \hyperref[def:fol_theory_model_functor]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \):
+  \begin{thmenum}
+    \thmitem{ex:def:fol_theory_model_functor/order} The \hyperref[def:preordered_set/theory]{partially ordered sets} extend the \hyperref[def:preordered_set/theory]{theory of preordered sets} with the antisymmetry condition \eqref{eq:def:binary_relation/antisymmetric}.
+
+    The homomorphisms of partially ordered sets are \hyperref[def:order_function/preserving]{order-preserving maps}, as in the case of the more general preordered sets. This is to be expected since we have not modified the signature.
+
+    On the other hand, the \hyperref[def:lattice/theory]{theory of lattices} introduces new function symbols and only introduces the familiar inequalities via \hyperref[def:fol_definitional_extension]{definitional extensions}.
+
+    \thmitem{ex:def:fol_theory_model_functor/groups} The \hyperref[def:group/theory]{theory of groups} extends \hyperref[def:monoid/theory]{that of monoids} with the unary symbol \( {\syninv} \), which forces it to also adapt the notion of homomorphisms.
+
+    On the other hand, the \hyperref[def:abelian_group]{abelian groups} extend only the theory, so the homomorphisms of abelian groups are precisely those of groups.
+  \end{thmenum}
+\end{example}
+
+\paragraph{Definitional extensions}
+
+\begin{concept}\label{con:primitive_notion}
+  In a sufficiently complex \hyperref[con:metalogic]{object theory}, different notions can be defined via each other. If we want to use \hyperref[def:well_founded_relation]{well-founded} notions that are not defined circularly via each other, we must choose a subset of them that should to be characterized via axioms, and then use them to define the rest. Following \incite[28]{Kleene1971Metamathematics}, we will refer call these notions as \term{primitive}.
+
+  For instance, when formalizing \hyperref[def:lattice]{lattices}, we may use an object theory based on one \hyperref[def:partially_ordered_set]{partial order relation} \( {\synleq} \), as we have done in \cref{def:lattice/theory}, or we may use a theory based on two operations \( {\latwedge} \) and \( {\latvee} \).
+
+  The object language will feature all three symbols anyway. If we use the formalization from \cref{def:lattice/theory}, however, we will specify the behavior of \( {\synleq} \) via axioms, while the behavior of \( {\latwedge} \) and \( {\latvee} \) will be defined via that of \( {\synleq} \). Conversely, \cref{thm:lattice_from_binary_operations} shows how we can take \( {\latwedge} \) and \( {\latvee} \) as primitive and use them to specify how \( {\synleq} \) behaves.
+
+  Usually the essential object of study is taken as primitive --- for example, sets and set membership are primitive in \fullref{ch:set_theory}, groups and group operations are primitive in \fullref{ch:group_theory}, vectors and vector space operations are primitive in \fullref{ch:linear_algebra} and so forth. This is mildly ironic because, for example, linear algebra cannot answer what a vector is beyond characterizing it as \enquote{an element of an abstract vector space}.
+
+  Since it is impractical to make a definitive list of all required symbols beforehand, we will rely on \hyperref[def:fol_definitional_extension]{definitional extensions} and \hyperref[con:syntactic_abbreviation]{metalingual abbreviations}.
+\end{concept}
+\begin{comments}
+  \item In addition to the adjective \enquote{primitive}, \incite[28]{Kleene1971Metamathematics} suggests \enquote{technical} and \enquote{undefined}. We will avoid the latter term because it would conflict with undefinedness as described in \cref{con:undefinedness}. See \cref{rem:undefined_and_primitive_terms} for disambiguation of the different notions of undefinedness.
+
+  \item We avoid introducing a distinct term for symbols whose behavior is defined via others. \incite[28]{Kleene1971Metamathematics} suggests \enquote{ordinary}, \enquote{logical} and \enquote{defined}.
+\end{comments}
+
+\begin{concept}\label{con:syntactic_abbreviation}\mimprovised
+  It is sometimes convenient to introduce a simplified notation for a more intricate \hyperref[con:expression]{expression}. We call this process \term{abbreviation}.
+
+  Inside the \hyperref[con:metalogic]{object languages}, we can use \hyperref[def:fol_signature_category/morphisms]{signature translation} and \hyperref[def:fol_definition]{definitional extensions}. In case they are either insufficient or inconvenient, we may rely on notational shorthands entirely within the \hyperref[con:metalogic]{metalanguage}. For example, we use the \hyperref[con:description_operator/unique_existence]{unique existence quantifier} \( \qExists* x \varphi \) as an abbreviation of the more complicated expression \eqref{eq:rem:fol_formula_conventions/unique_existence}.
+\end{concept}
+
+\begin{definition}\label{def:fol_definition}\mcite[def. 2.6.11]{Hinman2005Logic}
+  Fix a \hyperref[def:fol_theory]{first-order theory} \( \Gamma \) over the signature \( \Sigma \).
+
+  \begin{thmenum}
+    \thmitem{def:fol_definition/predicate} Consider some symbol \( p \) not in \( \Sigma \) and some formula \( \varphi_p \) whose free variables are among \( x_1, \ldots, x_n \).
+
+    We can \hyperref[def:fol_signature_extension]{extend} \( \Sigma \) with \( p \) as an \( n \)-ary predicate and then form an \hyperref[def:fol_theory/extension]{extended theory} as the closure of \( \Gamma \) and the formula
+    \begin{equation}\label{eq:def:fol_definition/predicate}
+      \qforall {x_1} \cdots \qforall {x_n} (p(x_1, \ldots, x_n) \syniff \varphi_p).
+    \end{equation}
+
+    We call \eqref{eq:def:fol_definition/predicate} a \term{definition} of \( p \) in \( \Gamma \).
+
+    \thmitem{def:fol_definition/function} Consider some symbol \( f \) not in \( \Sigma \) and some formula \( \varphi_f \) whose free variables are among \( x_1, \ldots, x_n \), and such that \( \Gamma \) contains
+    \begin{equation}\label{eq:def:fol_definition/function/condition}
+      \qforall {x_1} \cdots \qforall {x_n} \qexists y \varphi_f.
+    \end{equation}
+
+    We can extend \( \Sigma \) with \( f \) as an \( n \)-ary predicate and then form an extended theory as the closure of \( \Gamma \) and the formula
+    \begin{equation}\label{eq:def:fol_definition/function}
+      \qforall {x_1} \cdots \qforall {x_n} \qforall y (f(x_1, \ldots, x_n) \syneq y \syniff \varphi_f).
+    \end{equation}
+
+    We call \eqref{eq:def:fol_definition/function} a \term{definition} of \( f \) in \( \Gamma \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Of course, the new symbols are allowed to have any \hyperref[def:fol_signature/notation]{notation}.
+\end{comments}
+
+\begin{definition}\label{def:fol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
+  We say that the \hyperref[def:fol_theory/extension]{theory extension} \( (\Sigma^+, \Gamma^+) \) of \( (\Sigma, \Gamma) \) is a \term{definitional extension} if there exist finitely many function and predicate symbols in \( \Sigma^+ \) but not \( \Sigma \) such that \( (\Sigma^+, \Gamma^+) \) can be obtained from \( (\Sigma, \Gamma) \) by adding definitions for these symbols in accordance with \cref{def:fol_definition}.
+
+  \begin{thmenum}
+    \thmitem{def:fol_definitional_extension/model}\mcite[lemma 2.6.14]{Hinman2005Logic} For every structure \( \mscrX = (X, I) \), we can define an \hyperref[def:fol_structure_expansion]{expansion} \( \mscrX^+ = (X, I^+) \), where \( I^+ \) extends \( I \) as follows:
+    \begin{thmenum}
+      \thmitem{def:fol_definitional_extension/model/pred} For each new \( n \)-ary predicate symbol \( p \), we use the \hyperref[def:fol_parameterized_formula_denotation]{parametrized formula denotation}:
+      \begin{equation*}
+        I^+(p)(a_1, \ldots, a_n) \coloneqq \Bracks{\varphi_p}_\mscrX(a_1, \ldots, a_n).
+      \end{equation*}
+
+      \thmitem{def:fol_definitional_extension/model/fun} For each new \( n \)-ary function symbol \( f \), we define \( I^+(p)(a_1, \ldots, a_n) \) as the unique value \( y \) for which \( \Bracks{\varphi_p}_\mscrX(a_1, \ldots, a_n, y) = \semtop \).
+
+      Uniqueness of \( y \) is guaranteed by \eqref{eq:def:fol_definition/function/condition}.
+    \end{thmenum}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We do not disallow trivial definitional extensions, but will not find them useful.
+\end{comments}
+
+\begin{lemma}\label{thm:fol_definitional_extension_model_uniqueness}
+  In the setting of \cref{def:fol_definitional_extension}, if \( \mscrX \) is a model of \( \Gamma \), then \( \mscrX^+ \) is the unique expansion of \( \mscrX \) that is a model of \( \Gamma^+ \).
+\end{lemma}
+\begin{proof}
+  It suffices to consider the case where \( (\Sigma^+, \Gamma^+) \) extends \( (\Sigma, \Gamma) \) with one definition. Suppose that \( \mscrX = (X, I) \) is a model of \( \Gamma \).
+
+  \begin{itemize}
+    \item Suppose that \( \Sigma^+ \) extends \( \Sigma \) with the \( n \)-ary predicate symbol \( p \).
+
+    Every formula \( \varphi \) in \( \mscrX^+ \) is by definition a semantic consequence of \( \Gamma \) and \eqref{eq:def:fol_definition/predicate}, both of which \( \mscrX^+ \) satisfies. Then \( \mscrX^+ \) also satisfies \( \varphi \).
+
+    Furthermore, any other interpretation of \( p \) would not satisfy \eqref{eq:def:fol_definition/predicate}, which demonstrates the uniqueness of \( \mscrX^+ \).
+
+    \item The case for function symbols is similar.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:fol_definitional_extension_conservative}
+  \hyperref[def:fol_definitional_extension]{First-order definitional extensions} are \hyperref[def:fol_theory/conservative]{conservative}.
+\end{proposition}
+\begin{proof}
+  It suffices to consider the case where \( (\Sigma^+, \Gamma^+) \) extends \( (\Sigma, \Gamma) \) with the definition of one symbol. Let \( \mscrX = (X, I) \) be a model of \( \Gamma \) and let \( \mscrX^+ = (X, I^+) \) be the corresponding expansion from \cref{def:fol_definitional_extension/model}.
+  \begin{itemize}
+    \item Suppose that \( \Sigma^+ \) extends \( \Sigma \) with the \( n \)-ary predicate symbol \( p \).
+
+    Let \( \varphi \) be a formula from \( \Gamma^+ \) that does not contain \( f \).
+
+    By \cref{thm:fol_definitional_extension_model_uniqueness}, the expansion \( \mscrX^+ \) is a model of \( \Gamma^+ \), and of \( \varphi \) in particular. Since \( \varphi \) does not contain \( f \), the denotation of \( \varphi \) in \( \mscrX^+ \) only uses the interpretation \( I \). Thus, \( \mscrX \) is also a model of \( \varphi \).
+
+    Therefore, \( \Gamma^+ \) is conservative.
+
+    \item The case for function symbols is similar.
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:def:fol_definitional_extension}
+  We list examples of \hyperref[def:fol_definitional_extension]{definitional extensions}:
+  \begin{thmenum}
+    \thmitem{ex:def:fol_definitional_extension/sets} In \fullref{sec:naive_set_theory}, we define many operators on sets, and in \cref{thm:zfc_existence_theorems} we prove that they satisfy the condition \eqref{eq:def:fol_definition/function} for function definitions.
+
+    \thmitem{ex:def:fol_definitional_extension/lattices} The \hyperref[def:lattice/theory]{theory of lattices} is only formulated using function symbols, and is adapted to the \hyperref[def:preordered_set/theory]{theory of preordered sets} via definitional extensions.
+  \end{thmenum}
+\end{example}
 
 \paragraph{Isomorphism}
 
