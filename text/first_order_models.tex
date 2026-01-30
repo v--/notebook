@@ -5,7 +5,7 @@
 \begin{definition}\label{def:fol_theory}\mimprovised
   We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
 
-  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \op*{Th}(\Gamma) \).
+  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \cat{Th}(\Gamma) \).
 
   \begin{thmenum}
     \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
@@ -14,9 +14,9 @@
 
     We call \( \Gamma^+ \) an \term{extension} of \( \Gamma \).
 
-    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a (syntactic or semantic) category of theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
+    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a category of (syntactic or semantic) theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
 
-    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism or extension is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
+    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
 
     \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \op*{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
 
@@ -34,29 +34,99 @@
   \hyperref[def:fol_theory]{First-order theories} have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:fol_theory/model_theory_consistent_complete} For every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is consistent and complete.
+
+    \thmitem{thm:def:fol_theory/theory_morphism_reduct} For every \hyperref[def:fol_theory/morphism]{theory morphism} \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), if \( \mscrY \) is a model of \( \Delta \), its \hyperref[def:fol_reduct_along_morphism]{reduct} \( \red_t(\mscrY) \) is a model of \( \Gamma \).
+
+    The reduct is taken with respect to the underlying signature morphism of \( t \). We show that the theory morphism is also compatible with this reduct.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
   \SubProofOf{thm:def:fol_theory/model_theory_consistent_complete} Analogous to \cref{thm:def:propositional_theory/model_theory_consistent_complete}.
+
+  \SubProofOf{thm:def:fol_theory/theory_morphism_reduct} Suppose that \( \mscrY \) is a model of \( \Delta \).
+
+  Consider the theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \). By definition, it is a signature morphism that translates formulas from \( \Gamma \) to formulas from \( \Delta \).
+
+  The reduct \( \red_t(\mscrY) \) along the \hi{signature morphism} \( t \). Suppose that \( \mscrY \) is a model of \( \Delta \), i.e. \( \Bracks{\psi}_\mscrY = \semtop \) for every formula \( \psi \) in \( \Delta \). In particular, \( \Bracks{\varphi[t]}_\mscrY = \semtop \) for every \( \varphi \) in \( \Gamma \).
+
+  \Cref{thm:fol_structure_reduct_denotation/formulas} implies that \( \Bracks{\varphi}_{\red_t(\mscrY)}^v = \semtop \) for every \( \varphi \) in \( \Gamma \); hence, \( \red_t(\mscrY) \) is a model of \( \Gamma \).
 \end{proof}
 
-\paragraph{Categories of models}
-
-\begin{definition}\label{def:category_of_first_order_models}\mimprovised
+\begin{definition}\label{def:fol_theory_model_functor}\mimprovised
   Consider the \hyperref[def:fol_institution]{first-order institution} over the \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
 
-  We are interested in the category \( \ucat{Mod}(\Sigma) \) of \hyperref[def:fol_structure]{first-order structures} over the \hyperref[def:fol_signature]{signature} \( \Sigma \).
+  This institution has a \hyperref[def:fol_institution/models]{model functor} \( \cat{Mod}: \cat{Sign} \to \cat{Cat}^{\oppos} \) which sends each \hyperref[def:fol_signature]{signature} \( \Sigma \) to the category \( \cat{Mod}(\Sigma) \) of all \hyperref[def:fol_structure]{structures} and \hyperref[def:fol_homomorphism]{homomorphisms} over \( \Sigma \), and each \hyperref[def:fol_signature_category/morphisms]{signature morphism} \( t: \Sigma \to \Theta \) to the corresponding \hyperref[def:fol_institution/models/hom]{reduct functor} \( \cat{Mod}(t): \cat{Mod}(\Theta) \to \cat{Mod}(\Sigma) \).
 
-  More specifically, given a \hyperref[def:fol_theory]{first-order theory} \( \Gamma \), we are interested in the \hyperref[def:subcategory/full]{full subcategory} of structures in which \( \Gamma \) is \hyperref[def:fol_semantics/model]{valid}. We will denote this subcategory by \( \ucat{Mod}(\Gamma) \), and refer to it as the \term{category of \( \mscrU \)-small models of \( \Gamma \)}.
+  We can extend \( \cat{Mod} \) to a functor \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) on the corresponding \hyperref[def:fol_theory/category]{category of theories}:
+  \begin{thmenum}
+    \thmitem{def:fol_theory_model_functor/obj} We send a theory \( \Gamma \) to the \hyperref[def:subcategory/full]{\hi{full} subcategory} of \( \cat{Mod}(\Sigma) \) of all structures in which \( \Gamma \) is \hyperref[def:fol_semantics/model]{valid}.
+
+    We denote it by \( \cat{Mod}(\Gamma) \) and refer to it as the \term{category of \( \mscrU \)-small models of \( \Gamma \)}.
+
+    It is important that we have required the subcategory \( \cat{Mod}(\Gamma) \) to be full. Thus, what counts as a model in \( \cat{Mod}(\Gamma) \) depend on the axioms of \( \Gamma \), but what counts as a homomorphism depend solely on \( \Sigma \). In particular, if \( \Gamma \) is the empty theory, then \( \cat{Mod}(\Gamma) \) coincides with \( \cat{Mod}(\Sigma) \).
+
+    \thmitem{def:fol_theory_model_functor/hom} We send the \hyperref[def:fol_theory/morphism]{theory morphism} \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) to the aforementioned reduct functor \( \cat{Mod}(t): \cat{Mod}(\Theta) \to \cat{Mod}(\Sigma) \). To highlight that the functor acts on theories, we denote it by \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \).
+
+    The reduct functor only depends on the underlying signature morphism, but, as shown in \cref{thm:def:fol_theory/theory_morphism_reduct}, whether the reduct is a model of \( \Gamma \) generally depends on \( \Delta \).
+  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item For established theories, we will introduce specific names. For example, we use \( \ucat{Grp} \) for the \hyperref[def:group/category]{category of groups} or \( \ucat{Lat} \) for \hyperref[def:lattice/theory]{category of lattices}.
+  \item For established theories, instead of \( \cat{Mod}(\Gamma) \), we introduce specific names. For example, we use \( \cat{Grp} \) for the \hyperref[def:group/category]{category of groups} or \( \cat{Lat} \) for \hyperref[def:lattice/theory]{category of lattices}.
 
-  \item We have included the \( \mscrU \) prefix here for clarity, but will usually drop it.
+  \item We have skipped the \( \mscrU \) prefix here for brevity, but all the aforementioned categories depend on \( \mscrU \).
 
-  \item This definition is based on some remarks from \bycite[105]{GoguenBurstall1992Institutions}.
+  \item This definition is based on the discussion in \bycite[105]{GoguenBurstall1992Institutions}.
 \end{comments}
 
-\begin{remark}\label{rem:def:category_of_first_order_models}
-  It is important that in \cref{def:category_of_first_order_models} we have required the subcategory \( \ucat{Mod}(\Gamma) \) to be full. This means that a structure from \( \ucat{Mod}(\Gamma) \) may or may not be a model of \( \Gamma \), but a homomorphism between models of \( \Gamma \) cannot have restrictions that do not depend solely on \( \Sigma \)
-\end{remark}
+\begin{proposition}\label{thm:def:fol_theory_model_functor}
+  The \hyperref[def:fol_theory_model_functor/obj]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_theory_model_functor/reduct_faithful} For every theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), the corresponding reduct functor \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \) is \hyperref[def:functor_invertibility/faithful]{faithful}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_theory_model_functor/reduct_faithful} Fix two models \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) of \( \Delta \), and consider their reducts \( \red_t(\mscrX) = (X, I_t) \) and \( \red_t(\mscrY) = (Y, J_t) \). \Cref{thm:def:fol_theory/theory_morphism_reduct} implies that they are models of \( \Gamma \).
+
+  If \( \red_t(h) \) and \( \red_t(g) \) coincide for homomorphisms \( h \) and \( g \) in \( \cat{Mod}(\Sigma) \), they agree as functions on \( X \), thus \( h \) and \( g \) also coincide as homomorphisms in \( \cat{Mod}(\Sigma) \). Hence, \( \cat{Mod}(t) \) is faithful.
+\end{proof}
+
+\begin{definition}\label{def:fol_theory_forgetful_functor}\mimprovised
+  The \hyperref[def:fol_theory_model_functor/obj]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) naturally induces many \hyperref[def:concrete_category]{forgetful functors}.
+
+  \begin{thmenum}
+    \thmitem{def:fol_theory_forgetful_functor/reduct} For every theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), the corresponding reduct functor \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \) can be regarded as forgetful.
+
+    \thmitem{def:fol_theory_forgetful_functor/set} For any category of models \( \cat{Mod}(\Gamma) \), there is a natural functor \( U: \cat{Mod}(\Gamma) \to \cat{Set} \) sending each structure to its universe and each homomorphism to its underlying function.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \Cref{thm:def:fol_theory_model_functor/reduct_faithful} implies that the reduct functors are faithful, and the proof for \( U \) is even simpler, so the implicit requirement of faithfulness from \cref{def:concrete_category} is satisfied.
+\end{defproof}
+
+\paragraph{Isomorphism}
+
+\begin{definition}\label{def:fol_isomorphism}
+  We say that a \hyperref[def:fol_homomorphism]{first-order homomorphism} \( h: \mscrX \to \mscrY \) is an \term[ru=изоморфизм (\cite[170]{Герасимов2014Вычислимость}), en=isomorphism (\cite[def. 2.3.1]{Hinman2005Logic})]{isomorphism} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:fol_isomorphism/categorical}\mimprovised \( h \) is a \hyperref[def:fol_isomorphism]{categorical isomorphism} in \( \cat{Mod}(\Sigma) \): there exists an inverse homomorphism \( g \) such that \( g \bincirc h \) is the identity in \( \mscrX \) and \( h \bincirc g \) is the identity in \( \mscrY \).
+
+    \thmitem{def:fol_isomorphism/inverse}\mimprovised \( h \) is a \hyperref[def:function_invertibility/bijective]{bijective} homomorphism and its set-theoretic inverse \( h^{-1} \) is a homomorphism.
+
+    \thmitem{def:fol_isomorphism/direct}\mcite[170]{Герасимов2014Вычислимость} \( h \) is a \hyperref[def:function_invertibility/bijective]{bijective} \hyperref[def:fol_homomorphism/predicates]{strong homomorphism}.
+
+    If the signature has no predicate symbols, all homomorphisms are strong, so it is sufficient for the homomorphism to be bijective.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:fol_isomorphism/categorical}{def:fol_isomorphism/inverse} Suppose that \( h \) is a categorical isomorphism with inverse \( g \).
+
+  \Cref{thm:function_invertibility_categorical/fully_invertible} implies that the image \( U(h) \) under the \hyperref[def:fol_theory_forgetful_functor/set]{forgetful functor} \( U: \cat{Mod}(\Sigma) \to \cat{Set} \) is a bijective function, and \cref{thm:def:functor/isomorphisms} implies that \( U(g) \) is the inverse of \( U(h) \) in \( \cat{Set} \).
+
+  Therefore, the homomorphism \( g \) is the set-theoretic inverse of \( h \).
+
+  \ImplicationSubProof{def:fol_isomorphism/inverse}{def:fol_isomorphism/categorical} Suppose that \( h \) is a bijective homomorphism whose set-theoretic inverse \( h^{-1} \) is a homomorphism.
+
+  To be precise, our assumptions is that \( U(h) \) is bijective and that there exists a homomorphism \( g \) in \( \cat{Mod}(\Sigma) \) such that \( U(g) = U(h)^{-1} \), i.e. \( U(g) \) is the set-theoretic inverse of \( h \). \Cref{thm:def:functor_invertibility/faithful_reflects_isomorphisms} implies that \( g \) is the inverse of \( h \) in \( \cat{Mod}(\Sigma) \).
+
+  \EquivalenceSubProof{def:fol_isomorphism/inverse}{def:fol_isomorphism/direct} If \( h \) is bijective, the inequality in \eqref{eq:def:fol_homomorphism/predicates} for \( h^{-1} \) coincides with the converse inequality for \( h \).
+\end{defproof}
