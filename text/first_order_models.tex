@@ -124,190 +124,272 @@
   \end{thmenum}
 \end{example}
 
-\paragraph{Definitional extensions}
+\paragraph{Substructures}
 
-\begin{concept}\label{con:primitive_notion}
-  In a sufficiently complex \hyperref[con:metalogic]{object theory}, different notions can be defined via each other. If we want to use \hyperref[def:well_founded_relation]{well-founded} notions that are not defined circularly via each other, we must choose a subset of them that should to be characterized via axioms, and then use them to define the rest. Following \incite[28]{Kleene1971Metamathematics}, we will refer call these notions as \term{primitive}.
+\begin{definition}\label{def:fol_substructure}\mcite[def. 2.3.12]{Hinman2005Logic}
+  Consider two \hyperref[def:fol_structure]{first-order structures} \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) over the same \hyperref[def:fol_signature]{signature} \( \Sigma \).
 
-  For instance, when formalizing \hyperref[def:lattice]{lattices}, we may use an object theory based on one \hyperref[def:partially_ordered_set]{partial order relation} \( {\synleq} \), as we have done in \cref{def:lattice/theory}, or we may use a theory based on two operations \( {\latwedge} \) and \( {\latvee} \).
+  We say that \( \mscrY \) is a \term[ru=подструктура (\cite[114]{ШеньВерещагин2017ЯзыкиИИсчисления})]{substructure} of \( \mscrX \) if, For every \( n \)-ary symbol \( s \) in \( \Sigma \), the interpretation \( J(s) \) is a \hyperref[def:set_valued_map/restriction]{restriction} of \( I(s) \) to \( Y^n \).
 
-  The object language will feature all three symbols anyway. If we use the formalization from \cref{def:lattice/theory}, however, we will specify the behavior of \( {\synleq} \) via axioms, while the behavior of \( {\latwedge} \) and \( {\latvee} \) will be defined via that of \( {\synleq} \). Conversely, \cref{thm:lattice_from_binary_operations} shows how we can take \( {\latwedge} \) and \( {\latvee} \) as primitive and use them to specify how \( {\synleq} \) behaves.
-
-  Usually the essential object of study is taken as primitive --- for example, sets and set membership are primitive in \fullref{ch:set_theory}, groups and group operations are primitive in \fullref{ch:group_theory}, vectors and vector space operations are primitive in \fullref{ch:linear_algebra} and so forth. This is mildly ironic because, for example, linear algebra cannot answer what a vector is beyond characterizing it as \enquote{an element of an abstract vector space}.
-
-  Since it is impractical to make a definitive list of all required symbols beforehand, we will rely on \hyperref[def:fol_definitional_extension]{definitional extensions} and \hyperref[con:syntactic_abbreviation]{metalingual abbreviations}.
-\end{concept}
-\begin{comments}
-  \item In addition to the adjective \enquote{primitive}, \incite[28]{Kleene1971Metamathematics} suggests \enquote{technical} and \enquote{undefined}. We will avoid the latter term because it would conflict with undefinedness as described in \cref{con:undefinedness}. See \cref{rem:undefined_and_primitive_terms} for disambiguation of the different notions of undefinedness.
-
-  \item We avoid introducing a distinct term for symbols whose behavior is defined via others. \incite[28]{Kleene1971Metamathematics} suggests \enquote{ordinary}, \enquote{logical} and \enquote{defined}.
-\end{comments}
-
-\begin{concept}\label{con:syntactic_abbreviation}\mimprovised
-  It is sometimes convenient to introduce a simplified notation for a more intricate \hyperref[con:expression]{expression}. We call this process \term{abbreviation}.
-
-  Inside the \hyperref[con:metalogic]{object languages}, we can use \hyperref[def:fol_signature_category/morphisms]{signature translation} and \hyperref[def:fol_definition]{definitional extensions}. In case they are either insufficient or inconvenient, we may rely on notational shorthands entirely within the \hyperref[con:metalogic]{metalanguage}. For example, we use the \hyperref[con:description_operator/unique_existence]{unique existence quantifier} \( \qExists* x \varphi \) as an abbreviation of the more complicated expression \eqref{eq:rem:fol_formula_conventions/unique_existence}.
-\end{concept}
-
-\begin{definition}\label{def:fol_definition}\mcite[def. 2.6.11]{Hinman2005Logic}
-  Fix a \hyperref[def:fol_theory]{first-order theory} \( \Gamma \) over the signature \( \Sigma \).
+  By abuse of notation, we may write \( J = I\restr_Y \) for the interpretation and \( \mscrY = \mscrX\restr_Y \) for the substructure itself.
 
   \begin{thmenum}
-    \thmitem{def:fol_definition/predicate} Consider some symbol \( p \) not in \( \Sigma \) and some formula \( \varphi_p \) whose free variables are among \( x_1, \ldots, x_n \).
+    \thmitem{def:fol_substructure/inclusion}\mimprovised The inclusion \( \iota: X \to Y \) is a \hyperref[def:fol_homomorphism]{homomorphism}. Furthermore, we show in \cref{thm:def:fol_substructure/inclusion_embedding} that it is an \hyperref[def:fol_embedding]{embedding}.
 
-    We can \hyperref[def:fol_signature_extension]{extend} \( \Sigma \) with \( p \) as an \( n \)-ary predicate and then form an \hyperref[def:fol_theory/extension]{extended theory} as the closure of \( \Gamma \) and the formula
-    \begin{equation}\label{eq:def:fol_definition/predicate}
-      \qforall {x_1} \cdots \qforall {x_n} (p(x_1, \ldots, x_n) \syniff \varphi_p).
-    \end{equation}
-
-    We call \eqref{eq:def:fol_definition/predicate} a \term{definition} of \( p \) in \( \Gamma \).
-
-    \thmitem{def:fol_definition/function} Consider some symbol \( f \) not in \( \Sigma \) and some formula \( \varphi_f \) whose free variables are among \( x_1, \ldots, x_n \), and such that \( \Gamma \) contains
-    \begin{equation}\label{eq:def:fol_definition/function/condition}
-      \qforall {x_1} \cdots \qforall {x_n} \qexists y \varphi_f.
-    \end{equation}
-
-    We can extend \( \Sigma \) with \( f \) as an \( n \)-ary predicate and then form an extended theory as the closure of \( \Gamma \) and the formula
-    \begin{equation}\label{eq:def:fol_definition/function}
-      \qforall {x_1} \cdots \qforall {x_n} \qforall y (f(x_1, \ldots, x_n) \syneq y \syniff \varphi_f).
-    \end{equation}
-
-    We call \eqref{eq:def:fol_definition/function} a \term{definition} of \( f \) in \( \Gamma \).
+    \thmitem{def:fol_substructure/submodel}\mimprovised In case both \( \mscrX \) and \( \mscrY \) are both \hyperref[def:fol_semantics/model]{models} of the same \hyperref[def:fol_theory]{theory}, we say that \( \mscrY \) is a \term[ru=подмодель (\cite[53]{Мальцев1970АлгебраическиеСистемы})]{submodel} of \( \mscrX \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Of course, the new symbols are allowed to have any \hyperref[def:fol_signature/notation]{notation}.
+  \item Substructures correspond to \hyperref[def:categorical_subobject]{categorical subobjects}; see \cref{thm:fol_categorical_subobjects}.
 \end{comments}
 
-\begin{definition}\label{def:fol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
-  We say that the \hyperref[def:fol_theory/extension]{theory extension} \( (\Sigma^+, \Gamma^+) \) of \( (\Sigma, \Gamma) \) is a \term{definitional extension} if there exist finitely many function and predicate symbols in \( \Sigma^+ \) but not \( \Sigma \) such that \( (\Sigma^+, \Gamma^+) \) can be obtained from \( (\Sigma, \Gamma) \) by adding definitions for these symbols in accordance with \cref{def:fol_definition}.
-\end{definition}
-\begin{comments}
-  \item We do not disallow trivial definitional extensions, but will not find them useful.
-  \item See \cref{thm:def:fol_definability} for how \hyperref[def:fol_definability]{definability} relates to definitional extensions.
-\end{comments}
-
-\begin{definition}\label{def:fol_definitional_structure_expansion}\mimprovised
-  In the setting of \cref{def:fol_definitional_extension}, for every structure \( \mscrX = (X, I) \), we can define an \hyperref[def:fol_structure_expansion]{expansion} \( \mscrX^+ = (X, I^+) \), where \( I^+ \) extends \( I \) as follows:
+\begin{proposition}\label{thm:def:fol_substructure}
+  \hyperref[def:fol_substructure]{First-order substructures} have the following basic properties:
   \begin{thmenum}
-    \thmitem{def:fol_definitional_structure_expansion/predicate} For each new \( n \)-ary predicate symbol \( p \), we use the \hyperref[def:fol_parameterized_formula_denotation]{parametrized formula denotation}:
-    \begin{equation*}
-      I^+(p)(a_1, \ldots, a_n) \coloneqq \Bracks{\varphi_p}_\mscrX(a_1, \ldots, a_n).
-    \end{equation*}
-
-    \thmitem{def:fol_definitional_structure_expansion/function} For each new \( n \)-ary function symbol \( f \), we define \( I^+(p)(a_1, \ldots, a_n) \) as the unique value \( y \) for which \( \Bracks{\varphi_p}_\mscrX(a_1, \ldots, a_n, y) = \semtop \).
-
-    Uniqueness of \( y \) is guaranteed by \eqref{eq:def:fol_definition/function/condition}.
+    \thmitem{thm:def:fol_substructure/homomorphism_image} For every \hyperref[def:fol_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) between the structures \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \), the set-theoretic image \( h[X] \) of \( X \) is (the domain of) a substructure of \( \mscrY \).
   \end{thmenum}
-
-  We call it the \term{definitional expansion} of \( \mscrX \).
-\end{definition}
-
-\begin{lemma}\label{thm:fol_definitional_extension_model_uniqueness}
-  In the setting of \cref{def:fol_definitional_structure_expansion}, if \( \mscrX \) is a model of \( \Gamma \), then \( \mscrX^+ \) is the unique expansion of \( \mscrX \) that is a model of \( \Gamma^+ \).
-\end{lemma}
-\begin{proof}
-  It suffices to consider the case where \( (\Sigma^+, \Gamma^+) \) extends \( (\Sigma, \Gamma) \) with one definition. Suppose that \( \mscrX = (X, I) \) is a model of \( \Gamma \).
-
-  \begin{itemize}
-    \item Suppose that \( \Sigma^+ \) extends \( \Sigma \) with the \( n \)-ary predicate symbol \( p \).
-
-    Every formula \( \varphi \) in \( \mscrX^+ \) is by definition a semantic consequence of \( \Gamma \) and \eqref{eq:def:fol_definition/predicate}, both of which \( \mscrX^+ \) satisfies. Then \( \mscrX^+ \) also satisfies \( \varphi \).
-
-    Furthermore, any other interpretation of \( p \) would not satisfy \eqref{eq:def:fol_definition/predicate}, which demonstrates the uniqueness of \( \mscrX^+ \).
-
-    \item The case for function symbols is similar.
-  \end{itemize}
-\end{proof}
-
-\begin{proposition}\label{thm:fol_definitional_extension_conservative}
-  \hyperref[def:fol_definitional_extension]{First-order definitional extensions} are \hyperref[def:fol_theory/conservative]{conservative}.
 \end{proposition}
 \begin{proof}
-  It suffices to consider the case where \( (\Sigma^+, \Gamma^+) \) extends \( (\Sigma, \Gamma) \) with the definition of one symbol. Let \( \mscrX = (X, I) \) be a model of \( \Gamma \) and let \( \mscrX^+ = (X, I^+) \) be the corresponding expansion from \cref{def:fol_definitional_structure_expansion}.
-  \begin{itemize}
-    \item Suppose that \( \Sigma^+ \) extends \( \Sigma \) with the \( n \)-ary predicate symbol \( p \).
+  \SubProofOf{thm:def:fol_substructure/homomorphism_image} Fix a function symbol \( f \) of arity \( n \).
 
-    Let \( \varphi \) be a formula from \( \Gamma^+ \) that does not contain \( f \).
+  For every tuple \( b_1, \ldots, b_n \) in \( h[X] \), there exists a tuple \( a_1, \ldots, a_n \) of preimages. Thus,
+  \begin{equation*}
+    I(f)(b_1, \ldots, b_n)
+    =
+    I(f)(h(a_1), \ldots, h(a_n))
+    =
+    h(I(f)(a_1, \ldots, a_n)),
+  \end{equation*}
+  which also belongs to \( h[X] \).
 
-    By \cref{thm:fol_definitional_extension_model_uniqueness}, the expansion \( \mscrX^+ \) is a model of \( \Gamma^+ \), and of \( \varphi \) in particular. Since \( \varphi \) does not contain \( f \), the denotation of \( \varphi \) in \( \mscrX^+ \) only uses the interpretation \( I \). Thus, \( \mscrX \) is also a model of \( \varphi \).
-
-    Therefore, \( \Gamma^+ \) is conservative.
-
-    \item The case for function symbols is similar.
-  \end{itemize}
+  Therefore, \( h[X] \) is closed under function application.
 \end{proof}
 
-\begin{example}\label{ex:def:fol_definitional_extension}
-  We list examples of \hyperref[def:fol_definitional_extension]{definitional extensions}:
-  \begin{thmenum}
-    \thmitem{ex:def:fol_definitional_extension/sets} In \fullref{sec:naive_set_theory}, we define many operators on sets, and in \cref{thm:zfc_existence_theorems} we prove that they satisfy the condition \eqref{eq:def:fol_definition/function} for function definitions.
+\begin{definition}\label{def:fol_monomorphism}\mimprovised
+  Consider some \hyperref[def:fol_theory_model_functor/obj]{category of models} \( \cat{Mod}(\Gamma) \). Based on the categorical terminology from \cref{def:morphism_invertibility/left_cancellative}, we say that the homomorphism \( h: \mscrX \to \mscrY \) is a \term{monomorphism} if it is left-cancellative, i.e. if \( h \bincirc g_1 = h \bincirc g_2 \) implies that \( g_1 = g_2 \).
 
-    \thmitem{ex:def:fol_definitional_extension/lattices} The \hyperref[def:lattice/theory]{theory of lattices} is only formulated using function symbols, and is adapted to the \hyperref[def:preordered_set/theory]{theory of preordered sets} via definitional extensions.
-  \end{thmenum}
-\end{example}
+  We say that \( h \) \term{splits} if it has a \hyperref[def:morphism_invertibility/left_invertible]{left inverse}, i.e. a homomorphism \( g: \mscrY \to \mscrX \) such that \( g \bincirc h = \id_\mscrX \).
+\end{definition}
+\begin{comments}
+  \item If \( h \) has a left inverse, \cref{thm:def:morphism_invertibility/split_monomorphism} implies that it automatically follows that it is a monomorphism.
 
-\paragraph{Isomorphism}
+  \item Since \( \cat{Mod}(\Gamma) \) generally has less objects than \( \cat{Mod}(\Delta) \) if \( \Gamma \subseteq \Delta \), it is possible for \( h \) to be a monomorphism in \( \cat{Mod}(\Delta) \) but not in \( \cat{Mod}(\Gamma) \).
+
+  \item This definition is a direct restatement of the general categorical one, but the context allows some simplifications. For many useful theories, monomorphisms between first-order models are precisely injective homomorphisms. See \cref{rem:def:fol_monomorphism}.
+
+  Split monomorphisms, on the other hand, are more restrictive than even \hyperref[def:fol_embedding]{embeddings} --- see \cref{ex:def:fol_embedding/no_left_inverse}.
+\end{comments}
+
+\begin{remark}\label{rem:def:fol_monomorphism}
+  \hyperref[def:fol_monomorphism]{Monomorphisms} of first-order models are better behaved than those in general categories. This mainly stems from the connection to set-theoretic invertibility.
+
+  Indeed, consider the \hyperref[def:fol_theory_forgetful_functor/set]{forgetful functor} \( U: \cat{Mod}(\Gamma) \to M \) and structures \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \). The universes \( X \) and \( Y \) are by definition nonempty, so \cref{thm:concrete_category_function_invertibility/injective} implies that, for any homomorphism \( h: \mscrX \to \mscrY \), the following are equivalent:
+  \begin{itemize}
+    \item \( U(h) \) is left-cancellative (i.e. a categorical monomorphism) in \( \cat{Set} \).
+
+    \item \( U(h) \) is left-invertible (i.e. a categorical split monomorphism) in \( \cat{Set} \).
+
+    \item \( U(h) \) is injective.
+  \end{itemize}
+
+  Thus, if \( U(h) \) is injective, it is left-cancellative, i.e. \( U(h) \bincirc \alpha_1 = U(h) \bincirc \alpha_2 \) must imply \( \alpha_1 = \alpha_2 \) for all \hi{functions} \( \alpha_1 \) and \( \alpha_2 \). This is a stronger conditions than left cancellation of \( h \), where \( \alpha_1 \) and \( \alpha_2 \) must be homomorphisms. So injective homomorphisms are monomorphisms. The converse may fail, but counterexamples are sparse; see \cite{MathSE:categories_where_monomorphisms_differ_from_injective_morphisms}.
+
+  Nevertheless, as shown in \cref{thm:concrete_category_function_invertibility/injective}, monomorphisms are precisely injective homomorphisms when \( U: \cat{Mod}(\Gamma) \to M \) has a \hyperref[def:category_adjunction]{left adjoint}. This is the case, for example, for \hyperref[def:fol_equational_theory]{equational theories}, which have \hyperref[def:fol_free_term_model]{free term models}.
+
+  We can say less about the left invertibility of \( h \). Indeed, if \( U(h) \) is injective, it is left-invertible, but \( h \) may fail to be. If \( \alpha \bincirc U(h) = \id_X \) for \hi{some} function \( \alpha \), the mere existence of \( \alpha \) does not entail the existence of a homomorphism \( g \) such that \( U(g) = \alpha \). In fact, we show in \cref{ex:def:fol_embedding/no_left_inverse} that left invertible homomorphisms are even more general than \hyperref[def:fol_embedding]{first-order embeddings}.
+\end{remark}
 
 \begin{definition}\label{def:fol_isomorphism}
-  We say that a \hyperref[def:fol_homomorphism]{first-order homomorphism} \( h: \mscrX \to \mscrY \) is an \term[ru=изоморфизм (\cite[170]{Герасимов2014Вычислимость}), en=isomorphism (\cite[def. 2.3.1]{Hinman2005Logic})]{isomorphism} if any of the following equivalent conditions hold:
+  Consider some \hyperref[def:fol_theory_model_functor/obj]{category of models} \( \cat{Mod}(\Gamma) \). We say that a \hyperref[def:fol_homomorphism]{first-order homomorphism} \( h: \mscrX \to \mscrY \) is an \term[ru=изоморфизм (\cite[170]{Герасимов2014Вычислимость}), en=isomorphism (\cite[def. 2.3.1]{Hinman2005Logic})]{isomorphism} if any of the following equivalent conditions hold:
   \begin{thmenum}
     \thmitem{def:fol_isomorphism/categorical}\mimprovised \( h \) is a \hyperref[def:fol_isomorphism]{categorical isomorphism} in \( \cat{Mod}(\Sigma) \): there exists an inverse homomorphism \( g \) such that \( g \bincirc h \) is the identity in \( \mscrX \) and \( h \bincirc g \) is the identity in \( \mscrY \).
 
     \thmitem{def:fol_isomorphism/inverse}\mimprovised \( h \) is a \hyperref[def:function_invertibility/bijective]{bijective} homomorphism and its set-theoretic inverse \( h^{-1} \) is a homomorphism.
 
-    \thmitem{def:fol_isomorphism/direct}\mcite[170]{Герасимов2014Вычислимость} \( h \) is a \hyperref[def:function_invertibility/bijective]{bijective} \hyperref[def:fol_homomorphism/predicates]{strong homomorphism}.
+    \thmitem{def:fol_isomorphism/direct}\mcite[170]{Герасимов2014Вычислимость} \( h \) is a \hyperref[def:fol_homomorphism/predicates]{strong} \hyperref[def:function_invertibility/bijective]{bijective} homomorphism.
 
     If the signature has no predicate symbols, all homomorphisms are strong, so it is sufficient for the homomorphism to be bijective.
   \end{thmenum}
 \end{definition}
 \begin{defproof}
-  \ImplicationSubProof{def:fol_isomorphism/categorical}{def:fol_isomorphism/inverse} Suppose that \( h \) is a categorical isomorphism with inverse \( g \).
-
-  \Cref{thm:function_invertibility_categorical/fully_invertible} implies that the image \( U(h) \) under the \hyperref[def:fol_theory_forgetful_functor/set]{forgetful functor} \( U: \cat{Mod}(\Sigma) \to \cat{Set} \) is a bijective function, and \cref{thm:def:functor/isomorphisms} implies that \( U(g) \) is the inverse of \( U(h) \) in \( \cat{Set} \).
-
-  Therefore, the homomorphism \( g \) is the set-theoretic inverse of \( h \).
-
-  \ImplicationSubProof{def:fol_isomorphism/inverse}{def:fol_isomorphism/categorical} Suppose that \( h \) is a bijective homomorphism whose set-theoretic inverse \( h^{-1} \) is a homomorphism.
-
-  To be precise, our assumptions is that \( U(h) \) is bijective and that there exists a homomorphism \( g \) in \( \cat{Mod}(\Sigma) \) such that \( U(g) = U(h)^{-1} \), i.e. \( U(g) \) is the set-theoretic inverse of \( h \). \Cref{thm:def:functor_invertibility/faithful_reflects_isomorphisms} implies that \( g \) is the inverse of \( h \) in \( \cat{Mod}(\Sigma) \).
+  \EquivalenceSubProof{def:fol_isomorphism/categorical}{def:fol_isomorphism/inverse} Follows from \cref{thm:concrete_category_function_invertibility/bijective}.
 
   \EquivalenceSubProof{def:fol_isomorphism/inverse}{def:fol_isomorphism/direct} If \( h \) is bijective, the inequality in \eqref{eq:def:fol_homomorphism/predicates} for \( h^{-1} \) coincides with the converse inequality for \( h \).
 \end{defproof}
 
-\paragraph{Definability}
-
-\begin{definition}\label{def:fol_definability}\mcite[def. 2.3.37]{Hinman2005Logic}
-  In a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \), we say that the subset \( A \) of \( X^n \) is \term{definable} with \term{parameters} \( b_1, \ldots, b_m \) if there exists a formula \( \varphi_A \) with at most \( n + m \) free variables such that
-  \begin{equation*}
-    A = \set[\big]{ (a_1, \ldots, a_n) \in X^n \given* \Bracks{\varphi_A}_\mscrX^v(a_1, \ldots, a_n, b_1, \ldots, b_m) = \semtop }.
-  \end{equation*}
-
-  If \( A \) is definable without parameters, we simply say that it is \term{definable}.
-
+\begin{definition}\label{def:fol_embedding}
+  Consider some \hyperref[def:fol_theory_model_functor/obj]{category of models} \( \cat{Mod}(\Gamma) \). We say that the homomorphism \( h: \mscrX \to \mscrY \) is an \term[en=embedding (\cite[def. 2.3.26(ii)]{Hinman2005Logic})]{isomorphic embedding} if it satisfies any of the following equivalent conditions:
   \begin{thmenum}
-    \thmitem{def:fol_definability/predicate} As per \cref{rem:boolean_valued_functions_and_relations}, we may regard the \hyperref[def:subset_characteristic_function]{characteristic function} of \( A \) as the interpretation of a predicate symbol.
+    \thmitem{def:fol_embedding/direct}\mcite[def. 2.3.26(ii)]{Hinman2005Logic} \( h \) is a strong injective homomorphism.
 
-    \thmitem{def:fol_definability/function} If \( n > 1 \), we may also regard \( A \) as the interpretation of a \hyperref[def:set_valued_map]{set-valued map} from \( X^{n-1} \) to \( X \).
+    If the signature has no predicate symbols, all homomorphisms are strong, so it is sufficient for the homomorphism to be injective.
+
+    \thmitem{def:fol_embedding/substructure}\mcite[120]{VanDalen2004LogicAndStructure} The \hyperref[def:set_valued_map/restriction]{corestriction} of \( h \) to its image \( \mscrY\restr_{h[X]} \) is an \hyperref[def:fol_isomorphism]{isomorphism}.
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item See \cref{thm:def:fol_definability} for how definability relates to \hyperref[def:fol_definitional_extension]{definitional extensions}.
-  \item See \cref{def:set_builder_notation} and \fullref{thm:cumulative_hierarchy_model_of_zfc} for how this concept deeply relates to set theory.
-\end{comments}
+\begin{defproof}
+  \ImplicationSubProof{def:fol_embedding/direct}{def:fol_embedding/substructure} Suppose that \( h \) is a strong injective homomorphism.
 
-\begin{proposition}\label{thm:fol_definability_and_definitions}
-  \hyperref[def:fol_definitional_extension]{Definitional extensions} and \hyperref[def:fol_definability]{definability} are related as follows:
+  Its corestriction \( h' \) to its image \( \mscrY\restr_{h[X]} \) is then a strong bijective homomorphism. It thus satisfies \cref{def:fol_isomorphism/direct}, making \( h' \) an isomorphism.
+
+  \ImplicationSubProof{def:fol_embedding/substructure}{def:fol_embedding/direct} Suppose that the corestriction \( h' \) of \( h \) to \( \mscrY_{h[X]} \) is an isomorphism.
+
+  Then \( h' \) satisfies the equivalent conditions in \cref{def:fol_isomorphism}; in particular, it is a strong bijective homomorphism. Then \( h \) is a strong injective homomorphism.
+\end{defproof}
+
+\begin{proposition}\label{thm:def:fol_embedding}
+  \hyperref[def:fol_embedding]{First-order embeddings} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:fol_definability_and_definitions/function} If the formula \( \varphi_f \) is used for a \hyperref[def:fol_definition/function]{function definition} of the symbol \( f \) in a \hyperref[def:fol_definitional_extension]{definitional extension} \( \Gamma^+ \) of \( \Gamma \), and if \( \mscrX \) is a model of \( \Gamma \), then the interpretation \( I^+(f) \) in the \hyperref[def:fol_definitional_structure_expansion]{definitional expansion} \( \mscrX^+ \) is \hyperref[def:fol_definability/function]{definable} by \( \varphi_f \) in \( \mscrX \).
+    \thmitem{thm:def:fol_embedding/inclusion} The inclusion \( \iota: Y \to X \) of the \hyperref[def:fol_substructure]{substructure} \( \mscrY = (Y, J) \) into \( \mscrX = (X, I) \) is an embedding.
 
-    \thmitem{thm:def:fol_definability/predicates_extension} Similarly, if \( \varphi_p \) is used for a \hyperref[def:fol_definition/predicate]{predicate definition} of the symbol \( p \) in a \hyperref[def:fol_definitional_extension]{definitional extension} \( \Gamma^+ \) of \( \Gamma \), and if \( \mscrX \) is a model of \( \Gamma \), then the interpretation \( I^+(p) \) in the definitional expansion of \( \mscrX^+ \) is the \hyperref[def:subset_characteristic_function]{\hi{characteristic function}} of the set \hyperref[def:fol_definability/function]{definable} by \( \varphi_p \) in \( \mscrX \).
+    \thmitem{thm:def:fol_embedding/monomorphism} Every embedding is a \hyperref[def:fol_monomorphism]{monomorphism} (left-cancellative homomorphism).
+
+    \thmitem{thm:def:fol_embedding/split_monomorphism} Every \hyperref[def:fol_monomorphism]{split monomorphism} (left-invertible homomorphism) is an embedding.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Straightforward.
+  \SubProofOf{thm:def:fol_embedding/inclusion} Clearly the inclusion \( \iota: Y \to X \) is injective. Furthermore, it is a strong homomorphism because it vacuously satisfies \eqref{eq:def:fol_homomorphism/functions} and \eqref{eq:def:fol_homomorphism/predicates}.
+
+  \SubProofOf{thm:def:fol_embedding/monomorphism} Follows from \cref{thm:concrete_category_function_invertibility/injective} since an embedding is by definition injective.
+
+  \SubProofOf{thm:def:fol_embedding/split_monomorphism} Let \( g: \mscrY \to \mscrX \) be a left inverse of \( h: \mscrX \to \mscrY \).
+
+  \Cref{thm:concrete_category_function_invertibility/injective} implies that \( h \) is injective. Furthermore, we have
+  \begin{equation*}
+    I(p)(a_1, \ldots, a_n)
+    \leq
+    J(p)\parens[\big]{ h(a_1), \ldots, h(a_n) }
+    \leq
+    I(p)\parens[\big]{ g(h(a_1)), \ldots, g(h(a_n)) }
+    =
+    I(p)(a_1, \ldots, a_n),
+  \end{equation*}
+  so the homomorphism is strong. Thus, it satisfies \cref{def:fol_embedding/direct}, i.e. it is an embedding.
 \end{proof}
 
-\begin{proposition}\label{thm:fol_definable_set_automorphism}\mcite[corr. 2.3.40]{Hinman2005Logic}
-  \hyperref[def:fol_definability]{Definable sets} are \hyperref[def:invariant_subset]{invariant} under \hyperref[def:morphism_invertibility/automorphism]{automorphisms}.
+\begin{example}\label{ex:def:fol_embedding}
+  We list examples of \hyperref[def:fol_embedding]{first-order embeddings}:
+  \begin{thmenum}
+    \thmitem{ex:def:fol_embedding/no_left_inverse} Consider the embedding \( h(n) \coloneqq 2n \) of the additive group \( (\BbbZ, +) \) into itself.
+
+    It is indeed an embedding because it is obviously injective, and there are no predicate symbols in the theory of abelian groups.
+
+    Suppose it has a left inverse \( g \). Then
+    \begin{equation*}
+      n = [g \bincirc h](n) = g(2n) = 2 g(n),
+    \end{equation*}
+    so \( g(n) = n / 2 \). But \( n / 2 \) must be an integer, which is not possible if \( n \) is odd.
+
+    The obtained contradiction shows that \( h \) has no left inverse, and that having a left inverse is stronger than being an embedding.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:categorical_subobject}\mcite[18]{Jacobson1989BasicAlgebraII}
+  For an object \( X \) in some \hyperref[def:category]{category}, define an equivalence relation on \hyperref[def:morphism_invertibility/left_cancellative]{monomorphisms} \( f: A \to X \) and \( g: B \to X \) with a common codomain \( X \) to hold if there exists an \hyperref[def:morphism_invertibility/isomorphism]{isomorphism} \( h: A \to B \) such that \( f = g \bincirc h \).
+
+  We call the equivalence classes of this relation \term{subobjects} of \( X \).
+\end{definition}
+\begin{comments}
+  \item This particular definition is discussed in \cite{MathSE:categorical_subobject_definition}. We give several examples in \cref{ex:def:categorical_subobject}.
+
+  \item In many categories, especially those that are \hyperref[rem:concrete_categories]{concrete}, subobjects are determined by inclusion maps of \enquote{canonical} objects. This is the case for \hyperref[def:subset]{subsets}, \hyperref[def:group/submodel]{subgroups}, \hyperref[def:topological_subspace]{subspaces}, \hyperref[def:undirected_graph/subgraph]{subgraphs} and others.
+
+  In fact, we will mostly regard subobjects as concrete canonical objects.
+\end{comments}
+\begin{defproof}
+  We must show that the above equivalence is indeed an equivalence relation.
+
+  \SubProofOf[def:binary_relation/reflexive]{reflexivity} For every morphism, we have \( f = f \bincirc \id \) by definition.
+
+  \SubProofOf[def:binary_relation/symmetric]{symmetry} If \( f = g \bincirc h \) for some isomorphism \( h \), then \( g = f \bincirc h^{-1} \).
+
+  \SubProofOf[def:binary_relation/transitive]{transitivity} If \( f = g \bincirc h \) and \( k = g \bincirc l \), then
+  \begin{equation*}
+    f = g \bincirc h = (k \bincirc l^{-1}) \bincirc h = k \bincirc (l^{-1} \bincirc h).
+  \end{equation*}
+\end{defproof}
+
+\begin{example}\label{ex:def:categorical_subobject}
+  We list examples of \hyperref[def:categorical_subobject]{categorical subobjects}:
+  \begin{thmenum}
+    \thmitem{ex:def:categorical_subobject/sets} Consider the \hyperref[def:category_of_small_sets]{category of small sets} \( \cat{Set} \).
+
+    By definition, \( \set{ 1 } \) is a subset of \( \set{ 1, 2 } \). Categorically, this is manifested by the inclusion \( \iota_1: \set{ 1 } \to \set{ 1, 2 } \). It is clearly injective and, by \cref{thm:function_invertibility_categorical/nonempty_left_invertible}, a categorical monomorphism. Thus, \( \iota_1 \) induces a subobject.
+
+    Similarly, \( \set{ 2 } \) is a subset of \( \set{ 1, 2 } \), and the inclusion map \( \iota_2: \set{ 2 } \to \set{ 1, 2 } \) induces a subobject.
+
+    There is a unique isomorphism \( h: \set{ 1 } \to \set{ 2 } \), however,
+    \begin{equation*}
+      1 = \iota_1(1) \neq \iota_2(h(1)) = 2,
+    \end{equation*}
+    so the two subsets correspond to different categorical subobjects.
+
+    On the other hand, the map \( 2 \mapsto 1 \) is equivalent to \( \iota_1 \). To avoid confusion, we will focus on inclusion maps.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:fol_categorical_subobjects}
+  Consider some \hyperref[def:fol_theory_model_functor/obj]{category of models} \( \cat{Mod}(\Gamma) \).
+
+  If \( \mscrY = (Y, J) \) and \( \mscrZ = (Z, K) \) are \hyperref[def:fol_substructure]{submodels} of \( \mscrX = (X, I) \), the inclusions \( \iota_Y: Y \to X \) and \( \iota_Z: Z \to X \) induce the same \hyperref[def:categorical_subobject]{categorical subobject} of \( \mscrX \) in \( \cat{Mod}(\Gamma) \) if and only if \( Y = Z \).
 \end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \iota_Y: Y \to X \) and \( \iota_Z: Z \to X \) are equivalent, i.e. there exists some isomorphism \( h: Y \to Z \) such that \( \iota_Y = \iota_Z \bincirc h \).
+
+  Both \( \iota_Y \) and \( \iota_Z \) are embeddings by \cref{thm:def:fol_embedding/inclusion}, and hence monomorphisms by \cref{thm:def:fol_embedding/monomorphism}, so they naturally induce subobjects.
+
+  For every \( b \) in \( Y \), we have \( b = \iota_Y(b) = \iota_Z(h(b)) = h(b) \), which in particular implies that all elements of \( Y \) belong to \( Z \).
+
+  Similarly, for every \( c \) in \( Z \), we have \( c = \iota_Z(c) = \iota_Y(h^{-1}(c)) = h(c) \), which implies that \( Z \) is a subset of \( Y \). We have used here that the categorical isomorphism \( h \) is bijective, which follows from the equivalences in \cref{def:fol_isomorphism}.
+
+  \NecessitySubProof Conversely, suppose that \( Y = Z \). Then \( \iota_Y = \iota_Z \), so obviously they correspond to the same subobject.
+\end{proof}
+
+\paragraph{Generated substructures}
+
+\begin{definition}\label{def:fol_intersection_substructure}\mimprovised
+  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) and a family \( \seq{ (X_k, I_k) }_{k \in \mscrK} \) of \hyperref[def:fol_substructure]{substructures}.
+
+  If the intersection \( \bigcap_{k \in \mscrK} X_k \) is nonempty, restricting the interpretations gives us a substructure of \( \mscrX \), which we call the \term{intersection substructure}.
+\end{definition}
+\begin{comments}
+  \item In case the substructures are disjoint, their intersection is empty, and we have disallowed structures with empty domains. If we allow empty domains, as per \cref{rem:fol_empty_universe/semantics}, then the condition for the substructures not to be disjoint is unnecessary.
+
+  \item As shown in \cref{thm:intersection_of_fol_submodels}, for most theories we will consider, the intersection of submodels of \( \mscrX \) will also be a submodel.
+\end{comments}
+\begin{defproof}
+  We must show that \( \bigcap_{k \in \mscrK} X_k \) is indeed the universe of a substructure, which amounts to showing that it is closed under applications the signature functions.
+
+  Let \( f \) be a function symbol of arity \( n \) and let \( a_1, \ldots, a_n \) be members of the intersection. For every index \( k \), the elements \( a_1, \ldots, a_n \) belong to \( X_k \), and hence \( I(f)(a_1, \ldots, a_n) \) belongs to \( X_k \). Generalizing \( k \), we conclude that \( I(f)(a_1, \ldots, a_n) \) belongs to the intersection.
+\end{defproof}
+
+\begin{proposition}\label{thm:intersection_of_fol_submodels}
+  If the \hyperref[def:fol_theory]{theory} \( \Gamma \) has an axiomatization without existential quantifiers, then the \hyperref[def:fol_intersection_substructure]{intersection} of \hyperref[def:fol_substructure]{submodels} is again a submodel.
+\end{proposition}
+\begin{proof}
+  Fix a family \( \seq{ (X_k, I_k) }_{k \in \mscrK} \) of substructures of \( \mscrX = (X, I) \) and let \( Y \coloneqq \bigcap_{k \in \mscrK} X_k \).
+
+  Let \( \varphi \) be a formula that does not contain existential quantifiers. We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \Bracks{\varphi}_{\mscrX\restr_Y}^v = \semtop \) whenever \( \Bracks{\varphi}_{\mscrX\restr_{X_k}}^v = \semtop \) for every \( k \in \mscrK \) and every variable assignment \( v \) into \( Y \).
+
+  We will only consider the case of universal formulas since the others are trivial:
+  \begin{itemize}
+    \item Suppose that \( \varphi = \qforall x \psi \), where the inductive hypothesis holds for \( \psi \).
+
+    If \( \Bracks{\varphi}_{\mscrX\restr_{X_k}}^v = \semtop \), then, for every \( k \in \mscrK \),
+    \begin{equation*}
+      \bigwedge\set[\big]{ \Bracks{\psi}_{\mscrX\restr_{X_k}}^{v_{x \mapsto a}} \given* a \in X_k } = \semtop,
+    \end{equation*}
+    hence \( \Bracks{\psi}_{\mscrX\restr_{X_k}}^{v_{x \mapsto a}} = \semtop \) for every \( a \) in \( X_k \).
+
+    Therefore, \( \Bracks{\psi}_{\mscrX\restr_Y}^{v_{x \mapsto a}} = \semtop \) for every \( a \) in \( Y \), which implies that \( \Bracks{\varphi}_{\mscrX\restr_Y}^v = \semtop \).
+  \end{itemize}
+\end{proof}
+
+\begin{definition}\label{def:first_order_generated_substructure}\mcite[prop. 2.3.16]{Hinman2005Logic}
+  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure}. Given a subset \( A \) of \( X \), we define the substructure \( \braket{ A } \) \term[ru=порожденная (\cite[55]{Мальцев1970АлгебраическиеСистемы})]{generated} by \( A \) as the \hyperref[def:fol_intersection_substructure]{intersection substructure} of all substructures whose domains contain \( A \).
+
+  We denote the domain of this generated substructure by \( \braket{ A } \). \Cref{thm:closure_operator_from_set_semilattice} implies that it is a \hyperref[def:moore_closure_operator]{Moore closure operator} on \( \pow(X) \).
+\end{definition}
+\begin{comments}
+  \item In particular, as a consequence of \cref{thm:closure_operator_minimality}, \( \braket{ A } \) is the least among all substructure domains containing \( A \).
+\end{comments}

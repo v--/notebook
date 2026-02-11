@@ -47,3 +47,203 @@
 
   \NecessitySubProof* \Cref{thm:pure_equality_isomorphism/isomorphism} implies that, if two structures have the same cardinality, they are isomorphic. Then \cref{thm:def:elementary_embedding/isomorphism} implies that they are elementarily equivalent.
 \end{proof}
+
+\paragraph{Term models}
+
+\begin{definition}\label{def:fol_equational_theory}\mimprovised
+  We say that a subset \( \Alpha \) of a (syntactic or semantic) \hyperref[def:general_logic_theory]{first-order theory} \( \Gamma \) is \term{equational} if \( \Alpha \) consists of \hyperref[def:fol_quantifier_closure]{universal closures} of \hyperref[def:fol_equation]{equations}.
+
+  We call \( \Gamma \) an \term{equational theory} if it has such an axiomatization.
+\end{definition}
+\begin{comments}
+  \item The definition is based in \cite[def. 3.5.3]{BaaderNipkow2012TermRewriting}, who, without dealing with logic, present an equational theory as a set of pairs of terms (their terms resemble our first-order terms). The general notion is attributed to Garrett Birkhoff's discussion of universal algebra in \cite[ch. VI]{Birkhoff1967LatticeTheory}.
+\end{comments}
+
+\begin{definition}\label{def:fol_free_term_model}\mimprovised
+  Fix an \hyperref[def:fol_equational_theory]{equational theory} \( \Gamma \) over the \hyperref[def:fol_signature]{signature} \( \Sigma \) with no relation symbols. Also fix an \hyperref[def:formal_language/alphabet]{alphabet} \( V \), whose elements we will treat as \hyperref[con:free_construction/indeterminate]{indeterminates} (i.e. generalized syntactic variables).
+
+  We will build a \hyperref[def:fol_semantics/model]{model} \( \mscrT_\Gamma(V) \) of \( \Gamma \) consisting of generalized \hyperref[def:fol_term_ast]{abstract syntax trees} of terms over \( \Sigma \). We will call \( \mscrT_\Gamma(V) \) a \term[en=term algebra (\cite[def. 3.4.1]{BaaderNipkow2012TermRewriting})]{free term model} of \( \Gamma \).
+
+  \begin{thmenum}
+    \thmitem{def:fol_free_term_model/intermediate} First, let \( P \) be the set of syntax trees obtained via \fullref{thm:recursively_defined_abstract_syntax} from the function symbols in \( \Sigma \) and from the indeterminates \( V \) considered as nullary symbols.
+
+    On \( P \), we define the interpretation \( I(f) \) of the \( n \)-ary function \( f \) as
+    \begin{equation*}
+      I(f)(T_1, \ldots, T_n) \coloneqq B_+^f(T_1, \ldots, T_n),
+    \end{equation*}
+    where \( B_+^f(T_1, \ldots, T_n) \) is the tree obtained by \hyperref[def:ordered_tree_grafting]{grafting} \( T_1, \ldots, T_n \) to a new root labeled by \( f \). By construction, this tree belongs to \( \mscrP \).
+
+    Then \( \mscrP \coloneqq (P, I) \) is a \hyperref[def:fol_structure]{structure} over \( \Sigma \). At this point is is unrelated to the theory \( \Gamma \).
+
+    \thmitem{def:fol_free_term_model/relation} Fix a particular equational axiomatization \( A \) of \( \Gamma \). Let \( {\cong} \) be the \hyperref[def:first_order_congruence]{congruence} obtained via \fullref{thm:recursively_defined_relations} subject to the following rules:
+
+    \begin{thmenum}
+      \thmitem{def:fol_free_term_model/relation/base} We impose the standard equivalence relation conditions on all syntax trees:
+      \begin{paracol}{3}
+        \begin{nthcolumn}{0}
+          \ParacolAlignmentHack
+          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_R }]{inf:def:fol_free_term_model/relation/base/reflexivity}
+            \begin{prooftree}
+              \infer0[\ref{inf:def:fol_free_term_model/relation/base/reflexivity}]{ T \cong T }
+            \end{prooftree}
+          \end{equation*}
+        \end{nthcolumn}
+
+        \begin{nthcolumn}{1}
+          \ParacolAlignmentHack
+          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_S }]{inf:def:fol_free_term_model/relation/base/symmetry}
+            \begin{prooftree}
+              \hypo{ T \cong S }
+              \infer1[\ref{inf:def:fol_free_term_model/relation/base/symmetry}]{ S \cong T }
+            \end{prooftree}
+          \end{equation*}
+        \end{nthcolumn}
+
+        \begin{nthcolumn}{2}
+          \ParacolAlignmentHack
+          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_T }]{inf:def:fol_free_term_model/relation/base/transitivity}
+            \begin{prooftree}
+              \hypo{ T \cong S }
+              \hypo{ S \cong R }
+              \infer2[\ref{inf:def:fol_free_term_model/relation/base/transitivity}]{ T \cong R }
+            \end{prooftree}
+          \end{equation*}
+        \end{nthcolumn}
+      \end{paracol}
+
+      \thmitem{def:fol_free_term_model/relation/functions} For every function symbol \( f \) of arity \( n \), we impose
+      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_f }]{inf:def:fol_free_term_model/relation/functions}
+        \begin{prooftree}
+          \hypo{ T_1 \cong S_1 }
+          \hypo{ \cdots }
+          \hypo{ T_n \cong S_n }
+          \infer3[\ref{inf:def:fol_free_term_model/relation/functions}]{ I(f)(T_1, \ldots, T_1) \cong I(f)(S_1, \ldots, S_n) }
+        \end{prooftree}
+      \end{equation*}
+
+      \thmitem{def:fol_free_term_model/relation/axioms} For every axiom \( \varphi = \qforall {x_1} \cdots \qforall {x_n} (\tau \syneq \sigma) \) in \( A \), we impose
+      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_{\tau \syneq \sigma} }]{inf:def:fol_free_term_model/relation/axioms}
+        \begin{prooftree}
+          \hypo{ T_1 \cong S_1 }
+          \hypo{ \cdots }
+          \hypo{ T_n \cong S_n }
+          \infer3[\ref{inf:def:fol_free_term_model/relation/axioms}]{ \Bracks{\tau}_\mscrP(T_1, \ldots, T_n) \cong \Bracks{\sigma}_\mscrP(S_1, \ldots, S_n) }
+        \end{prooftree}
+      \end{equation*}
+    \end{thmenum}
+
+    The congruence would be trivial without the last rule. Furthermore, any two axiomatizations of \( \Gamma \) are by definition \hyperref[def:fol_semantics/equivalence]{equivalent}, so the congruence does not depend on the particular choice of equational axiomatization \( A \).
+
+    \thmitem{def:fol_free_term_model/quotient} The desired free term model \( \mscrT_\Gamma(V) \) is then the \hyperref[def:first_order_quotient]{quotient structure} \( \mscrP / {\cong} \).
+  \end{thmenum}
+\end{definition}
+
+\begin{theorem}[Free term model universal property]\label{thm:fol_free_term_model_universal_property}\mimprovised
+  The \hyperref[def:fol_free_term_model]{free term model} \( \mscrT_\Gamma(V) = (T, I) \) is the unique up to a unique isomorphism \hyperref[def:fol_semantics/model]{model} of \( \Gamma \) that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every model \( \mscrY = (Y, J) \) of \( \Gamma \) and every function \( e: V \to Y \) into the universe \( Y \) of \( \mscrY \), there exists a unique \hyperref[def:fol_homomorphism]{first-order homomorphism} \( \Phi_e: \mscrT_\Gamma(V) \to \mscrY \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:fol_term_model_universal_property}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__fol_free_term_model_universal_property}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+\end{theorem}
+\begin{comments}
+  \item Via \cref{rem:universal_mapping_property}, \( V \mapsto \mscrT_\Gamma(V) \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor}
+  \begin{equation*}
+    U: \ucat{Mod}(\Sigma) \to \ucat{Set},
+  \end{equation*}
+  which sends a model of \( \Sigma \) to its universe.
+
+  \item Many theories have distinct definitions for their free objects; these include \hyperref[def:free_group]{free groups}, \hyperref[def:free_semimodule]{free (semi)modules} and \hyperref[def:polynomial_algebra]{polynomial algebras}. They satisfy the same universal property, so, by \cref{thm:functor_adjoint_uniqueness}, they are isomorphic to the corresponding free term models. See \cref{ex:def:fol_free_term_model/free_monoid} for a broader discussion.
+\end{comments}
+\begin{proof}
+  We want the function \( \Phi_e: T \to Y \) to extend \( e \), thus the image of the coset \( [B_+^v] \), where \( B_+^v \) is an indeterminate tree, must be \( e(v) \). This is well-defined because no other tree is congruent to \( B_+^v \).
+
+  We also want \( \Phi_e \) to be a homomorphism. Thus, for the function application tree coset \( [B_+^f(T_1, \ldots, T_n)] \), \( \Phi_e \) must recursively apply itself to the subtrees. The rule \ref{inf:def:fol_free_term_model/relation/axioms} makes sure that \( \Phi_e \) does not depend on the choice of function application tree in a coset. This leads to the only possible definition
+  \begin{equation*}
+    \Phi_e([T]) \coloneqq \begin{cases}
+      e(v),                                                      &T = [B_+^v], \\
+      J(f)\parens[\big]{ \Phi_e([T_1]), \ldots, \Phi_e([T_n]) }, &T = [B_+^f(T_1, \ldots, T_n)].
+    \end{cases}
+  \end{equation*}
+\end{proof}
+
+\begin{example}\label{ex:def:fol_free_term_model}
+  We list examples of \hyperref[def:fol_free_term_model]{free term models}:
+  \begin{thmenum}
+    \thmitem{ex:def:fol_free_term_model/free_magma} A simple example of a free term model is based on the empty theory over a single binary operation.
+
+    As explained in \cref{rem:magma_terminology}, models of this theory are sometimes referred to as \enquote{magmas}, so for this example let us call \( \mscrT_\varnothing(V) \) the \term{free magma} over \( V \).
+
+    The congruence in the construction of \( \mscrT_\varnothing(V) \) is trivial, so the cosets are singleton sets. We thus do not need to distinguish between the syntax trees and their cosets.
+
+    The following trees correspond to elements more conveniently written as \( (xy)z \) and \( x(yz) \):
+    \begin{equation*}
+      \includegraphics[page=1]{output/ex__def__fol_free_term_model}
+      \qquad
+      \includegraphics[page=2]{output/ex__def__fol_free_term_model}
+    \end{equation*}
+
+    Here \( x \), \( y \) and \( z \) are metalinguistic variables denoting arbitrary syntax trees.
+
+    \thmitem{ex:def:fol_free_term_model/free_semigroup} By adding associativity to the empty theory, we obtain a very different free term model.
+
+    The trees above corresponding to \( (xy)z \) and \( x(yz) \) are now congruent. It is thus less convenient to regard them as trees and more convenient to regard them as \hyperref[def:ordered_tuple]{ordered triples}. This extends to quadruples, quintuples and so forth. The grafting product of trees corresponds to concatenation of tuples.
+
+    Thus, we may regard the free term model \( \mscrT_{\Gamma_1}(V) \) over the \hyperref[def:semigroup/theory]{first-order theory of semigroups} \( \Gamma_1 \) as the \hyperref[def:formal_language/kleene_plus]{Kleene plus} \( V^+ \), the set of nonempty strings of indeterminates. More formally, we have just demonstrated an isomorphism between \( \mscrT_{\Gamma_1}(V) \) and \( V^+ \).
+
+    \thmitem{ex:def:fol_free_term_model/free_monoid} This naturally leads to the definition of free monoid in \cref{def:free_monoid} as the \hyperref[def:formal_language/kleene_star]{Kleene star} \( V^* \).
+
+    Indeed, consider the free term model \( \mscrT_{\Gamma_2}(V) \) over the \hyperref[def:monoid/theory]{first-order theory of monoids} \( \Gamma_2 \). In \( \mscrT_{\Gamma_2}(V) \), we expect the equalities \( x = ex = xe \), where \( x \) is arbitrary and \( e = B_+^{\synneutral} \) is the neutral element in \( \mscrT_{\Gamma_2}(V) \). Thus, the following syntax trees must be regarded as congruent to \( x \):
+    \begin{equation*}
+      \includegraphics[page=3]{output/ex__def__fol_free_term_model}
+      \qquad
+      \includegraphics[page=4]{output/ex__def__fol_free_term_model}
+    \end{equation*}
+
+    This ensures that the grafting product with the neutral element tree \( e = B_+^{\synneutral} \) acts as concatenation with the empty string.
+
+    Again, we have just demonstrated an isomorphism between \( \mscrT_{\Gamma_2}(V) \) and \( V^* \). However, even if an explicit isomorphism is not obvious, the universal properties provide one of us. In this case \( \mscrT_{\Gamma_2}(V) \) satisfies \fullref{thm:fol_free_term_model_universal_property}, while \( V^* \) satisfies \fullref{thm:free_monoid_universal_property}. Both are left adjoint to the same forgetful functor \( U: \cat{Mon} \to \cat{Set} \), so, by \cref{thm:functor_adjoint_uniqueness}, they are isomorphic.
+
+    \thmitem{ex:def:fol_free_term_model/free_commutative_monoid} Further in one direction is the free commutative monoid, defined in \cref{def:free_commutative_monoid} as the \hyperref[def:free_semimodule]{free semimodule} \( \BbbN^{\oplus V} \).
+
+    Consider the theory \( \Gamma_3 \) obtained by adding the commutativity axiom \eqref{eq:def:binary_operation/commutative} to \( \Gamma_2 \). Due to \fullref{thm:free_commutative_monoid_universal_property}, we again have an implicit isomorphism between \( \mscrT_{\Gamma_3}(V) \) and \( \BbbN^{\oplus V} \).
+
+    This also follows naturally because, in the free term model \( \mscrT_{\Gamma_3}(V) \), the condition \( xy = yx \) requires us to additionally regard the following trees as congruent:
+    \begin{equation*}
+      \includegraphics[page=5]{output/ex__def__fol_free_term_model}
+      \qquad
+      \includegraphics[page=6]{output/ex__def__fol_free_term_model}
+    \end{equation*}
+
+    It thus becomes convenient to regard cosets in \( \mscrT_{\Gamma_3}(V) \) as \hyperref[def:multiset]{multisets} of \hyperref[def:multiset_cardinality/infinite]{finite order} over \( V \), i.e. as finitely-supported functions from \( V \) to \( \BbbN \).
+
+    \thmitem{ex:def:fol_free_term_model/free_group} Instead of extending monoids to commutative monoids, we may extend them to \hyperref[def:group]{groups}. Let \( \Gamma_4 \) be the \hyperref[def:group/theory]{first-order theory of groups}.
+
+    Compared to the free term model \( \mscrT_{\Gamma_2}(V) \) of monoids, in \( \mscrT_{\Gamma_4}(V) \) each element \( x \) has a corresponding inverse \( x^{-1} \), encoded by the tree
+    \begin{equation*}
+      \includegraphics[page=7]{output/ex__def__fol_free_term_model}
+    \end{equation*}
+
+    The theory additionally requires us to regard the following trees as congruent, for any \( x \), to the neutral element \( e = B_+^{\synneutral} \):
+    \begin{equation*}
+      \includegraphics[page=8]{output/ex__def__fol_free_term_model}
+      \qquad
+      \includegraphics[page=9]{output/ex__def__fol_free_term_model}
+    \end{equation*}
+
+    Symbolically, this amounts to reducing \( x^{-1}x \) and \( xx^{-1} \) to \( e \).
+
+    The free group \( F(V) \), as defined in \cref{def:free_group}, provides an alternative definition that leads to a similar result. The corresponding universal property is \fullref{thm:free_group_universal_property}.
+
+    \thmitem{ex:def:fol_free_term_model/polynomial_algebra} A more complicated example stems from the \hyperref[def:algebra_over_semiring/commutative]{first-order theory of commutative algebras} \( \Gamma_5 \) over a fixed \hyperref[def:semiring]{(semi)ring} \( R \).
+
+    The free term model \( \mscrT_{\Gamma_5}(V) \) requires many adjustments. However, due to \fullref{thm:polynomial_algebra_universal_property}, we know that the free term model is isomorphic to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[V] \).
+
+    This is shown explicitly in \cref{ex:def:fol_free_term_model}.
+
+    \thmitem{ex:def:fol_free_term_model/lattices} Unlike the examples discussed above, for the \hyperref[def:lattice/theory]{theory of lattices} \( \Gamma_6 \), we use free term model \( \mscrT_{\Gamma_6}(V) \) when defining free lattices in \cref{def:free_lattice}.
+  \end{thmenum}
+\end{example}
