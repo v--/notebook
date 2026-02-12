@@ -143,6 +143,16 @@
   \item Substructures correspond to \hyperref[def:categorical_subobject]{categorical subobjects}; see \cref{thm:fol_categorical_subobjects}.
 \end{comments}
 
+\begin{proposition}\label{thm:fol_substructure_characterization}
+  Given a structure \( \mscrX = (X, I) \), the subset \( A \subseteq X \) is (the domain of) a substructure of \( \mscrX \) if and only if it is closed under \( I(f) \) for every function symbol \( f \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Trivial.
+  \NecessitySubProof Suppose that, for every function symbol \( f \) of arity \( n \), \( I(f)(a_1, \ldots, a_n) \) belongs to \( A \) whenever \( a_1, \ldots, a_n \) do.
+
+  Then we can define an interpretation \( J(f) \) as \( I(f) \) restricted to \( A^n \). The structure \( (A, J) \) then vacuously satisfies \cref{def:fol_substructure}, i.e. is a substructure of \( \mscrX \).
+\end{proof}
+
 \begin{proposition}\label{thm:def:fol_substructure}
   \hyperref[def:fol_substructure]{First-order substructures} have the following basic properties:
   \begin{thmenum}
@@ -385,11 +395,69 @@
   \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:first_order_generated_substructure}\mcite[prop. 2.3.16]{Hinman2005Logic}
+\begin{definition}\label{def:fol_generated_substructure}\mcite[prop. 2.3.16]{Hinman2005Logic}
   Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure}. Given a subset \( A \) of \( X \), we define the substructure \( \braket{ A } \) \term[ru=порожденная (\cite[55]{Мальцев1970АлгебраическиеСистемы})]{generated} by \( A \) as the \hyperref[def:fol_intersection_substructure]{intersection substructure} of all substructures whose domains contain \( A \).
 
-  We denote the domain of this generated substructure by \( \braket{ A } \). \Cref{thm:closure_operator_from_set_semilattice} implies that it is a \hyperref[def:moore_closure_operator]{Moore closure operator} on \( \pow(X) \).
+  We denote the domain of this generated substructure by \( \braket{ A } \). \Cref{thm:moore_family_closure_operator} implies that it is a \hyperref[def:moore_closure_operator]{Moore closure operator} on \( \pow(X) \).
 \end{definition}
 \begin{comments}
   \item In particular, as a consequence of \cref{thm:closure_operator_minimality}, \( \braket{ A } \) is the least among all substructure domains containing \( A \).
+
+  \item \Cref{thm:fol_generated_substructure_iteration} provides a useful characterization.
 \end{comments}
+
+\begin{proposition}\label{thm:fol_generated_substructure_iteration}
+  Fix a \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) over \( \Sigma \). The \hyperref[def:fol_substructure]{substructure} of \( \mscrX \) \hyperref[def:fol_generated_substructure]{generated} by the set \( A \) is the smallest \hyperref[def:function_fixed_point]{fixed point} of the following operator:
+  \begin{equation}\label{eq:thm:fol_generated_substructure_iteration/operator}
+    \begin{aligned}
+      &T: \pow(X) \to \pow(X), \\
+      &T(S) \coloneqq S \cup \set{ I(f)(a_1, \ldots, a_{\# f}) \given f \in \op*{Fun}_\Sigma \T{and} a_1, \ldots, a_{\# f} \in S }.
+    \end{aligned}
+  \end{equation}
+
+  Furthermore, \( \braket{ A } \) is the union of the sequence
+  \begin{equation}\label{eq:thm:fol_generated_substructure_iteration/sequence}
+    A_k \coloneqq \begin{cases}
+      A,          &k = 0, \\
+      T(A_{k-1}), &k > 0.
+    \end{cases}
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  That \( T \) has a fixed point \( F \) follows from \fullref{thm:knaster_tarski_theorem}. That \( F \) is the union of \( A_0, A_1, \ldots \) follows from \cref{thm:knaster_tarski_iteration/continuous}. The latter requires verifying that \( T \) is \hyperref[def:scott_continuity]{Scott-continuous}, which can be shown analogously to how it is done in \fullref{thm:recursively_defined_abstract_syntax}.
+
+  It remains to show that \( \braket{ A } = F \). Since \( F \) is closed under \( I(f) \) for any function symbol \( f \), \cref{thm:fol_substructure_characterization} implies that it is a substructure of \( \mscrX \). By definition then \( \braket{ A } \subseteq F \).
+
+  Conversely, an element \( a \) of \( F \) must belong to some \( A_k \). Without loss of generality, suppose that \( k \) is minimal. We will use induction on \( k \) to show that \( a \) belongs to every substructure of \( \mscrX \) containing \( A \).
+  \begin{itemize}
+    \item If \( k = 0 \), then \( A_0 = A \), so \( a \) clearly also belongs to every substructure containing \( A \).
+
+    \item Otherwise, for some function symbol \( f \) of arity \( n \), \( a = I(f)(a_1, \ldots, a_n) \) for some elements \( a_1, \ldots, a_n \) from \( A_{k-1} \). By the inductive hypothesis, \( a_1, \ldots, a_n \) belong to every substructure containing \( A \); then so does \( a \).
+  \end{itemize}
+
+  It follows that \( F \subseteq \braket{ A } \).
+\end{proof}
+
+\begin{theorem}[Induction on generated substructures]\label{thm:induction_on_generated_substructures}
+  Over the \hyperref[def:fol_signature]{signature} \( \Sigma \), fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \). Consider a subset \( A \) of \( X \), a formula \( \varphi \) over \( \Sigma \), a variable \( x \) and a variable assignment \( v \) into \( X \).
+
+  Then, in order for the modified assignment \( v_{x \mapsto a} \) to satisfy \( \varphi \) for every \( a \) in the substructure \( \braket{ A } \) \hyperref[def:fol_generated_substructure]{generated} by \( A \), the following are sufficient:
+  \begin{thmenum}
+    \thmitem{thm:induction_on_generated_substructures/base} The \hyperref[def:fol_semantics/satisfaction]{assignment} \( v_{x \mapsto a} \) satisfies \( \varphi \) for every \( a \) in \( A \).
+
+    \thmitem{thm:induction_on_generated_substructures/step} For every function symbol \( f \) in \( \Sigma \) of arity \( n \), if there exists a tuple \( a_1, \ldots, a_n \) such that \( v_{x \mapsto a_k} \) satisfies \( \varphi \) for every \( k = 1, \ldots, n \), then \( v_{x \mapsto I(f)(x_1, \ldots, x_n)} \) also satisfies \( \varphi \).
+  \end{thmenum}
+\end{theorem}
+\begin{proof}
+  Suppose that both \cref{thm:induction_on_generated_substructures/base} and \cref{thm:induction_on_generated_substructures/step} hold.
+
+  Let \( a \) be an arbitrary member of \( \braket{ A } \). We will show that \( v_{x \mapsto a} \) satisfies \( \varphi \).
+
+  We will use the characterization \eqref{eq:thm:fol_generated_substructure_iteration/sequence} of \( \braket{ A } \) from \cref{thm:fol_generated_substructure_iteration}. Let \( i \) be the smallest index such that \( a \) belongs to \( A_i \). We will use induction on \( i \).
+
+  \begin{itemize}
+    \item If \( i = 0 \), then \cref{thm:induction_on_generated_substructures/base} ensures that \( v_{x \mapsto a} \) satisfies \( \varphi \).
+
+    \item Otherwise, \( a = I(f)(a_1, \ldots, a_n) \), where the inductive hypothesis holds for \( A_{i-1} \), then \cref{thm:induction_on_generated_substructures/step} is satisfied, and it implies that \( v_{x \mapsto a} \) satisfies \( \varphi \).
+  \end{itemize}
+\end{proof}
