@@ -1,5 +1,129 @@
 \section{First-order theories}\label{sec:first_order_theories}
 
+\paragraph{Theories}
+
+\begin{definition}\label{def:fol_theory}\mimprovised
+  We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
+
+  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \cat{Th}(\Gamma) \), and say that \( \Gamma \) \term{axiomatizes} \( \cat{Th}(\Gamma) \).
+
+  \begin{thmenum}
+    \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
+
+    \thmitem{def:fol_theory/extension} Of special interest is the case where \( t: \Sigma \to \Sigma^+ \) is the inclusion map of a \hyperref[def:fol_signature_extension]{signature extension}. In this case translation is does nothing, and \( t \) is a theory morphism from \( (\Sigma, \Gamma) \) to \( (\Sigma^+, \Gamma^+) \) if and only if \( \Gamma \) is a subset of \( \Gamma^+ \).
+
+    We call \( \Gamma^+ \) an \term{extension} of \( \Gamma \).
+
+    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a category of (syntactic or semantic) theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
+
+    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \vdash_\Sigma \varphi \) implies \( \Delta \vdash_\Theta \op*{Sen}(t)(\varphi) \).
+
+    Sufficiency is obvious for both semantic entailment and natural deduction, so it usually suffices to check that \( \Delta \vdash_\Theta \op*{Sen}(t)(\varphi) \) implies \( \Gamma \vdash_\Sigma \varphi \).
+
+    \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \cat{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
+
+    \thmitem{def:fol_theory/consistent}\mcite[def. 2.6.19]{Герасимов2014Вычислимость} We call a first-order theory \term[ru=непротиворечивое (множество формул)]{consistent} if \( \Gamma \) contains no \hyperref[def:fol_semantics/tautology]{contradictions}, i.e. if \( \Gamma \) does not contain \( \synbot \).
+
+    More generally, a set of sentences \( \Gamma \) is consistent if \( \synbot \) cannot be derived from it.
+
+    We discuss consistent theories in a general setting in \cref{def:consistent_set_of_sentences}, and give equivalent conditions for syntactic theories in \cref{thm:propositional_semantic_inconsistency} and for semantic theories in \cref{thm:propositional_semantic_inconsistency}. The latter also shows that semantic consistency is equivalent to \hyperref[def:propositional_semantics/satisfaction]{satisfiability}.
+
+    \thmitem{def:fol_theory/complete}\mcite[def. 2.4.i]{Hinman2005Logic} We call a first-order theory \( \Gamma \) \term[ru=полное (множество формул) (\cite[def. 2.6.20]{Герасимов2014Вычислимость})]{complete} if, for every sentence \( \varphi \), \( \Gamma \) contains either \( \varphi \) or \( \synneg \varphi \) (or possibly both, if the theory is inconsistent).
+
+    More generally, a set of sentences \( \Gamma \) is complete if, for every sentence \( \varphi \), we can derive either \( \varphi \) or \( \synneg \varphi \) (or possibly both) from \( \Gamma \).
+
+    We will discuss complete theories in a general setting in \cref{def:complete_set_of_sentences}, and prove in \cref{thm:propositional_syntactically_complete_set} that it coincides with our notion when restricted to classical logic.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_theory}
+  \hyperref[def:fol_theory]{First-order theories} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_theory/model_theory_consistent_complete} For every structure \( \mscrX \), the theory \( \cat{Th}(\mscrX) \) is consistent and complete.
+
+    \thmitem{thm:def:fol_theory/theory_morphism_reduct} For every \hyperref[def:fol_theory/morphism]{theory morphism} \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), if \( \mscrY \) is a model of \( \Delta \), its \hyperref[def:fol_reduct_along_morphism]{reduct} \( \red_t(\mscrY) \) is a model of \( \Gamma \).
+
+    The reduct is taken with respect to the underlying signature morphism of \( t \). We show that the theory morphism is also compatible with this reduct.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_theory/model_theory_consistent_complete} Analogous to \cref{thm:def:propositional_theory/model_theory_consistent_complete}.
+
+  \SubProofOf{thm:def:fol_theory/theory_morphism_reduct} Suppose that \( \mscrY \) is a model of \( \Delta \).
+
+  Consider the theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \). By definition, it is a signature morphism that translates formulas from \( \Gamma \) to formulas from \( \Delta \).
+
+  The reduct \( \red_t(\mscrY) \) along the \hi{signature morphism} \( t \). Suppose that \( \mscrY \) is a model of \( \Delta \), i.e. \( \Bracks{\psi}_\mscrY = \semtop \) for every formula \( \psi \) in \( \Delta \). In particular, \( \Bracks{\varphi[t]}_\mscrY = \semtop \) for every \( \varphi \) in \( \Gamma \).
+
+  \Cref{thm:fol_structure_reduct_denotation/formulas} implies that \( \Bracks{\varphi}_{\red_t(\mscrY)}^v = \semtop \) for every \( \varphi \) in \( \Gamma \); hence, \( \red_t(\mscrY) \) is a model of \( \Gamma \).
+\end{proof}
+
+\begin{definition}\label{def:fol_theory_model_functor}\mimprovised
+  Consider the \hyperref[def:fol_institution]{first-order institution} over the \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
+
+  This institution has a \hyperref[def:fol_institution/models]{model functor} \( \cat{Mod}: \cat{Sign} \to \cat{Cat}^{\oppos} \) which sends each \hyperref[def:fol_signature]{signature} \( \Sigma \) to the category \( \cat{Mod}(\Sigma) \) of all \hyperref[def:fol_structure]{structures} and \hyperref[def:fol_homomorphism]{homomorphisms} over \( \Sigma \), and each \hyperref[def:fol_signature_category/morphisms]{signature morphism} \( t: \Sigma \to \Theta \) to the corresponding \hyperref[def:fol_institution/models/hom]{reduct functor} \( \cat{Mod}(t): \cat{Mod}(\Theta) \to \cat{Mod}(\Sigma) \).
+
+  We can extend \( \cat{Mod} \) to a functor \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) on the corresponding \hyperref[def:fol_theory/category]{category of theories}:
+  \begin{thmenum}
+    \thmitem{def:fol_theory_model_functor/obj} We send a theory \( \Gamma \) to the \hyperref[def:subcategory/full]{\hi{full} subcategory} of \( \cat{Mod}(\Sigma) \) of all structures in which \( \Gamma \) is \hyperref[def:fol_semantics/model]{valid}.
+
+    We denote it by \( \cat{Mod}(\Gamma) \) and refer to it as the \term{category of \( \mscrU \)-small models of \( \Gamma \)}.
+
+    It is important that we have required the subcategory \( \cat{Mod}(\Gamma) \) to be full. Thus, what counts as a model in \( \cat{Mod}(\Gamma) \) depend on the axioms of \( \Gamma \), but what counts as a homomorphism depend solely on \( \Sigma \). In particular, if \( \Gamma \) is the empty theory, then \( \cat{Mod}(\Gamma) \) coincides with \( \cat{Mod}(\Sigma) \).
+
+    \thmitem{def:fol_theory_model_functor/hom} We send the \hyperref[def:fol_theory/morphism]{theory morphism} \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \) to the aforementioned reduct functor \( \cat{Mod}(t): \cat{Mod}(\Theta) \to \cat{Mod}(\Sigma) \). To highlight that the functor acts on theories, we denote it by \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \).
+
+    The reduct functor only depends on the underlying signature morphism, but, as shown in \cref{thm:def:fol_theory/theory_morphism_reduct}, whether the reduct is a model of \( \Gamma \) generally depends on \( \Delta \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item For established theories, instead of \( \cat{Mod}(\Gamma) \), we introduce specific names. For example, we use \( \cat{Grp} \) for the \hyperref[def:group/category]{category of groups} or \( \cat{Lat} \) for \hyperref[def:lattice/theory]{category of lattices}.
+
+  \item We have skipped the \( \mscrU \) prefix here for brevity, but all the aforementioned categories depend on \( \mscrU \).
+
+  \item This definition is based on the discussion in \bycite[105]{GoguenBurstall1992Institutions}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_theory_model_functor}
+  The \hyperref[def:fol_theory_model_functor]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_theory_model_functor/reduct_faithful} For every theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), the corresponding reduct functor \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \) is \hyperref[def:functor_invertibility/faithful]{faithful}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_theory_model_functor/reduct_faithful} Fix two models \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) of \( \Delta \), and consider their reducts \( \red_t(\mscrX) = (X, I_t) \) and \( \red_t(\mscrY) = (Y, J_t) \). \Cref{thm:def:fol_theory/theory_morphism_reduct} implies that they are models of \( \Gamma \).
+
+  If \( \red_t(h) \) and \( \red_t(g) \) coincide for homomorphisms \( h \) and \( g \) in \( \cat{Mod}(\Sigma) \), they agree as functions on \( X \), thus \( h \) and \( g \) also coincide as homomorphisms in \( \cat{Mod}(\Sigma) \). Hence, \( \cat{Mod}(t) \) is faithful.
+\end{proof}
+
+\begin{definition}\label{def:fol_theory_forgetful_functor}\mimprovised
+  The \hyperref[def:fol_theory_model_functor/obj]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \) induces many \hyperref[def:concrete_category]{forgetful functors}.
+
+  \begin{thmenum}
+    \thmitem{def:fol_theory_forgetful_functor/reduct} For every theory morphism \( t: (\Sigma, \Gamma) \to (\Theta, \Delta) \), the corresponding reduct functor \( \cat{Mod}(t): \cat{Mod}(\Delta) \to \cat{Mod}(\Gamma) \) can be regarded as forgetful.
+
+    \thmitem{def:fol_theory_forgetful_functor/set} For any category of models \( \cat{Mod}(\Gamma) \), there is a natural functor \( U: \cat{Mod}(\Gamma) \to \cat{Set} \) sending each structure to its universe and each homomorphism to its underlying function.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \Cref{thm:def:fol_theory_model_functor/reduct_faithful} implies that the reduct functors are faithful, and the proof for \( U \) is even simpler, so the implicit requirement of faithfulness from \cref{def:concrete_category} is satisfied.
+\end{defproof}
+
+\begin{example}\label{ex:def:fol_theory_model_functor}
+  We list examples related to \hyperref[def:fol_theory_model_functor]{theory model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \):
+  \begin{thmenum}
+    \thmitem{ex:def:fol_theory_model_functor/order} The \hyperref[def:preordered_set/theory]{partially ordered sets} extend the \hyperref[def:preordered_set/theory]{theory of preordered sets} with the antisymmetry condition \eqref{eq:def:binary_relation/antisymmetric}.
+
+    The homomorphisms of partially ordered sets are \hyperref[def:order_function/preserving]{order-preserving maps}, as in the case of the more general preordered sets. This is to be expected since we have not modified the signature.
+
+    On the other hand, the \hyperref[def:lattice/theory]{theory of lattices} introduces new function symbols and only introduces the familiar inequalities via \hyperref[def:fol_definitional_extension]{definitional extensions}.
+
+    \thmitem{ex:def:fol_theory_model_functor/groups} The \hyperref[def:group/theory]{theory of groups} extends \hyperref[def:monoid/theory]{that of monoids} with the unary symbol \( {\syninv} \), which forces it to also adapt the notion of homomorphisms.
+
+    On the other hand, the \hyperref[def:abelian_group]{abelian groups} extend only the theory, so the homomorphisms of abelian groups are precisely those of groups.
+  \end{thmenum}
+\end{example}
+
 \paragraph{Elementary embeddings}
 
 \begin{remark}\label{rem:fol_homomorphism_refinements}
