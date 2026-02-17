@@ -313,7 +313,7 @@
   \end{thmenum}
 \end{example}
 
-\paragraph{Invariance of \( \alpha \)-equivalence under substitution}
+\paragraph{Composite substitutions}
 
 \begin{definition}\label{def:lambda_substitution_composition}\mimprovised
   We define the \term{composition} \( \Bbbt\Bbbs \) of the \hyperref[def:atomic_lambda_term_substitution]{atomic \( \muplambda \)-term substitutions} \( \Bbbs \) and \( \Bbbt \) as
@@ -355,6 +355,78 @@
     \op*{Free}(M[\Bbbs][\Bbbt]).
   \end{align*}
 \end{proof}
+
+\begin{proposition}\label{thm:lambda_substitution_composition_term_equality}
+  Fix a \( \muplambda \)-term \( M \) and two substitutions \( \Bbbs \) and \( \Bbbt \).
+
+  Suppose that, for every variable \( x \) of \( M \), the variables of \( M \) and \( \Bbbs(x) \) are disjoint. Similarly, suppose that, for every variable \( y \) of \( M[\Bbbs] \), the variables of \( M[\Bbbs] \) and \( \Bbbt\Bbbs(y) \) are disjoint. Then
+  \begin{equation}\label{eq:thm:lambda_substitution_composition_term_equality}
+    M[\Bbbt\Bbbs] = M[\Bbbs][\Bbbt].
+  \end{equation}
+\end{proposition}
+\begin{comments}
+  \item Note that the restrictions hold for arbitrary variables, not necessarily free, because we want to use induction on subterms. These conditions are satisfied in many practical cases like
+  \begin{equation*}
+    M[x \mapsto c, y \mapsto d] = M[x \mapsto c][y \mapsto d],
+  \end{equation*}
+  where \( c \) and \( d \) are constants.
+
+  Without the restrictions, \cref{thm:nary_lambda_substitution_composition_is_alpha_equivalent} gives us \( \muplambda \)-equivalence instead of equality.
+\end{comments}
+\begin{proof}
+  We will use \fullref{thm:induction_on_abstract_syntax} on of \( M \), simultaneously on all suitable substitutions.
+
+  \begin{itemize}
+    \item If \( M \) is a constant, it is invariant under substitution, and thus
+    \begin{equation*}
+      M[\Bbbt\Bbbs] = M = M[\Bbbs][\Bbbt].
+    \end{equation*}
+
+    \item If \( M \) is a variable, then
+    \begin{equation*}
+      M[\Bbbt\Bbbs] = \Bbbt(\Bbbs(M)) = M[\Bbbs][\Bbbt].
+    \end{equation*}
+
+    \item Suppose that \( M = NK \) and that the inductive hypothesis holds for \( N \) and \( K \).
+
+    We have
+    \begin{equation*}
+      M[\Bbbt\Bbbs]
+      =
+      N[\Bbbt\Bbbs] \thinspace K[\Bbbt\Bbbs]
+      \reloset {\T{ind.}} =
+      N[\Bbbt][\Bbbs] \thinspace K[\Bbbt][\Bbbs]
+      =
+      M[\Bbbt][\Bbbs].
+    \end{equation*}
+
+    \item Finally, suppose that \( M = \qabs x N \) and that the inductive hypothesis holds for \( N \).
+
+    By assumption, \( x \) does not belong to \( \op*{Free}_\Bbbs(M) = \op*{Free}(M[\Bbbs]) \), so
+    \begin{equation*}
+      M[\Bbbs] = \qabs x N[\Bbbs_{x \mapsto x}].
+    \end{equation*}
+
+    Similarly, since \( x \) is a variable of \( M[\Bbbs] \), it does not belong to \( \op*{Free}_\Bbbt(M[\Bbbs]) = \op*{Free}(M[\Bbbs][\Bbbt]) \), so
+    \begin{equation*}
+      M[\Bbbs][\Bbbt] = \qabs x N[\Bbbs_{x \mapsto x}][\Bbbt_{x \mapsto x}].
+    \end{equation*}
+
+    \Cref{thm:substitution_composition_free_variables} implies that \( \op*{Free}_{\Bbbt\Bbbs}(M) = \op*{Free}(M[\Bbbs][\Bbbt]) \), so \( x \) does not belong there also, and
+    \begin{equation*}
+      M[\Bbbt\Bbbs] = \qabs x N[(\Bbbt\Bbbs)_{x \mapsto x}].
+    \end{equation*}
+
+    Since \( x \) is a variable of \( M \), by assumption it is not in \( \Bbbs(y) \) for any \( y \) in \( N \), so the two substitutions \( \Bbbt_{x \mapsto x} \bincirc \Bbbs_{x \mapsto x} \) and \( (\Bbbt\Bbbs)_{x \mapsto x} \) agree on the free variables of \( N \). \Cref{thm:lambda_substitutions_agree} thus implies that
+    \begin{equation*}
+      M[\Bbbt\Bbbs] = \qabs x \underbrace{N[\Bbbt_{x \mapsto x} \bincirc \Bbbs_{x \mapsto x}]}_{N[\Bbbs_{x \mapsto x}][\Bbbt_{x \mapsto x}] \T{by ind.}}.
+    \end{equation*}
+
+    Therefore, \( M[\Bbbt\Bbbs] = M[\Bbbs][\Bbbt] \).
+  \end{itemize}
+\end{proof}
+
+\paragraph{Invariance of \( \alpha \)-equivalence under substitution}
 
 \begin{lemma}\label{thm:composition_of_lambda_substitutions_lemma}
   Fix a \( \muplambda \)-term \( M \) and a sequence of \hyperref[def:atomic_lambda_term_substitution]{substitutions} \( \Bbbs_1, \ldots, \Bbbs_n \).
