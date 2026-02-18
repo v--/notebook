@@ -20,12 +20,12 @@ from .unification import UnificationError, unify
         unifier=dict(x='y')
     ),
     dict(
-        system=['(fᶜ⁰ = x)'],
-        unifier=dict(x='fᶜ⁰')
+        system=['(f⁰ = x)'],
+        unifier=dict(x='f⁰')
     ),
     dict(
-        system=['(x = f¹(y))', '(y = fᶜ⁰)'],
-        unifier=dict(x='f¹(fᶜ⁰)', y='fᶜ⁰')
+        system=['(x = f¹(y))', '(y = f⁰)'],
+        unifier=dict(x='f¹(f⁰)', y='f⁰')
     ),
     # ex:alg:first_order_unification/glue
     dict(
@@ -33,18 +33,18 @@ from .unification import UnificationError, unify
         unifier=dict(x='f¹(z)', y='z')
     ),
     dict(
-        system=['(x = f¹(y))', '(y = fᶜ⁰)'],
-        unifier=dict(x='f¹(fᶜ⁰)', y='fᶜ⁰')
+        system=['(x = f¹(y))', '(y = f⁰)'],
+        unifier=dict(x='f¹(f⁰)', y='f⁰')
     ),
     # ex:alg:first_order_unification/418a
     dict(
-        system=['(f²(x, y) = f²(g¹(fᶜ⁰), x))'],
-        unifier=dict(x='g¹(fᶜ⁰)', y='g¹(fᶜ⁰)')
+        system=['(f²(x, y) = f²(g¹(f⁰), x))'],
+        unifier=dict(x='g¹(f⁰)', y='g¹(f⁰)')
     ),
     # ex:alg:first_order_unification/418c
     dict(
-        system=['(f²(x, fᶜ⁰) = f²(g¹(y), z))'],
-        unifier=dict(x='g¹(y)', z='fᶜ⁰')
+        system=['(f²(x, f⁰) = f²(g¹(y), z))'],
+        unifier=dict(x='g¹(y)', z='f⁰')
     ),
 )
 def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signature: FormalLogicSignature) -> None:
@@ -61,7 +61,7 @@ def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signatur
 
 @pytest_parametrize_kwargs(
     dict(
-        system=['(x = fᶜ⁰)', '(x = gᶜ⁰)'],
+        system=['(x = f⁰)', '(x = g⁰)'],
     ),
     # ex:alg:first_order_unification/loop
     dict(

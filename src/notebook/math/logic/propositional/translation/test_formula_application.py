@@ -15,8 +15,8 @@ from .formula_application import translate_prop_formula
     ),
     dict(
         formula='(p ∧ q)',
-        mapping=dict(p='pᶜ⁰', q='qᶜ⁰'),
-        expected='(pᶜ⁰ ∧ qᶜ⁰)'
+        mapping=dict(p='p⁰', q='q⁰'),
+        expected='(p⁰ ∧ q⁰)'
     )
 )
 def test_translate_prop_formula(

@@ -12,16 +12,17 @@ def dummy_signature(max_args: int = 3) -> FormalLogicSignature:
     )
 
     for char in ['f', 'g', 'h', 't']:
-        signature.add_symbol(FunctionSymbol(char + 'ᶜ⁰', arity=0))
+        signature.add_symbol(FunctionSymbol(char + '⁰', arity=0, notation=SignatureSymbolNotation.CONDENSED))
 
         for i in range(1, max_args + 1):
-            signature.add_symbol(FunctionSymbol(char + itoa_superscripts(i), arity=i, notation=SignatureSymbolNotation.PREFIX))
             signature.add_symbol(FunctionSymbol(char + 'ᶜ' + itoa_superscripts(i), arity=i, notation=SignatureSymbolNotation.CONDENSED))
+            signature.add_symbol(FunctionSymbol(char + itoa_superscripts(i), arity=i, notation=SignatureSymbolNotation.PREFIX))
 
     for char in ['p', 'q', 'r', 's']:
-        signature.add_symbol(PredicateSymbol(char + 'ᶜ⁰', arity=0))
+        signature.add_symbol(PredicateSymbol(char + '⁰', arity=0, notation=SignatureSymbolNotation.CONDENSED))
 
         for i in range(1, max_args + 1):
+            signature.add_symbol(PredicateSymbol(char + 'ᶜ' + itoa_superscripts(i), arity=i, notation=SignatureSymbolNotation.CONDENSED))
             signature.add_symbol(PredicateSymbol(char + itoa_superscripts(i), arity=i, notation=SignatureSymbolNotation.PREFIX))
 
     return signature

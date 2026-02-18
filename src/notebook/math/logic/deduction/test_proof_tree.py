@@ -12,6 +12,7 @@ from ..parsing import (
     parse_variable,
 )
 from ..propositional import parse_prop_formula
+from ..formulas import NegationFormula
 from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution
@@ -365,11 +366,11 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
         premise_config(
-            main=parse_formula_with_substitution('p¹(x)[x ↦ fᶜ⁰]', dummy_signature),
+            main=parse_formula_with_substitution('p¹(x)[x ↦ f⁰]', dummy_signature),
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ fᶜ⁰]', dummy_signature),
+                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ f⁰]', dummy_signature),
             )
         ),
     )
@@ -379,7 +380,7 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
-          p¹(fᶜ⁰)
+          p¹(f⁰)
         ___________ ∃₊
          ∃x.p¹(x)
         '''

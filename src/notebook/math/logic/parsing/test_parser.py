@@ -41,8 +41,8 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
 
 @pytest_parametrize_kwargs(
     dict(
-        term='fᶜ⁰',
-        name='fᶜ⁰',
+        term='f⁰',
+        name='f⁰',
         arguments=[]
     ),
     dict(
@@ -83,12 +83,12 @@ def test_parsing_functions_with_unrecognized_names() -> None:
 
 def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('pᶜ⁰', dummy_signature)
+        parse_term('p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Encountered a formula where a term was expected'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ pᶜ⁰
-          │ ^^^
+        1 │ p⁰
+          │ ^^
     ''')
 
 
@@ -284,9 +284,9 @@ def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalL
 
 @pytest_parametrize_lists(
     term=[
-        'fᶜ⁰',
+        'f⁰',
         'fᶜ¹x',
-        'fᶜ²xgᶜ⁰',
+        'fᶜ²xg⁰',
         'fᶜ²xgᶜ¹y',
         'fᶜ¹(x ∘ y)',
     ]
@@ -380,12 +380,12 @@ def test_parsing_invalid_equality() -> None:
 
 def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(¬pᶜ⁰ = y)', dummy_signature)
+        parse_formula('(¬p⁰ = y)', dummy_signature)
 
     assert str(excinfo.value) == 'The first argument of an equality formula must be a term'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (¬pᶜ⁰ = y)
-          │  ^^^^
+        1 │ (¬p⁰ = y)
+          │  ^^^
     ''')
 
 
@@ -474,22 +474,22 @@ def test_lone_quantifier() -> None:
 
 def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('∀pᶜ⁰.pᶜ⁰', dummy_signature)
+        parse_formula('∀p⁰.p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ ∀pᶜ⁰.pᶜ⁰
-          │ ^^^^
+        1 │ ∀p⁰.p⁰
+          │ ^^^
     ''')
 
 
 def test_quantifier_with_no_dot(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('∀xpᶜ⁰', dummy_signature)
+        parse_formula('∀xp⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected dot after variable'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ ∀xpᶜ⁰
+        1 │ ∀xp⁰
           │ ^^
     ''')
 
