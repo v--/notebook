@@ -543,6 +543,104 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     )
 
 
+# thm:natural_deduction_pulling_existential_quantifier
+def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -> None:
+    u = parse_formula('(p⁰ → ∃x.p¹(x))', dummy_signature)
+    v = parse_formula('p⁰', dummy_signature)
+    w = parse_formula('p¹(y)', dummy_signature)
+    t = parse_formula('¬∃x.(p⁰ → p¹(x))', dummy_signature)
+
+    # This is the bulk of the proof tree
+    main_subtree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+        apply(
+            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
+            assume(u, parse_marker('u')),
+            assume(v, parse_marker('v')),
+        ),
+        premise_config(
+            attachments=[
+                MarkedFormulaWithSubstitution(
+                    parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
+                    parse_marker('w')
+                )
+            ],
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
+                premise_config(
+                    main=parse_formula_with_substitution('(p⁰ → p¹(x))[x ↦ y]', dummy_signature),
+                    tree=apply(
+                        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
+                        assume(w, parse_marker('w')),
+                        implicit={
+                            parse_formula_placeholder('φ'): parse_formula('p⁰', dummy_signature)
+                        }
+                    ),
+                )
+            ),
+        )
+    )
+
+    # The only addition to the main_subtree is our attempt to eliminate the assumption v
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
+        premise_config(
+            attachments=[MarkedFormula(t, parse_marker('t'))],
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
+                assume(t, parse_marker('t')),
+                apply(
+                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
+                    premise_config(
+                        main=parse_formula_with_substitution('(p⁰ → p¹(x))[x ↦ y]', dummy_signature),
+                        tree=apply(
+                            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
+                            premise_config(
+                                attachments=[MarkedFormula(v, parse_marker('v'))],
+                                tree=apply(
+                                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
+                                    apply(
+                                        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
+                                        assume(t, parse_marker('t')),
+                                        main_subtree,
+                                    ),
+                                    implicit={
+                                        parse_formula_placeholder('φ'): w,
+                                    }
+                                ),
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+
+    assert tree.get_cumulative_assumptions() == {MarkedFormula(u, parse_marker('u'))}
+    assert str(tree) == dedent('''\
+                                                                                                 [p¹(y)]ʷ
+                                                                                               ____________ →₊
+                                                            [(p⁰ → ∃x.p¹(x))]ᵘ    [p⁰]ᵛ        (p⁰ → p¹(y))
+                                                            ___________________________ →₋    _______________ ∃₊
+                                                                     ∃x.p¹(x)                 ∃x.(p⁰ → p¹(x))
+                                                          w _________________________________________________ ∃₋
+                                   [¬∃x.(p⁰ → p¹(x))]ᵗ                       ∃x.(p⁰ → p¹(x))
+                                   __________________________________________________________________________ ¬₋
+                                                                       ⊥
+                                   __________________________________________________________________________ RAA
+                                                                     p¹(y)
+                                 v __________________________________________________________________________ →₊
+                                                                  (p⁰ → p¹(y))
+                                 __________________________________________________________________________ ∃₊
+          [¬∃x.(p⁰ → p¹(x))]ᵗ                                   ∃x.(p⁰ → p¹(x))
+          ___________________________________________________________________________________________________ ¬₋
+                                                           ⊥
+        t ___________________________________________________________________________________________________ RAA
+                                                    ∃x.(p⁰ → p¹(x))
+        '''
+    )
+
+
 def test_simple_invalid_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('∃x.p¹(x)', dummy_signature)
     v = parse_formula('p¹(y)', dummy_signature)

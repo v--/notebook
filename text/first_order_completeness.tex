@@ -96,6 +96,47 @@
   Therefore, \( \Gamma \) is also closed under consequence, i.e. it is a theory.
 \end{proof}
 
+\begin{lemma}\label{thm:natural_deduction_pulling_existential_quantifier}
+  For \hyperref[def:fol_natural_deduction]{classical first-order natural deduction}, the following rule is \hyperref[con:inference_rule_admissibility]{admissible}:
+  \begin{equation*}\taglabel[\ensuremath{ \exists_{\uparrow} }]{inf:thm:natural_deduction_pulling_existential_quantifier}
+    \begin{prooftree}
+      \hypo{ \varphi \synimplies \qexists x \psi }
+      \infer1[\ref{inf:thm:natural_deduction_pulling_existential_quantifier}]{ \qexists x (\varphi \synimplies \psi) }
+    \end{prooftree}
+  \end{equation*}
+  where \( x \) is not free in \( \varphi \).
+\end{lemma}
+\begin{comments}
+  \item The proof tree is based on \cite{MathSE:natural_deduction_moving_quantifiers}.
+\end{comments}
+\begin{proof}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synneg \qexists x (\varphi \synimplies \psi)]^t }
+
+      \hypo{ [\synneg \qexists x (\varphi \synimplies \psi)]^t }
+
+      \hypo{ [\varphi \synimplies \qexists x \psi]^u }
+      \hypo{ [\varphi]^v }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qexists x \psi }
+
+      \hypo{ [\psi]^w }
+      \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies \psi }
+      \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ \qexists x (\varphi \synimplies \psi) }
+
+      \infer[left label={\( v \)}]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \qexists x \psi }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \psi }
+
+      \infer[left label={\( w \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies \psi }
+      \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ \qexists x (\varphi \synimplies \psi) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label={\( t \)}]1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \qexists x (\varphi \synimplies \psi) }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
 \begin{proposition}\label{thm:def:fol_henkin_extension}
   \hyperref[def:fol_henkin_extension]{Henkin extensions} of syntactic (natural deduction) theories have the following basic properties:
   \begin{thmenum}
@@ -127,23 +168,32 @@
   \end{equation*}
   from \( \Gamma \cup \Delta_{k+1} \).
 
-  Let \( P_{k+1} \) be the following tree:
+  Finally, let \( P_{k+1} \) be the following tree:
+  \footnotesize
   \begin{equation*}
-    \begin{prooftree}
+    \begin{prooftree}[separation=1em]
       \hypo{ [\qexists x \psi]^u }
+
+      \hypo{ [\psi[x \mapsto y]]^v }
+      \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ \qexists y \psi[x \mapsto y] }
+
+      \infer[left label={\( v \)}]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \qexists y \psi[x \mapsto y] }
+
+      \infer[left label={\( u \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ (\qexists x \psi) \synimplies (\qexists y \psi[x \mapsto y]) }
+      \infer1[\ref{inf:thm:natural_deduction_pulling_existential_quantifier}]{ \qexists y ((\qexists x \psi) \synimplies \psi[x \mapsto y]) }
 
       \hypo{}
       \ellipsis {\( P_k^\dprime \)} { \qforall y \parens[\big]{ ((\qexists x \psi) \synimplies \psi[x \mapsto y]) \synimplies \varphi } }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ ((\qexists x \psi) \synimplies \psi[x \mapsto y]) \synimplies \varphi }
 
-      \hypo{ [\psi[x \mapsto y]]^v }
-      \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \qexists x \psi \synimplies \psi[x \mapsto y] }
+      \hypo{ [(\qexists x \psi) \synimplies \psi[x \mapsto y]]^w }
       \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \varphi }
-      \infer[left label={\( v \)}]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \varphi }
+      \infer[left label={\( w \)}]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \varphi }
     \end{prooftree}
   \end{equation*}
+  \normalsize
 
-  Here \( \qexists x \psi \) is by assumption in \( \Gamma \), so \( P_{k+1} \) derives \( \varphi \) from \( \Gamma \cup \Delta_{k+1} \), as desired.
+  Here \( P_{k+1} \) derives \( \varphi \) from \( \Gamma \cup \Delta_{k+1} \), as desired.
 
   \SubProofOf{thm:def:fol_henkin_extension/scott_continuous} Let \( \seq{ \Gamma_k }_{k \in \mscrK} \) be an upward-directed family of theories and let \( \Gamma \) be their union. \Cref{thm:unward_union_of_theories} shows that \( \Gamma \) is also a theory.
 
@@ -161,7 +211,7 @@
 
   \SubProofOf{thm:def:fol_henkin_extension/fixed_point} Denote the signature of \( \Gamma \) by \( \Sigma \). Let \( \Gamma^{*\omega} \) be the union of \( \Gamma, \Gamma^*, \Gamma^{**}, \ldots \). \Cref{thm:unward_union_of_theories} implies that it is a theory, and \fullref{thm:knaster_tarski_iteration/continuous} implies that it is a fixed point of the Henkin extension operator.
 
-  Moreover, \( \Gamma^{*\omega} \) is a Henkin theory by construction. Indeed, given an existential formula \( \qexists x \varphi \) in \( \Gamma^{*\omega} \), since \( \Gamma^{*\omega} = \Gamma^{\omega*} \), it also contains \( (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \). Then can use \ref{inf:def:propositional_natural_deduction/imp/elim} to derive \( \varphi[x \mapsto c_{x,\varphi}] \).
+  Moreover, \( \Gamma^{*\omega} \) is a Henkin theory by construction. Indeed, given an existential formula \( \qexists x \varphi \) in \( \Gamma^{*\omega} \), since \( \Gamma^{*\omega} = (\Gamma^{*\omega})^* \), it also contains \( (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \). Then can use \ref{inf:def:propositional_natural_deduction/imp/elim} to derive \( \varphi[x \mapsto c_{x,\varphi}] \).
 
   It remains to show that \( \Gamma^{*\omega} \) is conservative over \( \Gamma \). If \( \varphi \) is a formula over \( \Sigma \) that belongs to \( \Gamma^{*\omega} \), it also belongs to some finite \( \Gamma^{*k} \). Using \cref{thm:def:fol_henkin_extension/conservative}, by induction on \( k \) we can show that \( \Gamma^{*k} \) is conservative over \( \Gamma \). Therefore, \( \varphi \) belongs to \( \Gamma \).
 \end{proof}
