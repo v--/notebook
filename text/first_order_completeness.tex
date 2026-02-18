@@ -1,12 +1,28 @@
 \section{First-order completeness}\label{sec:first_order_completeness}
 
-\paragraph{Henkin theories}
+\begin{remark}\label{rem:henkin_theories}
+   We will present a proof of \fullref{thm:fol_completeness} based on \bycite{Henkin1949FOLCompleteness}. The first proof of this theorem is attributed to Kurt G\"odel, thus it is also called \enquote{Go\"del's completeness theorem}.
 
-\begin{definition}\label{def:fol_henkin_theory}\mcite[def. 3.1.7]{Hinman2005Logic}
-  We say that the \hyperref[def:fol_theory]{first-order theory} \( \Gamma \) is \term[ru=экзистенциально полная (теория) (\cite[140]{ШеньВерещагин2017ЯзыкиИИсчисления})]{Henkin complete} is, whenever \( \qexists x \varphi \) belongs to \( \Gamma \), there exists a \hyperref[def:fol_closed_term]{closed term} \( \tau \) such that \( \varphi[x \mapsto \tau] \) belongs to \( \Gamma \). We call \( \tau \) the \term{Henkin witness} of \( \varphi \).
+   Our presentation follows the modern adaptation of \incite[\S 3.1]{VanDalen2004LogicAndStructure}. Other adaptations are given in \cite[\S 4.2]{Shoenfield1967MathematicalLogic}, \cite[\S 4.5]{ШеньВерещагин2017ЯзыкиИИсчисления} and \cite[\S 2.6.3]{Герасимов2014Вычислимость}, and similar constructions for proving \fullref{thm:fol_semantic_compactness} are given in \cite[ch. 3]{Hinman2005Logic}.
+
+   The differences are subtle but important. For example, Gerasimov imposes a weaker condition than in \cref{def:fol_henkin_completeness} --- if \( \qexists x \varphi \) belongs to \( \Gamma \), there must exist a closed term \( \tau \) such that \( \varphi[x \mapsto \tau] \) belongs to \( \Gamma \). This requires modifying how \hyperref[def:fol_henkin_extension]{Henkin extensions} interact with other extensions, and requires also adapting \fullref{thm:fol_lindenbaums_lemma}.
+\end{remark}
+
+\paragraph{Henkin completion}
+
+\begin{definition}\label{def:fol_henkin_completeness}\mcite[def. 3.1.4(iii)]{VanDalen2004LogicAndStructure}
+  We say that the \hyperref[def:fol_theory]{first-order theory} \( \Gamma \) over \( \Sigma \) is \term[en=Henkin complete (theory) (\cite[def. 3.1.7]{Hinman2005Logic}); Henkin theory (\cite[def. 3.1.4(iii)]{VanDalen2004LogicAndStructure})]{Henkin complete} if, for every closed existential formula \( \qexists x \varphi \) over \( \Sigma \), there exists a constant \( c \) such that
+  \begin{equation}\label{eq:def:fol_henkin_completeness/axiom}
+    \qexists x \varphi \synimplies \varphi[x \mapsto c]
+  \end{equation}
+  belongs to \( \Gamma \). We call \( c \) a \term{witness} of \( \varphi \).
 \end{definition}
 \begin{comments}
-  \item Note that \( \qexists x \varphi \) is assumed to be closed, so \( x \) is the only variable possibly free in \( \varphi \).
+  \item Note that we do not require neither \( \qexists x \varphi \) nor \( \varphi[x \mapsto c] \) to belong to \( \Gamma \).
+
+  This allows us to define completions in \cref{thm:fol_henkin_completion_is_complete} and ensure that they are compatible with further extensions. This is one of several possible definitions of Henkin theories --- see \cref{rem:henkin_theories}.
+
+  \item Since \( \qexists x \varphi \) is assumed to be closed, \( x \) is the only variable possibly free in \( \varphi \).
 \end{comments}
 
 \begin{definition}\label{def:fol_henkin_extension}\mcite[def. 3.1.6]{VanDalen2004LogicAndStructure}
@@ -14,12 +30,14 @@
 
   Consider the \hyperref[def:fol_signature_extension]{extension} \( \Sigma^* \) of \( \Sigma \) where, for every existential formula \( \qexists x \varphi \) in \( \Gamma \), we add a new constant \( c_{x,\varphi} \). For the sake of determinism, suppose that \( c_{x,\varphi} \) is a symbol entirely determined by \( x \) and \( \varphi \).
 
-  We define the \term{Henkin extension} \( \Gamma^* \) as the consequence closure of
+  We define the (one-step) \term{Henkin extension} \( \Gamma^* \) as the consequence closure of
   \begin{equation}\label{eq:def:fol_henkin_extension}
     \Gamma \cup \set[\big]{ (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \given* \qexists x \varphi \T{belongs to} \Gamma }.
   \end{equation}
 \end{definition}
 \begin{comments}
+  \item By iterating one-step Henkin extensions, we define Henkin completions in \cref{def:fol_henkin_completion}.
+
   \item Note that \( \qexists x \varphi \) is assumed to be closed, so \( x \) is the only variable possibly free in \( \varphi \).
 
   \item The determinism condition, although not present in \cite[def. 3.1.6]{VanDalen2004LogicAndStructure}, is important for some intermediate results like \cref{thm:def:fol_henkin_extension/scott_continuous}.
@@ -81,21 +99,6 @@
   \end{equation*}
 \end{proof}
 
-\begin{lemma}\label{thm:unward_union_of_theories}
-  With respect to a \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relation}, the union of an \hyperref[def:directed_set]{upward-directed family} of \hyperref[def:fol_theory]{first-order theories} is again a theory.
-\end{lemma}
-\begin{proof}
-  Let \( \seq{ \Gamma_k }_{k \in \mscrK} \) be an upward-directed family of theories and let \( \Gamma \) be their union.
-
-  If \( \Gamma \vdash \varphi \), by compactness there exists a finite subset \( \Gamma_0 \) of \( \Gamma \) such that \( \Gamma_0 \vdash \varphi \).
-
-  For every formula \( \psi \) in \( \Gamma \), let \( \Gamma_{k_\psi} \) be the smallest theory to which \( \psi \) belongs, and let \( k_0 > \max\set{ k_\psi \given \psi \in \Gamma_0 } \). Then \( \Gamma_0 \) is a subset of \( \Gamma_{k_0} \).
-
-  Since \( \varphi \) is a consequence of \( \Gamma_0 \), and hence of \( \Gamma_{k_0} \), it must belong to the latter, and hence to \( \Gamma \).
-
-  Therefore, \( \Gamma \) is also closed under consequence, i.e. it is a theory.
-\end{proof}
-
 \begin{lemma}\label{thm:natural_deduction_pulling_existential_quantifier}
   For \hyperref[def:fol_natural_deduction]{classical first-order natural deduction}, the following rule is \hyperref[con:inference_rule_admissibility]{admissible}:
   \begin{equation*}\taglabel[\ensuremath{ \exists_{\uparrow} }]{inf:thm:natural_deduction_pulling_existential_quantifier}
@@ -137,20 +140,11 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:def:fol_henkin_extension}
-  \hyperref[def:fol_henkin_extension]{Henkin extensions} of syntactic (natural deduction) theories have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:fol_henkin_extension/conservative}\mcite[lemma 3.1.7]{VanDalen2004LogicAndStructure} Every Henkin extension is \hyperref[def:fol_theory/conservative]{conservative}.
-
-    \thmitem{thm:def:fol_henkin_extension/scott_continuous} As an operator on theories, the Henkin extension operator \( (\anon)^* \) is \hyperref[def:scott_continuity]{Scott-continuous}.
-
-    \thmitem{thm:def:fol_henkin_extension/fixed_point}\mcite[lemma 3.1.8]{VanDalen2004LogicAndStructure} For a given theory \( \Gamma \), the union \( \Gamma^{*\omega} \) of the sequence \( \Gamma, \Gamma^*, \Gamma^{**}, \ldots \) is a \hyperref[def:fol_henkin_theory]{Henkin theory} and is invariant under Henkin extension.
-
-    Furthermore, \( \Gamma^{*\omega} \) is conservative over \( \Gamma \).
-  \end{thmenum}
+\begin{proposition}\label{thm:fol_henkin_extension_is_conservative}\mcite[lemma 3.1.7]{VanDalen2004LogicAndStructure}
+  The \hyperref[def:fol_henkin_extension]{Henkin extension} of a natural deduction theory is \hyperref[def:fol_theory/conservative]{conservative}.
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:fol_henkin_extension/conservative} Let \( \Gamma \) be a theory over \( \Sigma \). Let \( \Gamma^* \) be the Henkin extension of \( \Gamma \) with signature \( \Sigma^+ \). Denote by \( \Delta \) the set of additional axioms from \( \Gamma^* \), so that \( \Gamma^* = \op*{Th}(\Gamma \cup \Delta) \).
+  Let \( \Gamma \) be a theory over \( \Sigma \). Let \( \Gamma^* \) be the Henkin extension of \( \Gamma \) with signature \( \Sigma^+ \). Denote by \( \Delta \) the set of additional axioms from \( \Gamma^* \), so that \( \Gamma^* = \op*{Th}(\Gamma \cup \Delta) \).
 
   Fix a formula \( \varphi \) over \( \Sigma \) that belongs to \( \Gamma^* \). Since \( \Gamma^* \) is a consequence closure of \( \Gamma \cup \Delta \), there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} \( P \) for \( \varphi \) whose open assumptions are from \( \Gamma \cup \Delta \).
 
@@ -194,8 +188,56 @@
   \normalsize
 
   Here \( P_{k+1} \) derives \( \varphi \) from \( \Gamma \cup \Delta_{k+1} \), as desired.
+\end{proof}
 
-  \SubProofOf{thm:def:fol_henkin_extension/scott_continuous} Let \( \seq{ \Gamma_k }_{k \in \mscrK} \) be an upward-directed family of theories and let \( \Gamma \) be their union. \Cref{thm:unward_union_of_theories} shows that \( \Gamma \) is also a theory.
+\begin{lemma}\label{thm:upward_union_of_theories}
+  With respect to a \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relation}, the union of an \hyperref[def:directed_set]{upward-directed family} of \hyperref[def:fol_theory]{first-order theories} is again a theory.
+\end{lemma}
+\begin{comments}
+  \item We take the union of signature symbols also.
+\end{comments}
+\begin{proof}
+  Let \( \seq{ \Gamma_k }_{k \in \mscrK} \) be an upward-directed family of theories and let \( \Gamma \) be their union.
+
+  If \( \Gamma \vdash \varphi \), by compactness there exists a finite subset \( \Gamma_0 \) of \( \Gamma \) such that \( \Gamma_0 \vdash \varphi \).
+
+  For every formula \( \psi \) in \( \Gamma \), let \( \Gamma_{k_\psi} \) be the smallest theory to which \( \psi \) belongs, and let \( k_0 > \max\set{ k_\psi \given \psi \in \Gamma_0 } \). Then \( \Gamma_0 \) is a subset of \( \Gamma_{k_0} \).
+
+  Since \( \varphi \) is a consequence of \( \Gamma_0 \), and hence of \( \Gamma_{k_0} \), it must belong to the latter, and hence to \( \Gamma \).
+
+  Therefore, \( \Gamma \) is also closed under consequence, i.e. it is a theory.
+\end{proof}
+
+\begin{definition}\label{def:fol_henkin_completion}\mimprovised
+  With respect to some \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relation}, consider some \hyperref[def:fol_theory]{first-order theory} \( \Gamma \) over \( \Sigma \) as follows.
+
+  Define the \( \mu \)-indexed \hyperref[def:transfinite_sequence]{transfinite sequence} of \hyperref[def:fol_henkin_extension]{Henkin extensions}
+  \begin{equation*}
+    \Gamma^{*\alpha} \coloneqq \begin{cases}
+      \Gamma,                                &\alpha = 0, \\
+      (\Gamma^{*\beta})^*,                   &\alpha = \op{sc}(\beta), \\
+      \bigcup_{\beta < \alpha} \Gamma^\beta, &\alpha \T{is a limit ordinal.}
+    \end{cases}
+  \end{equation*}
+
+  For the signatures, we define an analogous sequence \( \seq{ \Sigma^{*\alpha} }_{\alpha < \mu} \).
+
+  As we will show in \cref{thm:fol_henkin_completion_is_complete}, this sequence stabilizes at \( \alpha = \omega \). We thus call \( \Gamma^{*\omega} \) the \term{Henkin completion} of \( \Gamma \).
+\end{definition}
+\begin{comments}
+  \item We extract the constructions from \cite[lemma 3.1.8]{VanDalen2004LogicAndStructure} and \cite[47]{Shoenfield1967MathematicalLogic} and take care of some formal details.
+
+  \item As the name suggests, the completion is \hyperref[def:fol_henkin_completeness]{Henkin complete} --- see \cref{thm:fol_henkin_completion_is_complete}.
+\end{comments}
+\begin{defproof}
+  \Cref{thm:upward_union_of_theories} shows correctness of the limit step.
+\end{defproof}
+
+\begin{lemma}\label{thm:fol_henkin_extensions_scott_continuous}
+  As an operator on \hyperref[def:fol_theory]{theories} over \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relations}, the \hyperref[def:fol_henkin_extension]{Henkin extension} operator \( (\anon)^* \) is \hyperref[def:scott_continuity]{Scott-continuous}.
+\end{lemma}
+\begin{proof}
+  Let \( \seq{ \Gamma_k }_{k \in \mscrK} \) be an upward-directed family of theories and let \( \Gamma \) be their union (we take the union of signature symbols also). \Cref{thm:upward_union_of_theories} shows that \( \Gamma \) is also a theory.
 
   We must show that
   \begin{equation*}
@@ -208,14 +250,31 @@
   \end{equation*}
 
   Conversely, let \( \psi = (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \) be a new axiom introduced in some \( \Gamma_{k_0}^* \) for some index \( k_0 \). Then \( \qexists x \varphi \) is in \( \Gamma_{k_0} \), so \( \psi \) belongs to \( \Gamma^* \).
-
-  \SubProofOf{thm:def:fol_henkin_extension/fixed_point} Denote the signature of \( \Gamma \) by \( \Sigma \). Let \( \Gamma^{*\omega} \) be the union of \( \Gamma, \Gamma^*, \Gamma^{**}, \ldots \). \Cref{thm:unward_union_of_theories} implies that it is a theory, and \fullref{thm:knaster_tarski_iteration/continuous} implies that it is a fixed point of the Henkin extension operator.
-
-  Moreover, \( \Gamma^{*\omega} \) is a Henkin theory by construction. Indeed, given an existential formula \( \qexists x \varphi \) in \( \Gamma^{*\omega} \), since \( \Gamma^{*\omega} = (\Gamma^{*\omega})^* \), it also contains \( (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \). Then can use \ref{inf:def:propositional_natural_deduction/imp/elim} to derive \( \varphi[x \mapsto c_{x,\varphi}] \).
-
-  It remains to show that \( \Gamma^{*\omega} \) is conservative over \( \Gamma \). If \( \varphi \) is a formula over \( \Sigma \) that belongs to \( \Gamma^{*\omega} \), it also belongs to some finite \( \Gamma^{*k} \). Using \cref{thm:def:fol_henkin_extension/conservative}, by induction on \( k \) we can show that \( \Gamma^{*k} \) is conservative over \( \Gamma \). Therefore, \( \varphi \) belongs to \( \Gamma \).
 \end{proof}
+
+\begin{proposition}\label{thm:fol_henkin_completion_is_complete}
+  The \hyperref[def:fol_henkin_completion]{Henkin completion} of a natural deduction theory is \hyperref[def:fol_theory/conservative]{conservative}, \hyperref[def:fol_henkin_completeness]{Henkin complete} and invariant under \hyperref[def:fol_henkin_extension]{Henkin extensions}.
+\end{proposition}
+\begin{proof}
+  Consider the theory \( \Gamma \) over the signature \( \Sigma \).
+
+  \SubProof{Proof that \( \Gamma^{*\omega} \) is conservative} If \( \varphi \) is a formula over \( \Sigma \) that belongs to \( \Gamma^{*\omega} \), it also belongs to some finite \( \Gamma^{*k_0} \). Using \cref{thm:def:fol_henkin_extension/conservative}, by induction on \( k_0 \) we can show that \( \Gamma^{*k_0} \) is conservative over \( \Gamma \). Therefore, \( \varphi \) belongs to \( \Gamma \).
+
+  \SubProof{Proof that \( \Gamma^{*\omega} \) is a fixed point} \Cref{thm:upward_union_of_theories} implies that the completion \( \Gamma^{*\omega} \) is a theory. Since the Henkin extension operator is \hyperref[def:scott_continuity]{Scott-continuous} by \cref{thm:fol_henkin_extensions_scott_continuous}, \fullref{thm:knaster_tarski_iteration/continuous} implies that \( \Gamma^{*\omega} \) is a fixed point.
+
+  \SubProof{Proof that \( \Gamma^{*\omega} \) is a Henkin complete} Every existential formula \( \qexists x \varphi \) over \( \Sigma^{*\omega} \) is a formula over some signature \( \Sigma^{*k_0} \) of finite index. In this case, \( \Gamma^{*k_0} \), and hence also \( \Gamma^{*\omega} \), contains the formula
+  \begin{equation*}
+    (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}].
+  \end{equation*}
+
+  It follows that \( c_{x,\varphi} \) is a witness of \( \qexists x \varphi \) in \( \Gamma^{*\omega} \). Generalizing, we conclude that \( \Gamma^{*\omega} \) is Henkin complete.
+\end{proof}
+
+\paragraph{Completeness}
 
 \begin{theorem}[First-order completeness]\label{thm:fol_completeness}\mcite[thm. 3.1.3]{VanDalen2004LogicAndStructure}
   The \hyperref[def:fol_natural_deduction]{classical first-order natural deduction system} is \hyperref[def:general_logic/completeness]{complete} with respect to \hyperref[def:fol_semantics]{first-order semantics}.
 \end{theorem}
+\begin{comments}
+  \item This theorem is attributed to both Kurt G\"odel and to Leon Henkin; see \cref{rem:henkin_theories}.
+\end{comments}
