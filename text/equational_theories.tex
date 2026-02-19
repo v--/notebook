@@ -1,11 +1,70 @@
 \section{Equational theories}\label{sec:equational_theories}
 
+\paragraph{Equational theories}
+
 \begin{definition}\label{def:fol_equational_theory}\mimprovised
-  We say that a \hyperref[def:fol_theory]{first-order theory} \( T \) is \term{equational} if it has an axiomatization consisting of \hyperref[def:fol_quantifier_closure]{universal closures} of \hyperref[def:fol_equation]{equations}.
+  Consider some \hyperref[def:fol_theory]{first-order theory} \( T \) over a signature with no predicate symbols.
+
+  We say that \( T \) is an \term[en=equational theory (\cite[def. 3.5.3]{BaaderNipkow2012TermRewriting})]{equational theory} if it has an axiomatization consisting of \hyperref[def:fol_quantifier_closure]{universal closures} of \hyperref[def:fol_equation]{equations}.
 \end{definition}
 \begin{comments}
   \item The definition is based in \cite[def. 3.5.3]{BaaderNipkow2012TermRewriting}, who, without dealing with logic, present an equational theory as a set of pairs of terms (their terms resemble our first-order terms). The general notion is attributed to Garrett Birkhoff's discussion of universal algebra in \cite[ch. VI]{Birkhoff1967LatticeTheory}.
 \end{comments}
+
+\begin{proposition}\label{thm:fol_equational_theory_models}
+  We will show that the \hyperref[def:fol_semantics/model]{models} of an \hyperref[def:fol_equational_theory]{equational theory} \( T \) are particularly well-behaved:
+
+  \begin{thmenum}
+    \thmitem{thm:fol_equational_theory_models/image} If \( \mscrX \) is a model of \( T \), for every \hyperref[def:fol_homomorphism]{homomorphism} \( h: \mscrX \to \mscrT \), the image \( h[X] \) is (the domain of) a model of \( T \).
+
+    \thmitem{thm:fol_equational_theory_models/substructure} Every \hyperref[def:fol_substructure]{substructure} of a model of \( T \) is also a model of \( T \).
+
+    \thmitem{thm:fol_equational_theory_models/direct_product} The \hyperref[def:fol_direct_product]{direct product} of models of \( T \) is also a model of \( T \).
+
+    \thmitem{thm:fol_equational_theory_models/quotient} Every \hyperref[def:fol_quotient_structure]{quotient structure} of a model of \( T \) is also a model of \( T \).
+
+    \thmitem{thm:fol_equational_theory_models/functions} If \( \mscrX \) is a model of \( T \), for every set \( S \), the \hyperref[def:fol_structure_of_functions]{structure of all functions} \( \fun(S, \mscrX) \) is also a model of \( T \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  Let \( E \) be an equational axiomatization of \( T \), with the universal quantifiers stripped (i.e. \( E \) is a set of \hyperref[def:fol_equation]{equations}). These equations are \hyperref[def:fol_universal_validity]{universally valid} in every model of \( T \).
+
+  \SubProofOf{thm:fol_equational_theory_models/image} Since there are no predicate symbols, every homomorphism is strong. \Cref{thm:def:fol_function_respect/atomic} implies that \( h: \mscrX \to \mscrY \) \hyperref[def:fol_function_respect/formula]{respects} atomic formulas, hence it respects the axioms from \( E \). Then, by definition, it also respects all formulas from \( T \).
+
+  \SubProofOf{thm:fol_equational_theory_models/substructure} Let \( \mscrY = (Y, J) \) be a substructure of \( \mscrX = (X, I) \).
+
+  For every equation \( (\tau \syneq \sigma) \) from \( E \) and every variable assignment \( v \) into \( Y \), \cref{thm:fol_equality_characterization} implies that \( \Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \).
+
+  Since \( Y \) is closed under signature function application, \( \Bracks{\tau}_\mscrX^v \) is in \( Y \), and, since \( J \) restricts the interpretation of these symbols, \( \Bracks{\tau}_\mscrX^v = \Bracks{\tau}_\mscrY^v \). Similarly, \( \Bracks{\sigma}_\mscrX^v = \Bracks{\sigma}_\mscrY^v \). \Cref{thm:fol_equality_characterization} implies that \( \Bracks{\tau \syneq \sigma}_\mscrY^v = \semtop \).
+
+  Generalizing on \( v \) and on \( (\tau \syneq \sigma) \), we conclude that all equations from \( E \) are universally valid in \( \mscrY \), and hence \( \mscrY \) is a model of \( T \).
+
+  \SubProofOf{thm:fol_equational_theory_models/direct_product} Let \( \seq{ \mscrX_k }_{k \in \mscrK} \) be models of \( T \), and consider their product \( \prod_{k \in \mscrK} \mscrX_k \).
+
+  By induction on the term \( \tau \), we can show that, assuming \( \tau \) has \( n \) free variables,
+  \begin{equation*}
+    \Bracks{\tau}_{\prod_{k \in \mscrX} \mscrX_k}\parens[\big]{ \seq{ a_{1,k} }_{k \in \mscrK}, \ldots, \seq{ a_{n,k} }_{k \in \mscrK} } = \seq[\big]{\Bracks{\tau}_{\mscrX_k}(a_{1,k}, \ldots, a_{n,k}) }_{k \in \mscrK}.
+  \end{equation*}
+
+  Hence, an equation is universally valid in \( \prod_{k \in \mscrX} \mscrX_k \) if and only if it is universally valid in \( \mscrX_k \) for every \( k \) simultaneously.
+
+  This holds in particular for the equations from \( E \), which we have assumed are universally valid in \( \mscrX_k \). They are thus also universally valid in the product \( \prod_{k \in \mscrX} \mscrX_k \), i.e. the product is thus a model of \( T \).
+
+  \SubProofOf{thm:fol_equational_theory_models/quotient} Let \( \mscrX = (X, I) \) be a model of \( T \) and let \( {\cong} \) be a congruence on \( \mscrX \).
+
+  \Cref{thm:fol_equational_theory_models/image} implies that the quotient homomorphism \( \pi: \mscrX \to \mscrX / {\cong} \) is surjective, so \cref{thm:fol_equational_theory_models/image} implies that the image \( \mscrX / {\cong} \) of \( \pi \) is a model of \( T \).
+
+  \SubProofOf{thm:fol_equational_theory_models/functions} Let \( \mscrX = (X, I) \) be a model of \( T \). Fix some set \( S \) and consider the structure of functions \( \fun(S, \mscrX) \).
+
+  By induction on the term \( \tau \), we can show that, assuming \( \tau \) has \( n \) free variables,
+  \begin{equation*}
+    \Bracks{\tau}_{\fun(S, \mscrX)}(a_1, \ldots, a_n) = \parens[\big]{ s \mapsto \Bracks{\tau}_\mscrX(a_1(s), \ldots, a_n(s)) }.
+  \end{equation*}
+
+  Fix an equation \( (\tau \syneq \sigma) \) from \( E \). It is by assumption universally valid in \( \mscrX \), so \cref{thm:fol_equality_characterization} implies that \( \Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \) for every variable assignment \( v \). This holds in particular for the values assigned by functions \( s: S \to X \).
+
+  Therefore, \( (\tau \syneq \sigma) \) is universally valid in \( \fun(S, \mscrX) \). Generalizing on \( (\tau \syneq \sigma) \), we conclude that the equations from \( E \) are universally valid in \( \fun(S, \mscrX) \), and hence \( \fun(S, \mscrX) \) is a model of \( T \).
+\end{proof}
 
 \paragraph{Theory of pure equality}
 
@@ -65,65 +124,6 @@
   \NecessitySubProof* \Cref{thm:pure_equality_isomorphism/isomorphism} implies that, if two structures have the same cardinality, they are isomorphic. Then \cref{thm:def:elementary_embedding/isomorphism} implies that they are elementarily equivalent.
 \end{proof}
 
-\paragraph{Fixed point substructures}
-
-\begin{definition}\label{def:fol_fixed_point_substructure}\mimprovised
-  We associate with every \hyperref[def:fol_homomorphism]{first-order endomorphism} \( h: \mscrX \to \mscrX \) the \hyperref[def:fol_subspace]{substructure} \( \fix(h) \) of \hyperref[def:function_fixed_point]{fixed points} of \( h \).
-\end{definition}
-\begin{defproof}
-  Fix a function symbol \( f \) of arity \( n \). If \( a_1, \ldots, a_n \) are fixed points of \( h \), then
-  \begin{equation*}
-    I(f)(a_1, \ldots, a_n)
-    =
-    I(f)(h(a_1), \ldots, h(a_n))
-    =
-    h(I(f)(a_1, \ldots, a_n)).
-  \end{equation*}
-
-  Thus, \( \fix(h) \) it closed under applications of \( f \), and \cref{thm:fol_substructure_characterization} implies that it is (the domain of) a substructure of \( \mscrX \).
-\end{defproof}
-
-\paragraph{Structures of functions}
-
-\begin{definition}\label{def:fol_structure_of_functions}\mimprovised
-  Consider a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over a \hyperref[def:fol_signature]{signature} \( \Sigma \). Fix a set \( S \), possibly unrelated to \( X \).
-
-  Define the interpretation \( J \) on the \hyperref[def:set_of_all_functions]{set of all functions} \( \fun(S, X) \) as follows:
-  \begin{thmenum}
-    \thmitem{def:fol_structure_of_functions/functions} For every function symbol \( f \) of arity \( n \), let
-    \begin{equation*}
-      \mathllap{J(f)(y_1, \ldots, y_n)} \coloneqq \mathrlap{\parens[\big]{ s \mapsto I(f)(y_1(s), \ldots, y_n(s)) }.}
-    \end{equation*}
-
-    \thmitem{def:fol_structure_of_functions/predicates} For every predicate symbol \( f \) of arity \( n \), let
-    \begin{equation*}
-      \mathllap{J(p)(y_1, \ldots, y_n)} \coloneqq \mathrlap{\bigwedge_{s \in S} I(p)\parens[\big]{ y_1(s), \ldots, y_n(s) }.}
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-
-\paragraph{Topological structures}
-
-\begin{definition}\label{def:topological_fol_structures}\mcite[159]{Robinson1974TopologicalModelTheory}
-  A \term{topological structure} over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) is a triple \( \mscrX = (X, I, \mscrT) \), where \( (X, I) \) is a structure in the sense of \cref{def:fol_structure} and \( \mscrT \) is a \hyperref[def:topological_space]{topology} on \( X \).
-
-  We require the following compatibility conditions:
-  \begin{thmenum}
-    \thmitem{def:topological_fol_structures/functions} For every function symbol \( f \) or arity \( n \), the function \( I(f): X^n \to X \) is \hyperref[def:global_continuity]{continuous}.
-
-    \thmitem{def:topological_fol_structures/predicates} For every predicate symbol \( p \) of arity \( n \), the \hyperref[def:function_support]{support} of \( I(p) \) is either open or closed in \( X^n \).
-
-    We call \( I(p) \) \term{open} or \term{closed} depending on whether its support is.
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item For every algebraic structure defined in \fullref{ch:group_theory} and \fullref{ch:ring_theory}, there exists a topological equivalent. We discuss \hyperref[def:topological_group]{topological groups} and \hyperref[def:topological_vector_space]{topological vector spaces} through the monograph, especially in \fullref{ch:functional_analysis}.
-\end{comments}
-
-\begin{definition}\label{def:fol_theory_topological_model_functor}\mimprovised
-  Based on the \hyperref[def:fol_theory_model_functor]{model functor} \( \cat{Mod}: \cat{Th} \to \cat{Cat}^{\oppos} \), we define a \term{topological model functor} \( \cat{TopMod}: \cat{Th} \to \cat{Top}^{\oppos} \) by considering \hyperref[def:topological_fol_structures]{topological structures} and \hyperref[def:global_continuity]{continuous} \hyperref[def:fol_homomorphism]{homomorphisms}.
-\end{definition}
-
 \paragraph{Term models}
 
 \begin{definition}\label{def:fol_free_term_model}\mimprovised
@@ -136,77 +136,49 @@
 
     On \( P \), we define the interpretation \( I(f) \) of the \( n \)-ary function \( f \) as
     \begin{equation*}
-      I(f)(T_1, \ldots, T_n) \coloneqq B_+^f(T_1, \ldots, T_n),
+      I(f)(\tau_1, \ldots, \tau_n) \coloneqq B_+^f(\tau_1, \ldots, \tau_n),
     \end{equation*}
-    where \( B_+^f(T_1, \ldots, T_n) \) is the tree obtained by \hyperref[def:ordered_tree_grafting]{grafting} \( T_1, \ldots, T_n \) to a new root labeled by \( f \). By construction, this tree belongs to \( \mscrP \).
+    where \( B_+^f(\tau_1, \ldots, \tau_n) \) is the tree obtained by \hyperref[def:ordered_tree_grafting]{grafting} \( \tau_1, \ldots, \tau_n \) to a new root labeled by \( f \). By construction, this tree belongs to \( \mscrP \).
 
     Then \( \mscrP \coloneqq (P, I) \) is a \hyperref[def:fol_structure]{structure} over \( \Sigma \). At this point is is unrelated to the theory \( T \).
 
-    \thmitem{def:fol_free_term_model/relation} Fix a particular equational axiomatization \( A \) of \( T \). Let \( {\cong} \) be the \hyperref[def:fol_congruence]{congruence} obtained via \fullref{thm:recursively_defined_relations} subject to the following rules:
+    \thmitem{def:fol_free_term_model/congruence} Fix a particular equational axiomatization \( A \) of \( T \). Let \( {\cong} \) be the \hyperref[def:fol_congruence]{congruence} constructed via \fullref{thm:recursively_defined_relations} by extending the equivalence relation rules from \cref{thm:generated_equivalence_relation} with the following:
 
     \begin{thmenum}
-      \thmitem{def:fol_free_term_model/relation/base} We impose the standard equivalence relation conditions on all syntax trees:
-      \begin{paracol}{3}
-        \begin{nthcolumn}{0}
-          \ParacolAlignmentHack
-          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_R }]{inf:def:fol_free_term_model/relation/base/reflexivity}
-            \begin{prooftree}
-              \infer0[\ref{inf:def:fol_free_term_model/relation/base/reflexivity}]{ T \cong T }
-            \end{prooftree}
-          \end{equation*}
-        \end{nthcolumn}
-
-        \begin{nthcolumn}{1}
-          \ParacolAlignmentHack
-          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_S }]{inf:def:fol_free_term_model/relation/base/symmetry}
-            \begin{prooftree}
-              \hypo{ T \cong T' }
-              \infer1[\ref{inf:def:fol_free_term_model/relation/base/symmetry}]{ T' \cong T }
-            \end{prooftree}
-          \end{equation*}
-        \end{nthcolumn}
-
-        \begin{nthcolumn}{2}
-          \ParacolAlignmentHack
-          \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_T }]{inf:def:fol_free_term_model/relation/base/transitivity}
-            \begin{prooftree}
-              \hypo{ T \cong T' }
-              \hypo{ T' \cong T^\dprime }
-              \infer2[\ref{inf:def:fol_free_term_model/relation/base/transitivity}]{ T \cong T^\dprime }
-            \end{prooftree}
-          \end{equation*}
-        \end{nthcolumn}
-      \end{paracol}
-
-      \thmitem{def:fol_free_term_model/relation/functions} For every function symbol \( f \) of arity \( n \), we impose
-      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_f }]{inf:def:fol_free_term_model/relation/functions}
+      \thmitem{def:fol_free_term_model/congruence/functions} For every function symbol \( f \) of arity \( n \), we impose
+      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_f }]{inf:def:fol_free_term_model/congruence/functions}
         \begin{prooftree}
-          \hypo{ T_1 \cong T_1' }
+          \hypo{ \tau_1 \cong \tau_1' }
           \hypo{ \cdots }
-          \hypo{ T_n \cong T_n' }
-          \infer3[\ref{inf:def:fol_free_term_model/relation/functions}]{ I(f)(T_1, \ldots, T_1) \cong I(f)(T_1', \ldots, T_n') }
+          \hypo{ \tau_n \cong \tau_n' }
+          \infer3[\ref{inf:def:fol_free_term_model/congruence/functions}]{ I(f)(\tau_1, \ldots, \tau_1) \cong I(f)(\tau_1', \ldots, \tau_n') }
         \end{prooftree}
       \end{equation*}
 
-      \thmitem{def:fol_free_term_model/relation/axioms} For every axiom \( \varphi = \qforall {x_1} \cdots \qforall {x_n} (\tau \syneq \sigma) \) in \( A \), we impose
-      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_{\tau \syneq \sigma} }]{inf:def:fol_free_term_model/relation/axioms}
+      \thmitem{def:fol_free_term_model/congruence/axioms} For every axiom \( \varphi = \qforall {x_1} \cdots \qforall {x_n} (\tau \syneq \sigma) \) in \( A \), we impose
+      \begin{equation*}\taglabel[\ensuremath{ \logic{TM}_{\tau \syneq \sigma} }]{inf:def:fol_free_term_model/congruence/axioms}
         \begin{prooftree}
-          \hypo{ T_1 \cong T_1' }
+          \hypo{ \rho_1 \cong \rho_1' }
           \hypo{ \cdots }
-          \hypo{ T_n \cong T_n' }
-          \infer3[\ref{inf:def:fol_free_term_model/relation/axioms}]{ \Bracks{\tau}_\mscrP(T_1, \ldots, T_n) \cong \Bracks{\sigma}_\mscrP(T_1', \ldots, T_n') }
+          \hypo{ \rho_n \cong \rho_n' }
+          \infer3[\ref{inf:def:fol_free_term_model/congruence/axioms}]{ \Bracks{\tau}_\mscrP(\rho_1, \ldots, \rho_n) \cong \Bracks{\sigma}_\mscrP(\rho_1', \ldots, \rho_n') }
         \end{prooftree}
       \end{equation*}
     \end{thmenum}
 
-    The congruence would be trivial without the last rule. Furthermore, any two axiomatizations of \( T \) are by definition \hyperref[def:fol_semantics/equivalence]{equivalent}, so the congruence does not depend on the particular choice of equational axiomatization \( A \).
+    Any two axiomatizations of \( T \) are by definition \hyperref[def:fol_semantics/equivalence]{equivalent}, so the congruence does not depend on the particular choice of equational axiomatization \( A \). Note that the congruence would be trivial without the last rule.
 
     \thmitem{def:fol_free_term_model/quotient} The desired free term model \( \mscrT_T(V) \) is then the \hyperref[def:fol_quotient_structure]{quotient structure} \( \mscrP / {\cong} \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item This construction resembles term models used for proving \fullref{thm:fol_model_existence_theorem}, which we discuss in \cref{def:fol_term_model}.
+
+  \item The terminology of free constructions, discussed in \cref{con:free_construction}, applies to all free term models.
+\end{comments}
 
 \begin{theorem}[Free term model universal property]\label{thm:fol_free_term_model_universal_property}\mimprovised
-  The \hyperref[def:fol_free_term_model]{free term model} \( \mscrT_T(V) = (T, I) \) is the unique up to a unique isomorphism \hyperref[def:fol_semantics/model]{model} of \( T \) that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  The \hyperref[def:fol_free_term_model]{free term model} \( \mscrT_T(V) = (M, I) \) is the unique up to a unique isomorphism \hyperref[def:fol_semantics/model]{model} of \( T \) that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
     For every model \( \mscrY = (Y, J) \) of \( T \) and every function \( e: V \to Y \) into the universe \( Y \) of \( \mscrY \), there exists a unique \hyperref[def:fol_homomorphism]{first-order homomorphism} \( \Phi_e: \mscrT_T(V) \to \mscrY \) such that the following diagram commutes:
     \begin{equation}\label{eq:thm:fol_term_model_universal_property}
@@ -217,22 +189,26 @@
   \end{displayquote}
 \end{theorem}
 \begin{comments}
-  \item Via \cref{rem:universal_mapping_property}, \( V \mapsto \mscrT_T(V) \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor}
+  \item Via \cref{rem:universal_mapping_property}, \( V \mapsto \mscrT_T(V) \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:fol_theory_forgetful_functor/set]{forgetful functor}
   \begin{equation*}
-    U: \ucat{Mod}(\Sigma) \to \ucat{Set},
+    U: \ucat{Mod}(T) \to \ucat{Set},
   \end{equation*}
-  which sends a model of \( \Sigma \) to its universe.
+  which sends a model of \( T \) to its universe.
 
   \item Many theories have distinct definitions for their free objects; these include \hyperref[def:free_group]{free groups}, \hyperref[def:free_semimodule]{free (semi)modules} and \hyperref[def:polynomial_algebra]{polynomial algebras}. They satisfy the same universal property, so, by \cref{thm:functor_adjoint_uniqueness}, they are isomorphic to the corresponding free term models. See \cref{ex:def:fol_free_term_model/free_monoid} for a broader discussion.
+
+  The terminology of free constructions, discussed in \cref{con:free_construction}, applies to all of them.
 \end{comments}
 \begin{proof}
-  We want the function \( \Phi_e: T \to Y \) to extend \( e \), thus the image of the coset \( [B_+^v] \), where \( B_+^v \) is an indeterminate tree, must be \( e(v) \). This is well-defined because no other tree is congruent to \( B_+^v \).
+  Let \( \pi: \mscrP \to \mscrT_T(V) \) be the quotient map from the construction of term models.
 
-  We also want \( \Phi_e \) to be a homomorphism. Thus, for the function application tree coset \( [B_+^f(T_1, \ldots, T_n)] \), \( \Phi_e \) must recursively apply itself to the subtrees. The rule \ref{inf:def:fol_free_term_model/relation/axioms} makes sure that \( \Phi_e \) does not depend on the choice of function application tree in a coset. This leads to the only possible definition
+  We want the function \( \Phi_e: M \to Y \) to extend \( e \), thus the image of the coset \( \pi(B_+^v) \), where \( B_+^v \) is an indeterminate tree, must be \( e(v) \). This is well-defined because no other tree is congruent to \( B_+^v \).
+
+  We also want \( \Phi_e \) to be a homomorphism. Thus, for the function application tree coset \( \pi(B_+^f(\tau_1, \ldots, \tau_n)) \), \( \Phi_e \) must recursively apply itself to the subtrees. The rule \ref{inf:def:fol_free_term_model/congruence/axioms} makes sure that \( \Phi_e \) does not depend on the choice of function application tree in a coset. This leads to the only possible definition
   \begin{equation*}
-    \Phi_e([T]) \coloneqq \begin{cases}
-      e(v),                                                      &T = [B_+^v], \\
-      J(f)\parens[\big]{ \Phi_e([T_1]), \ldots, \Phi_e([T_n]) }, &T = [B_+^f(T_1, \ldots, T_n)].
+    \Phi_e(\pi(M)) \coloneqq \begin{cases}
+      e(v),                                                                  &M = \pi(B_+^v), \\
+      J(f)\parens[\big]{ \Phi_e(\pi(\tau_1)), \ldots, \Phi_e(\pi(\tau_n)) }, &M = \pi(B_+^f(\tau_1, \ldots, \tau_n)),
     \end{cases}
   \end{equation*}
 \end{proof}
