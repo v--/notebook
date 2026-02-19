@@ -41,9 +41,9 @@
       \op*{Free}( \varphi[x \mapsto \psi] ) \subseteq (\op*{Free}(\varphi) \setminus \set{ x }) \cup \op*{Free}(\psi).
     \end{equation}
 
-    \thmitem{thm:alg:fol_formula_substitution/quant_single_rule} For any quantifier formula \( \varphi = \quantifier Q x \psi \) and any substitution \( \Bbbs \), there exists a variable \( n \not\in \op*{Free}_\Bbbs(\varphi) \) such that
+    \thmitem{thm:alg:fol_formula_substitution/quant_single_rule} For any quantifier formula \( \varphi = \quantifier Q x \psi \) and any substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}_\Bbbs(\varphi) \) such that
     \begin{equation}\label{eq:thm:alg:fol_formula_substitution/quant_single_rule}
-      \varphi[\Bbbs] = \quantifier Q n \psi[\Bbbs_{x \mapsto v}].
+      \varphi[\Bbbs] = \quantifier Q v \psi[\Bbbs_{x \mapsto v}].
     \end{equation}
 
     \thmitem{thm:alg:fol_formula_substitution/substitutions_agree} If the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables of \( \varphi \), then \( M[\Bbbs] = M[\Bbbt] \).
@@ -757,6 +757,8 @@
 \begin{comments}
   \item The quantifier rules are justified by rules for dependent types via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}; see \cref{rem:dependent_products_and_forall_quantifier_rules}.
 
+  \item The two equality rules are more concise and flexible, but less explicit than those from \cref{thm:fol_natural_deduction_equality}.
+
   \item These precise rules are used in the module \identifier{logic.classical_logic} in \cite{notebook:code}.
 \end{comments}
 
@@ -1078,6 +1080,129 @@
   \end{equation*}
 
   It derives \( \varphi[\Bbbt] \) from \( \cl_\forall \Gamma[\Bbbt] \). It remains to add to \( R \) all free variables of \( \varphi \) via repeated applications of \ref{inf:def:fol_natural_deduction/forall/intro}. The eigenvariable conditions are trivially satisfied since \( R \) has no open variables.
+\end{proof}
+
+\begin{proposition}\label{thm:fol_natural_deduction_equality}
+  In \hyperref[def:fol_natural_deduction]{minimal first-order natural deduction}, equality acts like an \hyperref[def:fol_congruence]{congruence}. More precisely, the following rules are \hyperref[con:inference_rule_admissibility]{admissible}:
+
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_R }]{inf:thm:fol_natural_deduction_equality/refl}
+        \begin{prooftree}
+          \infer0[\ref{inf:thm:fol_natural_deduction_equality/refl}]{ \syn\tau \syneq \syn\tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_S }]{inf:thm:fol_natural_deduction_equality/symm}
+        \begin{prooftree}
+          \hypo{ \syn\tau \syneq \syn\sigma }
+          \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \syn\sigma \syneq \syn\tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_T }]{inf:thm:fol_natural_deduction_equality/trans}
+        \begin{prooftree}
+          \hypo{ \syn\tau \syneq \syn\sigma }
+          \hypo{ \syn\sigma \syneq \syn\rho }
+          \infer2[\ref{inf:thm:fol_natural_deduction_equality/trans}]{ \syn\tau \syneq \syn\rho }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_f }]{inf:thm:fol_natural_deduction_equality/fun}
+        \begin{prooftree}
+          \hypo{ \syn\tau_1 \syneq \syn\sigma_1 }.
+          \hypo{ \ldots }
+          \hypo{ \syn\tau_1 \syneq \syn\sigma_n }.
+          \infer3[\ref{inf:thm:fol_natural_deduction_equality/fun}]{ f(\syn\tau_1, \ldots, \syn\tau_n) \syneq f(\syn\sigma_1, \ldots, \syn\sigma_n) }.
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_p }]{inf:thm:fol_natural_deduction_equality/pred}
+        \begin{prooftree}
+          \hypo{ \syn\tau_1 \syneq \syn\sigma_1 }.
+          \hypo{ \ldots }
+          \hypo{ \syn\tau_1 \syneq \syn\sigma_n }.
+          \hypo{ p(\syn\tau_1, \ldots, \syn\tau_n) }
+          \infer4[\ref{inf:thm:fol_natural_deduction_equality/pred}]{ p(\syn\sigma_1, \ldots, \syn\sigma_n) }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+
+  We need a distinct rule for every function symbol \( f \) and every predicate symbol \( p \).
+\end{proposition}
+\begin{comments}
+  \item Conversely, these rules can be used to emulate those from \cref{def:fol_natural_deduction/equality} that we use for our natural deduction systems.
+\end{comments}
+\begin{proof}
+  \SubProofOf{inf:thm:fol_natural_deduction_equality/refl} This is literally the same rule as \ref{inf:def:fol_natural_deduction/equality/intro}.
+
+  \SubProofOf{inf:thm:fol_natural_deduction_equality/symm} Let \( \varphi \coloneqq (x \syneq \tau) \) for some variable \( x \) not free in \( \tau \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ \varphi[x \mapsto \tau] }
+      \hypo{ [\tau \syneq \sigma]^u }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \underbrace{\varphi[x \mapsto \sigma]}_{N^\tau \syneq M^\tau} }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:fol_natural_deduction_equality/trans}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\tau \syneq \sigma]^u }
+      \hypo{ [\sigma \syneq \rho]^v }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \tau \syneq \rho }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:fol_natural_deduction_equality/fun}
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\tau_1 \syneq \sigma_1]^{u_1} }.
+      \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) \syneq f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) \syneq f(\sigma_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) }
+
+      \hypo{ [\tau_2 \syneq \sigma_2]^{u_2} }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) \syneq f(\sigma_1, \sigma_2, \ldots, \tau_{n-1}, \tau_n) }
+      \ellipsis{} { f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) \syneq f(\sigma_1, \sigma_2, \ldots, \sigma_{n-1}, \tau_n) }
+
+      \hypo{ [\tau_n \syneq \sigma_n]^{u_n} }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ f(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) \syneq f(\sigma_1, \sigma_2, \ldots, \sigma_{n-1}, \sigma_n) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  \SubProofOf{inf:thm:fol_natural_deduction_equality/pred}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\tau_1 \syneq \sigma_1]^{u_1} }.
+      \hypo{ [p(\tau_1, \tau_2, \ldots, \tau_{n-1}, \tau_n)]^v }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ p(\sigma_1, \tau_2, \ldots, \tau_{n-1}, \tau_n) }
+
+      \hypo{ [\tau_2 \syneq \sigma_2]^{u_2} }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ p(\sigma_1, \sigma_2, \ldots, \tau_{n-1}, \tau_n) }
+      \ellipsis{} { p(\sigma_1, \sigma_2, \ldots, \sigma_{n-1}, \tau_n) }
+
+      \hypo{ [\tau_n \syneq \sigma_n]^{u_n} }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ p(\sigma_1, \sigma_2, \ldots, \sigma_{n-1}, \sigma_n) }
+    \end{prooftree}
+  \end{equation*}
 \end{proof}
 
 \begin{theorem}[First-order syntactic deduction theorem]\label{thm:fol_natural_deduction_deduction_theorem}
