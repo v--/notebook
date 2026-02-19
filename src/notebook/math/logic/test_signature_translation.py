@@ -45,7 +45,7 @@ def test_translate_term_exchange_prefix_and_infix(dummy_signature: FormalLogicSi
     assert str(translate_formula(translation, formula)) == '(x ≠ f²(y, z))'
 
 
-def xtest_translate_formula(dummy_signature: FormalLogicSignature) -> None:
+def test_translate_formula(dummy_signature: FormalLogicSignature) -> None:
     target_signature = FormalLogicSignature()
     target_signature.add_symbol(FunctionSymbol('ф⁰', 0, notation=SignatureSymbolNotation.CONDENSED))
     target_signature.add_symbol(PredicateSymbol('п¹', 1, notation=SignatureSymbolNotation.PREFIX))
