@@ -12,7 +12,6 @@ from ..parsing import (
     parse_variable,
 )
 from ..propositional import parse_prop_formula
-from ..formulas import NegationFormula
 from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution
