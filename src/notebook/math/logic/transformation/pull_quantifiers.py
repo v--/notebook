@@ -10,6 +10,7 @@ from ..formulas import (
 )
 from ..substitution import substitute_in_formula
 from ..variables import get_formula_free_variables, new_variable
+from .collapse_repeated_negation import collapse_repeated_negation
 
 
 class PullQuantifiersVisitor(FormulaTransformationVisitor):
@@ -18,13 +19,11 @@ class PullQuantifiersVisitor(FormulaTransformationVisitor):
         body = self.visit(formula.body)
 
         if isinstance(body, QuantifierFormula):
-            if isinstance(body.body, NegationFormula):
-                return QuantifierFormula(get_dual_quantifier(body.quant), body.var, body.body.body)
-
-            return QuantifierFormula(get_dual_quantifier(body.quant), body.var, NegationFormula(body.body))
-
-        if isinstance(body, NegationFormula):
-            return NegationFormula(body.body)
+            return QuantifierFormula(
+                get_dual_quantifier(body.quant),
+                body.var,
+                collapse_repeated_negation(self.visit(NegationFormula(body.body)))
+            )
 
         return NegationFormula(body)
 

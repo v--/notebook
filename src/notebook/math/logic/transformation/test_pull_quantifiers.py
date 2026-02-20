@@ -11,7 +11,8 @@ from .pull_quantifiers import pull_quantifiers
 
     # Negation
     dict(formula='¬∀x.p¹(x)', expected='∃x.¬p¹(x)'),
-    dict(formula='¬∃x.p¹(x)', expected='∀x.¬p¹(x)'),
+    dict(formula='¬∀x.∀y.p²(x, y)', expected='∃x.∃y.¬p²(x, y)'),
+    dict(formula='¬∃x.p¹(x)',  expected='∀x.¬p¹(x)'),
     dict(formula='¬∃x.¬p¹(x)', expected='∀x.p¹(x)'),
 
     # Conjunctions and disjunctions

@@ -872,3 +872,79 @@
 
   Therefore, \( h[A] \) is definable by \( \varphi_A \).
 \end{proof}
+
+\paragraph{Skolemization}
+
+\begin{definition}\label{def:fol_prenex_normal_form}\mcite[def. 2.2.33]{Hinman2005Logic}
+  We say that the \hyperref[def:fol_formula]{first-order formula} \( \varphi \) is in \term[ru=предварённая / пренексная нормальная форма (\cite[def. 2.5.1]{Герасимов2014Вычислимость})]{prenex normal form} if there exist quantifiers \( Q_1, \ldots, Q_n \) and variables \( x_1, \ldots, x_n \) such that
+  \begin{equation*}
+    \varphi = \quantifier {Q_1} {x_1} \ldots \quantifier {Q_n} {x_n} \psi,
+  \end{equation*}
+  where \( \psi \) contains no quantifiers.
+
+  We call the \hi{formula} \( \psi \) the \term[ru=матрица (\cite[def. 2.5.1]{Герасимов2014Вычислимость})]{matrix} of \( \varphi \), and the \hi{string} \( \quantifier {Q_1} {x_1} \ldots {Q_n} {x_n} \) --- the \term[en=prefix (\cite[def. 2.2.33]{Hinman2005Logic})]{quantifier prefix} of \( \varphi \).
+\end{definition}
+
+\begin{algorithm}[First-order formula to prenex normal form]\label{alg:fol_formula_to_prenex_normal_form}
+  We introduce an operator \( T_{\logic{PNF}} \) on \hyperref[def:fol_formula]{first-order formulas} that \enquote{pulls out} quantifiers in order to produce a \hyperref[def:fol_semantics/equivalence]{semantically equivalent} formula in \hyperref[def:fol_prenex_normal_form]{prenex normal form}.
+
+  We proceed by recursion on \( \varphi \):
+  \begin{thmenum}
+    \thmitem{alg:fol_formula_to_prenex_normal_form/atomic} If \( \varphi \) is an atomic formula, let \( T_{\logic{pr}}(\varphi) \coloneqq \varphi \).
+
+    \thmitem{alg:fol_formula_to_prenex_normal_form/negation} If \( \varphi = \synneg \psi \), let \( \psi' \coloneqq T_{\logic{PNF}}(\psi) \) and let
+    \begin{equation*}
+      T_{\logic{PNF}}(\varphi) \coloneqq \begin{cases}
+        \quantifier {Q^{\oppos}} x T_{\logic{DNE}}(T_{\logic{PNF}}(\synneg \theta)), &\psi' = \quantifier Q x \theta, Q \in \op*{Quant}, \\
+        \synneg \psi',                                                               &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:fol_formula_to_prenex_normal_form/connectives} If \( \varphi = \psi \bincirc \theta \), let \( \psi' \coloneqq T_{\logic{PNF}}(\psi) \) and \( \theta' \coloneqq T_{\logic{PNF}}(\theta) \), and let
+    \small
+    \begin{equation*}
+      T_{\logic{PNF}}(\varphi) \coloneqq \begin{cases}
+        T_{\logic{PNF}}\parens[\big]{ (\psi' \synimplies \theta') \wedge (\theta' \synimplies \psi') }, &{\syncirc} \T{is} {\syniff} \T{and} \psi' \T{or} \theta' \T{have quantifiers}, \\
+        \quantifier {Q^{\oppos}} n T_{\logic{PNF}}(\omega[x \mapsto n] \synimplies \theta'),            &{\syncirc} \T{is} {\synimplies} \T{and} \psi' = \quantifier Q x \omega \T{and} n = \op*{FVar}(\theta', x), \\
+        \quantifier Q n T_{\logic{PNF}}(\omega[x \mapsto n] \synimplies \theta'),                       &\T{otherwise if} \psi' = \quantifier Q x \omega \T{and} n = \op*{FVar}(\theta', x), \\
+        \quantifier Q n T_{\logic{PNF}}(\psi' \synimplies \omega[x \mapsto n]),                         &\T{otherwise if} \theta' = \quantifier Q x \omega \T{and} n = \op*{FVar}(\psi', x), \\
+        \psi' \syncirc \theta',                                                                         &\T{otherwise,}
+      \end{cases}
+    \end{equation*}
+    \normalsize
+    where the auxiliary operator
+    \small
+    \begin{equation*}
+      \op*{FVar}(\omega, x) \coloneqq \begin{cases}
+        \sharp(\op*{Free}(\omega)), &x \in \op*{Free}(\omega), \\
+        x,                          &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+    \normalsize
+    aids us in combining analogues of the renaming \eqref{eq:alg:fol_formula_substitution/quant/renaming} and non-renaming \eqref{eq:alg:fol_formula_substitution/quant/direct} cases for substitution.
+
+    \thmitem{alg:fol_formula_to_prenex_normal_form/quantifiers} Finally, if \( \varphi = \quantifier Q x \psi \), let
+    \begin{equation*}
+      T_{\logic{PNF}}(\varphi) \coloneqq \quantifier Q x T_{\logic{PNF}}(\psi).
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.pnf.formula_to_pnf} in \cite{notebook:code}. The bulk of the implementation is in the module \identifier{math.logic.transformation.pull_quantifiers}.
+\end{comments}
+\begin{defproof}
+  We can use induction on the \hyperref[def:graph_cardinality/order]{graph order} of the \hyperref[def:fol_formula_ast]{abstract syntax tree} of \( \varphi \) to show that \( T_{\logic{PNF}}(\varphi) \) is in prenex normal form. This is straightforward because, in every operation, we recursively \enquote{pull} quantifiers outwards.
+
+  Semantic equivalence of \( \varphi \) and \( T_{\logic{PNF}}(\varphi) \) is also simple to show by induction.
+  \begin{itemize}
+    \item The case \ref{alg:fol_formula_to_prenex_normal_form/atomic} of atomic formulas is trivial.
+
+    \item If \( \varphi \) is a negation formula, the construction in \ref{alg:fol_formula_to_prenex_normal_form/negation} uses \fullref{alg:propositional_repeated_negation_collapse} to remove repeated negation, and overall semantic equivalence of \( \varphi \) and \( T_{\logic{PNF}}(\varphi) \) follows from the correctness of \fullref{alg:fol_formula_dualization}.
+
+    \item If \( \varphi \) is a connective formula, come additional commentary is needed.
+
+    Semantic equivalence of \( \varphi \) and \( T_{\logic{PNF}}(\varphi) \) follows \cref{thm:intuitionistic_equivalences/biconditional_via_conditionals} in the first case. In the other cases, we take care to rename the variables that may cause collisions; otherwise, equivalence follows from distributivity of joins and meets in the classical truth value algebra. In the second case, we must additionally note that \( \psi' \synimplies \theta' \) is equivalent to \( \synneg \psi' \synvee \theta' \), as shown in \cref{thm:classical_equivalences/conditional_as_disjunction}.
+
+    \item The case \ref{alg:fol_formula_to_prenex_normal_form/quantifiers} of quantifier formulas is also trivial.
+  \end{itemize}
+\end{defproof}
