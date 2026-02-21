@@ -1,4 +1,4 @@
-import stdnum
+import stdnum.isbn
 
 from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
