@@ -6,8 +6,8 @@ from .pull_quantifiers import pull_quantifiers
 
 @pytest_parametrize_kwargs(
     # Atomic
+    dict(formula='⊤',  expected=None),
     dict(formula='(x = y)',  expected=None),
-    dict(formula='∀y.p¹(x)', expected=None),
 
     # Negation
     dict(formula='¬∀x.p¹(x)', expected='∃x.¬p¹(x)'),
@@ -43,6 +43,10 @@ from .pull_quantifiers import pull_quantifiers
     # Biconditionals
     dict(formula='(p¹(x) ↔ q¹(x))', expected=None),
     dict(formula='(∀x.p¹(x) ↔ q¹(x))', expected='∃a.∀b.((p¹(a) → q¹(x)) ∧ (q¹(x) → p¹(b)))'),
+
+    # Quantifiers
+    dict(formula='∀x.p¹(x)', expected=None),
+    dict(formula='∃x.p¹(x)', expected=None),
 )
 def test_pull_quantifiers(formula: str, expected: str | None, dummy_signature: FormalLogicSignature) -> None:
     formula_ = parse_formula(formula, dummy_signature)

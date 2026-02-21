@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
-from .....support.pytest import pytest_parametrize_kwargs
-from ...propositional import parse_prop_formula
+from ....support.pytest import pytest_parametrize_kwargs
+from ..propositional import parse_prop_formula
 from .function_to_dnf import function_to_dnf
 from .validation import is_formula_in_dnf
 

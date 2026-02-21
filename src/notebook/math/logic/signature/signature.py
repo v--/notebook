@@ -45,9 +45,9 @@ class FormalLogicSignature:
 
         return sym
 
-    def __contains__(self, symbol: SignatureSymbol) -> bool:
+    def __contains__(self, symbol: str | SignatureSymbol) -> bool:
         try:
-            existing = self.trie[symbol.name]
+            existing = self.trie[symbol.name if isinstance(symbol, SignatureSymbol) else symbol]
         except MissingKeyError:
             return False
 

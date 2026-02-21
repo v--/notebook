@@ -14,7 +14,7 @@ class PowerSetBooleanAlgebra[T](FormalLogicStructure[Collection[T]]):
         self.signature = BOOLEAN_ALGEBRA_SIGNATURE
         self.interpretation = {
             BOOLEAN_ALGEBRA_SIGNATURE['⫪']: lambda: base_set,
-            BOOLEAN_ALGEBRA_SIGNATURE['⫫']: lambda: set(),
+            BOOLEAN_ALGEBRA_SIGNATURE['⫫']: set,
             BOOLEAN_ALGEBRA_SIGNATURE['⫬']: lambda a: frozenset(x for x in base_set if x not in a),
             BOOLEAN_ALGEBRA_SIGNATURE['⩓']: lambda a, b: frozenset(x for x in base_set if x in a and x in b),
             BOOLEAN_ALGEBRA_SIGNATURE['⩔']: lambda a, b: frozenset(x for x in base_set if x in a or x in b),

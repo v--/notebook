@@ -7,6 +7,7 @@ from .identifiers import (
     LatinIdentifier,
     is_greek_identifier,
     is_latin_identifier,
+    iter_latin_identifiers,
     new_latin_identifier,
 )
 from .identifiers import common as common_identifiers

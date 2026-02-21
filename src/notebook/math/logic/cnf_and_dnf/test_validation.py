@@ -1,5 +1,5 @@
-from .....support.pytest import pytest_parametrize_lists
-from ...propositional import parse_prop_formula
+from ....support.pytest import pytest_parametrize_lists
+from ..propositional import parse_prop_formula
 from .validation import is_formula_in_cnf
 
 

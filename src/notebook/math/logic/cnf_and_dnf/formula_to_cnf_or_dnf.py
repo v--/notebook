@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from typing import override
 
-from ...alphabet import BinaryConnective, LatticeConnective, get_dual_connective
-from ...formulas import (
+from ..alphabet import BinaryConnective, LatticeConnective, get_dual_connective
+from ..formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
     NegationFormula,
     QuantifierFormula,
 )
-from ...propositional import PropFormula, convert_to_prop_formula
-from ...transformation import dualize_formula
-from ..exceptions import UnsupportedFormulaError
+from ..propositional import PropFormula, convert_to_prop_formula
+from ..transformation import dualize_formula
+from .exceptions import UnsupportedFormulaError
 
 
 @dataclass

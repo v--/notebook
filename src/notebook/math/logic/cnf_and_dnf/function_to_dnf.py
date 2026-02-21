@@ -1,9 +1,9 @@
 import inspect
 from collections.abc import Callable, Iterable
 
-from ...alphabet import BinaryConnective, PropConstantSymbol
-from ...formulas import PropConstant
-from ...propositional import (
+from ..alphabet import BinaryConnective, PropConstantSymbol
+from ..formulas import PropConstant
+from ..propositional import (
     DEFAULT_PROP_SIGNATURE,
     PropConnectiveFormula,
     PropFormula,
@@ -11,7 +11,7 @@ from ...propositional import (
     PropVariable,
     iter_interpretations_for_variables,
 )
-from ..exceptions import VariableNameError
+from .exceptions import VariableNameError
 
 
 def vararg_connect(conn: BinaryConnective, formulas: Iterable[PropFormula]) -> PropFormula:

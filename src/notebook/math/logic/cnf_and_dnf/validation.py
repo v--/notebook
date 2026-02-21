@@ -1,5 +1,5 @@
-from ...alphabet import BinaryConnective, LatticeConnective, get_dual_connective
-from ...formulas import (
+from ..alphabet import BinaryConnective, LatticeConnective, get_dual_connective
+from ..formulas import (
     AtomicFormula,
     ConnectiveFormula,
     EqualityFormula,
