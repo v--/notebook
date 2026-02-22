@@ -32,7 +32,7 @@ output/%.pdf: figures/%.asy asymptote/*.asy asymptote/geom/*.asy asymptote/graph
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.pdf: src/notebook/figures/%.py | aux output
-	poetry run python -m src.notebook.figures.$*
+	uv run python -m src.notebook.figures.$*
 	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
