@@ -1,7 +1,6 @@
+import operator
 from collections.abc import Callable
 from typing import Any, Self
-
-from .types import ISemiring
 
 
 class TropicalMeta(type):
@@ -13,7 +12,7 @@ class TropicalMeta(type):
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
-        sum: Callable[[float, float], float] = ISemiring.__add__,  # noqa: A002
+        sum: Callable[[float, float], float] = operator.add,  # noqa: A002
         zero: float = 0
     ) -> T:
         attrs['sum'] = sum

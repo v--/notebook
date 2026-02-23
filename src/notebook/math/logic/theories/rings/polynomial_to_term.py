@@ -1,17 +1,14 @@
-from typing import cast
-
 from ....polynomials.monomial import Monomial
 from ....polynomials.polynomial.int import IntPolynomial
-from ...signature import FunctionSymbol
 from ...terms import FunctionApplication, Term, Variable
 from .signature import RING_SIGNATURE
 
 
 ZERO_TERM = FunctionApplication(RING_SIGNATURE.get_function_symbol('0'), [])
 ONE_TERM = FunctionApplication(RING_SIGNATURE.get_function_symbol('1'), [])
-PLUS = cast(FunctionSymbol, RING_SIGNATURE.get_function_symbol('+'))
-MINUS = cast(FunctionSymbol, RING_SIGNATURE.get_function_symbol('-'))
-TIMES = cast(FunctionSymbol, RING_SIGNATURE.get_function_symbol('⋅'))
+PLUS = RING_SIGNATURE.get_function_symbol('+')
+MINUS = RING_SIGNATURE.get_function_symbol('-')
+TIMES = RING_SIGNATURE.get_function_symbol('⋅')
 
 
 def number_to_term(num: int) -> Term:

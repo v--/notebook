@@ -47,9 +47,10 @@ def set_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Collec
 
 
 def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[str]]], Callable[P, str]]:
-    def decorator(fun: Callable[P, Iterable[str]]) -> Callable[P, str]:
+    # The outer ParamSpec seems not to be sufficient for ty because it is only used in the return value.
+    def decorator[**Q](fun: Callable[Q, Iterable[str]]) -> Callable[Q, str]:
         @functools.wraps(fun)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
+        def wrapper(*args: Q.args, **kwargs: Q.kwargs) -> str:
             return joiner.join(fun(*args, **kwargs))
 
         return wrapper

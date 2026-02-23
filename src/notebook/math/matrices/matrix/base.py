@@ -38,7 +38,7 @@ class MatrixMeta(type):
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
-        semiring: type[ISemiring] = ISemiring,
+        semiring: type[ISemiring] = int,  # I need some default and int seems the most generic option
     ) -> M:
         attrs['semiring'] = semiring
         return type.__new__(meta, name, bases, attrs)

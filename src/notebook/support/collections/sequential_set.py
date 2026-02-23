@@ -39,8 +39,8 @@ class SequentialSet[T](MutableSet[T]):
     def __len__(self) -> int:
         return sum(1 for _ in self._iter_items())
 
-    def __contains__(self, value: object) -> bool:
-        return any(item.value == value for item in self._iter_items())
+    def __contains__(self, x: object) -> bool:
+        return any(item.value == x for item in self._iter_items())
 
     def __delitem__(self, value: T) -> None:
         if self._payload and self._payload.value == value:
