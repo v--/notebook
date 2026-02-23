@@ -6,6 +6,7 @@ import loguru
 
 from ...paths import FIGURES_PATH, TEXT_PATH
 from ..common.inflection import prefix_cardinal
+from ..common.logging import configure_loguru
 
 
 def check_is_figure_used(figure_name: str) -> bool:
@@ -24,6 +25,7 @@ def check_is_figure_used(figure_name: str) -> bool:
 
 @click.command()
 def find_obsolete_figures() -> None:
+    configure_loguru(verbose=False)
     total_count = 0
     obsolete_count = 0
 

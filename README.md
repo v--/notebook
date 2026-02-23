@@ -18,7 +18,7 @@ This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: 
 
 ## Project structure
 
-While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU [`Makefile`]('./Makefile') specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are most easily activated via [poe](https://poethepoet.natn.io) (`poe <command>`).
+While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU [`Makefile`]('./Makefile') specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are available as [executable scripts](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts) (can be run via `uv run <command>`).
 
 See the README at [`src/notebook`](./src/notebook) for an overview of how the code is structured.
 
@@ -26,7 +26,7 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 
 ### Build system
 
-There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `poe watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
+There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `uv run watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
 
 Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) from the `metadata` file, if it exists. Similarly, a list of files to be whitelisted for building read by [`ProcessIncludeOnly`](./packages/compilation.sty) from the `includeonly` file, if it exists.
 
@@ -53,7 +53,7 @@ There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/f
 
 ### Bib(La)TeX tools
 
-There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/bibtools) (Usage: `poe bibtools`), consisting of:
+There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/bibtools) (Usage: `uv run bibtools`), consisting of:
 * A "formatter" (`... format bibliography bibliography/*.bib`) that handles name and ISBN/ISSN normalization, reference translation (e.g. DOI, mathnet, zbMATH and other URLs to fields) and other mundane tasks. It also emits warnings when it detects mistakes, e.g. an `@article` entry without a `journal` or an `@inbook` entry without a `booktitle`.
 
 * Several BibLaTeX entry fetch tools:
