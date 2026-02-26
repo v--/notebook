@@ -20,6 +20,8 @@
 
     Sufficiency is obvious for both semantic entailment and natural deduction, so it usually suffices to check that \( \op*{Sen}(t)(\varphi) \in T' \) implies \( \varphi \in T \).
 
+    \Cref{ex:thm:fol_completeness/skolemization} shows that it may be important whether we consider syntactic or semantic conservative extension.
+
     \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \cat{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
 
     \thmitem{def:fol_theory/consistent}\mcite[def. 2.6.19]{Герасимов2014Вычислимость} We call a first-order theory \term[ru=непротиворечивое (множество формул)]{consistent} if \( T \) contains no \hyperref[def:fol_semantics/tautology]{contradictions}, i.e. if \( T \) does not contain \( \synbot \).
@@ -1030,14 +1032,14 @@
 
   At the end, let
   \begin{align*}
-    M_{\logic{SNF}}(\Sigma) \coloneqq \Sigma_n,
+    M_{\logic{SNF}}(\varphi, \Sigma) \coloneqq \Sigma_n,
     &&
-    M_{\logic{SNF}}(\mscrX) \coloneqq \mscrX_n,
+    M_{\logic{SNF}}(\varphi, \mscrX) \coloneqq \mscrX_n,
     &&
     M_{\logic{SNF}}(\varphi) \coloneqq \varphi_n.
   \end{align*}
 
-  Then \( M_{\logic{SNF}}(\varphi) \) is a universal formula over \( M_{\logic{SNF}}(\Sigma) \) that is valid in \( M_{\logic{SNF}}(\mscrX) \).
+  Then \( M_{\logic{SNF}}(\varphi) \) is a universal formula over \( M_{\logic{SNF}}(\varphi, \Sigma) \) that is valid in \( M_{\logic{SNF}}(\varphi, \mscrX) \).
 
   We proceed as follows:
   \begin{thmenum}
@@ -1088,16 +1090,57 @@
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item The overall premise of Skolemization is described in \cref{rem:definitional_extensions_and_skolemization}.
+  \item The overall premise of Skolemization is described in \cref{rem:definitional_extensions_and_skolemization} and \fullref{thm:skolems_theorem}.
   \item There are two sources of ambiguity in the algorithm --- the choice of Skolem function symbols and the choice of the functions themselves. The disambiguation that we may find useful depends on the situation.
   \item This algorithm can be found as \identifier{math.logic.skolemization.skolemize} in \cite{notebook:code}.
 \end{comments}
 
-\begin{proposition}\label{thm:skolemization_semantic_equivalence}
-  A \hyperref[def:closed_fol_formula]{closed formula} \( \varphi \) is \hyperref[def:fol_semantics/model]{satisfiable} if and only if its skolemization \( M_{\logic{PNF}}(\varphi) \), obtained via \fullref{alg:fol_skolemization}, is satisfiable.
+\begin{proposition}\label{thm:skolems_theorem}
+  A \hyperref[def:closed_fol_formula]{closed formula} \( \varphi \) is \hyperref[def:fol_semantics/model]{satisfiable} if and only if its skolemization \( M_{\logic{SNF}}(\varphi) \), obtained via \fullref{alg:fol_skolemization}, is satisfiable.
 \end{proposition}
 \begin{proof}
-  The skolemization algorithm allows \hyperref[def:fol_structure_expansion]{expanding} a model of \( \varphi \) to a model of \( M_{\logic{PNF}}(\varphi) \).
+  The skolemization algorithm allows \hyperref[def:fol_structure_expansion]{expanding} a model of \( \varphi \) to a model of \( M_{\logic{SNF}}(\varphi) \).
 
-  We can reverse the construction of this expansion to show that every model of \( M_{\logic{PNF}}(\varphi) \) is also a model of \( \varphi \).
+  Furthermore, this expansion is constructed so that a model of \( M_{\logic{PNF}}(\varphi) \) is also a model of \( \varphi \).
+\end{proof}
+
+\begin{theorem}[Skolem's theorem]\label{thm:skolems_theorem}\mcite[corr. 2.6.29]{Hinman2005Logic}
+  For every \hyperref[def:fol_theory]{first-order theory}, there exists a \hyperref[def:fol_theory/conservative]{conservative extension} with an axiomatization consisting of \hyperref[def:fol_prenex_normal_form/universal]{universal formulas}.
+\end{theorem}
+\begin{comments}
+  \item The name of the theorem is taken from \cite[56]{Shoenfield1967MathematicalLogic}.
+  \item Note that the construction of this theory is done for semantic theories. Syntactic theories require an adaptation --- see \cref{ex:thm:fol_completeness/skolemization}.
+\end{comments}
+\begin{proof}
+  Fix a theory \( T \) over \( \Sigma \). \Cref{thm:fol_theory_pnf} implies that \( T \) has an axiomatization \( \Gamma \) consisting of formulas in \hyperref[def:fol_prenex_normal_form]{prenex normal form}. Let \( \Phi = \seq{ \varphi_\alpha }_{\alpha < \kappa} \) be a \hyperref[def:set_enumeration]{transfinite enumeration} of \( \Gamma \).
+
+  Via \fullref{thm:bounded_transfinite_recursion}, for each \( \alpha \leq \kappa \) we will build a \hyperref[def:transfinite_sequence]{transfinite sequence} \( \Psi_\alpha = \seq{ \psi_{\alpha,\beta} }_{\beta < \alpha} \) over the signature \( \Sigma_\alpha \) such that, for every \( \beta < \alpha \), \( \psi_{\alpha,\beta} \) is a universal formula \hyperref[def:equisatisfiability]{equisatisfiable} with \( \varphi_\beta \).
+
+  \begin{itemize}
+    \item Let \( \Psi_0 \) be the empty sequence, and let \( \Sigma_0 \) be \( \Sigma \).
+
+    \item If \( \alpha = \op{sc}(\gamma) \), let \( \Psi_\alpha \) be
+    \begin{equation*}
+      \psi_{\alpha,\beta} \coloneqq \begin{cases}
+        M_{\logic{SNF}}(\varphi_\gamma), \beta = \gamma \\
+        \psi_{\gamma,\beta},             \T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    Let the signature \( \Sigma_\alpha \) be \( M_{\logic{SNF}}(\psi_{\gamma,\gamma}, \Sigma_\gamma) \).
+
+    \Cref{thm:skolems_theorem} implies that \( \psi_{\gamma,\gamma} \) is equisatisfiable with \( \varphi_\gamma \).
+
+    \item If \( \alpha \) is a limit ordinal, let \( \Psi_\alpha \) be the set-theoretic union of \( \Psi_\gamma \) for \( \gamma < \alpha \).
+
+    Let the signature \( \Sigma_\alpha \) be the signature whose symbols are the union of those of \( \Sigma_\gamma \) across \( \gamma < \alpha \).
+  \end{itemize}
+
+  Denote by \( \Sigma^+ \) the signature \( \Sigma_\kappa \) and by \( \Gamma^+ \) the set of formulas of \( \Psi_\kappa \). Since \( \Psi_\kappa \) is componentwise equisatisfiable with \( \Phi \), then \( \Gamma \) is equisatisfiable with \( \Gamma^+ \).
+
+  It remains to show that the consequence closure \( T^+ \) of \( \Gamma^+ \) is conservative over \( T \).
+
+  Indeed, fix a formula \( \theta \) from \( T^+ \) over \( \Sigma \). Suppose that \( \Gamma \) has a model. Since \( \Gamma \) is equisatisfiable with \( \Gamma^+ \), it follows that \( \Gamma^+ \) has a model, say \( \mscrX^+ \). Since \( \theta \) is a semantic consequence of \( \Gamma^+ \), it follows that \( \mscrX^+ \) is a model of \( \theta \). But \( \theta \) only contains symbols from \( \Sigma \), so the reduct of \( \mscrX^+ \) to \( \Sigma \) is a model of \( \theta \). It follows that \( \theta \) belongs to \( T \).
+
+  Generalizing on \( \theta \), it follows that \( T^+ \) is conservative over \( T \). Furthermore, \( \Gamma^+ \) is an axiomatization of \( T^+ \) consisting of universal formulas.
 \end{proof}
