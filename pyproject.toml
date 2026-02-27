@@ -47,21 +47,12 @@ format-matrices = "notebook.commands.format_matrices:format_matrices"
 bibtools = "notebook.commands.bibtools:bibtools"
 find-obsolete-figures = "notebook.commands.find_obsolete_figures:find_obsolete_figures"
 
-# These should ideally go as CLI invocations into some standardized configuration, like the ones discussed in
-#   https://discuss.python.org/t/idea-introduce-standardize-project-development-scripts/67194
-# For now, they are Python wrappers for CLI tools, which allows running them via `uv run <command>`
-lint = "scripts.lint:run_linters"
-format = "scripts.format:run_formatters"
-test = "pytest:console_main"
-coverage = "scripts.coverage:get_coverage"
-benchmark = "scripts.benchmark:run_benchmark"
-check_cites = "scripts.check_cites:run_checkcites"
-
 [dependency-groups]
 dev = [
   "beautifulsoup4 (>=4.14.3)",
   "coverage (>=7.13.4)",
   "mypy (>=1.19.1)",
+  "poethepoet (>=0.42.0)",
   "pytest (>=9.0.2)",
   "pytest-benchmark (>=5.2.3)",
   "pytest-loguru (>=0.4.0)",
@@ -74,6 +65,16 @@ dev = [
 [build-system]
 requires = ["uv_build (>=0.10.5, <0.11.0)"]
 build-backend = "uv_build"
+
+# poe
+[tool.poe]
+include = "./poe.toml"
+
+[tool.poe.tasks.checkcites]
+cmd = "checkcites --backend biber --crossrefs --all aux/notebook.bcf"
+
+[tool.poe.tasks.benchmark]
+cmd = "pytest --config-file pytest_benchmark.ini"
 
 # pytest
 [tool.pytest.ini_options]
