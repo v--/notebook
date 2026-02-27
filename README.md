@@ -49,7 +49,7 @@ Two additional parsers are included:
 
 ### LaTeX tools
 
-There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/format_matrices) (Usage: `poe format-matrices figures/*.tex`), made specifically for formatting LaTeX arrays and similar environments.
+There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/format_matrices) (Usage: `uv run format-matrices figures/*.tex`), made specifically for formatting LaTeX arrays and similar environments.
 
 ### Bib(La)TeX tools
 
