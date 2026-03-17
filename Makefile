@@ -16,24 +16,28 @@ aux/text:
 output:
 	mkdir --parents output
 
+# LaTeX compilation is complicated, so we avoid using Make for intermediate files in aux/
+# In the end, we use dd to copy the result (cp messes up reloading of PDF files in viewers)
 output/notebook.pdf: $(TEXT_SOURCE) images/*.png $(wildcard includeonly metadata) | aux aux/text output
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	biber --quiet aux/notebook.bcf
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	$(COMPILER) -output-directory=aux notebook.tex
-	cat aux/notebook.pdf > output/notebook.pdf
+	dd status=none if=aux/notebook.pdf of=output/notebook.pdf
 
 output/%.pdf: figures/%.tex classes/*.cls packages/*.sty | aux output
 	$(COMPILER) -output-directory=aux figures/$*.tex
-	cat aux/$*.pdf > output/$*.pdf
+	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
+# Asymptote may fail silently, so we remove the aux file prior to making a new one
 output/%.pdf: figures/%.asy asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy | aux output
+	rm --force aux/$*.pdf
 	$(if $(shell grep 'import three' figures/$*.asy),xvfb-run --auto-servernum,) asy -outname=aux/$* figures/$*.asy
-	cat aux/$*.pdf > output/$*.pdf
+	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
 output/%.pdf: src/notebook/figures/%.py | aux output
 	uv run python -m src.notebook.figures.$*
-	cat aux/$*.pdf > output/$*.pdf
+	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
 
