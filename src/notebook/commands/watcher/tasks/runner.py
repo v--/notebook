@@ -68,7 +68,8 @@ class TaskRunner:
             self.run_queued()
 
     def finalize(self) -> None:
-        for item in self._queue.values():
+        # We cache the "queue" in a list because graceful shutdown empties it
+        for item in list(self._queue.values()):
             if item.aio_task:
                 item.aio_task.cancel()
                 del self._queue[item.task.trigger]
