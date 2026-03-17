@@ -30,10 +30,12 @@ transform3 rot(real factor) {
   return g * f;
 };
 
-draw(unitcube, gray + opacity(0.75));
 draw(rot(1) * unitcube, white + opacity(0.75));
+trj.trajectory(rot, 0, 1, (1, 0, 0));
+trj.trajectory(rot, 0, 1, (1, 0, 1));
+draw(unitcube, gray + opacity(0.75));
+trj.trajectory(rot, 0, 1, (0, 0, 1));
 
 dot((0, 0, 0), linewidth(2));
-trj.trajectory(rot, 0, 1, (0, 0, 1));
-trj.trajectory(rot, 0, 1, (1, 0, 1));
-trj.trajectory(rot, 0, 1, (1, 0, 0));
+dot((1, 0, 0), linewidth(2));
+dot((1, 0, 1), linewidth(2));

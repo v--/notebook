@@ -32,7 +32,7 @@ output/%.pdf: figures/%.tex classes/*.cls packages/*.sty | aux output
 # Asymptote may fail silently, so we remove the aux file prior to making a new one
 output/%.pdf: figures/%.asy asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy | aux output
 	rm --force aux/$*.pdf
-	$(if $(shell grep 'import three' figures/$*.asy),xvfb-run --auto-servernum,) asy -outname=aux/$* figures/$*.asy
+	asy -outname=aux/$* figures/$*.asy
 	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
 output/%.pdf: src/notebook/figures/%.py | aux output

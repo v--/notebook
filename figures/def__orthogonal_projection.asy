@@ -16,8 +16,13 @@ transform3 T = {
 path plane_path = (-1 / 2, -1) -- (-1 / 2, 3 / 2) -- (3 / 2, 3 / 2) -- (3 / 2, -1) -- cycle;
 path plane_hole = (0, -1 / 2) -- (0, 1) -- (1, 1) -- (1, -1 / 2) -- cycle;
 
-draw(T * unitcube, mediumgray);
-draw(T * surface(reverse(plane_hole) ^^ plane_path), white);
+if (settings.render == 0) {
+  draw(T * surface(plane_path), white);
+  draw(T * surface(plane_hole), mediumgray);
+} else {
+  draw(T * surface(reverse(plane_hole) ^^ plane_path), white);
+  draw(T * unitcube, mediumgray);
+}
 
 draw(unitcube, gray);
 

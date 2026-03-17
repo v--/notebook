@@ -5,7 +5,6 @@ from collections.abc import AsyncIterator
 import click
 import loguru
 from asyncinotify import Inotify, Mask
-from xvfbwrapper import Xvfb
 
 from ...paths import FIGURES_PATH, ROOT_PATH
 from ..common.logging import configure_loguru
@@ -106,9 +105,6 @@ def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
     base_logger = loguru.logger
     manager = TaskRunner()
 
-    vdisplay = Xvfb()
-    vdisplay.start()
-
     try:
         asyncio.run(
             setup_watchers(
@@ -120,4 +116,3 @@ def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
     except KeyboardInterrupt:
         manager.finalize()
         base_logger.info('Gracefully shutting down')
-        vdisplay.stop()

@@ -31,7 +31,7 @@ There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.
 Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) from the `metadata` file, if it exists. Similarly, a list of files to be whitelisted for building read by [`ProcessIncludeOnly`](./packages/compilation.sty) from the `includeonly` file, if it exists.
 
 There are externalized figures in the [`figures`](./figures) directory of the following kinds:
-* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. `xvfb` is used by default for 3D rendering (freeglut doesn't work on headless environments nor on Wayland).
+* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. 2D projection is used instead of proper 3D rendering (the latter is flaky).
 * [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
 * [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
 
