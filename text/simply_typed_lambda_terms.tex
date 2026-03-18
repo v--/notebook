@@ -102,6 +102,8 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   \item The decision to restrict ourselves to variables is explained in \cref{rem:type_context_only_variables}.
 
   \item \incite[def. 5.1.1]{Barendregt1992LambdaCalculiWithTypes} calls unordered type contexts \enquote{bases}, and later in \cite[def. 5.1.5]{Barendregt1992LambdaCalculiWithTypes} calls a base a \enquote{context} if it is totally ordered. We will avoid unordered type context in light of the possible complications shown in \cref{ex:def:mltt_well_formed_context}.
+
+  \incite[note 2A5.2]{Hindley1997BasicSTT} considers contexts to be unordered, but does not go beyond simple types.
 \end{comments}
 
 \begin{definition}\label{def:abstract_type_system}\mimprovised
@@ -181,7 +183,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   The phrase \term[en=simple type theory (\cite[ix]{Hindley1997BasicSTT})]{simple type theory} refers to several distinct \hyperref[def:abstract_type_system]{type systems}, depending on the authors. All of them revolve around simple types as defined in \cref{def:simple_type}.
 
   \begin{thmenum}
-    \thmitem{con:simple_type_theory/hol} The original usage, due to \bycite[56]{Church1940STT}, allows two base types, arrow types and no type variables, with the specific typing rules listed in \cref{def:higher_order_logic_syntax}. This system is intended to serve as a foundation for \hyperref[def:higher_order_logic]{higher-order logic}.
+    \thmitem{con:simple_type_theory/hol} The original usage, due to \bycite[56]{Church1940STT}, allows two base types, arrow types and no type variables, with the specific typing rules listed in \cref{def:hol_typing_rules}. This system is intended to serve as a foundation for \hyperref[def:higher_order_logic]{higher-order logic}.
 
     Other authors who follow this convention are \incite[\S 51]{Andrews2002Logic} and \incite[269]{Farmer2008STTVirtues}.
 
@@ -280,7 +282,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
 
   \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some, like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}, require modification --- see \cref{def:typed_term_alpha_equivalence}.
 
-  \item For \hyperref[def:higher_order_logic]{higher-order logic}, we will need \( \muplambda \)-terms for which all variables have type annotations. We will achieve this by attaching a \hyperref[def:type_context]{type context} to the \( \muplambda \)-term --- see \cref{def:hol_term}.
+  \item For \hyperref[def:higher_order_logic]{higher-order logic}, we will need \( \muplambda \)-terms for which all variables have type annotations. We will achieve this by attaching a \hyperref[def:type_context]{type context} to the \( \muplambda \)-term --- see \cref{def:hol_expression}.
 
   \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992LambdaCalculiWithTypes}. He prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the typing rules. He does this in accordance with his more general terminology discussed in \cref{con:pseudoterm_expression}.
 
@@ -588,7 +590,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
   We disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{alphabet of \( \muplambda \)-calculus} as constants and the symbols from the \hyperref[def:simple_type_alphabet]{alphabet of simple types} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type variable.
 
-  We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
+  We discuss some cardinality considerations in \cref{rem:language_alphabet_cardinality}; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
 \end{definition}
 \begin{comments}
   \item For simplicity of definition, we put no restrictions on sets of \( \muplambda \)-terms and types. If needed, we can consider \hyperref[con:syntax_fragment]{fragments} of the syntax of terms or types.
@@ -829,6 +831,19 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
       \begin{prooftree}
         \hypo{ \synx: \tau }
         \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \synx \synx: \tau \synimplies \tau }
+      \end{prooftree}
+    \end{equation*}
+
+    Furthermore, due to our reluctance to identify \( \alpha \)-equivalent \( \muplambda \)-terms, the combinator \( (\qabs \synf \synf) (\qabs \synx \synx) \) is also typable:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synf: \tau \synimplies \tau }
+        \infer[left label={\( \synf \)}]1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \synf \synf: (\tau \synimplies \tau) \synimplies (\tau \synimplies \tau) }
+
+        \hypo{ \synx: \tau }
+        \infer[left label={\( \synx \)}]1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \synx \synx: \tau \synimplies \tau }
+
+        \infer2[\ref{inf:def:arrow_type/elim}]{ (\qabs \synf \synf) (\qabs \synx \synx): \tau \synimplies \tau }
       \end{prooftree}
     \end{equation*}
 

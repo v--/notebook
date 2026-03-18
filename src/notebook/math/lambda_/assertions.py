@@ -1,11 +1,6 @@
 from dataclasses import dataclass
 
-from .terms import (
-    TypedTerm,
-    TypedTermSchema,
-    Variable,
-    VariablePlaceholder,
-)
+from .terms import TypedTerm, TypedTermSchema, Variable, VariablePlaceholder
 from .types import SimpleType, SimpleTypeSchema
 
 
@@ -17,7 +12,7 @@ class TypeAssertion:
     def __str__(self) -> str:
         return f'{self.term}: {self.type}'
 
-    def __iter__(self) -> tuple[TypedTerm, SimpleType]:
+    def unpack(self) -> tuple[TypedTerm, SimpleType]:
         return (self.term, self.type)
 
 
@@ -33,7 +28,7 @@ class TypeAssertionSchema:
     def __str__(self) -> str:
         return f'{self.term}: {self.type}'
 
-    def __iter__(self) -> tuple[TypedTermSchema, SimpleTypeSchema]:
+    def unpack(self) -> tuple[TypedTermSchema, SimpleTypeSchema]:
         return (self.term, self.type)
 
 

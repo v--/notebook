@@ -9,15 +9,15 @@ We give here the following definition, and then proceed to explain it:
 \begin{remark}\label{rem:higher_order_logic_and_type_theory}
   Type theory allows two unrelated approaches to \hyperref[con:predicate_logic]{predicate logic}:
   \begin{thmenum}
-    \thmitem{rem:higher_order_logic_and_type_theory/terms} As mentioned in \cref{rem:type_theory}, Alonzo Church initially formulated typed \( \muplambda \)-calculus as a way to encode logical formulas via \hyperref[con:type_annotation]{type-annotated} \hyperref[def:lambda_term]{\( \muplambda \)-terms}.
+    \thmitem{rem:higher_order_logic_and_type_theory/terms} As mentioned in \cref{rem:type_theory}, Alonzo Church initially introduced typed \( \muplambda \)-calculus as a way to encode logical formulas via \hyperref[con:type_annotation]{type-annotated} \hyperref[def:lambda_term]{\( \muplambda \)-terms}.
 
     This approach was later extended by his students Leon Henkin and Peter Andrews. Andrews describes a \hyperref[con:logical_system]{logical system} \( \logic{Q}_0 \) in \cite[ch. 5]{Andrews2002Logic} based on his and Henkin's refinements. More recently, William Farmer suggests modernized variants of Church's and Andrews' systems; he briefly outlines such a system in \cite{Farmer2008STTVirtues} and \cite{Farmer1990PartialFunctionSTT}. All these systems presuppose \hyperref[con:classical_logic]{classical logic}.
 
-    Based on the availability of \fullref{ch:lambda_calculus}, which itself grew out of Church's system, we provide a further refinement of their formulations that also allows going beyond classical logic while staying as close as reasonable to Henkin's notion of semantics.
+    Based on the availability of \fullref{ch:lambda_calculus}, which itself grew out of Church's system, we provide a further refinement of their formulations. It is in principle not limited to classical logic, but we will not purpose such generalizations.
 
     Because of the variety of influences involved, we comment the origin of each definition individually. The relations of our system and those mentioned above are discussed in \cref{rem:hol_notational_shorthands}, \cref{rem:hol_formula_abbreviations} and \cref{rem:hol_axiomatic_derivations}.
 
-    \thmitem{rem:higher_order_logic_and_type_theory/types} A much more powerful approach is based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, which hints at how \hi{types} rather than \( \muplambda \)-terms can be used to encode logical formulas.
+    \thmitem{rem:higher_order_logic_and_type_theory/types} A more powerful approach is based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, which hints at how \hi{types} rather than \( \muplambda \)-terms can be used to encode logical formulas.
 
     The correspondence itself is briefly outlined in \cref{con:curry_howard_correspondence} and formalized for \hyperref[def:propositional_formula]{propositional formulas} via \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}.
 
@@ -28,7 +28,7 @@ We give here the following definition, and then proceed to explain it:
 \begin{definition}\label{def:quantifiable_type}\mimprovised
   As discussed in \cref{con:simple_type_theory/hol}, Church uses restricted \hyperref[def:simple_type]{simple types} in \cite{Church1940STT} for his formulation of higher-order logic. We will call them \term{quantifiable types} to distinguish them from other simple types we consider in this monograph.
 
-  Fix a nonempty finite set \( \op*{Sort} \), whose elements act as \hyperref[def:simple_type]{base types}. Unless explicitly noted otherwise, we presuppose a single sort --- the \term[en=type of individuals (\cite[56]{Church1940STT})]{type of individuals} \( \syn\iota \)\fnote{The term \enquote{individuals} is based on Russell's usage; see \cref{rem:hol_formula_order_origin}. The symbol we use to denote their type is Church's small iota from \cite[56]{Church1940STT} with a dot on top, as per \cref{rem:mathematical_logic_conventions/terminal_dots}.}.
+  Fix a nonempty finite set \( \op*{Sort} \), whose elements act as \hyperref[def:simple_type]{base types}. Unsurprisingly, we will call them \term{sorts}. Unless explicitly noted otherwise, we presuppose a single sort --- the \term[en=type of individuals (\cite[56]{Church1940STT})]{type of individuals} \( \syn\iota \)\fnote{The term \enquote{individuals} is based on Russell's usage; see \cref{rem:hol_formula_order_origin}. The symbol we use to denote their type is Church's small iota from \cite[56]{Church1940STT} with a dot on top, as per \cref{rem:mathematical_logic_conventions/terminal_dots}.}.
 
   We also presuppose another base type --- the \term[en=type of propositions (\cite[56]{Church1940STT})]{type of propositions} \( \syn\omicron \)\fnote{\tcite{In #2, where #1}[56]{Church1940STT} pioneers a dedicated syntax for types, formulas have a dedicated type --- the \enquote{type of propositions}, denoted by \( \omicron \). It can be regarded as either a Latin or a Greek letter; here we suppose the latter. In accordance with \cref{rem:mathematical_logic_conventions/terminal_dots}, we place a dot on top.} --- that we do not consider a sort.
 
@@ -42,8 +42,6 @@ We give here the following definition, and then proceed to explain it:
   \item We decided to call the non-propositional base types \enquote{sorts} based on similar usage in many-sorted first-order logic, which is discussed in \cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory} and \cite[def. 62]{GoguenBurstall1992Institutions}.
 
   Sorts, as defined here, are unrelated to sorts in \hyperref[def:pure_type_system]{pure type systems}, which act as \hyperref[con:type_universe]{type universes} rather than types.
-
-  \item Unsurprisingly, we will call them \term[en=sorts (\cite[35]{BaaderNipkow2012TermRewriting})]{sorts}.
 \end{comments}
 
 \begin{definition}\label{def:hol_signature}\mimprovised
@@ -51,15 +49,13 @@ We give here the following definition, and then proceed to explain it:
   \begin{thmenum}
     \thmitem{def:hol_signature/sorts} A nonempty \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Sort} \), whose elements act as sorts of \hyperref[def:quantifiable_type]{quantifiable types}.
 
-    These sorts must not include improper symbols from the \hyperref[def:simple_type_alphabet]{alphabet of simple types}.
+    These sorts must not include improper symbols from the \hyperref[def:simple_type_alphabet]{alphabet of simple types} and the \hyperref[def:inference_rule_alphabet]{alphabet of inference rules}, but are allowed to range over Greek identifiers (because we discard type variables).
 
     We call the resulting logical system \term[en=one-sorted (predicate calculus) (\cite[84]{Kleene2002Logic})]{one-sorted} or \term[en=many-sorted predicate logic (\cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory})]{many-sorted} depending on the amount of sorts.
 
-    As per \cref{rem:improper_symbols_and_parsing}, we disallow as constants the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:simple_type_alphabet]{alphabet of simple types} and the \hyperref[def:inference_rule_alphabet]{alphabet of inference rules}, as well as the Latin and small Greek identifiers from \cref{def:variable_identifier}.
-
     \thmitem{def:hol_signature/nl_const} A possibly empty alphabet \( \op*{NLConst} \), whose elements act as \hyperref[def:lambda_term]{constant \( \muplambda \)-terms}. We call them \term{nonlogical constants}\fnote{We stated in \cref{rem:logical_symbol_terminology} that the separation into \enquote{logical} and \enquote{nonlogical} symbols is generally ambiguous, but in this case there will be no ambiguity because we specify the kind of entity we refer to, e.g. \enquote{nonlogical constant} rather than simply \enquote{nonlogical symbol}.}.
 
-    As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{alphabet of \( \muplambda \)-calculus} and the \hyperref[def:inference_rule_alphabet]{alphabet of inference rules} as constants.
+    We disallow the improper symbols from the \hyperref[def:lambda_term_alphabet]{alphabet of \( \muplambda \)-calculus} and the \hyperref[def:inference_rule_alphabet]{alphabet of inference rules}, as well as all Latin identifiers. We also disallow the logical constants from \cref{def:hol_typing_rules}.
 
     \thmitem{def:hol_signature/nl_type} A set \( \op*{NLType} \), whose elements are \hyperref[def:type_assertion]{type assertions} for the nonlogical constants. We require exactly one assertion per nonlogical constant.
 
@@ -72,7 +68,7 @@ We give here the following definition, and then proceed to explain it:
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
+  \item We discuss some cardinality considerations in \cref{rem:language_alphabet_cardinality}; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
 
   \item Explicit signatures are not considered by Church nor Henkin. \incite*[\S 55]{Andrews2002Logic} distinguishes between different \enquote{languages} of his system \( \logic{Q}_0 \), where a single language consists of all well-formed formulas. So Andrews also does not consider signatures, but only the resulting sets of formulas.
 
@@ -88,24 +84,40 @@ We give here the following definition, and then proceed to explain it:
   We will use several notational shorthands for higher-order logic that emulate Church's notation from \cite{Church1940STT} (or rather Farmer's refinement from \cite{Farmer2008STTVirtues}):
 
   \begin{thmenum}
-    \thmitem{rem:hol_notational_shorthands/variable_annotations} As discussed in \cref{rem:typing_style}, Church attaches type annotations to every \( \muplambda \)-term. We find this tedious since, as shown in \cref{thm:typed_term_habitation_uniqueness}, annotating only the free and bound variables is sufficient.
+    \thmitem{rem:hol_notational_shorthands/variable_annotations} There is a discrepancy between Church's theory of types from \cite{Church1940STT} and modernized simple type theory as presented in \fullref{sec:simply_typed_lambda_terms}.
 
-    We have defined typed \( \muplambda \)-terms in \cref{def:typed_lambda_term} so that \( \muplambda \)-terms have no \hyperref[con:type_annotation]{type annotations}. Instead, the types of bound variables are determined by an annotation on the corresponding abstractor variable, while the types of free variables are determined by \hyperref[def:type_context]{type contexts}. This allows us to unambiguously infer the type of an arbitrary \( \muplambda \)-term, provided all its free variables are in the context.
+    Namely, as discussed in \cref{rem:typing_style}, Church attaches type annotations to every \( \muplambda \)-term. For convenience, he supposes that every type has a distinct set of variables. This is in contrast with the modernized simple type theory presented in \fullref{sec:simply_typed_lambda_terms}, where only quantifier variables are annotated.
 
-    We want to attach annotations to free variables so that we do not have to mix type contexts and logical contexts. This leads us to define, in \cref{def:hol_term}, a logical term as a pair \( (\Gamma, M) \), where \( \Gamma \vdash M: \tau \) for some type \( \tau \), and all variables of \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that, as long as \( M \) is \hyperref[def:typability]{typable} in \( \Gamma \), \( \tau \) is uniquely determined by \( \Gamma \) and \( M \).
-
-    This allows us to place the type of every free variable in \( M \) in a superscript. For example, we denote the logical term
+    Namely, the Church-style term
     \begin{equation*}
-      \parens[\big]{ (f: \tau \synimplies \sigma, x: \tau), f x }
+      (f^{\tau \synimplies \sigma} x^\tau)^\sigma
     \end{equation*}
-    by
+    consists of two variables of different types\fnote{Church placed the types as subscripts rather than as superscripts; see \cref{rem:type_theory}.}. The variables here are distinguished on the level of syntax.
+
+    In contrast, in a modern theory we have the inference
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ f: \tau \synimplies \sigma }
+        \hypo{ x: \tau }
+        \infer2[\ref{inf:def:arrow_type/elim}]{ f x: \sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    Here \( f \) and \( x \) are both untyped variables that are parts of type assertions. As long as we do not care about the inference tree, we can express the above as the sequent
+    \begin{equation*}
+      (f: \tau \synimplies \sigma, x: \tau) \vdash f x: \sigma.
+    \end{equation*}
+
+    In \cref{def:hol_expression}, we define an expression of higher-order logic as a triple \( (\Gamma, M, \tau) \), where \( \Gamma \vdash M: \tau \) and all variables of \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that, as long as \( M \) is \hyperref[def:typability]{typable} in \( \Gamma \), \( \tau \) is uniquely determined by \( \Gamma \) and \( M \). This justifies visually attaching a type to each free variable (somewhat resembling Church's notation):
     \begin{equation*}
       f^{\tau \synimplies \sigma} x^\tau.
     \end{equation*}
 
-    Then all variables of \( \Gamma \) are visualized by this notation, and can recover \( \Gamma \) unambiguously from it.
+    A similar approach is used by \incite[def. 2A7]{Hindley1997BasicSTT}.
 
-    An alternative would be to use Farmer's convention (which is in turn based on Andrews' convention from \cite[211]{Andrews2002Logic}), where all variables are annotated, and variables with different annotations are considered to be different.
+    \thmitem{rem:hol_notational_shorthands/arrow_types} Another case where we deviate from Church's notation on purpose is arrow types --- we denote by \( \tau \synimplies \sigma \) what Church denotes by \( \sigma\tau \).
+
+    As discussed in \cref{rem:arrow_type_name}, the arrow notation is preferred by modern authors.
 
     \thmitem{rem:hol_notational_shorthands/placeholder_annotations} Similarly, we have defined typed \( \muplambda \)-term \hyperref[con:schemas_and_instances]{schemas} in \cref{def:lambda_term_schema} so that neither variable schemas nor placeholders have type annotations attached.
 
@@ -113,13 +125,7 @@ We give here the following definition, and then proceed to explain it:
 
     For example, the schema \( F^{\tau \synimplies \sigma} x^\tau \) designates the types of the placeholder \( F \) and free variable \( x \). For bound variables, we avoid repeating the type annotation as a metalingual convention. So we write \( \qabs {x^\tau} x^\tau \) as \( \qabs {x^\tau} x \).
 
-    In accordance with \cref{rem:hol_rule_formalization}, we will only use schemas for higher-order logic only inside the metalanguage, but we must nevertheless explain their nuances.
-
     Another convention we will use is to denote formula placeholders --- those of type \( \syn\omicron \) --- via letters like \( \varphi \), \( \psi \) and \( \theta \) (without superscripts), in accordance with \cref{rem:mathematical_logic_conventions/greek_alphabet}.
-
-    \thmitem{rem:hol_notational_shorthands/arrow_types} One case where we deviate from Church's notation on purpose is arrow types --- we denote by \( \tau \synimplies \sigma \) what Church denotes by \( \sigma\tau \).
-
-    As discussed in \cref{rem:arrow_type_name}, the arrow notation is preferred by modern authors.
 
     \thmitem{rem:hol_notational_shorthands/abbreviations} In order to express logical constructs, Church suggests starting with several constant \( \muplambda \)-terms and \hyperref[con:syntactic_abbreviation]{abbreviating} other \( \muplambda \)-terms to obtain a more familiar logical syntax.
 
@@ -127,146 +133,157 @@ We give here the following definition, and then proceed to explain it:
 
     We describe in \cref{rem:hol_formula_abbreviations} how different authors offer different abbreviations leading to the same logical layer. These abbreviations depend on classical propositional equivalences like those in \cref{thm:classical_equivalences}.
 
-    We prefer a more straightforward approach, where each connective and quantifier has its own dedicated constant --- see \cref{def:hol_formula_rules}.
+    We prefer a more straightforward approach, where each connective and quantifier has its own dedicated constant --- see \cref{def:hol_typing_rules}.
   \end{thmenum}
 \end{remark}
 
-\begin{remark}\label{rem:hol_rule_formalization}
-  The multi-layer approach to syntax, which we discuss in \cref{rem:hol_notational_shorthands/abbreviations}, makes it difficult to introduce a formalized language for expressing the \hyperref[def:inference_rule]{inference rules} of higher-order logic.
+\begin{definition}\label{def:hol_expression}\mimprovised
+  Over a fixed \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic, suppose that the \( \muplambda \)-term \( M \) is \hyperref[def:typability]{typable} in the \hyperref[def:type_context]{type context} \( \Gamma \) with respect to the arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, the family of constant typing rules \ref{inf:def:hol_signature/nl_type}, and the formula formation that we will discuss in \cref{def:hol_typing_rules}.
 
-  Since we will not focus on higher-order logic, we resort to stating all rules here only in the metalanguage (even the simple typing rules like those of \cref{def:hol_formula_rules}). Later, in \fullref{sec:first_order_logic}, we will extend the propositional schemas to encompass the new constructs required to state special cases of the rules presented here.
+  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, we call the triple \( (\Gamma, M, \tau) \) a \term{well-formed expression} of higher-order logic if all variables in \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that \( \tau \) is uniquely determined by \( M \) and \( \Gamma \).
 
-  Furthermore, rules like \cref{inf:def:hol_equality_rules/intro} are difficult to formalize.
-\end{remark}
+  As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we annotate metalingual placeholders for expressions, so \( M^\tau \) denotes a logical expression of type \( \tau \).
 
-\begin{definition}\label{def:hol_term}\mimprovised
-  Over a fixed \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic, suppose that the \( \muplambda \)-term \( M \) is \hyperref[def:typability]{typable} in the \hyperref[def:type_context]{type context} \( \Gamma \) with respect to the arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, the constant typing rule \ref{inf:def:hol_signature/nl_type} and the formula formation rules from \cref{def:hol_formula_rules}.
+  We denote the set of all expressions over \( \Sigma \) by \( \op*{Expr}_\Sigma \).
 
-  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, call the pair \( (\Gamma, M) \) a \term{logical term} if all variables in \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that each logical term has a unique type \( \tau \).
+  \begin{thmenum}[resume=def:hol_expression]
+    \thmitem{def:hol_expression/formula} If \( \tau \) is the type of propositions, we also call the logical expression a \term{formula}.
 
-  As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we annotate metalingual placeholders for logical terms, so \( M^\tau \) denotes a logical term of type \( \tau \).
-
-  We denote the set of all logical terms over \( \Sigma \) by \( \op*{Term}_\Sigma \).
-
-  \begin{thmenum}[resume=def:hol_term]
-    \thmitem{def:hol_term/formula} If \( \tau \) is the type of propositions, we also call the logical term a \term{formula}.
-
-    As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we use the familiar symbols like \( \varphi \), \( \psi \) and \( \theta \) (without superscripts) for denoting formulas. \Cref{def:hol_formula_rules} lists some formation rules for formulas.
+    As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we use the familiar symbols like \( \varphi \), \( \psi \) and \( \theta \) (without superscripts) for denoting formulas. \Cref{def:hol_typing_rules} lists formation rules for formulas.
 
     We denote the set of all formulas over \( \Sigma \) by \( \op*{Form}_\Sigma \).
 
-    \thmitem{def:hol_term/predicate} If \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \syn\omicron \), we instead call the logical term a \term{predicate}.
+    \thmitem{def:hol_expression/predicate} If \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \syn\omicron \), we instead call the logical expression a \term{predicate}.
 
     Predicates may be full-fledged syntactic statements, but may also be variables annotated with an appropriate type.
   \end{thmenum}
-
-  Finally, some additional terminology:
-  \begin{thmenum}[resume=def:hol_term]
-    \thmitem{def:hol_term/closed} If \( M \) has no free variables, we say that the corresponding logical term is \term[en=closed expression (\cite[270]{Farmer2008STTVirtues})]{closed}.
-
-    \thmitem{def:hol_term/sentence} If a formula is closed, we call it a \term{sentence}.
-  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The uniqueness of the assigned type is shown in \cref{thm:logical_term_type_uniqueness}.
+  \item Our usage of the phrase \enquote{well-formed expression} here is aligned with the informal general usage described in \cref{con:expression}.
 
-  \item This precise definition for logical terms and formulas is discussed in \cref{rem:hol_notational_shorthands}.
+  \begin{itemize}
+    \item \incite{Church1940STT} uses \enquote{well-formed formula}, as does \incite[211]{Andrews2002Logic}. We want to generalize the terminology of first-order logic, so we only use \enquote{formula} for expressions inhabiting type of propositions.
 
-  \item The phrase \enquote{logical term} is inspired by \hyperref[def:fol_term]{first-order terms}, which is in turn inspired by Russell's terminology discussed in \cref{rem:hol_formula_order_origin}; we add the adjective \enquote{logical} to distinguish them conceptually from \( \muplambda \)-terms. Unlike in first-order logic, terms here are more general than formulas since the (quantifiable) type of any term can be quantified over.
+    \item \incite[270]{Farmer2008STTVirtues} uses \enquote{expression}, which we find too general given that we allow expressions to be ill-formed.
+
+    \item Since the crucial component of an expression is a \( \muplambda \)-term, to avoid confusion we refrain from using \enquote{term} for anything else (even though it seems fitting to generalize first-order terms).
+  \end{itemize}
 \end{comments}
 
-\begin{remark}\label{rem:quantifiable_type_uncurrying}
-  For \hyperref[def:hol_term]{higher-order logical terms}, we will find it convenient to utilize, within the \hyperref[con:metalogic]{metalanguage}, the different function application notations from \cref{def:function_application_notation}.
+\begin{definition}\label{def:hol_closed_expression}
+  As in the case of ordinary \hyperref[def:lambda_term]{\( \muplambda \)-terms}, if a \hyperref[def:hol_expression]{higher-order logic expression} has no \hyperref[def:lambda_variable_freeness]{free variables}, we say that it is \term[en=closed expression (\cite[270]{Farmer2008STTVirtues})]{closed}.
 
-  For the term \( M^\tau \), where \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \theta \) and \( \theta = \syn\omicron \) or \( \theta \in \op*{Sort} \), we will find it convenient to write \( M(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term application syntax \( M x_1 \ldots x_n \), which itself is a simplification of the notation with explicit parentheses, \( (\ldots ((M x_1) x_2) \ldots x_n) \). This acts as \hyperref[def:function_currying]{uncurrying} on the level of syntax.
+  As in \hyperref[def:first_order_logic]{first-order logic}, we refer to closed formulas as \term{sentences}\fnote{We will not call them \enquote{combinators} even though they technically are uniquely determined by combinators.}.
+\end{definition}
+
+\begin{remark}\label{rem:quantifiable_type_uncurrying}
+  For \hyperref[def:hol_expression]{higher-order expressions}, we will find it convenient to utilize, within the \hyperref[con:metalogic]{metalanguage}, the different function application notations from \cref{def:function_application_notation}.
+
+  For the term \( M^\tau \), where \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \theta \) and \( \theta \) is atomic, we will find it convenient to write \( M(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term application syntax \( M x_1 \ldots x_n \), which itself is a simplification of the notation with explicit parentheses, \( (\ldots ((M x_1) x_2) \ldots x_n) \). This acts as \hyperref[def:function_currying]{uncurrying} on the level of syntax.
 
   Of course, most constants we will encounter will be non-letter symbols denoting binary operations, and for them we will prefer infix notation.
 \end{remark}
 
-\begin{definition}\label{def:hol_formula_rules}
-  In higher-order logic, we presuppose several \hyperref[def:lambda_term]{constant \( \muplambda \)-terms}, which we call \term{logical constants}. These are \( \synH_{\syntop}, \synH_{\synbot}, \synH_{\syneq}, \synH_{\synneg} \), as well as \( \synH_{\syncirc} \) for every \hyperref[def:propositional_alphabet/connectives]{propositional connective} and \( \synH_Q \) for every \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier}.
+\begin{definition}\label{def:hol_typing_rules}
+  In higher-order logic, we presuppose several \hyperref[def:lambda_term]{constant \( \muplambda \)-terms}, which we call \term{logical constants}. These are \( \synH_\top \), \( \synH_\bot \), \( \synH_\neg \), \( \synH_= \), \( \synH_\turnediota \), as well as \( \synH_{\syncirc} \) for every \hyperref[def:propositional_alphabet/connectives]{propositional connective} \( {\syncirc} \) and \( \synH_Q \) for every \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier} \( Q \).
 
-  We associate with them the following \hyperref[def:simple_typing_rule]{simple typing rules} (the braces indicate \hyperref[con:syntactic_abbreviation]{metalingual abbreviations} that more closely resemble the familiar syntax of predicate logic):
-  \begin{paracol}{3}
+  We associate with each of them a \hyperref[def:simple_typing_rule]{simple typing rule}. The propositional connectives are straightforward:
+  \begin{paracol}{4}
     \begin{nthcolumn}{0}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{\top} }]{inf:def:hol_formula_rules/top}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_\top }]{inf:def:hol_typing_rules/top}
         \begin{prooftree}
-          \infer0[\ref{inf:def:hol_formula_rules/top}]{ \underbrace{\synH_{\syntop}}_{\syntop}: \syn\omicron }
+          \infer0[\ref{inf:def:hol_typing_rules/top}]{ \synH_\top: \syn\omicron }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{1}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{\bot} }]{inf:def:hol_formula_rules/bot}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_\bot }]{inf:def:hol_typing_rules/bot}
         \begin{prooftree}
-          \infer0[\ref{inf:def:hol_formula_rules/bot}]{ \underbrace{\synH_{\syntop}}_{\synbot}: \syn\omicron }
+          \infer0[\ref{inf:def:hol_typing_rules/bot}]{ \synH_\bot: \syn\omicron }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{2}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{=} }]{inf:def:hol_formula_rules/eq}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_\neg }]{inf:def:hol_typing_rules/neg}
         \begin{prooftree}
-          \hypo{ M: \tau }
-          \hypo{ N: \tau }
-          \infer2[\ref{inf:def:hol_formula_rules/eq}]{ \underbrace{\synH_{\syneq} M N}_{M^\tau \syneq N^\tau}: \syn\omicron }
+          \infer0[\ref{inf:def:hol_typing_rules/neg}]{ \synH_\neg: \syn\omicron \synimplies \syn\omicron }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{3}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{\syncirc} }]{inf:def:hol_typing_rules/conn}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:hol_typing_rules/conn}]{ \synH_{\syncirc}: \syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
   \end{paracol}
 
+  We will use \hyperref[con:syntactic_abbreviation]{metalingual abbreviations} to emulate the familiar syntax of predicate logic. For example, we will abbreviate \( \synH_\top \) as \( \syntop \) and \( \synH_\neg \varphi \) as \( \synneg \varphi \), but we will retain \( \synH_\neg \) as a standalone expression.
+
+  The other rules are more tricky since we rely on the precise structure of the terms involved:
   \begin{paracol}{3}
     \begin{nthcolumn}{0}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{\neg} }]{inf:def:hol_formula_rules/neg}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_= }]{inf:def:hol_typing_rules/eq}
         \begin{prooftree}
-          \hypo{ \varphi: \syn\omicron }
-          \infer1[\ref{inf:def:hol_formula_rules/neg}]{ \underbrace{\synH_{\synneg} \varphi}_{\synneg \varphi}: \syn\omicron }
+          \hypo{ \synM: \syn\tau }
+          \hypo{ \synN: \syn\tau }
+          \infer2[\ref{inf:def:hol_typing_rules/eq}]{ \underbrace{\synH_= \synM \synN}_{\synM^\syn\tau \syneq \synN^\syn\tau}: \syn\omicron }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{1}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_{\syncirc} }]{inf:def:hol_formula_rules/conn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_\turnediota }]{inf:def:hol_typing_rules/descr}
         \begin{prooftree}
-          \hypo{ \varphi: \syn\omicron }
-          \hypo{ \psi: \syn\omicron }
-          \infer2[\ref{inf:def:hol_formula_rules/conn}]{ \underbrace{\synH_{\syncirc} \varphi \psi}_{\varphi \syncirc \psi}: \syn\omicron }
+          \hypo{ \synx: \syn\tau }
+          \hypo{ \syn\varphi: \syn\omicron }
+          \infer2[\ref{inf:def:hol_typing_rules/descr}]{ \underbrace{\synH_{\turnediota} (\qabs {\synx^{\syn\tau}} \syn\varphi)}_{\qdesc {\synx^{\syn\tau}} \syn\varphi}: \syn\tau }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{2}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_Q }]{inf:def:hol_formula_rules/quant}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{H}_Q }]{inf:def:hol_typing_rules/quant}
         \begin{prooftree}
-          \hypo{ x: \tau }
-          \hypo{ \varphi: \syn\omicron }
-          \infer2[\ref{inf:def:hol_formula_rules/quant}]{ \underbrace{\synH_Q (\qabs {x^\tau} \varphi)}_{\quantifier Q {x^\tau} \varphi}: \syn\omicron }
+          \hypo{ \synx: \syn\tau }
+          \hypo{ \syn\varphi: \syn\omicron }
+          \infer2[\ref{inf:def:hol_typing_rules/quant}]{ \underbrace{\synH_Q (\qabs {\synx^{\syn\tau}} \syn\varphi)}_{\quantifier Q {\synx^{\syn\tau}} \syn\varphi}: \syn\omicron }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
   \end{paracol}
-
-  The rules \ref{inf:def:hol_formula_rules/conn} and \ref{inf:def:hol_formula_rules/quant} are schemas --- we have a distinct rule for each propositional connective \( \syncirc \) and a distinct rule for every quantifier \( Q \).
 \end{definition}
 \begin{comments}
-  \item We use \( \varphi \) and \( \psi \) as \( \muplambda \)-term placeholders and \( \tau \) as a (quantifiable) type placeholder.
+  \item As discussed in \cref{rem:hol_notational_shorthands/abbreviations}, unlike Church and his students Henkin and Andrews, we do not pursue minimalism, so we add a dedicated constant for every propositional connective.
 
-  Even though the rules stated here as simple and can be formalized via the familiar schemas used through \fullref{sec:curry_howard_correspondence}, we only state them in the metalanguage, as per \cref{rem:hol_rule_formalization}.
+  \item Analogously to \ref{inf:def:hol_typing_rules/conn}, instead of \ref{inf:def:hol_typing_rules/eq}, we could have used the rule
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ensuremath{ \logic{H}_= }]{ \synH_=: \syn\tau \synimplies \syn\tau \synimplies \syn\omicron }
+    \end{prooftree}
+  \end{equation*}
 
-  \item As discussed in \cref{rem:hol_notational_shorthands/abbreviations}, unlike Church, Henkin and Andrews, we do not pursue minimalism, so we add a dedicated constant for every propositional connective.
+  This would make \( \synH_= \) typable with multiple types, however, which would break \cref{thm:logical_term_type_uniqueness}.
+
+  \item We use the symbol \( \synimplies \) both as a connective for arrow types and as a connective for formulas.
 \end{comments}
 
 \begin{proposition}\label{thm:logical_term_type_uniqueness}
-  The type of a \hyperref[def:hol_term]{higher-order logical term} is unique: for every logical term \( (\Gamma, M) \), if \( \Gamma \vdash M: \tau \) and \( \Gamma \vdash M: \tau' \), then \( \tau = \tau' \).
+  The type of a \hyperref[def:hol_expression]{higher-order logic expression} is unique: for every expression \( (\Gamma, M, \tau) \), if \( \Gamma \vdash M: \sigma \), then \( \sigma = \tau \).
 \end{proposition}
 \begin{proof}
-  We must extend the recursion in the proof of \cref{thm:typed_term_habitation_uniqueness} to handle the new typing rules from \cref{def:hol_formula_rules}, as well as \ref{inf:def:hol_signature/nl_type}. The actual recursive cases are straightforward.
+  We must extend the recursion in the proof of \cref{thm:typed_term_habitation_uniqueness} to handle the new typing rules from \cref{def:hol_typing_rules}, as well as \ref{inf:def:hol_signature/nl_type}. The actual recursive cases are straightforward.
 \end{proof}
 
 \begin{remark}\label{rem:hol_formula_abbreviations}
@@ -274,9 +291,9 @@ We give here the following definition, and then proceed to explain it:
 
   Church originally used several constants --- \( N_{oo} \) for \hyperref[def:propositional_alphabet/negation]{negation}, \( A_{ooo} \) for \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction}, \( \Pi_{o(o\alpha)} \) for \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} and \( \iota_{\alpha(o\alpha)} \) for \hyperref[con:description_operator/iota]{definite description}. The latter two are in fact families of constants depending on \( \alpha \).
 
-  Church's student \incite{Henkin1950CompletenessInTheoryOfTypes} reused Church's constants, but later in \incite*{Henkin1963TheoryOfPropositionalTypes} he presented a formulation that used only \( Q_{o \alpha \alpha } \) for \hyperref[def:predicate_logic_alphabet/equality]{equality}, acknowledging that one such constant is needed for each type \( \alpha \). This latter formulation is restricted to propositional formulas, but later in \cite{Henkin1975Identity} he extended it to all types supported by Church's original system.
+  Church's student \incite{Henkin1950CompletenessInTheoryOfTypes} reused Church's constants, but later in \incite*{Henkin1963TheoryOfPropositionalTypes} he presented a formulation that used only \( Q_{o \alpha \alpha } \) for \hyperref[def:predicate_logic_alphabet/equality]{equality}, acknowledging that one such constant is needed for each type \( \alpha \). This latter formulation was restricted to propositional formulas, but later in \cite{Henkin1975Identity} Henkin extended it to all types supported by Church's original system.
 
-  We show concrete abbreviations in \cref{tab:rem:hol_formula_abbreviations}, based on the constant \( \synH_{\syneq} \), typable via the rule \ref{inf:def:hol_formula_rules/eq}. These abbreviations depend on classical propositional equivalences like those in \cref{thm:classical_equivalences}.
+  We show concrete abbreviations in \cref{tab:rem:hol_formula_abbreviations}, based on the constant \( \synH_{\syneq} \), typable via the rule \ref{inf:def:hol_typing_rules/eq}. These abbreviations depend on classical propositional equivalences like those in \cref{thm:classical_equivalences}.
 
   Most of these abbreviations are based on \bycite[212]{Andrews2002Logic}, with the exception of \( \syntop \), which is instead taken from \bycite[273]{Farmer2008STTVirtues}. In the abbreviation of \( \varphi \synwedge \psi \), as in \cref{def:atomic_lambda_term_substitution/sharp}, the function \( \sharp(V) \) gives the smallest identifier not in \( V \).
 
@@ -305,13 +322,7 @@ We give here the following definition, and then proceed to explain it:
   \end{table}
 
   \incite*[\S 51]{Andrews2002Logic} presents a refinement of the systems of Church, Henkin and himself. Andrews calls this system \( \logic{Q}_0 \). It is based on two families of primitive constant \( \muplambda \)-terms --- \( Q_{o \alpha \alpha} \) for formal equality and \( \iota_{\iota (o \iota)} \) for definite description. \incite{Farmer2008STTVirtues} instead uses dedicated syntax for equality and definite descriptions.
-
-  We discard the description operator because we will have no use for it. As seen in \cref{con:description_operator/iota}, a downside of using descriptions is that they complicate semantics.
 \end{remark}
-
-\begin{definition}\label{def:higher_order_logic_syntax}
-  We define \enquote{the \hyperref[con:syntax_semantics_duality]{syntax} of higher-order logic} over an \hyperref[def:hol_signature]{eponymous signature} as the corresponding \hyperref[def:simple_type_system]{simple type theory} restricted \hyperref[def:quantifiable_type]{quantifiable types}, with the usual arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, the constant typing rule \ref{inf:def:hol_signature/nl_type} and the formula formation rules from \cref{def:hol_formula_rules}.
-\end{definition}
 
 \begin{remark}\label{rem:mltt_hol}
   We mentioned in \cref{rem:mltt_curry_howard/arrow_types} that \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be used as an alternative syntax for higher-order logic.

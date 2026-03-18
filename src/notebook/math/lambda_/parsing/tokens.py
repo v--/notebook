@@ -23,6 +23,7 @@ LambdaTokenKind = Literal[
     'LEFT_BRACKET',
     'RIGHT_BRACKET',
     'PLACEHOLDER',
+    'SEQUENT',
 
     'COMMA',
     'RULE_SEQUENT',

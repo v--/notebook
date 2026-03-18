@@ -12,7 +12,7 @@ class AuxImproperSymbol(StrEnum):
     RIGHT_PARENTHESIS = ')'
     LEFT_BRACKET = '['
     RIGHT_BRACKET = ']'
-    PLACEHOLDER = '•'
+    SEQUENT = '⊢'
 
 
 class BinaryTypeConnective(StrEnum):

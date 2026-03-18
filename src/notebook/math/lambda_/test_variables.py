@@ -2,7 +2,7 @@ from collections.abc import Collection
 
 from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_untyped_term
-from .variables import get_open_variables
+from .variables import get_free_variables
 
 
 @pytest_parametrize_kwargs(
@@ -13,5 +13,5 @@ from .variables import get_open_variables
     dict(term='(λx.(yz))',   expected={'y', 'z'}),
 )
 def test_get_open_variables(term: str, expected: Collection[str]) -> None:
-    actual = set(map(str, get_open_variables(parse_untyped_term(term))))
+    actual = set(map(str, get_free_variables(parse_untyped_term(term))))
     assert actual == expected
