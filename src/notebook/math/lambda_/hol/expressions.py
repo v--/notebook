@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Self
 
 from ..alphabet import AuxImproperSymbol
@@ -15,7 +15,7 @@ from .exceptions import HolError
 class HolExpression:
     term: TypedTerm
     type: SimpleType
-    context: Sequence[VariableTypeAssertion] = []
+    context: Sequence[VariableTypeAssertion] = field(default_factory=list)
 
     @classmethod
     def infer(cls, term: TypedTerm, type_: SimpleType, **kwargs: SimpleType) -> Self:

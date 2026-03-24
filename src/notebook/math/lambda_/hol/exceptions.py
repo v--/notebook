@@ -1,14 +1,17 @@
 from ..exceptions import LambdaCalculusError
-from ..signature.exceptions import LambdaSignatureError
 
 
 class HolError(LambdaCalculusError):
     pass
 
 
-class HolSignatureError(LambdaSignatureError):
+class HolSignatureError(HolError):
     pass
 
 
-class NonQuantifiableTypeError(LambdaSignatureError):
+class LambdaInterpretationError(HolError):
+    pass
+
+
+class MissingInterpretationError(LambdaInterpretationError):
     pass

@@ -1,16 +1,16 @@
 from collections.abc import Iterator, MutableMapping
 from dataclasses import dataclass
 
-from ..signature import ConstantTermSymbol, LambdaSignature, SignatureSymbol
+from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
 from ..types import SimpleType
 from .exceptions import HolSignatureError
 from .symbols import (
-    INDIVIDUAL_TYPE_SYMBOL,
-    PROP_TYPE_SYMBOL,
-    BaseTypeSymbol,
     LogicalConstantSymbol,
+    LogicalTypeSymbol,
     NonLogicalConstantSymbol,
     SortSymbol,
+    common_constants,
+    common_types,
 )
 
 
@@ -20,20 +20,22 @@ class HolSignature(LambdaSignature):
 
     def __init__(self, *symbols: SortSymbol) -> None:
         super().__init__()
-        super().add_symbol(PROP_TYPE_SYMBOL)
-        super().add_symbol(LogicalConstantSymbol('H⊤'))
-        super().add_symbol(LogicalConstantSymbol('H⊥'))
-        super().add_symbol(LogicalConstantSymbol('H∧'))
-        super().add_symbol(LogicalConstantSymbol('H∨'))
-        super().add_symbol(LogicalConstantSymbol('H→'))
-        super().add_symbol(LogicalConstantSymbol('H↔'))
-        super().add_symbol(LogicalConstantSymbol('H='))
-        super().add_symbol(LogicalConstantSymbol('H∀'))
-        super().add_symbol(LogicalConstantSymbol('H∃'))
-        super().add_symbol(LogicalConstantSymbol('H℩'))
+        super().add_symbol(common_types.prop)
+        super().add_symbol(common_constants.verum)
+        super().add_symbol(common_constants.falsum)
+        super().add_symbol(common_constants.negation)
+        super().add_symbol(common_constants.conjunction)
+        super().add_symbol(common_constants.disjunction)
+        super().add_symbol(common_constants.conditional)
+        super().add_symbol(common_constants.biconditional)
+        super().add_symbol(common_constants.equality)
+        super().add_symbol(common_constants.forall)
+        super().add_symbol(common_constants.exists)
 
         for sym in symbols:
             super().add_symbol(sym)
+
+        self._assignment = {}
 
     def add_symbol(self, symbol: SignatureSymbol, type_sym: SimpleType | None = None) -> None:
         match symbol:
@@ -56,6 +58,38 @@ class HolSignature(LambdaSignature):
 
                 super().add_symbol(symbol)
 
+    def get_logical_type_symbol(self, name: str) -> LogicalTypeSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, LogicalTypeSymbol):
+            raise HolSignatureError(f'Expected {name} to be a logical type symbol, but got a {sym.get_kind_string()}')
+
+        return sym
+
+    def get_sort_symbol(self, name: str) -> SortSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, SortSymbol):
+            raise HolSignatureError(f'Expected {name} to be a sort, but got a {sym.get_kind_string()}')
+
+        return sym
+
+    def get_logical_constant_symbol(self, name: str) -> LogicalConstantSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, LogicalConstantSymbol):
+            raise HolSignatureError(f'Expected {name} to be a logical constant symbol, but got a {sym.get_kind_string()}')
+
+        return sym
+
+    def get_nonlogical_constant_symbol(self, name: str) -> NonLogicalConstantSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, NonLogicalConstantSymbol):
+            raise HolSignatureError(f'Expected {name} to be a nonlogical constant symbol, but got a {sym.get_kind_string()}')
+
+        return sym
+
     def get_type(self, symbol: NonLogicalConstantSymbol) -> SimpleType:
         if symbol not in self:
             raise HolSignatureError(f'The symbol {symbol} is not part of the signature')
@@ -73,4 +107,4 @@ class HolSignature(LambdaSignature):
                 yield sym
 
 
-EMPTY_HOL_SIGNATURE = HolSignature(INDIVIDUAL_TYPE_SYMBOL)
+PLAIN_HOL_SIGNATURE = HolSignature(common_types.individual)

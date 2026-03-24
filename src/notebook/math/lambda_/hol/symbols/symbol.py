@@ -1,9 +1,8 @@
 from typing import override
 
-from ....support.inference import ImproperInferenceRuleSymbol
-from ..alphabet import AuxImproperSymbol, BinaryTypeConnective
-from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignatureError
-from .alphabet import HolTypeToken
+from .....support.inference import ImproperInferenceRuleSymbol
+from ...alphabet import AuxImproperSymbol, BinaryTypeConnective
+from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignatureError
 
 
 # We allow Greek identifiers as sorts since we forbid type variables
@@ -25,10 +24,6 @@ class SortSymbol(HolTypeSymbol):
     @override
     def get_kind_string(self) -> str:
         return 'sort'
-
-
-PROP_TYPE_SYMBOL = LogicalTypeSymbol(HolTypeToken.PROPOSITIONAL.value)
-INDIVIDUAL_TYPE_SYMBOL = SortSymbol(HolTypeToken.INDIVIDUAL.value)
 
 
 class LogicalConstantSymbol(ConstantTermSymbol):

@@ -291,7 +291,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
             raise self.annotate_unexpected_end_of_input()
 
         match head.kind:
-            case 'SIGNATURE_SYMBOL':
+            case 'SIGNATURE_SYMBOL' | 'BINARY_TYPE_CONNECTIVE':
                 symbol = self.signature[head.value]
 
                 if not isinstance(symbol, ConstantTermSymbol):
@@ -321,7 +321,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
                         self.advance()
                         raise context.annotate_context_error(f'{'UntypedApplication schemas' if parse_schema else 'Applications'} must have two terms, while {'Abstractions schemas' if parse_schema else 'abstractions'} must begin with {BinderSymbol.LAMBDA}')
 
-                    case 'LAMBDA':
+                    case 'SMALL_GREEK_IDENTIFIER' if next_head.value == BinderSymbol.LAMBDA:
                         return self._parse_abstraction(context, parse_schema=parse_schema, typed=typed)
 
                     case _:

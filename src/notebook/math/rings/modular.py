@@ -1,3 +1,4 @@
+import functools
 from collections.abc import Callable
 from typing import Any, Self
 
@@ -25,6 +26,7 @@ class IntModuloMeta(type):
         return result
 
 
+@functools.total_ordering
 class BaseIntModulo(metaclass=IntModuloMeta):
     new: Callable[[int], Self]
     modulus: int
@@ -65,6 +67,12 @@ class BaseIntModulo(metaclass=IntModuloMeta):
 
     def __int__(self) -> int:
         return self.value
+
+    def __lt__(self, other: Self | int) -> int:
+        if isinstance(other, BaseIntModulo):
+            return self.value < other.value
+
+        return self.value < (other % self.modulus)
 
     def __repr__(self) -> str:
         return type(self).__name__ + '(' + str(self.value) + ')'

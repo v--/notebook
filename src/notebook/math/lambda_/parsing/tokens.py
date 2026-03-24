@@ -3,7 +3,7 @@ from typing import Literal, get_args
 
 from ....parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
 from ....support.inference import ImproperInferenceRuleSymbol
-from ..alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
+from ..alphabet import AuxImproperSymbol, BinaryTypeConnective
 
 
 LambdaTokenKind = Literal[
@@ -15,7 +15,6 @@ LambdaTokenKind = Literal[
     'BINARY_TYPE_CONNECTIVE',
 
     # Singletons
-    'LAMBDA',
     'DOT',
     'COLON',
     'LEFT_PARENTHESIS',
@@ -35,7 +34,6 @@ TOKEN_KIND_LIST: Sequence[LambdaTokenKind] = get_args(LambdaTokenKind)
 SINGLETON_TOKEN_MAP: Mapping[str, LambdaTokenKind] = {
     ImproperInferenceRuleSymbol.SEQUENT.value: 'RULE_SEQUENT',
     ImproperInferenceRuleSymbol.COMMA.value: 'COMMA',
-    **map_of_str_enum_to_tokens(TOKEN_KIND_LIST, BinderSymbol),
     **map_of_str_enum_to_tokens(TOKEN_KIND_LIST, AuxImproperSymbol),
     **map_of_str_enum_to_single_token('BINARY_TYPE_CONNECTIVE', BinaryTypeConnective),
 }

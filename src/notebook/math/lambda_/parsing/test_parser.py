@@ -6,8 +6,9 @@ from ....parsing import GreekIdentifier, LatinIdentifier, ParserError, Tokenizer
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..alphabet import BinaryTypeConnective
 from ..assertions import TypeAssertion
-from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
-from ..terms import Constant, TypedAbstraction, UntypedApplication, Variable
+from ..hol import PLAIN_HOL_SIGNATURE
+from ..signature import ConstantTermSymbol, LambdaSignature
+from ..terms import Constant, TypedAbstraction, TypedApplication, Variable
 from ..types import SimpleConnectiveType, SimpleType, TypeVariable
 from .parser import (
     parse_type,
@@ -18,16 +19,6 @@ from .parser import (
     parse_typing_rule,
     parse_untyped_term,
     parse_variable,
-)
-
-
-# This is our base signature from def:hol_signature,
-# but with boldface symbols so that the (unicode) symbols do not collide with variables and placeholders
-# It is used only for testing the parser.
-HOL_TEST_SIGNATURE = LambdaSignature(
-    BaseTypeSymbol('𝛊'),
-    BaseTypeSymbol('𝐨'),
-    ConstantTermSymbol('𝐐')
 )
 
 
@@ -87,19 +78,19 @@ def test_parsing_invalid_variable_suffix() -> None:
 
 @pytest_parametrize_kwargs(
     dict(
-        term='𝐐',
-        expected=Constant(ConstantTermSymbol('𝐐'))
+        term='H∧',
+        expected=Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H∧'))
     ),
     dict(
-        term='(𝐐(𝐐x))',
-        expected=UntypedApplication(
-            Constant(ConstantTermSymbol('𝐐')),
-            UntypedApplication(Constant(ConstantTermSymbol('𝐐')), Variable(LatinIdentifier('x')))
+        term='((H=x)x)',
+        expected=TypedApplication(
+            TypedApplication(Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H=')), Variable(LatinIdentifier('x'))),
+            Variable(LatinIdentifier('x')),
         )
     )
 )
 def test_parsing_constants(term: str, expected: Constant) -> None:
-    assert parse_untyped_term(term, HOL_TEST_SIGNATURE) == expected
+    assert parse_typed_term(term, PLAIN_HOL_SIGNATURE) == expected
 
 
 @pytest_parametrize_lists(
@@ -210,26 +201,26 @@ def test_parsing_valid_type_variables(term: str, expected: TypeVariable) -> None
 @pytest_parametrize_lists(
     term=[
         'x',
-        '𝐐',
-        '(𝐐x)',
-        '(λx:𝛊.(𝐐x))',
+        'H¬',
+        '(H¬p)',
+        '(λx:ι.(H¬p))',
     ]
 )
 def test_rebuilding_term_with_constants(term: str) -> None:
-    assert str(parse_typed_term(term, HOL_TEST_SIGNATURE)) == term
+    assert str(parse_typed_term(term, PLAIN_HOL_SIGNATURE)) == term
 
 
 @pytest_parametrize_lists(
     schema=[
         'x',
-        '𝐐', # Constant term
+        'H¬', # Constant term
         'M', # Placeholder
-        '(QM)',
-        '(λx:𝛊.(QM))',
+        '(H¬M)',
+        '(λx:ι.(H¬M))',
     ]
 )
 def test_rebuilding_schema(schema: str) -> None:
-    assert str(parse_typed_term_schema(schema, HOL_TEST_SIGNATURE)) == schema
+    assert str(parse_typed_term_schema(schema, PLAIN_HOL_SIGNATURE)) == schema
 
 
 def test_parsing_term_schema_with_regular_parser() -> None:
@@ -242,6 +233,16 @@ def test_parsing_term_schema_with_regular_parser() -> None:
           │ ^
         '''
     )
+
+
+def test_parsing_type_connective_as_constant_term() -> None:
+    sym = ConstantTermSymbol('×')
+    signature = LambdaSignature(sym)
+    assert parse_typed_term('×', signature) == Constant(sym)
+
+
+def test_parsing_lambda_as_type_variable() -> None:
+    assert parse_type('λ') == TypeVariable(GreekIdentifier('λ'))
 
 
 @pytest_parametrize_kwargs(
@@ -275,19 +276,17 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
 
 
 @pytest_parametrize_lists(
-    # 𝛊 and 𝐨 are base types, the rest are variables
-    # Simply typed higher order logic disallows variables; we only aim to test the parser here
     type_=[
-        '𝛊',
-        '(𝛊 → 𝐨)',
+        'ι',
+        '(ι → ο)',
         'τ',
         '(σ → σ)',
-        '(𝛊 → (τ → σ))',
-        '((𝛊 → τ) → σ)'
+        '(ι → (τ → σ))',
+        '((ι → τ) → σ)'
     ]
 )
 def test_rebuilding_type(type_: str) -> None:
-    assert str(parse_type(type_, HOL_TEST_SIGNATURE)) == type_
+    assert str(parse_type(type_, PLAIN_HOL_SIGNATURE)) == type_
 
 
 def test_parsing_type_assertion_missing_arrow() -> None:
