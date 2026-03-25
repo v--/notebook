@@ -17,9 +17,8 @@ BIB_ROOT = pathlib.Path(__file__).parent.parent.parent.parent.parent / 'bibliogr
     group='bib-tokenizer',
 )
 def benchmark_tokenizer(benchmark: BenchmarkFixture) -> None:
-    with open(BIB_ROOT / 'books.bib') as file:
-        source = file.read()
-        tokenizer = BibTokenizer(source)
+    source = (BIB_ROOT / 'books.bib').read_text(encoding='utf-8')
+    tokenizer = BibTokenizer(source)
 
     benchmark.pedantic(
         lambda: list(tokenizer.iter_tokens()),

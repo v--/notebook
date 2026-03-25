@@ -1,3 +1,4 @@
+# ruff: noqa: ARG005, FURB118
 
 from typing import TYPE_CHECKING
 
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
     ),
 
     dict(
-        predicate=lambda x: False,  # noqa: ARG005
+        predicate=lambda x: False,
         polynomial=b.false,
     ),
 

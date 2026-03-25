@@ -1,3 +1,5 @@
+# ruff: noqa: RUF027
+
 from .url_template import UrlTemplate
 
 

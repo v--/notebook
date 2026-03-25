@@ -1,6 +1,8 @@
 # The schema here is extracted from a few example responses and guided by
 # https://arxiv.org/schemas/atom.xsd
 
+# ruff: noqa: E222
+
 from dataclasses import dataclass, field
 
 from xsdata.formats.dataclass.parsers import XmlParser
@@ -30,7 +32,7 @@ class ArxivLink:
 
 @dataclass
 class ArxivCategory:
-    term: str   =        field(metadata=dict(type='Attribute', required=True))
+    term: str =        field(metadata=dict(type='Attribute', required=True))
     scheme: str | None = field(metadata=dict(type='Attribute'), default=None)
     label: str | None =  field(metadata=dict(type='Attribute'), default=None)
 

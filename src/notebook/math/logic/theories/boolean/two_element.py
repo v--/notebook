@@ -1,10 +1,12 @@
+# ruff: noqa: FURB118
+
 from ...structure import FormalLogicStructure
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 
 
 class TwoElementBooleanAlgebra(FormalLogicStructure[bool]):
     def __init__(self) -> None:
-        self.universe = { True, False }
+        self.universe = {True, False}
         self.signature = BOOLEAN_ALGEBRA_SIGNATURE
         self.interpretation = {
             BOOLEAN_ALGEBRA_SIGNATURE['⫪']: lambda: True,

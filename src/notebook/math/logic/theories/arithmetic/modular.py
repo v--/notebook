@@ -1,3 +1,5 @@
+# ruff: noqa: FURB118
+
 from ....rings.modular import BaseIntModulo
 from ...structure import FormalLogicStructure
 from .signature import ARITHMETIC_SIGNATURE

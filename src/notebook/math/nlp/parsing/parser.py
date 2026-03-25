@@ -49,7 +49,6 @@ class TextParser(Parser[TextToken]):
             yield phrase
 
 
-
 def extract_phrases(source: str, stop_words: Collection[str]) -> Sequence[Phrase]:
     tokens = tokenize_text(source)
 

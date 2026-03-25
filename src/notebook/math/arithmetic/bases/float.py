@@ -20,7 +20,6 @@ def get_digit(x: float, radix: int, index: int) -> int:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
 
-
     if x < 0:
         return -get_digit(-x, radix, index)
 

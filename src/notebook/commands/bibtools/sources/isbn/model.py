@@ -26,16 +26,13 @@ class GoogleBookVolumeInfo(GoogleBookBaseModel):
     description: str | None = None
 
 
-
 class GoogleBookSearchInfo(GoogleBookBaseModel):
     text_snippet: str
-
 
 
 class GoogleBook(GoogleBookBaseModel):
     volume_info: GoogleBookVolumeInfo
     search_info: GoogleBookSearchInfo | None = None
-
 
 
 class GoogleBooksResponse(GoogleBookBaseModel):

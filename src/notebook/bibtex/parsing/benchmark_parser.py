@@ -18,10 +18,9 @@ BIB_ROOT = pathlib.Path(__file__).parent.parent.parent.parent.parent / 'bibliogr
     group='bib-parser',
 )
 def benchmark_parser(benchmark: BenchmarkFixture) -> None:
-    with open(BIB_ROOT / 'books.bib') as file:
-        source = file.read()
-        tokens = tokenize_bibtex(source)
-        parser = BibParser(source, tokens)
+    source = (BIB_ROOT / 'books.bib').read_text(encoding='utf-8')
+    tokens = tokenize_bibtex(source)
+    parser = BibParser(source, tokens)
 
     benchmark.pedantic(
         lambda: list(parser.iter_entries()),

@@ -98,4 +98,3 @@ class Permutation[T: IComparable]:
                 cycle_payload.append(current)
 
             yield Cycle(cycle_payload)
-

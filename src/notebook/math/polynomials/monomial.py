@@ -80,7 +80,7 @@ class Monomial(Mapping[LatinIdentifier, int], Hashable):
         return hash(tuple(dict(self).items()))
 
 
-x = Monomial({ ci.x: 1 })
-y = Monomial({ ci.y: 1 })
-z = Monomial({ ci.z: 1 })
+x = Monomial({ci.x: 1})
+y = Monomial({ci.y: 1})
+z = Monomial({ci.z: 1})
 const = Monomial({})

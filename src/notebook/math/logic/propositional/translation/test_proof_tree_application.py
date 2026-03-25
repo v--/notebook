@@ -56,4 +56,3 @@ def test_double_implication_intro(dummy_signature: FormalLogicSignature) -> None
           (p¹(x) → (q¹(x) → p¹(x)))
         ''',
     )
-

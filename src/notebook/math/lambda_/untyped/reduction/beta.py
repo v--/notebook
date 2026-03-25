@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class BetaReduction(Reduction):
     def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
         if isinstance(term, UntypedApplication) and isinstance(term.left, UntypedAbstraction):
-            return substitute(term.left.body, { term.left.var: term.right })
+            return substitute(term.left.body, {term.left.var: term.right})
 
         return None
 
@@ -32,7 +32,7 @@ def to_function(term: UntypedTerm) -> Callable:
         i = 0
 
         while isinstance(result, UntypedAbstraction):
-            result = substitute(result.body, { result.var: args[i] })
+            result = substitute(result.body, {result.var: args[i]})
             i += 1
 
         return result

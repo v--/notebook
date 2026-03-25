@@ -40,7 +40,7 @@ from .validation import is_formula_in_cnf
         formula='(p ∨ (q ∨ (r ∨ (s ∧ t))))',
         expected='((p ∨ (q ∨ (r ∨ s))) ∧ (p ∨ (q ∨ (r ∨ t))))',
     ),
-    dict(formula='¬(p ∧ (q ∨ r))', expected='((¬p ∨ ¬q) ∧ (¬p ∨ ¬r))'), # We distribute the dual of the inner formula
+    dict(formula='¬(p ∧ (q ∨ r))', expected='((¬p ∨ ¬q) ∧ (¬p ∨ ¬r))'),  # We distribute the dual of the inner formula
 )
 def test_formula_to_cnf_prop(formula: str, expected: str) -> None:
     formula_ = parse_prop_formula(formula)

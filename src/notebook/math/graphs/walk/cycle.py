@@ -15,9 +15,9 @@ def are_closed[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> b
 
 def is_cycle[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
     return (
-        len(walk) > 0 and \
-        are_closed(walk) and \
-        len(SequentialSet(walk.iter_vertices())) == len(walk) and \
+        len(walk) > 0 and
+        are_closed(walk) and
+        len(SequentialSet(walk.iter_vertices())) == len(walk) and
         not (len(walk.segments) == 2 and walk.segments[0].edge == walk.segments[1].edge)
     )
 

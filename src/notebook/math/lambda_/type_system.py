@@ -13,4 +13,3 @@ class TypingRule(InferenceRule[TypingRuleEntry]):
 
 class ExplicitTypeSystem(InferenceRuleSystem[TypingRule]):
     pass
-

@@ -39,7 +39,7 @@ def unify(system: Sequence[EqualityFormula]) -> AtomicLogicSubstitution:
             ):
                 next_system = [
                     *current_system[:i],
-                    *(EqualityFormula(l, r) for l, r in zip(eq.left.arguments, eq.right.arguments, strict=True)),
+                    *map(EqualityFormula, eq.left.arguments, eq.right.arguments, strict=True),
                     *current_system[i + 1:],
                 ]
 

@@ -20,4 +20,3 @@ def test_extract_phrases_henkin() -> None:
         Phrase(['theory']),
         Phrase(['types']),
     ]
-

@@ -94,4 +94,3 @@ def test_entry_stringify_shortauthor() -> None:
           title = {Тест}
         }
         '''[1:])
-

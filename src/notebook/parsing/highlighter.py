@@ -53,9 +53,9 @@ class ErrorHighlighter:
         self.lines_shown = lines_shown = list[str]()
 
         self.pos_hi_start = SourcePosition(0, 1, 1)
-        self.pos_hi_end   = SourcePosition(0, 1, 1)
+        self.pos_hi_end = SourcePosition(0, 1, 1)
         self.pos_shown_start = SourcePosition(0, 1, 1)
-        self.pos_shown_end   = SourcePosition(0, 1, 1)
+        self.pos_shown_end = SourcePosition(0, 1, 1)
 
         for offset, char in enumerate(source):
             if offset == offset_hi_start:
@@ -107,7 +107,7 @@ class ErrorHighlighter:
 
                 yield ' ' * (lineno_prefix_length + 1)
                 yield SpecialChars.LINENO_SEP
-                yield ' ' * col # We must have at least one space and must subtract one from the column one-based index
+                yield ' ' * col  # We must have at least one space and must subtract one from the column one-based index
                 yield SpecialChars.MARKER * (1 + (last_col - col))
                 yield '\n'
 

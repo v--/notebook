@@ -48,7 +48,7 @@ class AxiomaticDerivation:
         for i, cond in enumerate(self.payload[:k]):
             if isinstance(cond, ConnectiveFormula) and cond.conn == BinaryConnective.CONDITIONAL and cond.right == formula:
                 for j, antecedent in enumerate(self.payload):
-                     if antecedent == cond.left:
+                    if antecedent == cond.left:
                         return ModusPonensConfig(i, j, k)
 
         return None

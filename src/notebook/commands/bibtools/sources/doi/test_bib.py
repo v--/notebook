@@ -624,6 +624,7 @@ def test_parse_101145_6213862141_is_identical_to(doi: str = '10.1145/62138.62141
         title='Keynote address - data abstraction and hierarchy',
     )
 
+
 def test_parse_101090_gsm_250_datetime_version(doi: str = '10.1090/gsm/250') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()

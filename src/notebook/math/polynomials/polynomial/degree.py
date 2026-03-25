@@ -80,7 +80,6 @@ class PolynomialDegree:
 
         return self.value <= other_value
 
-
     def __int__(self) -> int:
         if self.value is None:
             raise PolynomialDegreeError('Undefined degree')

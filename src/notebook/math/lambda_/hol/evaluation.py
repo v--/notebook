@@ -1,3 +1,5 @@
+# ruff: noqa: FURB118
+
 import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any

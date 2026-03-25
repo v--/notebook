@@ -41,7 +41,7 @@ def test_parse_mathse_question_4272953_229174(identifier: str = 'https://math.st
     )
 
 
-def test_parse_mathof_answer_231571(identifier: str='https://mathoverflow.net/a/231571') -> None:
+def test_parse_mathof_answer_231571(identifier: str = 'https://mathoverflow.net/a/231571') -> None:
     with get_stackexchange_fixture_path(identifier).open() as file:
         html = file.read()
 

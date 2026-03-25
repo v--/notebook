@@ -1,3 +1,4 @@
+# ruff: noqa: FURB118
 
 from typing import TYPE_CHECKING
 
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
     ),
 
     dict(
-        formula='(q ∧ p)', # Verify that the inferred order of the variables is alphabetic
+        formula='(q ∧ p)',  # Verify that the inferred order of the variables is alphabetic
         function=lambda p, q: p and q,
     ),
 

@@ -107,4 +107,3 @@ class FormulaSchemaVisitor[T]:
 
     def generic_visit(self, schema: FormulaSchema) -> T:
         raise NotImplementedError
-

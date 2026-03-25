@@ -166,7 +166,7 @@ class DoiData(DoiBaseModel):
     url: str
 
     resource: DoiResource | None = None
-    relation: DoiRelationMap | None =None
+    relation: DoiRelationMap | None = None
     subject: list[DoiSubject] | None = None
 
     is_referenced_by_count: int | None = None

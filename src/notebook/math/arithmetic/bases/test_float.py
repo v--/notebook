@@ -27,7 +27,7 @@ def test_get_digit(x: float, radix: int, precision: int = 10) -> None:
 )
 def test_get_rational_digit(p: int, q: int, radix: int, precision: int = 10) -> None:
     digits = [get_digit_rational(p=p, q=q, radix=radix, index=k) for k in range(1, precision + 2)]
-    reconstructed = sum(d * radix ** (-k-1) for k, d in enumerate(digits))
+    reconstructed = sum(d * radix ** (-k - 1) for k, d in enumerate(digits))
     assert reconstructed == pytest.approx(p / q, abs=radix ** -precision)
 
 

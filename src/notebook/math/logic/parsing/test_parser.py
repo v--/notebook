@@ -196,6 +196,7 @@ def test_parsing_infix_function_without_second_term(dummy_signature: FormalLogic
           │ ^^^^
     ''')
 
+
 def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_term('(x ≠ y', dummy_signature)
@@ -205,6 +206,7 @@ def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLo
         1 │ (x ≠ y
           │ ^^^^^^
     ''')
+
 
 def test_parsing_infix_function_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
@@ -244,6 +246,7 @@ def test_parsing_infix_predicate_without_second_term(dummy_signature: FormalLogi
           │ ^^^^
     ''')
 
+
 def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(x ≠ y', dummy_signature)
@@ -253,6 +256,7 @@ def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalL
         1 │ (x ≠ y
           │ ^^^^^^
     ''')
+
 
 def test_parsing_infix_predicate_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
@@ -274,7 +278,6 @@ def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: Formal
         1 │ (x p³ y)
           │    ^^
     ''')
-
 
 
 @pytest_parametrize_lists(
@@ -331,7 +334,6 @@ def test_parsing_condensed_function_with_missing_arguments(dummy_signature: Form
         1 │ fᶜ¹
           │ ^^^
     ''')
-
 
 
 @pytest_parametrize_kwargs(

@@ -65,8 +65,8 @@ class BibEntryAdjuster:
         main_language = get_main_entry_language(self.crossref) if self.crossref and len(self.adjusted.languages) == 0 else get_main_entry_language(self.adjusted)
 
         if (
-            author.short_name is None and \
-            author.full_name != 'others' and \
+            author.short_name is None and
+            author.full_name != 'others' and
             (main_language == 'russian' or main_language == 'bulgarian')
         ):
             main_name = get_main_human_name(author.full_name)
@@ -146,7 +146,6 @@ class BibEntryAdjuster:
 
         if len(self.adjusted.origlanguages) > 0 and self.adjusted.crossref is None and len(self.adjusted.translators) == 0:
             self.logger.warning('Specified the original language, but not the translators')
-
 
     def adjust_entry_name(self) -> None:
         name = self.adjusted.entry_name

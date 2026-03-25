@@ -1,3 +1,5 @@
+# ruff: noqa: PLR6104
+
 from .exceptions import IncompatibleMatrixError
 from .matrix import FloatMatrix, IFieldMatrix, ISemiringMatrix
 from .norm import is_unit

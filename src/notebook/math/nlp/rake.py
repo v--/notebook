@@ -1,4 +1,5 @@
 import itertools
+import operator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -60,7 +61,7 @@ class PhraseScoreContext:
 
     def iter_sorted(self, limit: int | None = None) -> Iterable[tuple[Phrase, float]]:
         return itertools.islice(
-            sorted(self.scores.items(), key=lambda x: x[1], reverse=True),
+            sorted(self.scores.items(), key=operator.itemgetter(1), reverse=True),
             limit,
         )
 

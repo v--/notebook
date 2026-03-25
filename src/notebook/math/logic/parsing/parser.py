@@ -449,7 +449,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         return result
 
-
     @overload
     def parse_formula(self, *, parse_schema: Literal[False]) -> Formula: ...
     @overload

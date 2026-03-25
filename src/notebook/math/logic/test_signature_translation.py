@@ -14,12 +14,12 @@ from .signature_translation import translate_formula, translate_term
 
 def test_translation_kind_mismatch(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(SignatureMorphismError, match='Mismatch between the function symbol f¹ and the predicate symbol p¹'):
-        SignatureMorphism(dummy_signature, { dummy_signature['f¹']: dummy_signature['p¹'] })
+        SignatureMorphism(dummy_signature, {dummy_signature['f¹']: dummy_signature['p¹']})
 
 
 def test_translation_arity_mismatch(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(SignatureMorphismError, match='Mismatch between the arity 1 of the function symbol f¹ and the arity 2 of the function symbol g²'):
-        SignatureMorphism(dummy_signature, { dummy_signature['f¹']: dummy_signature['g²'] })
+        SignatureMorphism(dummy_signature, {dummy_signature['f¹']: dummy_signature['g²']})
 
 
 def test_translate_term(dummy_signature: FormalLogicSignature) -> None:

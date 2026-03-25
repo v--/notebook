@@ -17,7 +17,7 @@ class PropInterpretation:
 
     @classmethod
     def from_kwargs(cls, **kwargs: bool) -> PropInterpretation:
-        return cls({ parse_prop_variable(key): value for key, value in kwargs.items() })
+        return cls({parse_prop_variable(key): value for key, value in kwargs.items()})
 
     def get_value(self, var: PropVariable) -> bool:
         if var in self.mapping:
@@ -26,10 +26,10 @@ class PropInterpretation:
         raise MissingInterpretationError(f'No assignment specified for variable {var.symbol.name}')
 
     def modify(self, var: PropVariable, value: bool) -> PropInterpretation:  # noqa: FBT001
-        return PropInterpretation({ **self.mapping, var: value })
+        return PropInterpretation({**self.mapping, var: value})
 
     def get_dual(self) -> PropInterpretation:
-        return PropInterpretation({ var: not value for var, value in self.mapping.items() })
+        return PropInterpretation({var: not value for var, value in self.mapping.items()})
 
     def iter_items(self) -> Iterable[tuple[PropVariable, bool]]:
         return self.mapping.items()

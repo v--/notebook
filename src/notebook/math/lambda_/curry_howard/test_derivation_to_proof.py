@@ -51,7 +51,7 @@ class TestTypeDerivationToProofTree:
         )
 
         proof = ptree.assume(
-            parse_formula('τ',ch_logic_dummy_signature),
+            parse_formula('τ', ch_logic_dummy_signature),
             parse_marker('x'),
         )
 

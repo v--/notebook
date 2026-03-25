@@ -17,7 +17,7 @@ class VariableAssignment[T]:
 
     @classmethod
     def infer(cls, **kwargs: T) -> VariableAssignment:
-        return cls({ parse_variable(key): value for key, value in kwargs.items() })
+        return cls({parse_variable(key): value for key, value in kwargs.items()})
 
     def get_value(self, var: Variable) -> T:
         if var in self.mapping:

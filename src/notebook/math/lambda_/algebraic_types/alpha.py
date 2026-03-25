@@ -128,6 +128,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
             new_right_premise,
         )
 
+
 def alpha_convert_derivation_unsafe(tree: TypeDerivationTree, other: TypedTerm) -> TypeDerivationTree:
     return AlphaConversionVisitor(other).visit(tree)
 

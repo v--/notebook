@@ -18,4 +18,3 @@ def universal_closure(formula: Formula) -> Formula:
 
 def existential_closure(formula: Formula) -> Formula:
     return quantifier_closure(formula, Quantifier.EXISTENTIAL)
-

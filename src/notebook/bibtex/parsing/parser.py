@@ -48,7 +48,7 @@ class BibParser(Parser[BibToken]):
 
     def parse_entry_name(self, name_context: BibValueContext, existing_names: Collection[str]) -> str:
         # Entry names may even contain %, which is otherwise used for comments
-        while (head := self.peek()) and head.kind not in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
+        while (head := self.peek()) and head.kind not in {'CLOSING_BRACE', 'COMMA', 'LINE_BREAK'}:
             self.advance()
 
         if name_context.is_empty():

@@ -23,4 +23,3 @@ def test_apply_substitution_to_assignment() -> None:
     subst_assignment = apply_substitution_to_assignment(structure, assignment, substitution)
 
     assert evaluate_term(subst_term, structure, assignment) == evaluate_term(term, structure, subst_assignment)
-

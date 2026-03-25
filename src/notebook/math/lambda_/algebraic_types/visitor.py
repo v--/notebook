@@ -176,4 +176,3 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
 
     def generic_visit(self, tree: TypeDerivationTree) -> T:
         raise NotImplementedError
-

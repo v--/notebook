@@ -29,7 +29,7 @@ class PolynomialMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):  # noqa: PLW1641
+class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):  # noqa: PLR0904, PLW1641
     _coefficients: MutableMapping[Monomial, N]
 
     @classmethod

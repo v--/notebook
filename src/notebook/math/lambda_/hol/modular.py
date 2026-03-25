@@ -1,3 +1,5 @@
+# ruff: noqa: FURB118
+
 from ...rings.modular import BaseIntModulo
 from ..parsing import parse_type
 from .signature import HolSignature

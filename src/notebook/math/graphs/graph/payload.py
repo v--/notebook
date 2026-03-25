@@ -1,4 +1,5 @@
 from collections.abc import Collection, MutableMapping
+from itertools import starmap
 from typing import NamedTuple, overload
 
 from ....support.collections.sequential_mapping import SequentialMapping
@@ -48,7 +49,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
         except KeyError:
             raise MissingVertexError(f'The vertex {vertex!r} is in not in the graph') from None
 
-        for edge in self._edge_map:
+        for edge in list(self._edge_map):
             if vertex in edge:
                 del self._edge_map[edge]
 
@@ -62,7 +63,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
         return self._vertex_map.keys()
 
     def get_labeled_vertices(self) -> Collection[LabeledVertex[VertT, VertLabelT]]:
-        return [LabeledVertex(*t) for t in self._vertex_map.items()]
+        return list(starmap(LabeledVertex, self._vertex_map.items()))
 
     def get_vertex_count(self) -> int:
         return len(self._vertex_map)
@@ -93,7 +94,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
         return self._edge_map.keys()
 
     def get_labeled_edges(self) -> Collection[LabeledEdge[EdgeT, EdgeSymbolT]]:
-        return [LabeledEdge(*t) for t in self._edge_map.items()]
+        return list(starmap(LabeledEdge, self._edge_map.items()))
 
     def get_edge_count(self) -> int:
         return len(self._edge_map)

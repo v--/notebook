@@ -82,7 +82,7 @@ def assume(assumption: Formula, marker: Marker) -> AssumptionTree:
 @dataclass(frozen=True)
 class RuleApplicationPremise:
     tree: ProofTree
-    attachments: Sequence[None | MarkedFormula]
+    attachments: Sequence[MarkedFormula | None]
 
 
 # This class is only needed to aid the construction of proof trees; we do not need attached substitutions in the final tree
@@ -90,7 +90,7 @@ class RuleApplicationPremise:
 class RuleApplicationPremiseConfig:
     tree: ProofTree
     main: FormulaWithSubstitution
-    attachments: Sequence[None | MarkedFormulaWithSubstitution]
+    attachments: Sequence[MarkedFormulaWithSubstitution | None]
 
     def eval(self) -> RuleApplicationPremise:
         return RuleApplicationPremise(
@@ -103,7 +103,7 @@ def premise_config(
     *,
     tree: ProofTree,
     main: FormulaWithSubstitution | None = None,
-    attachments: Sequence[None | MarkedFormula | MarkedFormulaWithSubstitution] = [],
+    attachments: Sequence[MarkedFormula | MarkedFormulaWithSubstitution | None] = [],
 ) -> RuleApplicationPremiseConfig:
     return RuleApplicationPremiseConfig(
         tree,
@@ -180,10 +180,10 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         discharged_ = {*discharged, *self.get_locally_discharged_markers()}
 
         for premise_tree in self.premises:
-             yield from premise_tree.tree.get_open_variables(eigen_, discharged_)
+            yield from premise_tree.tree.get_open_variables(eigen_, discharged_)
 
         for premise in self.get_local_implicit_open_premises():
-             for var in get_formula_free_variables(premise):
+            for var in get_formula_free_variables(premise):
                 if var not in eigen:
                     yield var
 

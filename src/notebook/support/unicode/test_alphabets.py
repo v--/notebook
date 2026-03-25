@@ -1,7 +1,7 @@
 from .alphabets import Capitalization, is_greek_string, is_latin_string
 
 
-def xnor(a: bool, b: bool) -> bool:  # noqa: FBT001
+def xnor(a: bool, b: bool) -> bool:  # noqa: FBT001, FURB118
     return a == b
 
 

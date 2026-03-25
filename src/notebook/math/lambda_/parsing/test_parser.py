@@ -98,11 +98,11 @@ def test_parsing_constants(term: str, expected: Constant) -> None:
         'x',
         '(xy)',
         '(x₁y₂)',
-        '(λx.x)', # I combinator
+        '(λx.x)',  # I combinator
         '(λx.y)',
-        '(λx.(λy.x))', # K combinator
-        '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
-        '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
+        '(λx.(λy.x))',  # K combinator
+        '(λx.(λy.(λz.((xz)(yz)))))',  # S combinator
+        '(λf.((λx.(f(xx)))(λx.(f(xx)))))',  # Y combinator
     ],
 )
 def test_rebuilding_terms(term: str) -> None:
@@ -171,9 +171,9 @@ def test_parsing_incomplete_application() -> None:
 
 @pytest_parametrize_lists(
     term=[
-        '(λx.(λy.x))', # K combinator
-        '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
-        '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
+        '(λx.(λy.x))',  # K combinator
+        '(λx.(λy.(λz.((xz)(yz)))))',  # S combinator
+        '(λf.((λx.(f(xx)))(λx.(f(xx)))))',  # Y combinator
     ],
 )
 def test_reparsing_terms(term: str) -> None:
@@ -213,8 +213,8 @@ def test_rebuilding_term_with_constants(term: str) -> None:
 @pytest_parametrize_lists(
     schema=[
         'x',
-        'H¬', # Constant term
-        'M', # Placeholder
+        'H¬',  # Constant term
+        'M',  # Placeholder
         '(H¬M)',
         '(λx:ι.(H¬M))',
     ],

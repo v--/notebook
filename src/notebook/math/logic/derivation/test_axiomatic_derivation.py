@@ -119,7 +119,6 @@ def test_derivation_to_proof_tree(payload: Sequence[str], expected: str) -> None
     assert str(derivation_to_proof_tree(IMPLICATIONAL_AXIOMS, derivation)) == expected
 
 
-
 @pytest_parametrize_lists(
     payload=[
         ['p'],

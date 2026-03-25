@@ -12,12 +12,12 @@ from .polynomial.int import IntPolynomial, const, x, y, z, zero
 
 
 @pytest_parametrize_kwargs(
-    dict(f=zero,                       g=const,      indet=ci.x, q=zero,                  r=zero             ),
-    dict(f=const,                      g=const,      indet=ci.x, q=const,                 r=zero             ),
-    dict(f=x ** 2,                     g=x,          indet=ci.x, q=x,                     r=zero             ),
-    dict(f=x ** 2 - const,             g=x - const,  indet=ci.x, q=x + const,             r=zero             ),
+    dict(f=zero,                       g=const,      indet=ci.x, q=zero,                  r=zero),
+    dict(f=const,                      g=const,      indet=ci.x, q=const,                 r=zero),
+    dict(f=x ** 2,                     g=x,          indet=ci.x, q=x,                     r=zero),
+    dict(f=x ** 2 - const,             g=x - const,  indet=ci.x, q=x + const,             r=zero),
     dict(f=3 * x ** 3 + x + 2 * const, g=x ** 2 - x, indet=ci.x, q=3 * x + 3 * const,     r=4 * x + 2 * const),
-    dict(f=x ** 2 * y + x * z + 2 * x, g=x,          indet=ci.x, q=x * y + z + 2 * const, r=zero             ),
+    dict(f=x ** 2 * y + x * z + 2 * x, g=x,          indet=ci.x, q=x * y + z + 2 * const, r=zero),
 )
 def test_euclidean_divmod(f: IntPolynomial, g: IntPolynomial, indet: LatinIdentifier, q: IntPolynomial, r: IntPolynomial) -> None:
     assert euclidean_divmod(f, g, indet) == DivMod(q, r)

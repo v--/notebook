@@ -9,4 +9,3 @@ ARITHMETIC_SIGNATURE = FormalLogicSignature(
     FunctionSymbol('×', arity=2),
     PredicateSymbol('≤', arity=2),
 )
-

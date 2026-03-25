@@ -48,7 +48,7 @@ class BaseSignatureSymbol(abc.ABC):
             raise FormalLogicSignatureError('Cannot use a parenthesis as a proper signature symbol')
 
         if (
-            name in PropConstantSymbol or
+            name in PropConstantSymbol or  # noqa: PLR0916
             name in UnaryPrefix or
             name in BinaryConnective or
             name in Quantifier or

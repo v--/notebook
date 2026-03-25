@@ -31,6 +31,5 @@ class TypeErasureVisitor(TypedTermVisitor[UntypedTerm]):
         return UntypedAbstraction(term.var, self.visit(term.body))
 
 
-
 def erase_annotations(term: TypedTerm) -> UntypedTerm:
     return TypeErasureVisitor().visit(term)

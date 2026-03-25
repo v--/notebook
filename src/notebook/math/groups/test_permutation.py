@@ -30,7 +30,7 @@ def test_disjoint_permutation_composition() -> None:
     domain = [1, 2, 3]
     p1 = Permutation.from_cycle(domain, Cycle([1, 2]))
     p2 = Permutation.from_cycle(domain, Cycle([3, 4]))
-    res = Permutation(domain, { 1: 2, 2: 1, 3: 4, 4: 3 })
+    res = Permutation(domain, {1: 2, 2: 1, 3: 4, 4: 3})
 
     assert p1 @ p2 == res
 

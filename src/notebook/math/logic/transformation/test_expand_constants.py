@@ -17,4 +17,3 @@ def test_expand_constants(formula: str, expected: str) -> None:
 
     result = expand_constants_prop(formula_)
     assert result == expected_
-

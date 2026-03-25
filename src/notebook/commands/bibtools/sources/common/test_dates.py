@@ -30,4 +30,3 @@ def test_extract_year(string: str, year: str) -> None:
 
 def test_extract_year_longer() -> None:
     assert extract_year('dan31411') is None
-

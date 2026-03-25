@@ -1,9 +1,9 @@
 import pathlib
 
-from ...common.file_names import escape_file_name
+from ..common.file_names import escape_file_name
 
 
-FIXTURE_DIR = pathlib.Path(__file__).resolve().parent
+FIXTURE_DIR = pathlib.Path(__file__).resolve().parent / 'fixtures'
 
 
 def get_stackexchange_fixture_path(identifier: str) -> pathlib.Path:

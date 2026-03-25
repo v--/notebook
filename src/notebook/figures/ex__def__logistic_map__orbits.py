@@ -60,35 +60,35 @@ img = PIL.Image.fromarray(pixels, 'L')
 img.save(raster_path)
 
 
-with open(code_path, 'w') as code_file:
-    code_file.write(
-        dedent(f'''\
-            unitsize(6.5cm);
+pathlib.Path(code_path).write_text(
+    dedent(f'''\
+        unitsize(6.5cm);
 
-            import graph;
+        import graph;
 
-            from notebook access pens;
+        from notebook access pens;
 
-            limits(min=(2, 0), max=(4, 1));
-            label(graphic('{raster_path}', 'width=13cm, height=6.5cm'), (3, 0.5));
+        limits(min=(2, 0), max=(4, 1));
+        label(graphic('{raster_path}', 'width=13cm, height=6.5cm'), (3, 0.5));
 
-            xaxis(
-              Label('$a$'),
-              p=fontsize(7),
-              axis=Bottom,
-              ticks=Ticks(pTick=pens.thin, Step=0.5, step=0.1)
-            );
+        xaxis(
+          Label('$a$'),
+          p=fontsize(7),
+          axis=Bottom,
+          ticks=Ticks(pTick=pens.thin, Step=0.5, step=0.1)
+        );
 
-            yaxis(
-              Label('$\\Phi_{{a,t}}(x_0)$'),
-              p=fontsize(7),
-              autorotate=false,
-              axis=Left,
-              ticks=Ticks(pTick=pens.thin, Step=0.2, step=0.1)
-            );
-            ''',
-        ),
-    )
+        yaxis(
+          Label('$\\Phi_{{a,t}}(x_0)$'),
+          p=fontsize(7),
+          autorotate=false,
+          axis=Left,
+          ticks=Ticks(pTick=pens.thin, Step=0.2, step=0.1)
+        );
+        ''',
+    ),
+    encoding='utf-8',
+)
 
 try:
     subprocess.run(f'asy -dir={ROOT_PATH} -outname={output_path} {code_path}', shell=True, check=True)  # noqa: S602

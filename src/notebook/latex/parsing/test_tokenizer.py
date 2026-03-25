@@ -138,7 +138,6 @@ def test_command() -> None:
 
 
 def test_real() -> None:
-    with open(FIGURES_PATH / 'thm__natural_number_divisibility_order.tex') as file:
-        string = file.read()
-        tokens = tokenize_latex(string)
-        assert ''.join(t.value for t in tokens) == string
+    string = (FIGURES_PATH / 'thm__natural_number_divisibility_order.tex').read_text(encoding='utf-8')
+    tokens = tokenize_latex(string)
+    assert ''.join(t.value for t in tokens) == string

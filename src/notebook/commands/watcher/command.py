@@ -83,7 +83,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                         )
 
             if (
-                path.match('notebook.tex') or
+                path.match('notebook.tex') or  # noqa: PLR0916
                 path.match('includeonly') or
                 path.match('classes/notebook.cls') or
                 path.match('bibliography/*.bib') or

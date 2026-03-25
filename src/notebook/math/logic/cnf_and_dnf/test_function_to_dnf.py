@@ -1,3 +1,4 @@
+# ruff: noqa: ARG005, FURB118
 
 from typing import TYPE_CHECKING
 
@@ -18,11 +19,11 @@ if TYPE_CHECKING:
         formula='⊤',
     ),
     dict(
-        function=lambda p: True,  # noqa: ARG005
+        function=lambda p: True,
         formula='(p ∨ ¬p)',
     ),
     dict(
-        function=lambda p, q: True,  # noqa: ARG005
+        function=lambda p, q: True,
         formula='((p ∧ q) ∨ ((p ∧ ¬q) ∨ ((¬p ∧ q) ∨ (¬p ∧ ¬q))))',
     ),
 
@@ -32,11 +33,11 @@ if TYPE_CHECKING:
         formula='⊥',
     ),
     dict(
-        function=lambda p: False,  # noqa: ARG005
+        function=lambda p: False,
         formula='⊥',
     ),
     dict(
-        function=lambda p, q: False,  # noqa: ARG005
+        function=lambda p, q: False,
         formula='⊥',
     ),
 

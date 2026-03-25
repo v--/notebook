@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
     assert ramsey_upper_bound(*sizes) == expected
 
+
 @pytest_parametrize_kwargs(
     dict(
         sizes=[3, 3],

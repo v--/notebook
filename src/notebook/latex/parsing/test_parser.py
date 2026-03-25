@@ -83,7 +83,6 @@ def test_unmatched_brace() -> None:
     )
 
 
-
 def test_command_with_bracket_arg() -> None:
     string = '\\test[a]'
     nodes = parse_latex(string)
@@ -275,7 +274,6 @@ def test_matrix_environment() -> None:
 
 
 def test_real() -> None:
-    with open(FIGURES_PATH / 'thm__natural_number_divisibility_order.tex') as file:
-        string = file.read()
-        nodes = parse_latex(string)
-        assert stringify_nodes(nodes) == string
+    string = (FIGURES_PATH / 'thm__natural_number_divisibility_order.tex').read_text(encoding='utf-8')
+    nodes = parse_latex(string)
+    assert stringify_nodes(nodes) == string

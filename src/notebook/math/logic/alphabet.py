@@ -41,7 +41,6 @@ class AuxImproperSymbol(StrEnum):
     SEQUENT = '⊢'
 
 
-
 def get_dual_prop_constant(const: PropConstantSymbol) -> PropConstantSymbol:
     match const:
         case PropConstantSymbol.VERUM:

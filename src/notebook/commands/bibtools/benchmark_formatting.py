@@ -1,4 +1,5 @@
 import io
+import pathlib
 from typing import TYPE_CHECKING
 
 import loguru
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     group='bib-format',
 )
 def benchmark_format(benchmark: BenchmarkFixture) -> None:
-    with open(BIB_PATH / 'books.bib') as file:
+    with pathlib.Path(BIB_PATH / 'books.bib').open(encoding='utf-8') as file:
         entries = read_entries(file)
 
     benchmark.pedantic(
@@ -30,7 +31,7 @@ def benchmark_format(benchmark: BenchmarkFixture) -> None:
     group='bib-write',
 )
 def benchmark_write(benchmark: BenchmarkFixture) -> None:
-    with open(BIB_PATH / 'books.bib') as file:
+    with pathlib.Path(BIB_PATH / 'books.bib').open(encoding='utf-8') as file:
         entries = read_entries(file)
 
     output = io.StringIO()
