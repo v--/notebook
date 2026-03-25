@@ -52,7 +52,7 @@ class TrieMapping[T](MutableMapping[str, T]):
 
     def __getitem__(self, key: str) -> T:
         subtrie = self.get_subtrie(key)
-        value = subtrie._value  # noqa: SLF001
+        value = subtrie._value
 
         if value is None:
             raise MissingKeyError(key)

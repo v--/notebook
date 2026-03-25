@@ -70,6 +70,6 @@ class FormatterContextManager:
         src.close()
         dest.seek(0)
 
-        with pathlib.Path(self.path).open('w', encoding='utf-8') as src_w:
+        with open(self.path, 'w', encoding='utf-8') as src_w:
             shutil.copyfileobj(dest, src_w)
             src_w.truncate()

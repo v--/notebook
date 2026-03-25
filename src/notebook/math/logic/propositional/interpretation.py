@@ -25,7 +25,7 @@ class PropInterpretation:
 
         raise MissingInterpretationError(f'No assignment specified for variable {var.symbol.name}')
 
-    def modify(self, var: PropVariable, value: bool) -> PropInterpretation:  # noqa: FBT001
+    def modify(self, var: PropVariable, value: bool) -> PropInterpretation:
         return PropInterpretation({**self.mapping, var: value})
 
     def get_dual(self) -> PropInterpretation:

@@ -1,4 +1,3 @@
-# ruff: noqa: DTZ005
 
 import itertools
 from dataclasses import dataclass

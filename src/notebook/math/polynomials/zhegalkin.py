@@ -28,7 +28,7 @@ def infer_zhegalkin(fun: Callable[..., bool]) -> BooleanPolynomial:
 
     first_pol, = BooleanPolynomial.from_monomials(Monomial.from_indeterminate(LatinIdentifier(first_param.name)))
 
-    sub_t = infer_zhegalkin(functools.partial(fun, True))  # noqa: FBT003
-    sub_f = infer_zhegalkin(functools.partial(fun, False))  # noqa: FBT003
+    sub_t = infer_zhegalkin(functools.partial(fun, True))
+    sub_f = infer_zhegalkin(functools.partial(fun, False))
 
     return first_pol * (sub_t + sub_f) + sub_f

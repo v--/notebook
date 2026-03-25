@@ -13,5 +13,5 @@ if TYPE_CHECKING:
 def apply_substitution_to_assignment[T](structure: FormalLogicStructure[T], assignment: VariableAssignment[T], substitution: AtomicLogicSubstitution) -> VariableAssignment[T]:
     return VariableAssignment({
         key: evaluate_term(substitution.substitute_variable(key), structure, assignment)
-        for key, value in assignment.mapping.items()
+        for key in assignment.mapping
     })

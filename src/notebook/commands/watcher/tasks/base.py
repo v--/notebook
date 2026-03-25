@@ -1,4 +1,3 @@
-# ruff: noqa: DTZ005
 
 import abc
 from datetime import datetime

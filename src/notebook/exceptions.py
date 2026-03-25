@@ -1,4 +1,4 @@
-class NotebookException(Exception):  # noqa: N818
+class NotebookException(Exception):
     pass
 
 
