@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from .formulas import (
     EqualityFormula,
@@ -7,8 +7,11 @@ from .formulas import (
     FormulaTransformationVisitor,
     PredicateApplication,
 )
-from .signature import SignatureMorphism
 from .terms import FunctionApplication, Term, TermTransformationVisitor
+
+
+if TYPE_CHECKING:
+    from .signature import SignatureMorphism
 
 
 @dataclass
@@ -19,7 +22,7 @@ class TermTranslationVisitor(TermTransformationVisitor):
     def visit_function(self, term: FunctionApplication) -> Term:
         return FunctionApplication(
             self.translation(term.symbol),
-            [self.visit(arg) for arg in term.arguments]
+            [self.visit(arg) for arg in term.arguments],
         )
 
 
@@ -40,14 +43,14 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
     def visit_equality(self, formula: EqualityFormula) -> EqualityFormula:
         return EqualityFormula(
             self.term_visitor.visit(formula.left),
-            self.term_visitor.visit(formula.right)
+            self.term_visitor.visit(formula.right),
         )
 
     @override
     def visit_predicate(self, formula: PredicateApplication) -> PredicateApplication:
         return PredicateApplication(
             self.translation(formula.symbol),
-            [self.term_visitor.visit(arg) for arg in formula.arguments]
+            [self.term_visitor.visit(arg) for arg in formula.arguments],
         )
 
 

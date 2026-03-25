@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from ...matrices.matrix import ISemiringMatrix, MinPlusMatrix
 from ...rings.tropical import MinPlusFloat
 from ...rings.types import ISemiring
-from ..graph import DirectedGraph
+from ..exceptions import GraphWalkError
+
+
+if TYPE_CHECKING:
+    from ..graph import DirectedGraph
 
 
 def get_adjacency_matrix[N: ISemiring, T: ISemiringMatrix, VertLabelT](cls: type[T], graph: DirectedGraph[int, VertLabelT, N]) -> T:
@@ -15,7 +21,8 @@ def get_adjacency_matrix[N: ISemiring, T: ISemiringMatrix, VertLabelT](cls: type
 
 
 def get_min_walk_weights[VertLabelT](graph: DirectedGraph[int, VertLabelT, float], max_length: int) -> MinPlusMatrix:
-    assert max_length >= 1
+    if max_length < 1:
+        raise GraphWalkError(f'Expected a positive max length, but got {max_length}')
 
     mat = MinPlusMatrix.zeros(len(graph.vertices))
 

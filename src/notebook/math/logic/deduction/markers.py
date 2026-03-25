@@ -1,10 +1,14 @@
-from collections.abc import Collection
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ....parsing.identifiers import LatinIdentifier, new_latin_identifier
 from ....support.unicode import to_superscript
 from ..formulas import Formula, FormulaWithSubstitution
 from ..substitution import evaluate_substitution
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 
 @dataclass(frozen=True)

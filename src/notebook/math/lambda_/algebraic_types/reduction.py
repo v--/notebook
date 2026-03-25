@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ...exceptions import NotebookMathException
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
 from ..assertions import VariableTypeAssertion
 from ..terms import (
@@ -23,7 +24,7 @@ from .substitution import substitute_in_tree
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
 
 
-class NotReducible(BaseException):
+class NotReducible(NotebookMathException):
     pass
 
 
@@ -68,15 +69,15 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
 
                 adjusted_subtree = substitute_in_tree(
                     subtree,
-                    {var: assume(assertion)}
+                    {var: assume(assertion)},
                 )
 
             return apply(
                 ARROW_ONLY_TYPE_SYSTEM['→₊'],
                 premise_config(
                     attachments=[assertion],
-                    tree=reduce_derivation_unsafe(adjusted_subtree, self.reduct.body)
-                )
+                    tree=reduce_derivation_unsafe(adjusted_subtree, self.reduct.body),
+                ),
             )
 
         raise NotReducible
@@ -95,7 +96,7 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
             if not isinstance(subtree_left, RuleApplicationTree) or subtree_left.rule != ARROW_ONLY_TYPE_SYSTEM['→₊']:
                 raise TypeDerivationError(f'Expected the tree deriving {subtree_left.conclusion} to be an application tree of →₊')
 
-            assert subtree_left.premises[0].attachments[0]
+            assert subtree_left.premises[0].attachments[0]  # noqa: S101
             subtree_left_body = subtree_left.premises[0].tree
             subtree_left_var = subtree_left.premises[0].attachments[0].term
             reduct_tree = substitute_in_tree(subtree_left_body, {subtree_left_var: subtree_right})
@@ -115,7 +116,7 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
                 return apply(
                     ARROW_ONLY_TYPE_SYSTEM['→₋'],
                     result_subtree_left,
-                    reduce_derivation_unsafe(subtree_right, self.reduct.right)
+                    reduce_derivation_unsafe(subtree_right, self.reduct.right),
                 )
 
             try:

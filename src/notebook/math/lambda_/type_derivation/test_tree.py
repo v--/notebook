@@ -13,7 +13,7 @@ def test_assumption_tree() -> None:
     assert tree.get_cumulative_assumptions() == {assumption}
     assert str(tree) == dedent('''\
         x: τ
-        '''
+        ''',
     )
 
 
@@ -25,7 +25,7 @@ def test_arrow_intro() -> None:
         premise_config(
             attachments=[assumption],
             tree=assume(assumption),
-        )
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == set()
@@ -33,7 +33,7 @@ def test_arrow_intro() -> None:
                x: τ
         x _________________ →₊
           (λx:τ.x): (τ → τ)
-        '''
+        ''',
     )
 
 
@@ -50,9 +50,9 @@ def test_nested_arrow_intro() -> None:
                 premise_config(
                     attachments=[assumption_y],
                     tree=assume(assumption_x),
-                )
+                ),
             ),
-        )
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == set()
@@ -63,7 +63,7 @@ def test_nested_arrow_intro() -> None:
                 (λy:σ.x): (σ → τ)
         x ______________________________ →₊
           (λx:τ.(λy:σ.x)): (τ → (σ → τ))
-        '''
+        ''',
     )
 
 
@@ -89,15 +89,15 @@ def test_cons() -> None:
                                 apply(
                                     SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₋'],
                                     assume(assumption_f),
-                                    assume(assumption_x)
+                                    assume(assumption_x),
                                 ),
-                                assume(assumption_y)
+                                assume(assumption_y),
                             ),
-                        )
+                        ),
                     ),
-                )
+                ),
             ),
-        )
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == set()
@@ -115,7 +115,7 @@ def test_cons() -> None:
                 (λy:σ.(λf:(τ → (σ → ρ)).((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
         x _________________________________________________________________________ →₊
           (λx:τ.(λy:σ.(λf:(τ → (σ → ρ)).((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
-        '''
+        ''',
     )
 
 
@@ -125,8 +125,8 @@ def test_empty_elim() -> None:
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         assume(assumption),
         implicit_types={
-            parse_type_placeholder('τ'): parse_type('σ')
-        }
+            parse_type_placeholder('τ'): parse_type('σ'),
+        },
     )
 
     assert tree.get_cumulative_assumptions() == {assumption}
@@ -134,5 +134,5 @@ def test_empty_elim() -> None:
          x: 𝟘
         ________ 𝟘₋
         (E₋x): σ
-        '''
+        ''',
     )

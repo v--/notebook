@@ -1,7 +1,13 @@
-from collections.abc import Collection, Iterable, Sequence
+
+from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal, Terminal, new_non_terminal
+from .exceptions import IncompatibleRuleError
 from .grammar import Grammar, GrammarRule, GrammarSchema
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Sequence
 
 
 def is_epsilon_rule(rule: GrammarRule) -> bool:
@@ -40,7 +46,8 @@ def identify_nullable_non_terminals(grammar: Grammar) -> Collection[NonTerminal]
 
 
 def iter_rules_without_nullables(nullable: Collection[NonTerminal], dest: Sequence[NonTerminal | Terminal]) -> Iterable[Sequence[NonTerminal | Terminal]]:
-    assert len(dest) > 0
+    if len(dest) == 0:
+        raise IncompatibleRuleError('Unexpected empty rule')
 
     if len(dest) == 1:
         yield dest
@@ -59,7 +66,7 @@ def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     nullable = identify_nullable_non_terminals(grammar)
     new_start = new_non_terminal(
         grammar.start.value,
-        grammar.schema.get_non_terminals()
+        grammar.schema.get_non_terminals(),
     )
 
     new_rules = [GrammarRule(src=[new_start], dest=[grammar.start])]

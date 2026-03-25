@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
 from ... import url_templates
@@ -5,7 +7,10 @@ from ..common.dates import extract_year
 from ..common.entries import generate_entry_name
 from ..common.names import name_to_bib_author
 from ..common.pages import normalize_pages
-from .model import MathNetEntry
+
+
+if TYPE_CHECKING:
+    from .model import MathNetEntry
 
 
 def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool) -> BibEntry:
@@ -31,5 +36,5 @@ def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool)
         doi=url_templates.clean_identifier(entry.crossref, url_templates.doi),
         mathscinet=url_templates.clean_identifier(entry.mathscinet, url_templates.mathscinet),
         zbmath=url_templates.clean_identifier(entry.zmath, url_templates.zbmath),
-        scopus=url_templates.clean_identifier(entry.scopus, url_templates.scopus)
+        scopus=url_templates.clean_identifier(entry.scopus, url_templates.scopus),
     )

@@ -38,10 +38,5 @@ def expand_constants(formula: Formula, default: Formula) -> Formula:
 # This is alg:propositional_constant_expansion in the monograph
 def expand_constants_prop(formula: PropFormula) -> PropFormula:
     variables = get_prop_variables(formula)
-
-    if len(variables) > 0:
-        p = min(variables)
-    else:
-        p = DEFAULT_PROP_VARIABLE
-
+    p = min(variables) if len(variables) > 0 else DEFAULT_PROP_VARIABLE
     return convert_to_prop_formula(expand_constants(formula, default=p))

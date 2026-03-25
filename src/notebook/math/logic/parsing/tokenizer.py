@@ -1,10 +1,13 @@
-from collections.abc import Sequence
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
 from ....support.unicode import Capitalization
 from ..signature import FormalLogicSignature, SignatureSymbol
 from .tokens import SINGLETON_TOKEN_MAP, LogicToken, LogicTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class FormalLogicTokenizer(IdentifierTokenizerMixin[LogicTokenKind], TrieTokenizerMixin[LogicTokenKind, SignatureSymbol], Tokenizer[LogicTokenKind]):

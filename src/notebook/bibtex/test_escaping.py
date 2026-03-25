@@ -8,8 +8,8 @@ from .escaping import escape
         'test',
         'test test',
         '\\\\',
-        '\\&'
-    ]
+        '\\&',
+    ],
 )
 def test_escape_noop(string: str) -> None:
     assert string == escape(string)
@@ -18,7 +18,7 @@ def test_escape_noop(string: str) -> None:
 @pytest_parametrize_kwargs(
     dict(string='&',           expected='\\&'),
     dict(string='@',           expected='\\@'),
-    dict(string='test & test', expected='test \\& test')
+    dict(string='test & test', expected='test \\& test'),
 )
 def test_escape(string: str, expected: str) -> None:
     assert escape(string) == expected

@@ -1,5 +1,8 @@
-from collections.abc import Collection
-from typing import Protocol, Self
+from typing import TYPE_CHECKING, Protocol, Self
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 
 class AbstractAtomicSubstitution[VariableT, ReplacementT](Protocol):

@@ -1,8 +1,14 @@
-from collections.abc import Iterable, Sequence
+
+from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal, Terminal
 from .epsilon_rules import is_essentially_epsilon_free
+from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 def is_rule_renaming(rule: GrammarRule) -> bool:
@@ -19,7 +25,7 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
 
     for rule in grammar.iter_starting_rules():
         if is_rule_renaming(rule):
-            assert isinstance(rule.dest[0], NonTerminal)
+            assert isinstance(rule.dest[0], NonTerminal)  # noqa: S101
             yield from iter_renamed_targets(grammar.schema.instantiate(rule.dest[0]), traversed | {grammar.start})
         else:
             yield rule.dest
@@ -27,7 +33,9 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
 
 # This is alg:renaming_rule_collapse in the monograph
 def collapse_renaming_rules(grammar: Grammar) -> Grammar:
-    assert is_essentially_epsilon_free(grammar)
+    if not is_essentially_epsilon_free(grammar):
+        raise IncompatibleGrammarError('Expected an essentially ε-free grammar')
+
     new_rules = list[GrammarRule]()
 
     for non_terminal in grammar.schema.get_non_terminals():

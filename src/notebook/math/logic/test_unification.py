@@ -1,50 +1,55 @@
-from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING
 
 import pytest
 
 from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_equation, parse_term, parse_variable
-from .signature import FormalLogicSignature
 from .substitution import AtomicLogicSubstitution
 from .unification import UnificationError, unify
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from .signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
     # ex:alg:first_order_unification/noop
     dict(
         system=['(x = x)'],
-        unifier=dict()
+        unifier={},
     ),
     dict(
         system=['(x = y)'],
-        unifier=dict(x='y')
+        unifier=dict(x='y'),
     ),
     dict(
         system=['(f⁰ = x)'],
-        unifier=dict(x='f⁰')
+        unifier=dict(x='f⁰'),
     ),
     dict(
         system=['(x = f¹(y))', '(y = f⁰)'],
-        unifier=dict(x='f¹(f⁰)', y='f⁰')
+        unifier=dict(x='f¹(f⁰)', y='f⁰'),
     ),
     # ex:alg:first_order_unification/glue
     dict(
         system=['(x = f¹(y))', '(x = f¹(z))'],
-        unifier=dict(x='f¹(z)', y='z')
+        unifier=dict(x='f¹(z)', y='z'),
     ),
     dict(
         system=['(x = f¹(y))', '(y = f⁰)'],
-        unifier=dict(x='f¹(f⁰)', y='f⁰')
+        unifier=dict(x='f¹(f⁰)', y='f⁰'),
     ),
     # ex:alg:first_order_unification/418a
     dict(
         system=['(f²(x, y) = f²(g¹(f⁰), x))'],
-        unifier=dict(x='g¹(f⁰)', y='g¹(f⁰)')
+        unifier=dict(x='g¹(f⁰)', y='g¹(f⁰)'),
     ),
     # ex:alg:first_order_unification/418c
     dict(
         system=['(f²(x, f⁰) = f²(g¹(y), z))'],
-        unifier=dict(x='g¹(y)', z='f⁰')
+        unifier=dict(x='g¹(y)', z='f⁰'),
     ),
 )
 def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signature: FormalLogicSignature) -> None:
@@ -52,7 +57,7 @@ def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signatur
     unifier_ = AtomicLogicSubstitution(
         variable_mapping={
             parse_variable(key): parse_term(value, dummy_signature) for key, value in unifier.items()
-        }
+        },
     )
 
     result = unify(system_)

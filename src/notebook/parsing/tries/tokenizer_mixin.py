@@ -1,11 +1,21 @@
+from typing import TYPE_CHECKING
+
 from ...support.collections import MissingKeyError, TrieMapping
 from ..tokenizer import Tokenizer
-from ..tokenizer_context import TokenizerContext
-from ..tokens import Token
+
+
+if TYPE_CHECKING:
+    from ..tokenizer_context import TokenizerContext
+    from ..tokens import Token
 
 
 class TrieTokenizerMixin[TokenKindT, TrieT](Tokenizer[TokenKindT]):
-    def read_token_if_trie_matches(self, context: TokenizerContext, token_kind: TokenKindT, trie: TrieMapping[TrieT]) -> Token[TokenKindT] | None:
+    def read_token_if_trie_matches(
+        self,
+        context: TokenizerContext[TokenKindT],
+        token_kind: TokenKindT,
+        trie: TrieMapping[TrieT],
+    ) -> Token[TokenKindT] | None:
         increment = 0
         subtrie = trie
 

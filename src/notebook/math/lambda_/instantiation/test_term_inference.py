@@ -1,4 +1,5 @@
-from collections.abc import Mapping
+
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -18,42 +19,46 @@ from .base import AtomicLambdaSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
 
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+
 @pytest_parametrize_kwargs(
     dict(
         schema='x',
         term='y',
         variable_mapping={'x': 'y'},
         term_mapping={},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='M',
         term='y',
         variable_mapping={},
         term_mapping={'M': 'y'},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='(xx)',
         term='(yy)',
         variable_mapping={'x': 'y'},
         term_mapping={},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='(xM)',
         term='(yy)',
         variable_mapping={'x': 'y'},
         term_mapping={'M': 'y'},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='(λx:τ.M)',
         term='(λy:σ.y)',
         variable_mapping={'x': 'y'},
         term_mapping={'M': 'y'},
-        type_mapping={'τ': 'σ'}
-    )
+        type_mapping={'τ': 'σ'},
+    ),
 )
 def test_infer_success(
     term: str,
@@ -66,7 +71,7 @@ def test_infer_success(
     expected = AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder(placeholder): parse_variable(value) for placeholder, value in variable_mapping.items()},
         term_mapping={parse_term_placeholder(placeholder): parse_typed_term(value) for placeholder, value in term_mapping.items()},
-        type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()}
+        type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()},
     )
 
     assert instantiation == expected
@@ -82,7 +87,7 @@ def test_constant_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match='Cannot match constant U₊ to x'):
         infer_instantiation_from_term(
             parse_typed_term_schema('U₊', SIMPLE_ALGEBRAIC_SIGNATURE),
-            parse_typed_term('x', SIMPLE_ALGEBRAIC_SIGNATURE)
+            parse_typed_term('x', SIMPLE_ALGEBRAIC_SIGNATURE),
         )
 
 
@@ -90,7 +95,7 @@ def test_variable_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match=r'Cannot match variable placeholder x to \(xx\)'):
         infer_instantiation_from_term(
             parse_typed_term_schema('x'),
-            parse_typed_term('(xx)')
+            parse_typed_term('(xx)'),
         )
 
 
@@ -98,7 +103,7 @@ def test_application_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match=r'Cannot match application schema \(xx\) to \(λx:τ.x\)'):
         infer_instantiation_from_term(
             parse_typed_term_schema('(xx)'),
-            parse_typed_term('(λx:τ.x)')
+            parse_typed_term('(λx:τ.x)'),
         )
 
 
@@ -106,7 +111,7 @@ def test_abstraction_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match=r'Cannot match abstraction schema \(λx:τ.x\) to \(xx\)'):
         infer_instantiation_from_term(
             parse_typed_term_schema('(λx:τ.x)'),
-            parse_typed_term('(xx)')
+            parse_typed_term('(xx)'),
         )
 
 
@@ -115,7 +120,7 @@ def test_abstraction_annotation_success() -> None:
     term = parse_typed_term('(λx:ι.x)', SIMPLE_ALGEBRAIC_SIGNATURE)
     assert infer_instantiation_from_term(schema, term) == AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        type_mapping={parse_type_placeholder('τ'): parse_type('ι', SIMPLE_ALGEBRAIC_SIGNATURE)}
+        type_mapping={parse_type_placeholder('τ'): parse_type('ι', SIMPLE_ALGEBRAIC_SIGNATURE)},
     )
 
 
@@ -123,5 +128,5 @@ def test_incompatible_subterm_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match=r'Cannot instantiate variable placeholder x to both y and z'):
         infer_instantiation_from_term(
             parse_typed_term_schema('(xx)'),
-            parse_typed_term('(yz)')
+            parse_typed_term('(yz)'),
         )

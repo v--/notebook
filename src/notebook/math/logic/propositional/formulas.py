@@ -1,7 +1,11 @@
 import functools
+from typing import TYPE_CHECKING
 
 from ..formulas import ConnectiveFormula, NegationFormula, PredicateApplication, PropConstant
-from .symbols import PropVariableSymbol
+
+
+if TYPE_CHECKING:
+    from .symbols import PropVariableSymbol
 
 
 @functools.total_ordering

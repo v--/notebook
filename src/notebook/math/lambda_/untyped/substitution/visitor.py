@@ -1,6 +1,5 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ...terms import (
     Constant,
@@ -11,6 +10,10 @@ from ...terms import (
     Variable,
 )
 from .substitution import UntypedTermSubstitution
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 @dataclass(frozen=True)

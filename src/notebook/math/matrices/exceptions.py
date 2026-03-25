@@ -11,3 +11,7 @@ class MatrixIndexError(MatrixError, IndexError):
 
 class MatrixValueError(MatrixError, ValueError):
     pass
+
+
+class IncompatibleMatrixError(MatrixError, ValueError):
+    pass

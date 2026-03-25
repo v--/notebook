@@ -32,7 +32,7 @@ class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
         return result
 
 
-class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](metaclass=GraphMeta):
+class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](metaclass=GraphMeta):  # noqa: PLW1641
     clone_initial: Callable[[], Self]
     vertices: VertexView
     edges: BaseEdgeView

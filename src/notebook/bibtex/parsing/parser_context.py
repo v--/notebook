@@ -36,7 +36,7 @@ class BibValueContext(ParserContext[BibToken]):
             first_token.offset,
             last_token.end_offset - 1,
             first_shown_token.offset,
-            last_shown_token.end_offset - 1
+            last_shown_token.end_offset - 1,
         )
 
         err.add_note(highlighter.highlight())

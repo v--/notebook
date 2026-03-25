@@ -9,8 +9,8 @@ from .parsing import parse_typed_term, parse_untyped_term
     dict(typed='(λx:τ.x)', untyped='(λx.x)'),
     dict(
         typed='(λx:σ.(λy:τ.(xy)))',
-        untyped='(λx.(λy.(xy)))'
-    )
+        untyped='(λx.(λy.(xy)))',
+    ),
 )
 def test_erase_annotations(typed: str, untyped: str) -> None:
     typed_term = parse_typed_term(typed)

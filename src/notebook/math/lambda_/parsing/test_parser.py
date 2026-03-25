@@ -25,16 +25,16 @@ from .parser import (
 @pytest_parametrize_kwargs(
     dict(
         term='x',
-        expected=Variable(LatinIdentifier('x'))
+        expected=Variable(LatinIdentifier('x')),
     ),
     dict(
         term='y',
-        expected=Variable(LatinIdentifier('y'))
+        expected=Variable(LatinIdentifier('y')),
     ),
     dict(
         term='y₁₂',
-        expected=Variable(LatinIdentifier('y', index=12))
-    )
+        expected=Variable(LatinIdentifier('y', index=12)),
+    ),
 )
 def test_parsing_valid_term_variables(term: str, expected: Variable) -> None:
     assert parse_variable(term) == expected
@@ -48,7 +48,7 @@ def test_parsing_accented_variable_name() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ä
           │ ^
-        '''
+        ''',
     )
 
 
@@ -60,7 +60,7 @@ def test_parsing_long_variable_names() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ xy
           │  ^
-        '''
+        ''',
     )
 
 
@@ -72,22 +72,22 @@ def test_parsing_invalid_variable_suffix() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ x₀₁
           │ ^^^
-        '''
+        ''',
     )
 
 
 @pytest_parametrize_kwargs(
     dict(
         term='H∧',
-        expected=Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H∧'))
+        expected=Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H∧')),
     ),
     dict(
         term='((H=x)x)',
         expected=TypedApplication(
             TypedApplication(Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H=')), Variable(LatinIdentifier('x'))),
             Variable(LatinIdentifier('x')),
-        )
-    )
+        ),
+    ),
 )
 def test_parsing_constants(term: str, expected: Constant) -> None:
     assert parse_typed_term(term, PLAIN_HOL_SIGNATURE) == expected
@@ -103,7 +103,7 @@ def test_parsing_constants(term: str, expected: Constant) -> None:
         '(λx.(λy.x))', # K combinator
         '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
         '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
-    ]
+    ],
 )
 def test_rebuilding_terms(term: str) -> None:
     assert str(parse_untyped_term(term)) == term
@@ -117,7 +117,7 @@ def test_parsing_abstraction_with_unclosed_parens() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (λx.x
           │ ^^^^^
-        '''
+        ''',
     )
 
 
@@ -129,7 +129,7 @@ def test_parsing_abstraction_with_unclosed_parens_truncated() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (λ
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -141,7 +141,7 @@ def test_parsing_abstraction_with_no_dot() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (λxx)
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -153,7 +153,7 @@ def test_parsing_empty_application() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ()
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -165,7 +165,7 @@ def test_parsing_incomplete_application() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (x)
           │ ^^^
-        '''
+        ''',
     )
 
 
@@ -174,7 +174,7 @@ def test_parsing_incomplete_application() -> None:
         '(λx.(λy.x))', # K combinator
         '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
         '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
-    ]
+    ],
 )
 def test_reparsing_terms(term: str) -> None:
     assert str(parse_untyped_term(str(parse_untyped_term(term)))) == term
@@ -183,16 +183,16 @@ def test_reparsing_terms(term: str) -> None:
 @pytest_parametrize_kwargs(
     dict(
         term='τ',
-        expected=TypeVariable(GreekIdentifier('τ'))
+        expected=TypeVariable(GreekIdentifier('τ')),
     ),
     dict(
         term='σ',
-        expected=TypeVariable(GreekIdentifier('σ'))
+        expected=TypeVariable(GreekIdentifier('σ')),
     ),
     dict(
         term='τ₁₂',
-        expected=TypeVariable(GreekIdentifier('τ', index=12))
-    )
+        expected=TypeVariable(GreekIdentifier('τ', index=12)),
+    ),
 )
 def test_parsing_valid_type_variables(term: str, expected: TypeVariable) -> None:
     assert parse_type_variable(term) == expected
@@ -204,7 +204,7 @@ def test_parsing_valid_type_variables(term: str, expected: TypeVariable) -> None
         'H¬',
         '(H¬p)',
         '(λx:ι.(H¬p))',
-    ]
+    ],
 )
 def test_rebuilding_term_with_constants(term: str) -> None:
     assert str(parse_typed_term(term, PLAIN_HOL_SIGNATURE)) == term
@@ -217,7 +217,7 @@ def test_rebuilding_term_with_constants(term: str) -> None:
         'M', # Placeholder
         '(H¬M)',
         '(λx:ι.(H¬M))',
-    ]
+    ],
 )
 def test_rebuilding_schema(schema: str) -> None:
     assert str(parse_typed_term_schema(schema, PLAIN_HOL_SIGNATURE)) == schema
@@ -231,7 +231,7 @@ def test_parsing_term_schema_with_regular_parser() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ M
           │ ^
-        '''
+        ''',
     )
 
 
@@ -248,15 +248,15 @@ def test_parsing_lambda_as_type_variable() -> None:
 @pytest_parametrize_kwargs(
     dict(
         type_='τ',
-        expected=TypeVariable(GreekIdentifier('τ'))
+        expected=TypeVariable(GreekIdentifier('τ')),
     ),
     dict(
         type_='(τ → σ)',
         expected=SimpleConnectiveType(
             BinaryTypeConnective.ARROW,
             TypeVariable(GreekIdentifier('τ')),
-            TypeVariable(GreekIdentifier('σ'))
-        )
+            TypeVariable(GreekIdentifier('σ')),
+        ),
     ),
     dict(
         type_='(τ × (σ → ρ))',
@@ -266,10 +266,10 @@ def test_parsing_lambda_as_type_variable() -> None:
             SimpleConnectiveType(
                 BinaryTypeConnective.ARROW,
                 TypeVariable(GreekIdentifier('σ')),
-                TypeVariable(GreekIdentifier('ρ'))
-            )
-        )
-    )
+                TypeVariable(GreekIdentifier('ρ')),
+            ),
+        ),
+    ),
 )
 def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
     assert parse_type(type_) == expected
@@ -282,8 +282,8 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
         'τ',
         '(σ → σ)',
         '(ι → (τ → σ))',
-        '((ι → τ) → σ)'
-    ]
+        '((ι → τ) → σ)',
+    ],
 )
 def test_rebuilding_type(type_: str) -> None:
     assert str(parse_type(type_, PLAIN_HOL_SIGNATURE)) == type_
@@ -297,7 +297,7 @@ def test_parsing_type_assertion_missing_arrow() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (τ σ)
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -316,7 +316,7 @@ def test_parsing_typed_abstraction_with_untyped_parser() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (λx:τ.x)
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -328,7 +328,7 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (λx.x)
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -336,14 +336,14 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
     assertion=[
         'x: τ',
         'p: (τ → τ)',
-        'f: (τ → σ)'
-    ]
+        'f: (τ → σ)',
+    ],
 )
 def test_parsing_type_assertion(assertion: str) -> None:
     term, type_ = assertion.split(': ', maxsplit=2)
     expected = TypeAssertion(
         parse_typed_term(term),
-        parse_type(type_)
+        parse_type(type_),
     )
 
     assert parse_type_assertion(assertion) == expected
@@ -357,7 +357,7 @@ def test_parsing_type_assertion_missing_colon() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ x τ
           │ ^^^
-        '''
+        ''',
     )
 
 
@@ -366,8 +366,8 @@ def test_parsing_type_assertion_missing_colon() -> None:
         '⊩ x: τ',
         'M: (τ → σ), N: τ ⊩ (MN): σ',
         '[x: τ] M: σ ⊩ (λx:τ.M): (τ → σ)',
-        '[x: τ] M: σ ⊩ [y: ρ] (λx:τ.M): (τ → σ)'
-    ]
+        '[x: τ] M: σ ⊩ [y: ρ] (λx:τ.M): (τ → σ)',
+    ],
 )
 def test_rebuilding_typing_rules(rule: str) -> None:
     assert parse_typing_rule('name', rule).without_name() == rule
@@ -381,7 +381,7 @@ def test_parsing_attached_schema_with_no_name() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [] x: τ ⊩ y: τ
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -393,5 +393,5 @@ def test_parsing_attached_schema_with_no_closing_bracket() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [x: τ y: τ ⊩ z: τ
           │ ^^^^^
-        '''
+        ''',
     )

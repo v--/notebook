@@ -1,10 +1,14 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import overload
+from typing import TYPE_CHECKING, overload
 
 from .exceptions import MissingSignatureSymbolError, SignatureMorphismError
-from .signature import FormalLogicSignature
 from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from .signature import FormalLogicSignature
 
 
 @dataclass

@@ -1,10 +1,15 @@
 from fractions import Fraction
 
+from .exceptions import InvalidArgumentError
+
 
 # This is alg:rational_number_power_bisection in the monograph
 def power_bisection(x: Fraction, y: Fraction, n: int) -> Fraction:
-    assert n > 0
-    assert x < y
+    if n <= 0:
+        raise InvalidArgumentError(f'Expected a positive power, but got {n}')
+
+    if x >= y:
+        raise InvalidArgumentError(f'Expected {x} to be less than {y}')
 
     if x < 1 < y:
         return Fraction(1, 1)

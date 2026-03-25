@@ -15,9 +15,9 @@ def test_derivation_and_parse_tree_basic() -> None:
         steps=[
             DerivationStep(
                 payload=[Terminal('a')],
-                rule=GrammarRule([NonTerminal('S')], [Terminal('a')])
-            )
-        ]
+                rule=GrammarRule([NonTerminal('S')], [Terminal('a')]),
+            ),
+        ],
     )
 
     tree = ParseTree(NonTerminal('S'), subtrees=[ParseTree(Terminal('a'))])
@@ -34,17 +34,17 @@ def test_derivation_and_parse_tree_branching() -> None:
         steps=[
             DerivationStep(
                 payload=[Terminal('a'), NonTerminal('S'), Terminal('b')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('a'), NonTerminal('S'), Terminal('b'), Terminal('b')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('a'), Terminal('a'), Terminal('b'), Terminal('b'), Terminal('b')],
-                rule=rule_b
-            )
-        ]
+                rule=rule_b,
+            ),
+        ],
     )
 
     tree = ParseTree(
@@ -59,14 +59,14 @@ def test_derivation_and_parse_tree_branching() -> None:
                         NonTerminal('S'),
                         subtrees=[
                             ParseTree(Terminal('a')),
-                            ParseTree(Terminal('b'))
-                        ]
+                            ParseTree(Terminal('b')),
+                        ],
                     ),
-                    ParseTree(Terminal('b'))
-                ]
+                    ParseTree(Terminal('b')),
+                ],
             ),
-            ParseTree(Terminal('b'))
-        ]
+            ParseTree(Terminal('b')),
+        ],
     )
 
     assert derivation_to_parse_tree(derivation) == tree
@@ -84,21 +84,21 @@ def test_derivation_to_parse_tree_rearrangement() -> None:
         steps=[
             DerivationStep(
                 payload=[Terminal('A'), NonTerminal('S'), Terminal('B')],
-                rule=rule_s
+                rule=rule_s,
             ),
             DerivationStep(
                 payload=[Terminal('A'), Terminal('B')],
-                rule=rule_e
+                rule=rule_e,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('B')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('b')],
-                rule=rule_b
-            )
-        ]
+                rule=rule_b,
+            ),
+        ],
     )
 
     derivation_2 = Derivation(
@@ -106,21 +106,21 @@ def test_derivation_to_parse_tree_rearrangement() -> None:
         steps=[
             DerivationStep(
                 payload=[Terminal('A'), NonTerminal('S'), Terminal('B')],
-                rule=rule_s
+                rule=rule_s,
             ),
             DerivationStep(
                 payload=[Terminal('a'), NonTerminal('S'), Terminal('B')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('B')],
-                rule=rule_e
+                rule=rule_e,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('b')],
-                rule=rule_b
-            )
-        ]
+                rule=rule_b,
+            ),
+        ],
     )
 
     assert derivation_to_parse_tree(derivation_1) == derivation_to_parse_tree(derivation_2)
@@ -134,13 +134,13 @@ def test_derivation_and_parse_tree_epsilon() -> None:
         steps=[
             DerivationStep(
                 payload=[Terminal('a'), NonTerminal('S'), Terminal('b')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('b')],
-                rule=rule_b
-            )
-        ]
+                rule=rule_b,
+            ),
+        ],
     )
 
     tree = ParseTree(
@@ -148,8 +148,8 @@ def test_derivation_and_parse_tree_epsilon() -> None:
         subtrees=[
             ParseTree(Terminal('a')),
             ParseTree(NonTerminal('S'), subtrees=[]),
-            ParseTree(Terminal('b'))
-        ]
+            ParseTree(Terminal('b')),
+        ],
     )
 
     assert derivation_to_parse_tree(derivation) == tree
@@ -164,17 +164,17 @@ def test_derivation_and_parse_tree_left_recursion() -> None:
         steps=[
             DerivationStep(
                 payload=[NonTerminal('S'), Terminal('a')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[NonTerminal('S'), Terminal('a'), Terminal('a')],
-                rule=rule_a
+                rule=rule_a,
             ),
             DerivationStep(
                 payload=[Terminal('a'), Terminal('a'), Terminal('a')],
-                rule=rule_b
-            )
-        ]
+                rule=rule_b,
+            ),
+        ],
     )
 
     tree = ParseTree(
@@ -186,14 +186,14 @@ def test_derivation_and_parse_tree_left_recursion() -> None:
                     ParseTree(
                         NonTerminal('S'),
                         subtrees=[
-                            ParseTree(Terminal('a'))
-                        ]
+                            ParseTree(Terminal('a')),
+                        ],
                     ),
-                    ParseTree(Terminal('a'))
-                ]
+                    ParseTree(Terminal('a')),
+                ],
             ),
-            ParseTree(Terminal('a'))
-        ]
+            ParseTree(Terminal('a')),
+        ],
     )
 
     assert derivation_to_parse_tree(derivation) == tree

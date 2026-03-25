@@ -1,9 +1,14 @@
-# ruff: noqa: ARG002
+# ruff: noqa: S101, ARG002
 
-from ..assertions import VariableTypeAssertion
+from typing import TYPE_CHECKING
+
 from ..type_derivation import AssumptionTree, RuleApplicationTree, TypeDerivationTree, UnknownDerivationRuleError
-from ..types import SimpleType
 from .system import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+
+
+if TYPE_CHECKING:
+    from ..assertions import VariableTypeAssertion
+    from ..types import SimpleType
 
 
 class SimpleAlgebraicDerivationTreeVisitor[T]:
@@ -24,14 +29,14 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
                 return self.visit_arrow_elim(
                     tree=tree,
                     subtree_left=tree.premises[0].tree,
-                    subtree_right=tree.premises[1].tree
+                    subtree_right=tree.premises[1].tree,
                 )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋']:
             return self.visit_empty_elim(
                 tree=tree,
                 subtree=tree.premises[0].tree,
-                new_type=tree.conclusion.type
+                new_type=tree.conclusion.type,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']:
@@ -41,31 +46,31 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
             return self.visit_prod_intro(
                 tree=tree,
                 left_subtree=tree.premises[0].tree,
-                right_subtree=tree.premises[1].tree
+                right_subtree=tree.premises[1].tree,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₋ₗ']:
             return self.visit_prod_elim_left(
                 tree=tree,
-                subtree=tree.premises[0].tree
+                subtree=tree.premises[0].tree,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₋ᵣ']:
             return self.visit_prod_elim_right(
                 tree=tree,
-                subtree=tree.premises[1].tree
+                subtree=tree.premises[1].tree,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ']:
             return self.visit_sum_intro_left(
                 tree=tree,
-                subtree=tree.premises[0].tree
+                subtree=tree.premises[0].tree,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ᵣ']:
             return self.visit_sum_intro_left(
                 tree=tree,
-                subtree=tree.premises[1].tree
+                subtree=tree.premises[1].tree,
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋']:

@@ -1,15 +1,19 @@
 import asyncio
-import pathlib
 import shutil
-from collections.abc import Iterable
-from typing import override
+from typing import TYPE_CHECKING, override
 
 import texoutparse
 
 from ....paths import AUX_PATH
 from ..trigger import TaskTrigger, TaskTriggerKind
 from .cli import CliTask
-from .runner import TaskRunner
+
+
+if TYPE_CHECKING:
+    import pathlib
+    from collections.abc import Iterable
+
+    from .runner import TaskRunner
 
 
 TEX_LOG_ENCODING = 'latin-1'
@@ -32,14 +36,14 @@ class LaTeXTask(CliTask):
 
     @override
     def get_build_command(self) -> str:
-        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.trigger.path)
+        return rf'pdflatex -interaction=batchmode -output-directory={AUX_PATH} {self.trigger.path}'
 
     @override
     def get_build_out_buffer(self) -> int:
         return asyncio.subprocess.DEVNULL
 
     @override
-    async def build_post_process(self, runner: TaskRunner) -> None:
+    async def build_post_process(self, runner: TaskRunner) -> None:  # noqa: PLR0912
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
         requires_biber_rerun = False
@@ -83,8 +87,8 @@ class LaTeXTask(CliTask):
                 LaTeXTask(
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                     reason='rerunfilecheck',
-                    base_logger=self.base_logger
-                )
+                    base_logger=self.base_logger,
+                ),
             )
         elif requires_biber_rerun:
             from .biber import BiberTask  # Avoid circular import  # noqa: PLC0415
@@ -92,8 +96,8 @@ class LaTeXTask(CliTask):
                 BiberTask(
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                     reason=self.trigger.path.name,
-                    base_logger=self.base_logger
-                )
+                    base_logger=self.base_logger,
+                ),
             )
         else:
             output_path = self.get_output_path()

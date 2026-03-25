@@ -1,9 +1,12 @@
-from collections.abc import Mapping, Sequence
-from typing import Literal, get_args
+from typing import TYPE_CHECKING, Literal, get_args
 
 from ....parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
 from ....support.inference import ImproperInferenceRuleSymbol
 from ..alphabet import AuxImproperSymbol, BinaryTypeConnective
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 
 LambdaTokenKind = Literal[

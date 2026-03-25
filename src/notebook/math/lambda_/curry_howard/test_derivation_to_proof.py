@@ -1,10 +1,10 @@
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import proof_tree as ptree
 from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
-from ...logic.signature import FormalLogicSignature
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..parsing import (
     parse_type,
@@ -16,6 +16,10 @@ from ..parsing import (
 from ..type_derivation import tree as dtree
 from .derivation_to_proof import type_derivation_to_proof_tree, type_to_formula
 from .proof_to_derivation import formula_to_type, proof_tree_to_type_derivation
+
+
+if TYPE_CHECKING:
+    from ...logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -38,17 +42,17 @@ class TestTypeDerivationToProofTree:
     # x: τ
     def test_assumption(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.assume(
-            parse_variable_assertion('x: τ')
+            parse_variable_assertion('x: τ'),
         )
 
         assert str(derivation) == dedent('''\
             x: τ
-            '''
+            ''',
         )
 
         proof = ptree.assume(
             parse_formula('τ',ch_logic_dummy_signature),
-            parse_marker('x')
+            parse_marker('x'),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -62,7 +66,7 @@ class TestTypeDerivationToProofTree:
         assert str(derivation) == dedent('''\
             _____ 𝟙₊
             U₊: 𝟙
-            '''
+            ''',
         )
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
@@ -75,26 +79,26 @@ class TestTypeDerivationToProofTree:
                 parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
             implicit_types={
-                parse_type_placeholder('τ'): parse_type('τ')
-            }
+                parse_type_placeholder('τ'): parse_type('τ'),
+            },
         )
 
         assert str(derivation) == dedent('''\
              x: 𝟘
             ________ 𝟘₋
             (E₋x): τ
-            '''
+            ''',
         )
 
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
             ptree.assume(
                 parse_formula('⊥', ch_logic_dummy_signature),
-                parse_marker('x')
+                parse_marker('x'),
             ),
             implicit={
-                parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-            }
+                parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+            },
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -106,16 +110,16 @@ class TestTypeDerivationToProofTree:
             dtree.premise_config(
                 attachments=[parse_variable_assertion('x: τ')],
                 tree=dtree.assume(
-                    parse_variable_assertion('y: σ')
-                )
-            )
+                    parse_variable_assertion('y: σ'),
+                ),
+            ),
         )
 
         assert str(derivation) == dedent('''\
                  y: σ
             _________________ →₊
             (λx:τ.y): (τ → σ)
-            '''
+            ''',
         )
 
         proof = ptree.apply(
@@ -125,13 +129,13 @@ class TestTypeDerivationToProofTree:
                     ptree.MarkedFormula(
                         parse_formula('τ', ch_logic_dummy_signature),
                         parse_marker('x'),
-                    )
+                    ),
                 ],
                 tree=ptree.assume(
                     parse_formula('σ', ch_logic_dummy_signature),
-                    parse_marker('y')
+                    parse_marker('y'),
                 ),
-            )
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -141,30 +145,30 @@ class TestTypeDerivationToProofTree:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₊'],
             dtree.assume(
-                parse_variable_assertion('x: τ')
+                parse_variable_assertion('x: τ'),
             ),
             dtree.assume(
-                parse_variable_assertion('y: σ')
-            )
+                parse_variable_assertion('y: σ'),
+            ),
         )
 
         assert str(derivation) == dedent('''\
             x: τ      y: σ
             _________________ ×₊
             ((P₊x)y): (τ × σ)
-            '''
+            ''',
         )
 
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₊'],
             ptree.assume(
                 parse_formula('τ', ch_logic_dummy_signature),
-                parse_marker('x')
+                parse_marker('x'),
             ),
             ptree.assume(
                 parse_formula('σ', ch_logic_dummy_signature),
-                parse_marker('y')
-            )
+                parse_marker('y'),
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -176,12 +180,12 @@ class TestTypeDerivationToProofTree:
             dtree.apply(
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₊'],
                 dtree.assume(
-                    parse_variable_assertion('x: τ')
+                    parse_variable_assertion('x: τ'),
                 ),
                 dtree.assume(
-                    parse_variable_assertion('y: σ')
-                )
-            )
+                    parse_variable_assertion('y: σ'),
+                ),
+            ),
         )
 
         assert str(derivation) == dedent('''\
@@ -190,7 +194,7 @@ class TestTypeDerivationToProofTree:
             ((P₊x)y): (τ × σ)
             _________________ ×₋ₗ
             (P₋ₗ((P₊x)y)): τ
-            '''
+            ''',
         )
 
         proof = ptree.apply(
@@ -199,13 +203,13 @@ class TestTypeDerivationToProofTree:
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₊'],
                 ptree.assume(
                     parse_formula('τ', ch_logic_dummy_signature),
-                    parse_marker('x')
+                    parse_marker('x'),
                 ),
                 ptree.assume(
                     parse_formula('σ', ch_logic_dummy_signature),
-                    parse_marker('y')
-                )
-            )
+                    parse_marker('y'),
+                ),
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -216,13 +220,13 @@ class TestTypeDerivationToProofTree:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋'],
             dtree.assume(
-                parse_variable_assertion('x: (τ + 𝟘)', SIMPLE_ALGEBRAIC_SIGNATURE)
+                parse_variable_assertion('x: (τ + 𝟘)', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
             dtree.premise_config(
                 attachments=[parse_variable_assertion('a: τ')],
                 tree=dtree.assume(
-                    parse_variable_assertion('a: τ')
-                )
+                    parse_variable_assertion('a: τ'),
+                ),
             ),
             dtree.premise_config(
                 attachments=[parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)],
@@ -232,10 +236,10 @@ class TestTypeDerivationToProofTree:
                         parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
                     ),
                     implicit_types={
-                        parse_type_placeholder('τ'): parse_type('τ')
-                    }
-                )
-            )
+                        parse_type_placeholder('τ'): parse_type('τ'),
+                    },
+                ),
+            ),
         )
 
         assert str(derivation) == dedent('''\
@@ -244,45 +248,45 @@ class TestTypeDerivationToProofTree:
                  x: (τ + 𝟘)      a: τ      (E₋b): τ
             a, b __________________________________ +₋
                   (((S₋(λa:τ.a))(λb:𝟘.(E₋b)))x): τ
-            '''
+            ''',
         )
 
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₋'],
             ptree.assume(
                 parse_formula('(τ ∨ ⊥)', ch_logic_dummy_signature),
-                parse_marker('x')
+                parse_marker('x'),
             ),
             ptree.premise_config(
                 attachments=[
                     ptree.MarkedFormula(
                         parse_formula('τ', ch_logic_dummy_signature),
-                        parse_marker('a')
-                    )
+                        parse_marker('a'),
+                    ),
                 ],
                 tree=ptree.assume(
                     parse_formula('τ', ch_logic_dummy_signature),
-                    parse_marker('a')
+                    parse_marker('a'),
                 ),
             ),
             ptree.premise_config(
                 attachments=[
                     ptree.MarkedFormula(
                         parse_formula('⊥', ch_logic_dummy_signature),
-                        parse_marker('b')
-                    )
+                        parse_marker('b'),
+                    ),
                 ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
                     ptree.assume(
                         parse_formula('⊥', ch_logic_dummy_signature),
-                        parse_marker('b')
+                        parse_marker('b'),
                     ),
                     implicit={
-                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-                    }
+                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+                    },
                 ),
-            )
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -295,7 +299,7 @@ class TestTypeDerivationToProofTree:
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₋ᵣ'],
                 dtree.assume(
                     parse_variable_assertion('x: (τ × (σ + ρ))'),
-                )
+                ),
             ),
             dtree.premise_config(
                 tree=dtree.apply(
@@ -304,8 +308,8 @@ class TestTypeDerivationToProofTree:
                         parse_variable_assertion('a: σ'),
                     ),
                     implicit_types={
-                        parse_type_placeholder('τ'): parse_type('τ')
-                    }
+                        parse_type_placeholder('τ'): parse_type('τ'),
+                    },
                 ),
                 attachments=[parse_variable_assertion('a: σ')],
             ),
@@ -316,17 +320,17 @@ class TestTypeDerivationToProofTree:
                         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₋ₗ'],
                         dtree.assume(
                             parse_variable_assertion('x: (τ × (σ + ρ))'),
-                        )
+                        ),
                     ),
                     implicit_types={
-                        parse_type_placeholder('σ'): parse_type('σ')
-                    }
+                        parse_type_placeholder('σ'): parse_type('σ'),
+                    },
                 ),
                 attachments=[parse_variable_assertion('b: ρ')],
             ),
             implicit_variables={
                 parse_variable_placeholder('y'): parse_variable('b'),
-            }
+            },
         )
 
         assert str(derivation) == dedent('''\
@@ -337,7 +341,7 @@ class TestTypeDerivationToProofTree:
                (P₋ᵣx): (σ + ρ)          (S₊ᵣa): (τ + σ)        (S₊ₗ(P₋ₗx)): (τ + σ)
             a _____________________________________________________________________ +₋
                      (((S₋(λa:σ.(S₊ᵣa)))(λb:ρ.(S₊ₗ(P₋ₗx))))(P₋ᵣx)): (τ + σ)
-            '''
+            ''',
         )
 
         proof = ptree.apply(
@@ -346,33 +350,33 @@ class TestTypeDerivationToProofTree:
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₋ᵣ'],
                 ptree.assume(
                     parse_formula('(τ ∧ (σ ∨ ρ))', ch_logic_dummy_signature),
-                    marker=parse_marker('x')
-                )
+                    marker=parse_marker('x'),
+                ),
             ),
             ptree.premise_config(
                 attachments=[
                     ptree.MarkedFormula(
                         parse_formula('σ', ch_logic_dummy_signature),
-                        parse_marker('a')
-                    )
+                        parse_marker('a'),
+                    ),
                 ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
                     ptree.assume(
                         parse_formula('σ', ch_logic_dummy_signature),
-                        marker=parse_marker('a')
+                        marker=parse_marker('a'),
                     ),
                     implicit={
-                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-                    }
+                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+                    },
                 ),
             ),
             ptree.premise_config(
                 attachments=[
                     ptree.MarkedFormula(
                         parse_formula('ρ', ch_logic_dummy_signature),
-                        parse_marker('b')
-                    )
+                        parse_marker('b'),
+                    ),
                 ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
@@ -380,14 +384,14 @@ class TestTypeDerivationToProofTree:
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₋ₗ'],
                         ptree.assume(
                             parse_formula('(τ ∧ (σ ∨ ρ))', ch_logic_dummy_signature),
-                            marker=parse_marker('x')
-                        )
+                            marker=parse_marker('x'),
+                        ),
                     ),
                     implicit={
-                        parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature)
-                    }
+                        parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature),
+                    },
                 ),
-            )
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof

@@ -12,7 +12,7 @@ from .discrete_logarithm import DiscreteLogarithmError, naive_discrete_logarithm
     dict(base=Z5(2), x=Z5(2), y=1),
     dict(base=Z5(2), x=Z5(3), y=3),
     dict(base=Z7(3), x=Z7(2), y=2),
-    dict(base=Z7(5), x=Z7(3), y=5)
+    dict(base=Z7(5), x=Z7(3), y=5),
 )
 def test_naive_discrete_logarithm[T: BaseIntModulo](base: T, x: T, y: int) -> None:
     assert naive_discrete_logarithm(base, x) == y
@@ -20,7 +20,7 @@ def test_naive_discrete_logarithm[T: BaseIntModulo](base: T, x: T, y: int) -> No
 
 @pytest_parametrize_kwargs(
     dict(base=Z5(4), x=Z5(3)),
-    dict(base=Z7(2), x=Z7(3))
+    dict(base=Z7(2), x=Z7(3)),
 )
 def test_naive_discrete_logarithm_failure_nonprime[T: BaseIntModulo](base: T, x: T) -> None:
     with pytest.raises(DiscreteLogarithmError, match=re.escape(f'The base {base!r} is not a primitive root.')):

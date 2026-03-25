@@ -1,8 +1,7 @@
-from collections.abc import Iterator, MutableMapping
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
-from ..types import SimpleType
 from .exceptions import HolSignatureError
 from .symbols import (
     LogicalConstantSymbol,
@@ -12,6 +11,12 @@ from .symbols import (
     common_constants,
     common_types,
 )
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator, MutableMapping
+
+    from ..types import SimpleType
 
 
 @dataclass

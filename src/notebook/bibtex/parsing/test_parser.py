@@ -24,7 +24,7 @@ def test_invalid_entry() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │  test
           │  ^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -36,7 +36,7 @@ def test_invalid_entry_type() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @123↵
           │  ^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -48,7 +48,7 @@ def test_end_after_entry_type() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book
           │  ^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -60,7 +60,7 @@ def test_unknown_entry_type() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @test
           │  ^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -72,7 +72,7 @@ def test_entry_name_string_end() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{
           │      ^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -84,14 +84,14 @@ def test_empty_entry_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{}
           │       ^
-        '''[1:]
+        '''[1:],
     )
 
 
 def test_no_properties() -> None:
     string = dedent(r'''
         @book{test}
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -101,7 +101,7 @@ def test_no_properties() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test}↵
           │ ^^^^^^^^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -109,7 +109,7 @@ def test_value_without_equality() -> None:
     string = dedent(r'''
         @book{test,
           title < "title"
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -120,14 +120,14 @@ def test_value_without_equality() -> None:
         1 │ @book{test,↵
         2 │   title < "title"↵
           │         ^
-      '''[1:]
+      '''[1:],
     )
 
 
 def test_key_without_value() -> None:
     string = dedent(r'''
         @book{test,
-          title ='''[1:]
+          title ='''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -138,7 +138,7 @@ def test_key_without_value() -> None:
         1 │ @book{test,↵
         2 │   title =
           │         ^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -146,7 +146,7 @@ def test_no_closing_brace() -> None:
     string = dedent(r'''
         @book{test,
           title = "title"
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -157,7 +157,7 @@ def test_no_closing_brace() -> None:
         1 │ @book{test,↵
         2 │   title = "title"↵
           │                  ^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -166,7 +166,7 @@ def test_no_title() -> None:
         @book{test,
           edition = 1
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -180,7 +180,7 @@ def test_no_title() -> None:
           │ ^^^^^^^^^^^^^^
         3 │ }↵
           │ ^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -191,7 +191,7 @@ def test_minimal_valid_entry() -> None:
           author = {A B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
     entries = parse_bibtex(string)
     assert len(entries) == 1
@@ -200,7 +200,7 @@ def test_minimal_valid_entry() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -211,7 +211,7 @@ def test_multiple_languages() -> None:
           author = {A B},
           language = {english and russian}
         }
-        '''[1:]
+        '''[1:],
     )
     entries = parse_bibtex(string)
     assert len(entries) == 1
@@ -220,7 +220,7 @@ def test_multiple_languages() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english', 'russian']
+        languages=['english', 'russian'],
     )
 
 
@@ -231,7 +231,7 @@ def test_title_with_percent() -> None:
           author = {A B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
     entries = parse_bibtex(string)
     assert len(entries) == 1
@@ -240,7 +240,7 @@ def test_title_with_percent() -> None:
         entry_name='test',
         title='Te%st',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -251,7 +251,7 @@ def test_trailing_comma() -> None:
           author = {A B},
           language = {english},
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -265,7 +265,7 @@ def test_trailing_comma() -> None:
         4 │   language = {english},↵
           │                       ^
         5 │ }↵
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -276,7 +276,7 @@ def test_author_with_and_in_name() -> None:
           author = {Randy},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -286,7 +286,7 @@ def test_author_with_and_in_name() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='Randy')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -297,7 +297,7 @@ def test_multiple_authors() -> None:
           author = {A B and C D},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -307,7 +307,7 @@ def test_multiple_authors() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B'), BibAuthor(full_name='C D')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -319,7 +319,7 @@ def test_translator() -> None:
           translator = {C D},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -330,7 +330,7 @@ def test_translator() -> None:
         title='Test',
         authors=[BibAuthor(full_name='A B')],
         translators=[BibAuthor(full_name='C D')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -341,7 +341,7 @@ def test_authors_only_and() -> None:
           author = {and},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -353,7 +353,7 @@ def test_authors_only_and() -> None:
         2 │   title = {Test},↵
         3 │   author = {and},↵
           │            ^^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -364,7 +364,7 @@ def test_authors_double_and() -> None:
           author = {A and and B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -376,7 +376,7 @@ def test_authors_double_and() -> None:
         2 │   title = {Test},↵
         3 │   author = {A and and B},↵
           │            ^^^^^^^^^^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -387,7 +387,7 @@ def test_authors_empty_name() -> None:
           author = {A and},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -399,7 +399,7 @@ def test_authors_empty_name() -> None:
         2 │   title = {Test},↵
         3 │   author = {A and},↵
           │            ^^^^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -410,7 +410,7 @@ def test_single_verbatim_author() -> None:
           author = {{Verbatim}},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -420,7 +420,7 @@ def test_single_verbatim_author() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Verbatim'))],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -431,7 +431,7 @@ def test_multiple_verbatim_authors() -> None:
           author = {{Verbatim} and {Verbatim 2}},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -443,8 +443,8 @@ def test_multiple_verbatim_authors() -> None:
         languages=['english'],
         authors=[
             BibAuthor(full_name=VerbatimString('Verbatim')),
-            BibAuthor(full_name=VerbatimString('Verbatim 2'))
-        ]
+            BibAuthor(full_name=VerbatimString('Verbatim 2')),
+        ],
     )
 
 
@@ -455,7 +455,7 @@ def test_mixed_verbatim_author() -> None:
           author = {A, {B and C D}},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -467,7 +467,7 @@ def test_mixed_verbatim_author() -> None:
         languages=['english'],
         authors=[
             BibAuthor(full_name=CompositeString(['A, ', VerbatimString('B and C D')])),
-        ]
+        ],
     )
 
 
@@ -478,7 +478,7 @@ def test_one_verbatim_authors_with_and() -> None:
           author = {{Verbatim and Verbatim 2}},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -488,7 +488,7 @@ def test_one_verbatim_authors_with_and() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -499,7 +499,7 @@ def test_one_verbatim_authors_with_quotes() -> None:
           author = "{Long verbatim name}",
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -509,7 +509,7 @@ def test_one_verbatim_authors_with_quotes() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Long verbatim name'))],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -520,7 +520,7 @@ def test_minimal_valid_entry_escape() -> None:
           author = {A B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -530,7 +530,7 @@ def test_minimal_valid_entry_escape() -> None:
         entry_name='test',
         title='{Test}',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -541,7 +541,7 @@ def test_minimal_valid_entry_quotes() -> None:
           author = "A B",
           language = "english"
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -551,7 +551,7 @@ def test_minimal_valid_entry_quotes() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -562,7 +562,7 @@ def test_minimal_valid_entry_quote_escape() -> None:
           author = "A B",
           language = "english"
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -572,14 +572,14 @@ def test_minimal_valid_entry_quote_escape() -> None:
         entry_name='test',
         title='Test "',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
 
 
 def test_unclosed_demimiter() -> None:
     string = dedent(r'''
         @book{test,
-          title = {Test'''[1:]
+          title = {Test'''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -590,14 +590,14 @@ def test_unclosed_demimiter() -> None:
         1 │ @book{test,↵
         2 │   title = {Test
           │           ^^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
 def test_escape_truncated() -> None:
     string = dedent('''
         @book{test,
-          title = {Test \\'''[1:]
+          title = {Test \\'''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -608,7 +608,7 @@ def test_escape_truncated() -> None:
         1 │ @book{test,↵
         2 │   title = {Test \
           │                 ^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -619,7 +619,7 @@ def test_invalid_escape() -> None:
           author = {A B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -630,7 +630,7 @@ def test_invalid_escape() -> None:
         1 │ @book{test,↵
         2 │   title = {Test \},↵
           │                    ^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -647,7 +647,7 @@ def test_two_valid_entries() -> None:
           author = {А Б},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -657,14 +657,14 @@ def test_two_valid_entries() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        languages=['english']
+        languages=['english'],
     )
     assert entries[1] == BibEntry(
         entry_type='book',
         entry_name='тест',
         title='Тест',
         authors=[BibAuthor(full_name='А Б')],
-        languages=['russian']
+        languages=['russian'],
     )
 
 
@@ -681,7 +681,7 @@ def test_duplicate_name() -> None:
           author = {A B},
           language = {english}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -691,7 +691,7 @@ def test_duplicate_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         7 │ @book{test,↵
           │       ^^^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -703,7 +703,7 @@ def test_ampersand_removal() -> None:
           language = {english},
           publisher = {Chapman \& Hall/CRC}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -714,7 +714,7 @@ def test_ampersand_removal() -> None:
         title='Test',
         authors=[BibAuthor(full_name='A B')],
         languages=['english'],
-        publisher='Chapman & Hall/CRC'
+        publisher='Chapman & Hall/CRC',
     )
 
 
@@ -726,7 +726,7 @@ def test_url_ampersand_removal() -> None:
           language = {english},
           url = {http://api.com?a=1&b=2}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -737,7 +737,7 @@ def test_url_ampersand_removal() -> None:
         title='Test',
         authors=[BibAuthor(full_name='A B')],
         languages=['english'],
-        url='http://api.com?a=1&b=2'
+        url='http://api.com?a=1&b=2',
     )
 
 
@@ -749,7 +749,7 @@ def test_empty_isbn() -> None:
           language = {english},
           isbn = {}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -763,7 +763,7 @@ def test_empty_isbn() -> None:
         4 │   language = {english},↵
         5 │   isbn = {}↵
           │          ^^
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -775,7 +775,7 @@ def test_shortauthor_simple() -> None:
           shortauthor = {A},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -785,7 +785,7 @@ def test_shortauthor_simple() -> None:
         entry_name='тест',
         title='Тест',
         authors=[BibAuthor(full_name='А Б', short_name='A')],
-        languages=['russian']
+        languages=['russian'],
     )
 
 
@@ -797,7 +797,7 @@ def test_shortauthor_two_names() -> None:
           shortauthor = {A and V},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -808,9 +808,9 @@ def test_shortauthor_two_names() -> None:
         title='Тест',
         authors=[
             BibAuthor(full_name='А Б', short_name='A'),
-            BibAuthor(full_name='В Г', short_name='V')
+            BibAuthor(full_name='В Г', short_name='V'),
         ],
-        languages=['russian']
+        languages=['russian'],
     )
 
 
@@ -822,7 +822,7 @@ def test_shortauthor_others() -> None:
           shortauthor = {A},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -833,9 +833,9 @@ def test_shortauthor_others() -> None:
         title='Тест',
         authors=[
             BibAuthor(full_name='А Б', short_name='A'),
-            BibAuthor(full_name='others')
+            BibAuthor(full_name='others'),
         ],
-        languages=['russian']
+        languages=['russian'],
     )
 
 
@@ -847,7 +847,7 @@ def test_shortauthor_insufficient() -> None:
           shortauthor = {A},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -862,7 +862,7 @@ def test_shortauthor_insufficient() -> None:
           │                 ^^^
         5 │   language = {russian}↵
         6 │ }↵
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -874,7 +874,7 @@ def test_shortauthor_verbatim_overfull() -> None:
           shortauthor = {A and V},
           language = {russian}
         }
-        '''[1:]
+        '''[1:],
     )
 
     with pytest.raises(ParserError) as excinfo:
@@ -889,7 +889,7 @@ def test_shortauthor_verbatim_overfull() -> None:
           │                 ^^^^^^^^^
         5 │   language = {russian}↵
         6 │ }↵
-      '''[1:]
+      '''[1:],
     )
 
 
@@ -907,7 +907,7 @@ def test_article_entry() -> None:
           title = {Existence of bases implies the axiom of choice},
           volume = {31}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)
@@ -924,7 +924,7 @@ def test_article_entry() -> None:
         date='1984',
         pages='31-33',
         issn='1098-3627',
-        volume='31'
+        volume='31',
     )
 
 
@@ -942,7 +942,7 @@ def test_arxiv_entry() -> None:
           title = {An Existence Theorem for Non-Euclidean PID's},
           volume = {16}
         }
-        '''[1:]
+        '''[1:],
     )
 
     entries = parse_bibtex(string)

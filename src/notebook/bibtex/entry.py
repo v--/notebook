@@ -1,3 +1,5 @@
+# ruff: noqa: TC001, TC003
+
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import Annotated, Literal, get_args, get_type_hints
@@ -32,7 +34,7 @@ BibEntryType = Literal[
     'report',
     'techreport',
     'thesis',
-    'unpublished'
+    'unpublished',
 ]
 
 
@@ -51,8 +53,10 @@ class BibFieldAnnotation:
 @dataclass()
 class BibEntry:
     """Customized biblatex entry specific for the citations in this monograph.
+
     Includes almost all fields from https://www.bibtex.com/format/fields/ (except type, annote and organization), but also a lot of other fields.
     """
+
     entry_type:    Annotated[BibEntryType, BibFieldAnnotation(meta=True)]
     entry_name:    Annotated[str, BibFieldAnnotation(meta=True)]
     # Base fields

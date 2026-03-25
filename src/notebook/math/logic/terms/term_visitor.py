@@ -31,5 +31,5 @@ class TermTransformationVisitor(TermVisitor[Term]):
     def visit_function(self, term: FunctionApplication) -> Term:
         return FunctionApplication(
             term.symbol,
-            [self.visit(arg) for arg in term.arguments]
+            [self.visit(arg) for arg in term.arguments],
         )

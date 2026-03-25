@@ -1,7 +1,6 @@
 import contextlib
 import itertools
-from collections.abc import Iterable, MutableMapping, Sequence
-from typing import Any, Self, cast, override
+from typing import TYPE_CHECKING, Any, Self, cast, override
 
 from ....parsing import LatinIdentifier, is_latin_identifier
 from ....support.iteration import string_accumulator
@@ -10,6 +9,10 @@ from ...rings.types import IRing, ISemiring
 from ..exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError
 from ..monomial import Monomial, const
 from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, MutableMapping, Sequence
 
 
 class PolynomialMeta(type):
@@ -26,7 +29,7 @@ class PolynomialMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
+class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):  # noqa: PLW1641
     _coefficients: MutableMapping[Monomial, N]
 
     @classmethod
@@ -43,7 +46,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     @property
     def total_degree(self) -> PolynomialDegree:
         return PolynomialDegree(
-            max((mon.degree for mon in self._coefficients.keys()), default=None)
+            max((mon.degree for mon in self._coefficients), default=None),
         )
 
     @property
@@ -161,7 +164,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return str(self)
 
     def __call__(self, **kwargs: N) -> N:
-        for key in kwargs.keys():
+        for key in kwargs:
             if not is_latin_identifier(key, capitalization=Capitalization.SMALL):
                 raise IndeterminateError(f'The parameter name {key} is not a valid indeterminate name.') from None
 

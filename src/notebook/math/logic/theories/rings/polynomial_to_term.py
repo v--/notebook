@@ -21,7 +21,7 @@ def number_to_term(num: int) -> Term:
     if num > 1:
         return FunctionApplication(PLUS, [
             ONE_TERM,
-            number_to_term(num - 1)
+            number_to_term(num - 1),
         ])
 
     return FunctionApplication(MINUS, [number_to_term(-num)])
@@ -41,8 +41,8 @@ def monomial_to_term(mon: Monomial) -> Term:
     return FunctionApplication(TIMES, [
         Variable(indet),
         monomial_to_term(
-            Monomial({indet: mon[indet] - 1} | {ind: mon[ind] for ind in rest})
-        )
+            Monomial({indet: mon[indet] - 1} | {ind: mon[ind] for ind in rest}),
+        ),
     ])
 
 
@@ -63,7 +63,7 @@ def polynomial_to_term(pol: IntPolynomial) -> Term:
     else:
         mon_term = FunctionApplication(TIMES, [
             number_to_term(pol[mon]),
-            monomial_to_term(mon)
+            monomial_to_term(mon),
         ])
 
     if len(rest) == 0:
@@ -71,5 +71,5 @@ def polynomial_to_term(pol: IntPolynomial) -> Term:
 
     return FunctionApplication(PLUS, [
         mon_term,
-        polynomial_to_term(IntPolynomial.from_mapping({m: pol[m] for m in rest}))
+        polynomial_to_term(IntPolynomial.from_mapping({m: pol[m] for m in rest})),
     ])

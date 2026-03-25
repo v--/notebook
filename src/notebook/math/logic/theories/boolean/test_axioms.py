@@ -27,7 +27,7 @@ def test_bottom_absorption_proof() -> None:
                             conclusion_config=parse_formula_with_substitution('∀y.((x ⩓ (x ⩔ y)) = x)[x ↦ ⫫]', BOOLEAN_ALGEBRA_SIGNATURE),
                         ),
                         conclusion_config=parse_formula_with_substitution('((⫫ ⩓ (⫫ ⩔ y)) = ⫫)[y ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
-                    )
+                    ),
                 ),
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['=₋'],
@@ -52,8 +52,8 @@ def test_bottom_absorption_proof() -> None:
                 ),
                 conclusion_config=parse_formula_with_substitution('((⫫ ⩓ a) = ⫫)[a ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
             ),
-            main=parse_formula_with_substitution('((⫫ ⩓ x) = ⫫)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE)
-        )
+            main=parse_formula_with_substitution('((⫫ ⩓ x) = ⫫)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
+        ),
     )
 
     assert str(tree) == dedent('''\
@@ -68,7 +68,7 @@ def test_bottom_absorption_proof() -> None:
                                               ((⫫ ⩓ x) = ⫫)
         _________________________________________________________________________________________ ∀₊
                                             ∀x.((⫫ ⩓ x) = ⫫)
-        '''
+        ''',
     )
 
 
@@ -96,7 +96,7 @@ def test_bottom_minimality_proof() -> None:
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                     assume(assumption, parse_marker('v')),
                     conclusion_config=parse_formula_with_substitution('((⫫ ⩓ x) = ⫫)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
-                )
+                ),
             ),
         ),
     )
@@ -111,5 +111,5 @@ def test_bottom_minimality_proof() -> None:
                                   (⫫ ≤ x)
         ____________________________________________________________ ∀₊
                                  ∀x.(⫫ ≤ x)
-        '''
+        ''',
     )

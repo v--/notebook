@@ -1,14 +1,18 @@
-from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from ..alphabet import AuxImproperSymbol
 from ..assertions import VariableTypeAssertion
 from ..parsing import parse_variable
-from ..terms import TypedTerm
-from ..types import SimpleType
 from ..variables import get_free_variables
 from .exceptions import HolError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ..terms import TypedTerm
+    from ..types import SimpleType
 
 
 @dataclass

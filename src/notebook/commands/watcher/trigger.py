@@ -1,6 +1,9 @@
-import pathlib
 from enum import IntEnum, auto
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
+
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 class TaskTriggerKind(IntEnum):

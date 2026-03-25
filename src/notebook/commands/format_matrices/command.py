@@ -1,5 +1,5 @@
 import pathlib
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import click
 
@@ -8,6 +8,10 @@ from ...latex.format_matrices import format_tex_matrices
 from ..common.exception_handling import exit_gracefully_on_exception
 from ..common.formatting import FormatterContextManager
 from ..common.logging import configure_loguru
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 @click.command()

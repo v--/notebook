@@ -10,17 +10,17 @@ from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
     dict(m='(λx.x)', n='(λy.y)'),
     dict(
         m='(λx.(λy.(xy)))',
-        n='(λa.(λb.(ab)))'
+        n='(λa.(λb.(ab)))',
     ),
     dict(
         m='((λx.(λy.(xy)))x)',
-        n='((λa.(λb.(ab)))x)'
+        n='((λa.(λb.(ab)))x)',
     ),
 )
 def test_are_terms_alpha_equivalent_true(m: str, n: str) -> None:
     assert are_terms_alpha_equivalent(
         parse_untyped_term(m),
-        parse_untyped_term(n)
+        parse_untyped_term(n),
     )
 
 
@@ -29,13 +29,13 @@ def test_are_terms_alpha_equivalent_true(m: str, n: str) -> None:
     dict(m='(xy)', n='(xz)'),
     dict(
         m='(λx.(λy.(xy)))',
-        n='(λa.(λa.(aa)))'
+        n='(λa.(λa.(aa)))',
     ),
 )
 def test_are_terms_alpha_equivalent_false(m: str, n: str) -> None:
     assert not are_terms_alpha_equivalent(
         parse_untyped_term(m),
-        parse_untyped_term(n)
+        parse_untyped_term(n),
     )
 
 
@@ -48,25 +48,25 @@ def test_are_terms_alpha_equivalent_false(m: str, n: str) -> None:
     # Cases where renaming is needed
     dict(
         term=    '((λx.x)x)',
-        expected='((λa.a)x)'
+        expected='((λa.a)x)',
     ),
     dict(
         term=    '((λx.(xy))x)',
-        expected='((λa.(ay))x)'
+        expected='((λa.(ay))x)',
     ),
     dict(
         term=    '((λx.((λx.x)x))x)',
-        expected='((λa.((λb.b)a))x)'
+        expected='((λa.((λb.b)a))x)',
     ),
     dict(
         term=    '((λx.(λy.(xy)))(xy))',
-        expected='((λa.(λb.(ab)))(xy))'
+        expected='((λa.(λb.(ab)))(xy))',
     ),
 
     # Verify that fresh variables don't shadow existing ones
     dict(
         term=    '((λa.(λx.(ax)))x)',
-        expected='((λa.(λb.(ab)))x)'
+        expected='((λa.(λb.(ab)))x)',
     ),
 )
 def test_separate_free_and_bound_variables(term: str, expected: str) -> None:

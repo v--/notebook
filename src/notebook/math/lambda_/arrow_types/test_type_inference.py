@@ -9,14 +9,14 @@ def test_assumption() -> None:
     context = {parse_variable('x'): parse_type('τ')}
     assert str(derive_type(term, context)) == dedent('''\
         x: τ
-        '''
+        ''',
     )
 
 
 def test_arrow_elim() -> None:
     context = {
         parse_variable('x'): parse_type('(τ → τ)'),
-        parse_variable('y'): parse_type('τ')
+        parse_variable('y'): parse_type('τ'),
     }
 
     term = parse_typed_term('(xy)')
@@ -24,7 +24,7 @@ def test_arrow_elim() -> None:
         x: (τ → τ)      y: τ
         ______________________ →₋
                (xy): τ
-        '''
+        ''',
     )
 
 
@@ -35,7 +35,7 @@ def test_arrow_intro() -> None:
                x: τ
         x _________________ →₊
           (λx:τ.x): (τ → τ)
-        '''
+        ''',
     )
 
 
@@ -47,7 +47,7 @@ def test_nested_arrow_intro() -> None:
                 (λy:σ.x): (σ → τ)
         x ______________________________ →₊
           (λx:τ.(λy:σ.x)): (τ → (σ → τ))
-        '''
+        ''',
     )
 
 
@@ -67,5 +67,5 @@ def test_cons() -> None:
                 (λy:σ.(λf:(τ → (σ → ρ)).((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
         x _________________________________________________________________________ →₊
           (λx:τ.(λy:σ.(λf:(τ → (σ → ρ)).((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
-        '''
+        ''',
     )

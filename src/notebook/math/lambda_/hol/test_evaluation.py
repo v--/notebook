@@ -32,7 +32,7 @@ def test_evaluate_hol_expression(formula: str, value: Any) -> None:  # noqa: ANN
     model = ModularArithmeticStructure(Z2)
     formula_ = HolExpression(
         parse_typed_term(formula, ARITHMETIC_SIGNATURE),
-        BaseType(common_types.prop)
+        BaseType(common_types.prop),
     )
 
     assert evaluate_hol_expression(formula_, model) == value

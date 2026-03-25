@@ -1,11 +1,14 @@
 import functools
 import itertools
-from collections.abc import Collection, Iterable
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from ...exceptions import UnreachableException
 from ...support.unicode import itoa_subscripts
 from ..strings import StringContainer
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable
 
 
 @functools.total_ordering
@@ -45,7 +48,7 @@ class BaseIdentifier(StringContainer):
     def increment(self) -> Self:
         return type(self)(
             self.value,
-            0 if self.index is None else self.index + 1
+            0 if self.index is None else self.index + 1,
         )
 
 

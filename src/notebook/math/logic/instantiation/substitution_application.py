@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING
+
 from ..formulas import (
     FormulaSchemaWithSubstitution,
     FormulaWithSubstitution,
 )
 from ..terms import TermSubstitutionSpec
-from .base import AtomicLogicSchemaInstantiation
 from .formula_application import instantiate_formula_schema
 from .term_application import instantiate_term_schema
+
+
+if TYPE_CHECKING:
+    from .base import AtomicLogicSchemaInstantiation
 
 
 def instantiate_substitution(schema: FormulaSchemaWithSubstitution, instantiation: AtomicLogicSchemaInstantiation) -> FormulaWithSubstitution:
@@ -18,5 +23,5 @@ def instantiate_substitution(schema: FormulaSchemaWithSubstitution, instantiatio
     dest_ = instantiate_term_schema(schema.sub.dest, instantiation)
     return FormulaWithSubstitution(
         formula,
-        TermSubstitutionSpec(src, dest_)
+        TermSubstitutionSpec(src, dest_),
     )

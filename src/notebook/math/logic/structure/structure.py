@@ -1,9 +1,13 @@
-from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass
-from typing import overload
+from typing import TYPE_CHECKING, overload
 
-from ..signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 from .exceptions import FormalLogicInterpretationError, MissingInterpretationError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Collection, Mapping
+
+    from ..signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
 @dataclass

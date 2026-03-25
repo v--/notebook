@@ -1,7 +1,12 @@
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from ..support.iteration import string_accumulator
-from .string import BibString
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from .string import BibString
 
 
 @string_accumulator('')

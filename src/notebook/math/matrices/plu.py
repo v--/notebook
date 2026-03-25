@@ -1,6 +1,7 @@
 import functools
 import operator
 
+from .exceptions import IncompatibleMatrixError
 from .matrix import IFieldMatrix, ISemiringMatrix
 from .triangular import lower_triangular_inv, upper_triangular_inv
 
@@ -28,8 +29,10 @@ def transvection_matrix[M: ISemiringMatrix](cls: type[M], n: int, i: int, j: int
 
 # This is alg:plu_decomposition in the monograph
 def plu[M: IFieldMatrix](a: M) -> tuple[M, M, M]:
-    """PLU decomposition done entirely via multiplication of elementary matrices"""
-    assert a.is_square()
+    """PLU decomposition done entirely via multiplication of elementary matrices."""
+    if not a.is_square():
+        raise IncompatibleMatrixError('Only a square matrix can be PLU-decomposed')
+
     cls = type(a)
 
     l = cls.eye(a.n)
@@ -45,24 +48,26 @@ def plu[M: IFieldMatrix](a: M) -> tuple[M, M, M]:
             cls,
             a.n,
             min(j for j in range(k + 1, a.n) if u[j, k] != 0),
-            k
+            k,
         )
 
         p = perm @ p
         u_perm = perm @ u
         l = functools.reduce(
             operator.matmul,
-            (transvection_matrix(cls, a.n, k, j, -u_perm[j, k] / u_perm[k, k]) for j in range(k + 1, a.n))
+            (transvection_matrix(cls, a.n, k, j, -u_perm[j, k] / u_perm[k, k]) for j in range(k + 1, a.n)),
         ) @ perm @ l @ perm
 
     return (
         p.transpose(),  # The inverse of P is its transpose
         lower_triangular_inv(l),
-        l @ p @ a
+        l @ p @ a,
     )
 
 
 def plu_inv[M: IFieldMatrix](a: M) -> M:
-    assert a.is_square()
+    if not a.is_square():
+        raise IncompatibleMatrixError('Only a square matrix can be inverted')
+
     p, l, u = plu(a)
     return upper_triangular_inv(u) @ lower_triangular_inv(l) @ p.transpose()

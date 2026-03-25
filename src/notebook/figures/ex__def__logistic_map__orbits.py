@@ -86,8 +86,8 @@ with open(code_path, 'w') as code_file:
               axis=Left,
               ticks=Ticks(pTick=pens.thin, Step=0.2, step=0.1)
             );
-            '''
-        )
+            ''',
+        ),
     )
 
 try:

@@ -1,9 +1,14 @@
-from collections.abc import Iterable, Sequence
+# ruff: noqa: S101
+
 from dataclasses import dataclass
-from typing import Protocol, override
+from typing import TYPE_CHECKING, Protocol, override
 
 from ..iteration import string_accumulator
 from ..unicode import to_superscript
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 SUBTREE_DISTANCE = 4
@@ -128,7 +133,7 @@ class RuleApplicationRenderer(InferenceTreeRenderer):
 
         return max(
             base_prefix_width,
-            self.get_subtree_prefix_width()
+            self.get_subtree_prefix_width(),
         )
 
     @override
@@ -138,7 +143,7 @@ class RuleApplicationRenderer(InferenceTreeRenderer):
 
         return max(
             1 + len(self.rule_name),
-            self.get_subtree_suffix_width()
+            self.get_subtree_suffix_width(),
         )
 
     @override

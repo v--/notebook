@@ -1,8 +1,11 @@
 from ..matrices.matrix import IntMatrix
+from .exceptions import FormalLanguageError
 
 
 def hamming(v: str, w: str) -> int:
-    assert len(v) == len(w)
+    if len(v) != len(w):
+        raise FormalLanguageError(f'Expected equal strings, but got {v!r} and {w!r}')
+
     return sum(a != b for a, b in zip(v, w, strict=True))
 
 
@@ -21,7 +24,7 @@ def wagner_fisher(v: str, w: str) -> int:
             mat[(i, j)] = min(
                 mat[(i - 1, j)] + 1,
                 mat[(i, j - 1)] + 1,
-                mat[(i - 1, j - 1)] + (0 if v[i - 1] == w[j - 1] else 1)
+                mat[(i - 1, j - 1)] + (0 if v[i - 1] == w[j - 1] else 1),
             )
 
     return mat[(len(v), len(w))]

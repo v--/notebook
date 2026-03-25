@@ -1,11 +1,15 @@
 import re
+from typing import TYPE_CHECKING
 
 from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
 from ... import url_templates
 from ..common.entries import generate_entry_name
 from ..common.names import name_to_bib_author
-from .model import ArxivEntry
+
+
+if TYPE_CHECKING:
+    from .model import ArxivEntry
 
 
 def arxiv_entry_to_bib(aentry: ArxivEntry, arxiv_id: str) -> BibEntry:
@@ -32,5 +36,5 @@ def arxiv_entry_to_bib(aentry: ArxivEntry, arxiv_id: str) -> BibEntry:
         date=date,
         edition=str(version) if (version or 0) > 1 else None,
         institution=aentry.affiliation,
-        doi=url_templates.clean_identifier(aentry.doi, url_templates.doi)
+        doi=url_templates.clean_identifier(aentry.doi, url_templates.doi),
     )

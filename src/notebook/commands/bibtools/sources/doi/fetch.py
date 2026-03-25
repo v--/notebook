@@ -8,7 +8,7 @@ from .fixtures import get_doi_fixture_path
 def fetch_doi_json(identifier: str, *, dump_as_fixture: bool = False) -> str:
     req = Request(
         f'https://dx.doi.org/{identifier}',
-        headers={'Accept': 'application/vnd.citationstyles.csl+json'}
+        headers={'Accept': 'application/vnd.citationstyles.csl+json'},
     )
 
     try:

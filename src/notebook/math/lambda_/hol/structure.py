@@ -1,9 +1,12 @@
-from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from .signature import HolSignature
-from .symbols import NonLogicalConstantSymbol, SortSymbol
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Collection, Mapping
+
+    from .signature import HolSignature
+    from .symbols import NonLogicalConstantSymbol, SortSymbol
 
 
 @dataclass

@@ -1,6 +1,9 @@
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
-from .conftest import GrammarFixture
+
+if TYPE_CHECKING:
+    from .conftest import GrammarFixture
 
 
 def test_an(an: GrammarFixture) -> None:
@@ -10,5 +13,5 @@ def test_an(an: GrammarFixture) -> None:
         <S> → <A>
         <A> → <A> "a"
         <A> → "a"
-        '''
+        ''',
         )

@@ -1,10 +1,13 @@
-from collections.abc import Sequence
-from types import TracebackType
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from .exceptions import ParserError
 from .highlighter import ErrorHighlighter
 from .tokens import Token
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from types import TracebackType
 
 
 class Parser[TokenT: Token]:
@@ -79,7 +82,7 @@ class Parser[TokenT: Token]:
         self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
-        traceback: TracebackType | None
+        traceback: TracebackType | None,
      ) -> None:
         if exc_type is None:
             self.assert_exhausted()

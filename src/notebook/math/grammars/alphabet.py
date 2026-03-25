@@ -1,10 +1,13 @@
 import itertools
-from collections.abc import Collection
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from ...exceptions import UnreachableException
 from ...parsing import StringContainer
 from ...support.unicode import atoi_subscripts, is_numeric_subscript_char, itoa_subscripts
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 
 class Terminal(StringContainer):

@@ -5,13 +5,17 @@ class GrammarError(NotebookMathError):
     pass
 
 
+class IncompatibleGrammarError(GrammarError):
+    pass
+
+
+class IncompatibleRuleError(GrammarError):
+    pass
+
+
 class UnknownSymbolError(GrammarError):
     pass
 
 
 class TokenizationError(GrammarError):
-    pass
-
-
-class ParserError(GrammarError):
     pass

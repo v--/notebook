@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
@@ -10,7 +10,7 @@ from .fixtures import get_stackexchange_fixture_path
 from .model import parse_stackexchange_html
 
 
-TODAY = to_iso_date(datetime.now())
+TODAY = to_iso_date(datetime.now(tz=UTC))
 
 
 def test_parse_invalid(identifier: str = 'invalid') -> None:
@@ -37,7 +37,7 @@ def test_parse_mathse_question_4272953_229174(identifier: str = 'https://math.st
         date='2021-10-10',
         titleaddon='Mathematics Stack Exchange',
         url=identifier,
-        urldate=TODAY
+        urldate=TODAY,
     )
 
 
@@ -57,5 +57,5 @@ def test_parse_mathof_answer_231571(identifier: str='https://mathoverflow.net/a/
         date='2016-02-19',
         titleaddon='MathOverflow',
         url=identifier,
-        urldate=TODAY
+        urldate=TODAY,
     )

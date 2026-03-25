@@ -1,6 +1,5 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.substitution import UnspecifiedReplacementError
 from ..assertions import VariableTypeAssertion
@@ -19,6 +18,10 @@ from ..type_derivation import (
     premise_config,
 )
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 @dataclass
@@ -52,7 +55,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         return apply(
             tree.rule,
             *(premise_config(tree=apply_substitution_to_tree(p.tree, self.substitution)) for p in tree.premises),
-            instantiation=instantiation
+            instantiation=instantiation,
         )
 
     def _visit_abstractor_premise(self, body_tree: TypeDerivationTree, assertion: VariableTypeAssertion) -> RuleApplicationPremise:
@@ -62,7 +65,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         new_subst = self.substitution.modify_at(assertion.term, assume(new_assertion))
         return premise_config(
             tree=apply_substitution_to_tree(body_tree, new_subst),
-            attachments=[new_assertion]
+            attachments=[new_assertion],
         )
 
     @override
@@ -109,5 +112,5 @@ def apply_substitution_to_tree(tree: TypeDerivationTree, substitution: AtomicTyp
 def substitute_in_tree(tree: TypeDerivationTree, variable_mapping: Mapping[Variable, TypeDerivationTree]) -> TypeDerivationTree:
     return apply_substitution_to_tree(
         tree,
-        AtomicTypeDerivationSubstitution(variable_mapping=variable_mapping)
+        AtomicTypeDerivationSubstitution(variable_mapping=variable_mapping),
     )

@@ -4,38 +4,38 @@ from .tokens import TextToken
 
 def test_english_word() -> None:
     assert tokenize_text('Test') == [
-        TextToken('WORD', 'Test', 0)
+        TextToken('WORD', 'Test', 0),
     ]
 
 
 def test_standalone_apostrophe() -> None:
     assert tokenize_text("'") == [
-        TextToken('SYMBOL', "'", 0)
+        TextToken('SYMBOL', "'", 0),
     ]
 
 
 def test_english_word_with_apostrophe() -> None:
     assert tokenize_text("Can't") == [
-        TextToken('WORD', "Can't", 0)
+        TextToken('WORD', "Can't", 0),
     ]
 
 
 def test_standalone_dash() -> None:
     assert tokenize_text('-') == [
-        TextToken('SYMBOL', '-', 0)
+        TextToken('SYMBOL', '-', 0),
     ]
 
 
 def test_english_word_with_dash() -> None:
     assert tokenize_text('Semi-demigod') == [
-        TextToken('WORD', 'Semi-demigod', 0)
+        TextToken('WORD', 'Semi-demigod', 0),
     ]
 
 
 def test_english_phrase() -> None:
     assert tokenize_text('Waters rising') == [
         TextToken('WORD', 'Waters', 0),
-        TextToken('WORD',  'rising', 7)
+        TextToken('WORD',  'rising', 7),
     ]
 
 
@@ -58,32 +58,32 @@ def test_english_sentence() -> None:
         TextToken('WORD', 'it', 32),
         TextToken('WORD', 'all', 35),
         TextToken('WORD', 'away', 39),
-        TextToken('SYMBOL', '.', 43)
+        TextToken('SYMBOL', '.', 43),
     ]
 
 
 def test_decimal() -> None:
     assert tokenize_text('314') == [
-        TextToken('DECIMAL', '314', 0)
+        TextToken('DECIMAL', '314', 0),
     ]
 
 
 def test_decimal_prefix() -> None:
     assert tokenize_text('314-partite') == [
-        TextToken('WORD', '314-partite', 0)
+        TextToken('WORD', '314-partite', 0),
     ]
 
 
 def test_cyrillic_word() -> None:
     assert tokenize_text('Тест') == [
-        TextToken('WORD', 'Тест', 0)
+        TextToken('WORD', 'Тест', 0),
     ]
 
 
 def test_cyrillic_sentence() -> None:
     assert tokenize_text('Сморкалось.') == [
         TextToken('WORD', 'Сморкалось', 0),
-        TextToken('SYMBOL', '.', 10)
+        TextToken('SYMBOL', '.', 10),
     ]
 
 
@@ -93,12 +93,12 @@ def test_bad_unicode() -> None:
         TextToken('WORD', 'analiz', 11),
         TextToken('WORD', 'i', 18),
         TextToken('WORD', 'lineĭnai͡a', 20),
-        TextToken('WORD', 'algebra', 31)
+        TextToken('WORD', 'algebra', 31),
     ]
 
 
 def test_space_separator() -> None:
     assert tokenize_text('de\xa0Beer') == [
         TextToken('WORD', 'de', 0),
-        TextToken('WORD', 'Beer', 3)
+        TextToken('WORD', 'Beer', 3),
     ]

@@ -1,7 +1,12 @@
-from collections.abc import Mapping
+
+from typing import TYPE_CHECKING
 
 from ...alphabet import BinaryConnective, LatticeConnective, PropConstantSymbol
 from ...signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 # The symbols we use here differ from those used in the monograph because Unicode is more restricted than the symbols we can conjure up in (La)TeX
@@ -12,7 +17,7 @@ BOOLEAN_ALGEBRA_SIGNATURE = FormalLogicSignature(
     FunctionSymbol('⩓', arity=2),
     FunctionSymbol('⩔', arity=2),
     PredicateSymbol('≤', arity=2),
-    PredicateSymbol('≥', arity=2)
+    PredicateSymbol('≥', arity=2),
 )
 
 

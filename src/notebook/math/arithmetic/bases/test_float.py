@@ -43,15 +43,15 @@ def test_get_number_expansion(x: float, radix: int, precision: int = 10) -> None
 @pytest_parametrize_lists(
     p=itertools.chain(
         [1] * 25,
-        repeat5(random.randint, -1000, 1000)
+        repeat5(random.randint, -1000, 1000),
     ),
     q=itertools.chain(
         range(1, 26),
-        repeat5(random.randint, 1, 200)
+        repeat5(random.randint, 1, 200),
     ),
     radix=itertools.chain(
         [10] * 25,
-        repeat5(random.choice, [10, 16])
+        repeat5(random.choice, [10, 16]),
     ),
 )
 def test_get_rational_number_expansion(p: int, q: int, radix: int, precision: int = 10) -> None:
@@ -67,15 +67,15 @@ def test_get_rational_number_expansion(p: int, q: int, radix: int, precision: in
 @pytest_parametrize_lists(
     p=itertools.chain(
         [1] * 15,
-        repeat5(random.randint, -100, 100)
+        repeat5(random.randint, -100, 100),
     ),
     q=itertools.chain(
         range(1, 16),
-        repeat5(random.randint, 1, 15)
+        repeat5(random.randint, 1, 15),
     ),
     radix=itertools.chain(
         [10] * 15,
-        repeat5(random.choice, [10, 16])
+        repeat5(random.choice, [10, 16]),
     ),
 )
 def test_get_fraction(p: int, q: int, radix: int) -> None:
@@ -108,7 +108,7 @@ def test_get_fraction(p: int, q: int, radix: int) -> None:
     dict(frac=Fraction(1, 30),  radix=3,  expected='0.0(0022)'),
 
     dict(frac=Fraction(1, 300), radix=10, expected='0.00(33)'),
-    dict(frac=Fraction(1, 300), radix=3,  expected='0.0(0000210212111020012200002102121110200100)')
+    dict(frac=Fraction(1, 300), radix=3,  expected='0.0(0000210212111020012200002102121110200100)'),
 )
 def test_get_rational_number_expansion_strings(frac: Fraction, radix: int, expected: str) -> None:
     e = get_rational_number_expansion(frac, radix=radix)

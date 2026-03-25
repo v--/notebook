@@ -25,11 +25,11 @@ def test_parse_9780821810255(isbn: str = '978-0-8218-1025-5') -> None:
         entry_name='Birkhoff1940LatticeTheory',
         title='Lattice Theory',
         authors=[
-            BibAuthor(full_name='Garrett Birkhoff')
+            BibAuthor(full_name='Garrett Birkhoff'),
         ],
         isbn=isbn,
         languages=['english'],
-        date='1940-12-31'
+        date='1940-12-31',
     )
 
 
@@ -46,11 +46,11 @@ def test_parse_9780821847817(isbn: str = '978-0-8218-4781-7') -> None:
         entry_name='Aluffi2009Algebra',
         title='Algebra: Chapter 0',
         authors=[
-            BibAuthor(full_name='Paolo Aluffi')
+            BibAuthor(full_name='Paolo Aluffi'),
         ],
         isbn=isbn,
         languages=['english'],
-        date='2009'
+        date='2009',
     )
 
 
@@ -68,11 +68,11 @@ def test_parse_3885380064_limited_data(isbn: str = '3-88538-006-4') -> None:
         entry_name='Engelking1989Topology',
         title='General Topology',
         authors=[
-            BibAuthor(full_name='Ryszard Engelking')
+            BibAuthor(full_name='Ryszard Engelking'),
         ],
         languages=['english'],
         date='1989',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -90,10 +90,10 @@ def test_parse_9781071635971_subtitle_and_no_year(isbn: str = '978-1-0716-3597-1
         title='The New Mathematical Coloring Book',
         subtitle='Mathematics of Coloring and the Colorful Life of Its Creators',
         authors=[
-            BibAuthor(full_name='Alexander Soifer')
+            BibAuthor(full_name='Alexander Soifer'),
         ],
         languages=['english'],
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -110,11 +110,11 @@ def test_parse_5898060227_russian(isbn: str = '5-89806-022-7') -> None:
         entry_name='Шафаревич1999ОсновныеПонятияАлгебры',
         title='Основные понятия алгебры',
         authors=[
-            BibAuthor(full_name='Игорь Ростиславович Шафаревич')
+            BibAuthor(full_name='Игорь Ростиславович Шафаревич'),
         ],
         languages=['russian'],
         date='1999',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -131,11 +131,11 @@ def test_parse_9785922102667_empty_subtitle(isbn: str = '978-5-9221-0266-7') -> 
         entry_name='Колмогоров2004ФункциональногоАнализа',
         title='Элементы теории функций и функционального анализа',
         authors=[
-            BibAuthor(full_name='Андрей Николаевич Колмогоров')
+            BibAuthor(full_name='Андрей Николаевич Колмогоров'),
         ],
         languages=['russian'],
         date='2004',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -152,11 +152,11 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
         entry_name='Tyrtyshnikov2007MatrichnyĭAnalizILineĭnaiAAlgebra',
         title='Matrichnyĭ analiz i lineĭnai͡a algebra',
         authors=[
-            BibAuthor(full_name='Evgeniĭ Evgenʹevich Tyrtyshnikov')
+            BibAuthor(full_name='Evgeniĭ Evgenʹevich Tyrtyshnikov'),
         ],
         languages=['russian'],
         date='2007',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -174,11 +174,11 @@ def test_parse_9548706733_bulgarian(isbn: str = '954-8706-73-3') -> None:
         title='Диференциална геометрия',
         subtitle='Учебник за студентите от СУ Св. Климент Охридски',
         authors=[
-            BibAuthor(full_name='Грозяо Станилов')
+            BibAuthor(full_name='Грозяо Станилов'),
         ],
         languages=['bulgarian'],
         date='1997',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -197,7 +197,7 @@ def test_parse_5791300166_no_authors(isbn: str = '5-7913-0016-6') -> None:
         authors=[],
         languages=['russian'],
         date='2000',
-        isbn=isbn
+        isbn=isbn,
     )
 
 
@@ -216,5 +216,5 @@ def test_parse_5791300166_no_industry_identifiers(isbn: str = '0-471-43334-9') -
         authors=[BibAuthor(full_name='David S. Dummit'), BibAuthor(full_name='Richard M. Foote')],
         languages=['english'],
         date='2003-07-14',
-        isbn=isbn
+        isbn=isbn,
     )

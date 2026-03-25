@@ -1,9 +1,13 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing.identifiers import LatinIdentifier
 from ..alphabet import BinderSymbol
-from ..types import SimpleTypeSchema
 from .terms import Constant
+
+
+if TYPE_CHECKING:
+    from ....parsing.identifiers import LatinIdentifier
+    from ..types import SimpleTypeSchema
 
 
 @dataclass(frozen=True)

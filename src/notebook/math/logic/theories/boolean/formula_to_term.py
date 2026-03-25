@@ -1,7 +1,6 @@
-from typing import cast, override
+from typing import TYPE_CHECKING, cast, override
 
 from ...alphabet import LatticeConnective
-from ...formulas import PropConstant
 from ...parsing import parse_variable
 from ...propositional import (
     PropConnectiveFormula,
@@ -19,6 +18,10 @@ from .signature import (
 )
 
 
+if TYPE_CHECKING:
+    from ...formulas import PropConstant
+
+
 class FormulaToTermVisitor(PropFormulaVisitor[Term]):
     @override
     def visit_prop_constant(self, formula: PropConstant) -> Term:
@@ -32,7 +35,7 @@ class FormulaToTermVisitor(PropFormulaVisitor[Term]):
     def visit_negation(self, formula: PropNegationFormula) -> Term:
         return FunctionApplication(
             BOOLEAN_ALGEBRA_SIGNATURE.get_function_symbol('⫬'),
-            [self.visit(formula.body)]
+            [self.visit(formula.body)],
         )
 
     @override
@@ -42,7 +45,7 @@ class FormulaToTermVisitor(PropFormulaVisitor[Term]):
 
         return FunctionApplication(
             FORMULA_CONNECTIVE_TO_TERM_CONNECTIVE[cast(LatticeConnective, formula.conn)],
-            [self.visit(formula.left), self.visit(formula.right)]
+            [self.visit(formula.left), self.visit(formula.right)],
         )
 
 

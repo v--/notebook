@@ -12,5 +12,5 @@ class FloatMatrix(INormedFieldMatrix[float], semiring=float):
     def round(self) -> IntMatrix:
         return IntMatrix(
             self.n, self.m,
-            lambda i, j: round(self[i, j])
+            lambda i, j: round(self[i, j]),
         )

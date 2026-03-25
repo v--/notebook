@@ -1,10 +1,15 @@
-from collections.abc import Iterable, Sequence
 from itertools import product
+from typing import TYPE_CHECKING
 
 from .evaluation import evaluate_prop_formula
-from .formulas import PropFormula, PropVariable
 from .interpretation import PropInterpretation
 from .variables import get_prop_variables
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+    from .formulas import PropFormula, PropVariable
 
 
 def iter_interpretations_for_variables(variables: Sequence[PropVariable]) -> Iterable[PropInterpretation]:
@@ -14,7 +19,7 @@ def iter_interpretations_for_variables(variables: Sequence[PropVariable]) -> Ite
 
 def iter_interpretations(*formulas: PropFormula) -> Iterable[PropInterpretation]:
     return iter_interpretations_for_variables(
-        sorted(var for formula in formulas for var in get_prop_variables(formula))
+        sorted(var for formula in formulas for var in get_prop_variables(formula)),
     )
 
 

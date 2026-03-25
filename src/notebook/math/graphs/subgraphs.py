@@ -1,8 +1,12 @@
 import itertools
-from collections.abc import Collection, Iterable
+from typing import TYPE_CHECKING
 
 from ..combinatorics.binomial import choose
 from .graph import UndirectedGraph
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable
 
 
 def max_fixed_order_subgraph_count(n: int, order: int) -> int:
@@ -22,7 +26,7 @@ def max_subgraph_count(n: int) -> int:
 
 
 def enumerate_subgraphs[VertT, VertLabelT, EdgeSymbolT](
-    graph: UndirectedGraph[VertT, VertLabelT, EdgeSymbolT]
+    graph: UndirectedGraph[VertT, VertLabelT, EdgeSymbolT],
 ) -> Collection[UndirectedGraph[VertT, VertLabelT, EdgeSymbolT]]:
     n = len(graph.vertices)
 

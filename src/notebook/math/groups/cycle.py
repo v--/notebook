@@ -1,6 +1,9 @@
-from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import overload
+from typing import TYPE_CHECKING, overload
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator, Sequence
 
 
 @dataclass(frozen=True)

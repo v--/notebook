@@ -1,8 +1,13 @@
-from .....bibtex.entry import BibEntry
+from typing import TYPE_CHECKING
+
 from ...exceptions import BibToolsError
 from .bib import mathnet_entry_to_bib
 from .fetch import fetch_mathnet_html
 from .model import parse_mathnet_html
+
+
+if TYPE_CHECKING:
+    from .....bibtex.entry import BibEntry
 
 
 def retrieve_mathnet_entry(identifier: str, *, english: bool, dump_as_fixture: bool) -> BibEntry:

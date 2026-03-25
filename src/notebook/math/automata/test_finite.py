@@ -1,5 +1,10 @@
-from .conftest import FiniteAutomatonFixture
+from typing import TYPE_CHECKING
+
 from .finite import FiniteAutomaton
+
+
+if TYPE_CHECKING:
+    from .conftest import FiniteAutomatonFixture
 
 
 # ex:def:formal_language/an

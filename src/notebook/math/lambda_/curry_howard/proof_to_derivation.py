@@ -1,4 +1,4 @@
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....parsing import GreekIdentifier
 from ...logic.alphabet import BinaryConnective, PropConstantSymbol
@@ -13,7 +13,6 @@ from ...logic.formulas import (
     PredicateApplication,
     PropConstant,
 )
-from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
 from ..assertions import VariableTypeAssertion
@@ -22,7 +21,6 @@ from ..parsing import parse_type_variable
 from ..signature import BaseTypeSymbol
 from ..terms import Variable
 from ..type_derivation import tree as dtree
-from ..type_system import TypingRule
 from ..types import (
     BaseType,
     SimpleConnectiveType,
@@ -31,6 +29,11 @@ from ..types import (
     TypeVariable,
 )
 from .exceptions import ProofToDerivationError
+
+
+if TYPE_CHECKING:
+    from ...logic.instantiation import AtomicLogicSchemaInstantiation
+    from ..type_system import TypingRule
 
 
 def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeConnective:
@@ -72,7 +75,7 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
         return SimpleConnectiveType(
             formula_connective_to_type_connective(formula.conn),
             self.visit(formula.left),
-            self.visit(formula.right)
+            self.visit(formula.right),
         )
 
     @override
@@ -90,10 +93,10 @@ def proof_tree_premise_to_derivation_tree_premise(premise: ptree.RuleApplication
         attachments=[
             VariableTypeAssertion(
                 Variable(att.marker.identifier),
-                formula_to_type(att.formula)
+                formula_to_type(att.formula),
             ) if att else None
             for att in premise.attachments
-        ]
+        ],
     )
 
 
@@ -128,14 +131,14 @@ def create_instantiation(instantiation: AtomicLogicSchemaInstantiation, **kwargs
                 formula_to_type(instantiation.formula_mapping[FormulaPlaceholder(GreekIdentifier(key))])
 
             for key, value in kwargs.items()
-        }
+        },
     )
 
 
 def translate_application(
     derivation: ptree.RuleApplicationTree,
     rule: TypingRule,
-    **kwargs: str
+    **kwargs: str,
 ) -> dtree.RuleApplicationTree:
     instantiation = create_instantiation(derivation.instantiation, **kwargs)
     return dtree.apply(
@@ -154,8 +157,8 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
         return dtree.assume(
             VariableTypeAssertion(
                 Variable(proof.marker.identifier),
-                formula_to_type(proof.conclusion)
-            )
+                formula_to_type(proof.conclusion),
+            ),
         )
 
     if not isinstance(proof, ptree.RuleApplicationTree):
@@ -166,21 +169,21 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
             return translate_application(
                 proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
-                φ='τ'
+                φ='τ',
             )
 
         case '∨₊ₗ':
             return translate_application(
                 proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
-                ψ='σ'
+                ψ='σ',
             )
 
         case '∨₊ᵣ':
             return translate_application(
                 proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ᵣ'],
-                φ='τ'
+                φ='τ',
             )
 
         case _:

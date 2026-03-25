@@ -1,11 +1,14 @@
-from collections.abc import Sequence
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from .exceptions import FormalLogicError
 from .formulas import EqualityFormula
 from .substitution import AtomicLogicSubstitution, apply_substitution_to_formula
 from .terms import FunctionApplication, Term, Variable
 from .variables import get_term_variables
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class UnificationError(FormalLogicError):
@@ -37,7 +40,7 @@ def unify(system: Sequence[EqualityFormula]) -> AtomicLogicSubstitution:
                 next_system = [
                     *current_system[:i],
                     *(EqualityFormula(l, r) for l, r in zip(eq.left.arguments, eq.right.arguments, strict=True)),
-                    *current_system[i + 1:]
+                    *current_system[i + 1:],
                 ]
 
                 break
@@ -54,7 +57,7 @@ def unify(system: Sequence[EqualityFormula]) -> AtomicLogicSubstitution:
                 any(eq.left == e.left or eq.left in get_term_variables(e.right) for e in current_system if e != eq)
             ):
                 sub = AtomicLogicSubstitution(variable_mapping={eq.left: eq.right})
-                next_system = cast(list[EqualityFormula], [
+                next_system = cast('list[EqualityFormula]', [
                     *(apply_substitution_to_formula(e, sub) for e in current_system[:i]),
                     eq,
                     *(apply_substitution_to_formula(e, sub) for e in current_system[i + 1:]),
@@ -67,7 +70,7 @@ def unify(system: Sequence[EqualityFormula]) -> AtomicLogicSubstitution:
                     *current_system[:i],
                     eq,
                     *current_system[i + 1:j],
-                    *current_system[j + 1:]
+                    *current_system[j + 1:],
                 ]
                 break
         else:

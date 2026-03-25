@@ -1,5 +1,7 @@
 import math
 
+from .exceptions import InvalidArgumentError
+
 
 # This is eq:thm:stirlings_gamma_approximation/mu in the monograph
 def stirling_mu(x: float, terms: int) -> float:
@@ -11,5 +13,7 @@ def stirling_mu(x: float, terms: int) -> float:
 
 # This is eq:thm:stirlings_gamma_approximation in the monograph
 def stirling(x: float) -> float:
-    assert x > 0
+    if x <= 0:
+        raise InvalidArgumentError(f'Expected a positive number, but got {x:.3f}')
+
     return math.sqrt(2 * math.pi) * x ** (x - 1 / 2) * math.exp(-x)

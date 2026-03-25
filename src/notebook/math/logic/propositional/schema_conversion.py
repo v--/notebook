@@ -41,7 +41,7 @@ class PropFormulaSchemaConversionVisitor(FormulaSchemaVisitor[PropFormulaSchema]
         return PropConnectiveFormulaSchema(
             schema.conn,
             self.visit(schema.left),
-            self.visit(schema.right)
+            self.visit(schema.right),
         )
 
     @override

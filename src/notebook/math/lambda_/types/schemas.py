@@ -1,8 +1,12 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing.identifiers import GreekIdentifier
-from ..alphabet import BinaryTypeConnective
 from .types import BaseType
+
+
+if TYPE_CHECKING:
+    from ....parsing.identifiers import GreekIdentifier
+    from ..alphabet import BinaryTypeConnective
 
 
 @dataclass(frozen=True)

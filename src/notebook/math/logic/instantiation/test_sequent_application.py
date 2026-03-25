@@ -11,17 +11,17 @@ def test_instantiate_context_schema() -> None:
     instantiation = AtomicLogicSchemaInstantiation(
         formula_mapping={
             parse_formula_placeholder('φ'): parse_prop_formula('q'),
-            parse_formula_placeholder('ψ'): parse_prop_formula('r')
+            parse_formula_placeholder('ψ'): parse_prop_formula('r'),
         },
         context_mapping={
             parse_context_placeholder('Γ'): [parse_prop_formula('p')],
-            parse_context_placeholder('Δ'): []
-        }
+            parse_context_placeholder('Δ'): [],
+        },
     )
 
     expected = Sequent(
         LogicalContext([parse_prop_formula('p'), parse_prop_formula('q')]),
-        LogicalContext([parse_prop_formula('r')])
+        LogicalContext([parse_prop_formula('r')]),
     )
 
     assert instantiate_sequent_schema(schema, instantiation) == expected

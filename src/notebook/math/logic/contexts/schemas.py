@@ -1,8 +1,12 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing import GreekIdentifier
-from ..formulas import FormulaSchema
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ....parsing import GreekIdentifier
+    from ..formulas import FormulaSchema
 
 
 @dataclass(frozen=True)

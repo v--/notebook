@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from .terms import Term, Variable
+
+if TYPE_CHECKING:
+    from .terms import Term, Variable
 
 
 @dataclass(frozen=True)

@@ -3,6 +3,7 @@ from ..automata.finite_determinize import determinize
 from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .context_free import reverse_grammar
 from .epsilon_rules import is_epsilon_free, is_epsilon_rule, remove_epsilon_rules
+from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .renaming_rules import collapse_renaming_rules
 
@@ -35,7 +36,8 @@ def is_regular(grammar: Grammar) -> bool:
 
 # This is alg:regular_grammar_to_automaton in the monograph
 def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
-    assert is_regular(grammar)
+    if not is_regular(grammar):
+        raise IncompatibleGrammarError('Expected a regular grammar')
 
     g1 = grammar if is_right_linear(grammar) else reverse_grammar(grammar)
 
@@ -46,7 +48,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
 
     for rule in g3.schema.rules:
         if is_epsilon_rule(rule):
-            assert rule.src == [g3.start]
+            assert rule.src == [g3.start]  # noqa: S101
             g4_rules.append(rule)
             continue
 
@@ -75,7 +77,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
             aut.add_transition(
                 src=rule.src_symbol.value,
                 dest=rule.dest[1].value if len(rule.dest) > 1 else final.value,
-                symbol=rule.dest[0].value
+                symbol=rule.dest[0].value,
             )
 
     if is_right_linear(grammar):

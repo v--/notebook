@@ -1,10 +1,14 @@
 import itertools
-from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from .exceptions import NlpError
 from .parsing import extract_phrases
 from .phrases import Phrase
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping
 
 
 class RakeError(NlpError):
@@ -57,7 +61,7 @@ class PhraseScoreContext:
     def iter_sorted(self, limit: int | None = None) -> Iterable[tuple[Phrase, float]]:
         return itertools.islice(
             sorted(self.scores.items(), key=lambda x: x[1], reverse=True),
-            limit
+            limit,
         )
 
     def iter_max_scoring(self, limit: int | None = None) -> Iterable[Phrase]:
@@ -72,14 +76,14 @@ class PhraseScoreContext:
     def get_shortest_max_scoring(self) -> Phrase:
         return min(
             self.iter_max_scoring(),
-            key=lambda phrase: (len(phrase), len(str(phrase)))
+            key=lambda phrase: (len(phrase), len(str(phrase))),
         )
 
 
 def generate_phrase_scores(
     main_text: str,
     stop_words: Collection[str],
-    *aux_texts: str
+    *aux_texts: str,
 ) -> PhraseScoreContext:
     phrases = extract_phrases(main_text, stop_words)
 

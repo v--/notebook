@@ -49,13 +49,13 @@ def test_parse_1606_08092v1(arxiv_id: str = '1606.08092v1') -> None:
         title='Classifying Material Implications over Minimal Logic',
         authors=[
             BibAuthor(full_name='Hannes Diener'),
-            BibAuthor(full_name='Maarten McKubre-Jordens')
+            BibAuthor(full_name='Maarten McKubre-Jordens'),
         ],
         languages=['english'],
         eprinttype='arXiv',
         eprintclass='math.LO',
         eprint=arxiv_id,
-        date='2016-06-26'
+        date='2016-06-26',
     )
 
 
@@ -72,14 +72,14 @@ def test_parse_2011_00412v3(arxiv_id: str = '2011.00412v3') -> None:
         entry_name='Leinster2023LebesgueIntegration',
         title='A categorical derivation of Lebesgue integration',
         authors=[
-            BibAuthor(full_name='Tom Leinster')
+            BibAuthor(full_name='Tom Leinster'),
         ],
         edition='3',
         languages=['english'],
         eprinttype='arXiv',
         eprintclass='math.FA',
         eprint=arxiv_id,
-        date='2023-01-30'
+        date='2023-01-30',
     )
 
 
@@ -96,14 +96,14 @@ def test_parse_1010_0824v13_russian(arxiv_id: str = '1010.0824v13') -> None:
         entry_name='Akbarov2024MathematicalAnalysis',
         title='Mathematical analysis without gaps',
         authors=[
-            BibAuthor(full_name='Sergei Akbarov')
+            BibAuthor(full_name='Sergei Akbarov'),
         ],
         languages=['english'],  # This is supposed to be "Russian", but the arXiv API does not give us this information
         eprinttype='arXiv',
         eprintclass='math.CA',
         eprint=arxiv_id,
         date='2024-06-14',
-        edition='13'
+        edition='13',
     )
 
 
@@ -122,14 +122,14 @@ def test_parse_0903_0340v3_doi_and_link_without_type(arxiv_id: str = '0903.0340v
         title='Physics, Topology, Logic and Computation: A Rosetta Stone',
         authors=[
             BibAuthor(full_name='John C. Baez'),
-            BibAuthor(full_name='Mike Stay')
+            BibAuthor(full_name='Mike Stay'),
         ],
         languages=['english'],
         eprinttype='arXiv',
         eprintclass='quant-ph',
         eprint=arxiv_id,
         edition='3',
-        date='2009-06-06'
+        date='2009-06-06',
     )
 
 
@@ -146,13 +146,13 @@ def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> 
         entry_name='Ambridge2024ConstructiveUnivalentMathematics',
         title='Exact Real Search: Formalised Optimisation and Regression in Constructive Univalent Mathematics',
         authors=[
-            BibAuthor(full_name='Todd Waugh Ambridge')
+            BibAuthor(full_name='Todd Waugh Ambridge'),
         ],
         languages=['english'],
         eprinttype='arXiv',
         eprintclass='cs.LO',
         eprint=arxiv_id,
-        date='2024-01-17'
+        date='2024-01-17',
     )
 
 
@@ -172,12 +172,12 @@ def test_parse_2403_06707v1_dashes_and_line_break_in_title(arxiv_id: str = '2403
             BibAuthor(full_name='David Binder'),
             BibAuthor(full_name='Ingo Skupin'),
             BibAuthor(full_name='Tim Süberkrüb'),
-            BibAuthor(full_name='Klaus Ostermann')
+            BibAuthor(full_name='Klaus Ostermann'),
         ],
         doi='10.1145/3649846',
         languages=['english'],
         eprinttype='arXiv',
         eprintclass='cs.PL',
         eprint=arxiv_id,
-        date='2024-03-11'
+        date='2024-03-11',
     )

@@ -4,7 +4,9 @@
 from dataclasses import dataclass, field
 
 from xsdata.formats.dataclass.parsers import XmlParser
-from xsdata.models.datatype import XmlDateTime
+
+# annotation-only XmlDateTime breaks because of metaprogramming
+from xsdata.models.datatype import XmlDateTime  # noqa: TC002
 
 
 ARXIV_NAMESPACE = 'http://arxiv.org/schemas/atom'

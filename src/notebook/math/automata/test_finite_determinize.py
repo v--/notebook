@@ -1,6 +1,11 @@
-from .conftest import FiniteAutomatonFixture
+from typing import TYPE_CHECKING
+
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize, is_automata_deterministic
+
+
+if TYPE_CHECKING:
+    from .conftest import FiniteAutomatonFixture
 
 
 # fig:def:finite_automaton

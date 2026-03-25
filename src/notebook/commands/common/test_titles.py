@@ -9,8 +9,8 @@ from .titles import title_case
         'Word Word',
         'Word  Word',
         'WORD',
-        'слово'
-    ]
+        'слово',
+    ],
 )
 def test_name_to_bib_author_noop(string: str) -> None:
     assert title_case(string) == string
@@ -18,7 +18,7 @@ def test_name_to_bib_author_noop(string: str) -> None:
 
 @pytest_parametrize_kwargs(
     dict(string='word',      expected='Word'),
-    dict(string='word word', expected='Word Word')
+    dict(string='word word', expected='Word Word'),
 )
 def test_name_to_bib_author(string: str, expected: str) -> None:
     assert title_case(string) == expected

@@ -1,10 +1,14 @@
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import loguru
-import pytest
 
 from ...bibtex import VerbatimString, parse_bibtex
 from .formatting import adjust_entry
+
+
+if TYPE_CHECKING:
+    import pytest
 
 
 def test_author_name_reformatting() -> None:
@@ -16,8 +20,8 @@ def test_author_name_reformatting() -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -33,8 +37,8 @@ def test_author_name_verbatim() -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -50,8 +54,8 @@ def test_author_short() -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -68,8 +72,8 @@ def test_author_short_existing() -> None:
               shortauthor = {Levenshtein},
               date = {1965}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -85,8 +89,8 @@ def test_language_reformatting() -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -102,8 +106,8 @@ def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -123,8 +127,8 @@ def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
               month = {2},
               day = {1}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -149,8 +153,8 @@ def test_title_splitting_with_subtitle() -> None:
               subtitle = {Test Subtitle},
               date = {1984}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -170,8 +174,8 @@ def test_isbn_formatting() -> None:
               subtitle = {Its Syntax and Semantics},
               date = {1984}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -194,8 +198,8 @@ def test_issn_formatting() -> None:
               url = {http://dx.doi.org/10.2307/1990284},
               volume = {58}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -213,8 +217,8 @@ def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -233,8 +237,8 @@ def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -254,8 +258,8 @@ def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -275,8 +279,8 @@ def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('WARNING'):
@@ -296,8 +300,8 @@ def test_arxiv_entry_url() -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     adjusted = adjust_entry(entry, None, loguru.logger)
@@ -315,8 +319,8 @@ def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               url = {http://mi.mathnet.ru/tm1095}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('INFO'):
@@ -336,8 +340,8 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
               mathnet = {dan31411},
               url = {http://mi.mathnet.ru/dan31411}
             }
-            '''
-        )
+            ''',
+        ),
     )
 
     with caplog.at_level('INFO'):

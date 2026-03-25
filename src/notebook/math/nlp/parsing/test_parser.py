@@ -8,7 +8,7 @@ def test_extract_phrases_quick_fox(quick_fox: str) -> None:
     assert phrases == [
         Phrase(['quick', 'brown']),
         Phrase(['jumps', 'over']),
-        Phrase(['lazy', 'dog'])
+        Phrase(['lazy', 'dog']),
     ]
 
 
@@ -18,6 +18,6 @@ def test_extract_phrases_henkin() -> None:
     assert phrases == [
         Phrase(['Completeness']),
         Phrase(['theory']),
-        Phrase(['types'])
+        Phrase(['types']),
     ]
 

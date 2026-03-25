@@ -1,15 +1,24 @@
-from collections.abc import Iterator
+
+from typing import TYPE_CHECKING
 
 from ....support.collections import MissingKeyError, TrieMapping
 from .exceptions import FormalLogicSignatureError
 from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+
 class FormalLogicSignature:
-    '''What we call here function and predicate symbols can have multiple Unicode graphemes,
-    yet they are guaranteed to correspond to one lexeme ("token").
+    """A collection of symbols with certain restrictions.
+
+    What we call here function and predicate symbols can have multiple Unicode graphemes, yet they are guaranteed to correspond to one lexeme ("token").
+
     This makes it more convenient to use at the cost of possibly confusing terminology.
-    Calling them "symbols" corresponds to their usage in the literature, where Unicode is not involved.'''
+    Calling them "symbols" corresponds to their usage in the literature, where Unicode is not involved.
+    """
+
     trie: TrieMapping[SignatureSymbol]
 
     def __init__(self, *symbols: SignatureSymbol) -> None:

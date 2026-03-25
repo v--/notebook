@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ..terms import FunctionApplication, Term, TermVisitor, Variable
 from .assignment import VariableAssignment
-from .structure import FormalLogicStructure
+
+
+if TYPE_CHECKING:
+    from .structure import FormalLogicStructure
 
 
 @dataclass(frozen=True)

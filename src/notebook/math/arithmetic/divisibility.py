@@ -1,11 +1,14 @@
 from typing import NamedTuple
 
+from .exceptions import NotebookZeroDivisionError
 from .support import sgn
 
 
 # This is eq:rem:integer_division_uniqueness/max/q in the monograph
 def quot_max(n: int, m: int) -> int:
-    assert m != 0
+    if m == 0:
+        raise NotebookZeroDivisionError(m)
+
     # We can't iterate over all integers, so we choose a wide enough range
     domain = range(-abs(n), abs(n) + 1)
     return sgn(m) * max(
@@ -15,21 +18,27 @@ def quot_max(n: int, m: int) -> int:
 
 # This is eq:rem:integer_division_uniqueness/trunc/q in the monograph
 def quot_trunc(n: int, m: int) -> int:
-    assert m != 0
+    if m == 0:
+        raise NotebookZeroDivisionError(m)
+
     domain = range(abs(n) + 1)
     return sgn(n) * sgn(m) * max(k for k in domain if k * abs(m) <= abs(n))
 
 
 # This is eq:rem:integer_division_uniqueness/floor/q in the monograph
 def quot_floor(n: int, m: int) -> int:
-    assert m != 0
+    if m == 0:
+        raise NotebookZeroDivisionError(m)
+
     domain = range(-abs(n), abs(n) + 1)
     return max(k for k in domain if k * abs(m) <= sgn(m) * n)
 
 
 # This is eq:rem:integer_division_uniqueness/dist/q in the monograph
 def quot_dist(n: int, m: int) -> int:
-    assert m != 0
+    if m == 0:
+        raise NotebookZeroDivisionError(m)
+
     domain = range(-abs(n), abs(n) + 1)
     a, *rest = sorted(domain, key=lambda k: abs(n - k * m))
 
@@ -44,7 +53,8 @@ def quot_dist(n: int, m: int) -> int:
 
 # This should match quot_max, but is implemented via Python's floor division, which acts like quot_floor
 def quot(n: int, m: int, *, raise_if_inexact: bool = False) -> int:
-    assert m != 0
+    if m == 0:
+        raise NotebookZeroDivisionError(m)
 
     if raise_if_inexact and not divides(m, n):
         raise ValueError(f'{m} does not divide {n}')

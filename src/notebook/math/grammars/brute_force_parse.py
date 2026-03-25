@@ -1,12 +1,16 @@
 import itertools
 from collections.abc import Collection, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
 from .epsilon_rules import is_epsilon_rule
-from .exceptions import GrammarError
-from .grammar import Grammar
+from .exceptions import GrammarError, IncompatibleGrammarError
 from .parse_tree import ParseTree
+
+
+if TYPE_CHECKING:
+    from .grammar import Grammar
 
 
 class BruteForceParseError(GrammarError):
@@ -34,14 +38,17 @@ def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, t
         yield from parse_impl(
             grammar.schema.instantiate(sym),
             string,
-            {(grammar.start, string), *traversed}
+            {(grammar.start, string), *traversed},
         )
 
 
 def parse_impl(grammar: Grammar, string: str, traversed: Collection[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
+    if not is_context_free(grammar):
+        raise IncompatibleGrammarError('Expected a context-free grammar')
+
     if traversed is None:
         traversed = Collection()
-    assert is_context_free(grammar), 'Brute force parsing algorithm only works on context-free grammars'
+
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):
             if len(string) == 0:
@@ -52,7 +59,7 @@ def parse_impl(grammar: Grammar, string: str, traversed: Collection[tuple[NonTer
                     *(
                         list(generate_trees(sym, substr, grammar, traversed))
                         for sym, substr in zip(rule.dest, part, strict=True)
-                    )
+                    ),
                 ):
                     yield ParseTree(grammar.start, list(subtrees))
 

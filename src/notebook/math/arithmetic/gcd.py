@@ -48,5 +48,5 @@ def extended_gcd(n: int, m: int) -> ExtendedGcdResult:
     gcd = a * n + b * m
 
     return ExtendedGcdResult(
-        n, m, sgn(gcd) * a, sgn(gcd) * b
+        n, m, sgn(gcd) * a, sgn(gcd) * b,
     )

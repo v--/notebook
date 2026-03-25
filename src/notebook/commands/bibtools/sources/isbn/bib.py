@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import stdnum.isbn
 
 from .....bibtex import BibEntry
@@ -6,7 +8,10 @@ from ..common.dates import extract_year
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
 from ..common.names import name_to_bib_author
-from .model import GoogleBook
+
+
+if TYPE_CHECKING:
+    from .model import GoogleBook
 
 
 def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
@@ -28,5 +33,5 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
         subtitle=subtitle or None,
         languages=[language],
         date=vi.published_date,
-        isbn=stdnum.isbn.format(isbn)
+        isbn=stdnum.isbn.format(isbn),
     )

@@ -1,4 +1,6 @@
-from collections.abc import Iterable, Sequence
+
+
+from typing import TYPE_CHECKING
 
 from ...parsing import Parser
 from ...support.unicode import Capitalization, is_latin_string
@@ -16,6 +18,10 @@ from ..nodes import (
 from .parser_context import LaTeXGroupContext
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, LaTeXTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class LaTeXParser(Parser[LaTeXToken]):

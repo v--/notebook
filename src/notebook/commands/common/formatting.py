@@ -3,10 +3,13 @@ import io
 import pathlib
 import shutil
 import tempfile
-from types import TracebackType
-from typing import NamedTuple, TextIO
+from typing import TYPE_CHECKING, NamedTuple, TextIO
 
 import loguru
+
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 
 class FormatterContext(NamedTuple):
@@ -36,7 +39,7 @@ class FormatterContextManager:
         self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
-        traceback: TracebackType | None
+        traceback: TracebackType | None,
      ) -> None:
         if self.context is None:
             return
@@ -50,8 +53,8 @@ class FormatterContextManager:
         src.seek(0)
         dest.seek(0)
 
-        old_hash = hashlib.sha1(src.read().encode('utf-8')).hexdigest()
-        new_hash = hashlib.sha1(dest.read().encode('utf-8')).hexdigest()
+        old_hash = hashlib.blake2b(src.read().encode('utf-8'), digest_size=4).hexdigest()
+        new_hash = hashlib.blake2b(dest.read().encode('utf-8'), digest_size=4).hexdigest()
 
         if new_hash == old_hash:
             return

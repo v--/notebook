@@ -35,7 +35,7 @@ CYR_TO_LAT_TABLE = str.maketrans({
     'ю': 'iu',
     'я': 'ya',  # This is supposed to be "ia", but "ya" is more widely accepted
     # Custom
-    'і': 'i'
+    'і': 'i',
 })
 
 

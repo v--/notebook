@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_formula
-from ..signature import FormalLogicSignature
 from .pull_quantifiers import pull_quantifiers
+
+
+if TYPE_CHECKING:
+    from ..signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -21,15 +26,15 @@ from .pull_quantifiers import pull_quantifiers
     dict(formula='(∀x.p¹(x) ∨ q²(a, x))', expected='∀b.(p¹(b) ∨ q²(a, x))'),
     dict(
         formula='(∀x.p¹(x) ∨ ∀x.q¹(x))',
-        expected='∀x.∀a.(p¹(x) ∨ q¹(a))'
+        expected='∀x.∀a.(p¹(x) ∨ q¹(a))',
     ),
     dict(
         formula='((∃x.p¹(x) ∧ ∃y.q¹(y)) ∨ (∃x.p¹(x) ∧ ∃y.q¹(y)))',
-        expected='∃x.∃y.∃a.∃b.((p¹(x) ∧ q¹(y)) ∨ (p¹(a) ∧ q¹(b)))'
+        expected='∃x.∃y.∃a.∃b.((p¹(x) ∧ q¹(y)) ∨ (p¹(a) ∧ q¹(b)))',
     ),
     dict(
         formula='((∀x.p¹(x) ∨ q¹(x)) ∧ ∃a.r¹(a))',
-        expected='∀a.∃b.((p¹(a) ∨ q¹(x)) ∧ r¹(b))'
+        expected='∀a.∃b.((p¹(a) ∨ q¹(x)) ∧ r¹(b))',
     ),
 
     # Conditionals

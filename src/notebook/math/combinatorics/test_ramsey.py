@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from ...support.pytest import pytest_parametrize_kwargs
 from .ramsey import (
@@ -11,6 +11,10 @@ from .ramsey import (
 )
 
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+
 @pytest_parametrize_kwargs(
     dict(sizes=[1, 5], expected=1),
     dict(sizes=[2, 5], expected=5),
@@ -19,7 +23,7 @@ from .ramsey import (
     dict(sizes=[5, 5], expected=70),
     dict(sizes=[3, 3], expected=6),
     dict(sizes=[3, 3, 2], expected=6),
-    dict(sizes=[3, 3, 3], expected=21)
+    dict(sizes=[3, 3, 3], expected=21),
 )
 def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
     assert ramsey_upper_bound(*sizes) == expected
@@ -30,8 +34,8 @@ def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
         expected=ExhaustiveRamseyComputationBounds(
             result_max=6,
             max_edge_count=10,
-            max_subgraphs_per_coloring={3: 10}
-        )
+            max_subgraphs_per_coloring={3: 10},
+        ),
     ),
 
     dict(
@@ -39,8 +43,8 @@ def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
         expected=ExhaustiveRamseyComputationBounds(
             result_max=6,
             max_edge_count=10,
-            max_subgraphs_per_coloring={2: 10, 3: 10}
-        )
+            max_subgraphs_per_coloring={2: 10, 3: 10},
+        ),
     ),
 
     dict(
@@ -48,8 +52,8 @@ def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
         expected=ExhaustiveRamseyComputationBounds(
             result_max=10,
             max_edge_count=36,
-            max_subgraphs_per_coloring={3: 84, 4: 126}
-        )
+            max_subgraphs_per_coloring={3: 84, 4: 126},
+        ),
     ),
 
     dict(
@@ -57,13 +61,13 @@ def test_ramsey_upper_bound_binary(sizes: Sequence[int], expected: int) -> None:
         expected=ExhaustiveRamseyComputationBounds(
             result_max=21,
             max_edge_count=190,
-            max_subgraphs_per_coloring={3: 1140}
-        )
-    )
+            max_subgraphs_per_coloring={3: 1140},
+        ),
+    ),
 )
 def test_naive_ramsey_computation_bounds(
     sizes: Sequence[int],
-    expected: ExhaustiveRamseyComputationBounds
+    expected: ExhaustiveRamseyComputationBounds,
 ) -> None:
     bounds = naive_ramsey_computation_bounds(*sizes)
     assert bounds == expected
@@ -79,7 +83,7 @@ def test_compute_ramsey_number_exhaustively(
     sizes: Sequence[int],
     result: int,
     colorings_traversed: int,
-    subgraphs_traversed: int
+    subgraphs_traversed: int,
 ) -> None:
     state = compute_ramsey_number_exhaustively(*sizes)
     assert state.result == result
@@ -88,13 +92,13 @@ def test_compute_ramsey_number_exhaustively(
 
 
 @pytest_parametrize_kwargs(
-    dict(sizes=[3, 4], batch_size=10, batch_count=3, expected_colorings_traversed=60)
+    dict(sizes=[3, 4], batch_size=10, batch_count=3, expected_colorings_traversed=60),
 )
 def test_compute_ramsey_number_exhaustively_streaming(
     sizes: Sequence[int],
     batch_size: int,
     batch_count: int,
-    expected_colorings_traversed: int
+    expected_colorings_traversed: int,
 ) -> None:
     stream = compute_ramsey_number_exhaustively_streaming(*sizes, batch_size=batch_size)
     total_colorings_traversed = 0

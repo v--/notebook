@@ -1,4 +1,5 @@
-from collections.abc import Collection, Sequence
+
+from typing import TYPE_CHECKING
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ..propositional import parse_prop_formula
@@ -10,6 +11,10 @@ from .minimal_implicational_logic import (
 )
 
 
+if TYPE_CHECKING:
+    from collections.abc import Collection, Sequence
+
+
 IDENTITY_DERIVATION = [
     str(f) for f in
     get_identity_derivation_payload(parse_prop_formula('p'))
@@ -19,27 +24,27 @@ IDENTITY_DERIVATION = [
 @pytest_parametrize_kwargs(
     dict(
         payload=[],
-        expected=set()
+        expected=set(),
     ),
 
     dict(
         payload=['(p → (q → p))'],
-        expected=set()
+        expected=set(),
     ),
 
     dict(
         payload=['p'],
-        expected={'p'}
+        expected={'p'},
     ),
 
     dict(
         payload=IDENTITY_DERIVATION,
-        expected=set()
+        expected=set(),
     ),
 )
 def test_minimal_implicational_derivation_premises(payload: Sequence[str], expected: Collection[str]) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload],
     )
 
     premises = get_premises(IMPLICATIONAL_AXIOMS, derivation)
@@ -50,7 +55,7 @@ def test_minimal_implicational_derivation_premises(payload: Sequence[str], expec
     dict(
         payload=['p'],
         hypothesis='p',
-        expected=IDENTITY_DERIVATION
+        expected=IDENTITY_DERIVATION,
     ),
 
     dict(
@@ -59,20 +64,20 @@ def test_minimal_implicational_derivation_premises(payload: Sequence[str], expec
         expected=[
             '(q → (p → q))',
             'q',
-            '(p → q)'
-        ]
+            '(p → q)',
+        ],
     ),
 
     dict(
         payload=['p', '(p → q)', 'q'],
         hypothesis='p',
-        expected=['(p → q)']
+        expected=['(p → q)'],
     ),
 
     dict(
         payload=['(p → q)', 'p', 'q'],
         hypothesis='p',
-        expected=['(p → q)']
+        expected=['(p → q)'],
     ),
 
     dict(
@@ -85,8 +90,8 @@ def test_minimal_implicational_derivation_premises(payload: Sequence[str], expec
             '((p → (q → r)) → ((p → q) → (p → r)))',
             '((p → q) → (p → r))',
             '(p → q)',
-            '(p → r)'
-        ]
+            '(p → r)',
+        ],
     ),
 
     dict(
@@ -99,17 +104,17 @@ def test_minimal_implicational_derivation_premises(payload: Sequence[str], expec
             '(q → (p → q))',
             'q',
             '(p → q)',
-            '(p → r)'
-        ]
-    )
+            '(p → r)',
+        ],
+    ),
 )
 def test_introduce_conclusion_hypothesis(payload: Sequence[str], hypothesis: str, expected: Sequence[str]) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload],
     )
 
     expected_derivation = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in expected]
+        payload=[parse_prop_formula(s) for s in expected],
     )
 
     hypothesis_formula = parse_prop_formula(hypothesis)

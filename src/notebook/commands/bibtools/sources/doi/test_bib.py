@@ -18,14 +18,14 @@ def test_parse_1023072266967(doi: str = '10.2307/2266967') -> None:
         publisher='Cambridge University Press (CUP)',
         journal='Journal of Symbolic Logic',
         authors=[
-            BibAuthor(full_name='Leon Henkin')
+            BibAuthor(full_name='Leon Henkin'),
         ],
         doi=doi,
         languages=['english'],
         date='1950-06',
         issn='0022-4812,1943-5886',
         volume='15',
-        pages='81-91'
+        pages='81-91',
     )
 
 
@@ -54,13 +54,13 @@ def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256
         journal='Illinois Journal of Mathematics',
         authors=[
             BibAuthor(full_name='K. Appel'),
-            BibAuthor(full_name='W. Haken')
+            BibAuthor(full_name='W. Haken'),
         ],
         doi=doi,
         languages=['english'],
         date='1977-09-01',
         issn='0019-2082',
-        volume='21'
+        volume='21',
     )
 
 
@@ -80,13 +80,13 @@ def test_parse_101215_ijm_1256049012_missing_fields(doi: str = '10.1215/ijm/1256
         authors=[
             BibAuthor(full_name='K. Appel'),
             BibAuthor(full_name='W. Haken'),
-            BibAuthor(full_name='J. Koch')
+            BibAuthor(full_name='J. Koch'),
         ],
         doi=doi,
         languages=['english'],
         date='1977-09-01',
         issn='0019-2082',
-        volume='21'
+        volume='21',
     )
 
 
@@ -105,14 +105,14 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
         journal='Proceedings of the Steklov Institute of Mathematics',
         authors=[
             BibAuthor(full_name='S. M. Aseev'),
-            BibAuthor(full_name='V. M. Veliov')
+            BibAuthor(full_name='V. M. Veliov'),
         ],
         doi=doi,
         languages=['english'],
         date='2015-12-11',
         issn='0081-5438,1531-8605',
         volume='291',
-        pages='22-39'
+        pages='22-39',
     )
 
 
@@ -131,14 +131,14 @@ def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.201
         journal='Indagationes Mathematicae',
         authors=[
             BibAuthor(full_name='Guram Bezhanishvili'),
-            BibAuthor(full_name='Wesley H. Holliday')
+            BibAuthor(full_name='Wesley H. Holliday'),
         ],
         doi=doi,
         languages=['english'],
         date='2019-05',
         issn='0019-3577',
         volume='30',
-        pages='403-469'
+        pages='403-469',
     )
 
 
@@ -157,7 +157,7 @@ def test_parse_101016_jjmaa2019123445_funder(doi: str = '10.1016/j.jmaa.2019.123
         authors=[
             BibAuthor(full_name='Mira Bivas'),
             BibAuthor(full_name='Mikhail Krastanov'),
-            BibAuthor(full_name='Nadezhda Ribarska')
+            BibAuthor(full_name='Nadezhda Ribarska'),
         ],
         doi=doi,
         languages=['english'],
@@ -165,7 +165,7 @@ def test_parse_101016_jjmaa2019123445_funder(doi: str = '10.1016/j.jmaa.2019.123
         volume='481',
         date='2020-01',
         issn='0022-247X',
-        pages='123445'
+        pages='123445',
     )
 
 
@@ -184,7 +184,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
         publisher='Association for Computing Machinery (ACM)',
         authors=[
             BibAuthor(full_name='Jeffrey Dean'),
-            BibAuthor(full_name='Sanjay Ghemawat')
+            BibAuthor(full_name='Sanjay Ghemawat'),
         ],
         doi=doi,
         languages=['english'],
@@ -192,7 +192,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
         volume='51',
         pages='107-113',
         date='2008-01',
-        issn='0001-0782,1557-7317'
+        issn='0001-0782,1557-7317',
     )
 
 
@@ -210,7 +210,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
         publisher='Informa UK Limited',
         authors=[
             BibAuthor(full_name='Alan Edelman'),
-            BibAuthor(full_name='Gilbert Strang')
+            BibAuthor(full_name='Gilbert Strang'),
         ],
         doi=doi,
         url='http://dx.doi.org/10.1080/00029890.2004.11920065',
@@ -219,7 +219,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
         volume='111',
         pages='189-197',
         date='2004-03',
-        issn='0002-9890,1930-0972'
+        issn='0002-9890,1930-0972',
     )
 
 
@@ -236,7 +236,7 @@ def test_parse_101090_bull_1616_reference_issn(doi: str = '10.1090/bull/1616') -
         title='An introduction to univalent foundations for mathematicians',
         publisher='American Mathematical Society (AMS)',
         authors=[
-            BibAuthor(full_name='Daniel Grayson')
+            BibAuthor(full_name='Daniel Grayson'),
         ],
         doi=doi,
         languages=['english'],
@@ -244,7 +244,7 @@ def test_parse_101090_bull_1616_reference_issn(doi: str = '10.1090/bull/1616') -
         volume='55',
         pages='427-450',
         date='2018-03-05',
-        issn='0273-0979,1088-9485'
+        issn='0273-0979,1088-9485',
     )
 
 
@@ -267,7 +267,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
             BibAuthor(full_name='John B. Carlin'),
             BibAuthor(full_name='Charles Poole'),
             BibAuthor(full_name='Steven N. Goodman'),
-            BibAuthor(full_name='Douglas G. Altman')
+            BibAuthor(full_name='Douglas G. Altman'),
         ],
         doi=doi,
         languages=['english'],
@@ -275,7 +275,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
         volume='31',
         pages='337-350',
         date='2016-05-21',
-        issn='0393-2990,1573-7284'
+        issn='0393-2990,1573-7284',
     )
 
 
@@ -292,7 +292,7 @@ def test_parse_101016_jentcs200409017_special_numbering(doi: str = '10.1016/j.en
         title='Synthetic Topology',
         publisher='Elsevier BV',
         authors=[
-            BibAuthor(full_name='Martín Escardó')
+            BibAuthor(full_name='Martín Escardó'),
         ],
         doi=doi,
         languages=['english'],
@@ -300,7 +300,7 @@ def test_parse_101016_jentcs200409017_special_numbering(doi: str = '10.1016/j.en
         volume='87',
         pages='21-156',
         date='2004-11',
-        issn='1571-0661'
+        issn='1571-0661',
     )
 
 
@@ -320,7 +320,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
             BibAuthor(full_name='Matthew Inglis'),
             BibAuthor(full_name='Juan Pablo Mejia‐Ramos'),
             BibAuthor(full_name='Keith Weber'),
-            BibAuthor(full_name='Lara Alcock')
+            BibAuthor(full_name='Lara Alcock'),
         ],
         doi=doi,
         languages=['english'],
@@ -328,7 +328,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
         volume='5',
         pages='270-282',
         date='2013-04-11',
-        issn='1756-8757,1756-8765'
+        issn='1756-8757,1756-8765',
     )
 
 
@@ -356,7 +356,7 @@ def test_parse_101145_3649846_orcid(doi: str = '10.1145/3649846') -> None:
         volume='8',
         pages='983-1009',
         date='2024-04-29',
-        issn='2475-1421'
+        issn='2475-1421',
     )
 
 
@@ -372,12 +372,12 @@ def test_parse_1048550_arxiv180905923(doi: str = '10.48550/arXiv.1809.05923') ->
         entry_name='BradleyAppliedCategoryTheory',
         title='What is Applied Category Theory?',
         authors=[
-            BibAuthor(full_name='Tai-Danae Bradley')
+            BibAuthor(full_name='Tai-Danae Bradley'),
         ],
         doi=doi,
         url='https://arxiv.org/abs/1809.05923',
         languages=['english'],
-        publisher='arXiv'
+        publisher='arXiv',
     )
 
 
@@ -393,7 +393,7 @@ def test_parse_101109_mc19871663532_no_given_name(doi: str = '10.1109/MC.1987.16
         entry_name='Brooks1987SilverBulletEssence',
         title='No Silver Bullet Essence and Accidents of Software Engineering',
         authors=[
-            BibAuthor(full_name='Brooks')
+            BibAuthor(full_name='Brooks'),
         ],
         doi=doi,
         date='1987-04',
@@ -402,7 +402,7 @@ def test_parse_101109_mc19871663532_no_given_name(doi: str = '10.1109/MC.1987.16
         journal='Computer',
         volume='20',
         pages='10-19',
-        issn='0018-9162'
+        issn='0018-9162',
     )
 
 
@@ -418,7 +418,7 @@ def test_parse_104169_collegemathj475322_assertion_url(doi: str = '10.4169/colle
         entry_name='Kowalski2017SingleDegree',
         title='The Sine of a Single Degree',
         authors=[
-            BibAuthor(full_name='Travis Kowalski')
+            BibAuthor(full_name='Travis Kowalski'),
         ],
         doi=doi,
         date='2017-11-27',
@@ -427,7 +427,7 @@ def test_parse_104169_collegemathj475322_assertion_url(doi: str = '10.4169/colle
         journal='The College Mathematics Journal',
         volume='47',
         pages='322-332',
-        issn='0746-8342,1931-1346'
+        issn='0746-8342,1931-1346',
     )
 
 
@@ -443,7 +443,7 @@ def test_parse_103934_dcdsb2018020_no_family_name(doi: str = '10.3934/dcdsb.2018
         entry_name='Krukowski2018UniformSpaces',
         title="Arzelà-Ascoli's theorem in uniform spaces",
         authors=[
-            BibAuthor(full_name='Mateusz Krukowski')
+            BibAuthor(full_name='Mateusz Krukowski'),
         ],
         doi=doi,
         date='2018',
@@ -452,7 +452,7 @@ def test_parse_103934_dcdsb2018020_no_family_name(doi: str = '10.3934/dcdsb.2018
         journal='Discrete &amp; Continuous Dynamical Systems - B',
         volume='23',
         pages='283-294',
-        issn='1553-524X'
+        issn='1553-524X',
     )
 
 
@@ -468,7 +468,7 @@ def test_parse_101017_fmp20228_xml_abstract(doi: str = '10.1017/fmp.2022.8') -> 
         entry_name='Tao2022CollatzMapAttain',
         title='Almost all orbits of the Collatz map attain almost bounded values',
         authors=[
-            BibAuthor(full_name='Terence Tao')
+            BibAuthor(full_name='Terence Tao'),
         ],
         doi=doi,
         date='2022-05-20',
@@ -476,7 +476,7 @@ def test_parse_101017_fmp20228_xml_abstract(doi: str = '10.1017/fmp.2022.8') -> 
         languages=['english'],
         journal='Forum of Mathematics, Pi',
         volume='10',
-        issn='2050-5086'
+        issn='2050-5086',
     )
 
 
@@ -491,7 +491,7 @@ def test_parse_101080_00150517200212428680_affiliation_places(doi: str = '10.108
         entry_type='article',
         entry_name='Andaloro2024DirectedGraphs',
         authors=[
-            BibAuthor(full_name='Paul J. Andaloro')
+            BibAuthor(full_name='Paul J. Andaloro'),
         ],
         date='2024-09-19',
         doi=doi,
@@ -501,7 +501,7 @@ def test_parse_101080_00150517200212428680_affiliation_places(doi: str = '10.108
         pages='43-54',
         publisher='Informa UK Limited',
         title='The 3 <i>x</i> + 1 Problem and Directed Graphs',
-        volume='40'
+        volume='40',
     )
 
 
@@ -518,7 +518,7 @@ def test_parse_101145_190347190362_affiliation_places(doi: str = '10.1145/190347
         authors=[
             BibAuthor(full_name='Wieb Bosma'),
             BibAuthor(full_name='John Cannon'),
-            BibAuthor(full_name='Graham Matthews')
+            BibAuthor(full_name='Graham Matthews'),
         ],
         date='1994',
         doi=doi,
@@ -526,7 +526,7 @@ def test_parse_101145_190347190362_affiliation_places(doi: str = '10.1145/190347
         pages='52-57',
         publisher='ACM Press',
         subtitle='design of the MAGMA language',
-        title='Programming with algebraic structures'
+        title='Programming with algebraic structures',
     )
 
 
@@ -541,7 +541,7 @@ def test_parse_101038_261459a0_publisher(doi: str = '10.1038/261459a0') -> None:
         entry_type='article',
         entry_name='May1976SimpleMathematicalModels',
         authors=[
-            BibAuthor(full_name='Robert M. May')
+            BibAuthor(full_name='Robert M. May'),
         ],
         date='1976-06-10',
         doi=doi,
@@ -551,7 +551,7 @@ def test_parse_101038_261459a0_publisher(doi: str = '10.1038/261459a0') -> None:
         pages='459-467',
         publisher='Springer Science and Business Media LLC',
         title='Simple mathematical models with very complicated dynamics',
-        volume='261'
+        volume='261',
     )
 
 
@@ -566,7 +566,7 @@ def test_parse_102139_ssrn360300_other_publisher(doi: str = '10.2139/ssrn.360300
         entry_type='article',
         entry_name='Cramer2003LogisticRegression',
         authors=[
-            BibAuthor(full_name='J.S. Cramer')
+            BibAuthor(full_name='J.S. Cramer'),
         ],
         date='2003',
         doi=doi,
@@ -589,7 +589,7 @@ def test_parse_101080_00029890198511971528_aliases(doi: str = '10.1080/00029890.
         entry_type='article',
         entry_name='Lagarias2018Generalizations',
         authors=[
-            BibAuthor(full_name='Jeffrey C. Lagarias')
+            BibAuthor(full_name='Jeffrey C. Lagarias'),
         ],
         date='2018-02-05',
         doi=doi,
@@ -599,7 +599,7 @@ def test_parse_101080_00029890198511971528_aliases(doi: str = '10.1080/00029890.
         publisher='Informa UK Limited',
         pages='3-23',
         title='The 3<i>x</i>+ 1 Problem and its Generalizations',
-        volume='92'
+        volume='92',
     )
 
 
@@ -614,7 +614,7 @@ def test_parse_101145_6213862141_is_identical_to(doi: str = '10.1145/62138.62141
         entry_type='misc',
         entry_name='Liskov1987KeynoteAddress',
         authors=[
-            BibAuthor(full_name='Barbara Liskov')
+            BibAuthor(full_name='Barbara Liskov'),
         ],
         date='1987',
         doi=doi,
@@ -638,14 +638,14 @@ def test_parse_101090_gsm_250_datetime_version(doi: str = '10.1090/gsm/250') -> 
         series='Graduate Studies in Mathematics',
         authors=[
             BibAuthor(full_name='David Eisenbud'),
-            BibAuthor(full_name='Joe Harris')
+            BibAuthor(full_name='Joe Harris'),
         ],
         doi=doi,
         date='2024',
         issn='1065-7339',
         isbn='978-1-4704-7944-2',
         publisher='American Mathematical Society',
-        languages=['english']
+        languages=['english'],
     )
 
 
@@ -662,14 +662,14 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
         title='General Topology III',
         publisher='Springer Berlin Heidelberg',
         editors=[
-            BibAuthor(full_name='A. V. Arhangel’skii')
+            BibAuthor(full_name='A. V. Arhangel’skii'),
         ],
         doi=doi,
         languages=['english'],
         date='1995',
         series='Encyclopaedia of Mathematical Sciences',
         isbn='978-3-662-07413-8',
-        issn='0938-0396'
+        issn='0938-0396',
     )
 
 
@@ -688,14 +688,14 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
         publisher='Springer Berlin Heidelberg',
         authors=[
             BibAuthor(full_name='Jöran Bergh'),
-            BibAuthor(full_name='Jörgen Löfström')
+            BibAuthor(full_name='Jörgen Löfström'),
         ],
         doi=doi,
         languages=['english'],
         series='Grundlehren der mathematischen Wissenschaften',
         date='1976',
         issn='0072-7830',
-        isbn='978-3-642-66451-9'
+        isbn='978-3-642-66451-9',
     )
 
 
@@ -712,14 +712,14 @@ def test_parse_101007_9783319114781_book(doi: str = '10.1007/978-3-319-11478-1')
         title='An Invitation to General Algebra and Universal Constructions',
         publisher='Springer International Publishing',
         authors=[
-            BibAuthor(full_name='George M. Bergman')
+            BibAuthor(full_name='George M. Bergman'),
         ],
         doi=doi,
         languages=['english'],
         series='Universitext',
         date='2015',
         issn='0172-5939,2191-6675',
-        isbn='978-3-319-11477-4'
+        isbn='978-3-319-11477-4',
     )
 
 
@@ -737,7 +737,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
         publisher='Springer Berlin Heidelberg',
         authors=[
             BibAuthor(full_name='J. Baez'),
-            BibAuthor(full_name='M. Stay')
+            BibAuthor(full_name='M. Stay'),
         ],
         doi=doi,
         languages=['english'],
@@ -745,7 +745,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
         date='2010-07-05',
         issn='0075-8450,1616-6361',
         isbn='978-3-642-12821-9',
-        pages='95-172'
+        pages='95-172',
     )
 
 
@@ -763,12 +763,12 @@ def test_parse_101007_9783642617010_container_empty_array(doi: str = '10.1007/97
         subtitle='Chapters 1–4',
         publisher='Springer Berlin Heidelberg',
         authors=[
-            BibAuthor(full_name='Nicolas Bourbaki')
+            BibAuthor(full_name='Nicolas Bourbaki'),
         ],
         doi=doi,
         languages=['english'],
         date='1995',
-        isbn='978-3-642-61701-0'
+        isbn='978-3-642-61701-0',
     )
 
 
@@ -787,12 +787,12 @@ def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017/978
         publisher='Cambridge University Press & Assessment',
         authors=[
             BibAuthor(full_name='Stephen Boyd'),
-            BibAuthor(full_name='Lieven Vandenberghe')
+            BibAuthor(full_name='Lieven Vandenberghe'),
         ],
         doi=doi,
         languages=['english'],
         date='2019-09-13',
-        isbn='978-1-108-58366-4'
+        isbn='978-1-108-58366-4',
     )
 
 
@@ -809,7 +809,7 @@ def test_parse_101109_ieeestd20198766229_standard(doi: str = '10.1109/IEEESTD.20
         title='IEEE Standard for Floating-Point Arithmetic',
         publisher='IEEE',
         authors=[
-            BibAuthor(full_name='IEEE')
+            BibAuthor(full_name='IEEE'),
         ],
         doi=doi,
         isbn='978-1-5044-5924-2',
@@ -831,7 +831,7 @@ def test_parse_101023_a_1011497229317_no_title(doi: str = '10.1023/A:10114972293
         publisher='Springer Science and Business Media LLC',
         authors=[
             BibAuthor(full_name='David Borwein'),
-            BibAuthor(full_name='Jonathan M. Borwein')
+            BibAuthor(full_name='Jonathan M. Borwein'),
         ],
         doi=doi,
         date='2001',

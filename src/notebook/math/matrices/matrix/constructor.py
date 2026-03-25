@@ -1,9 +1,12 @@
-from collections.abc import Sequence
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from ...rings.types import ISemiring
 from ..exceptions import MatrixIndexError
 from .base import BaseMatrix
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):
@@ -26,7 +29,7 @@ class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):
         return cls.from_factory(
             mat.m,
             mat.n,
-            lambda i, j: cls.lift_to_scalar(mat[i, j])
+            lambda i, j: cls.lift_to_scalar(mat[i, j]),
         )
 
     @classmethod

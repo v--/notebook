@@ -7,7 +7,7 @@ TRANSLATION_TABLE = str.maketrans({
     ':': '_',
     '|': '_',
     '?': '_',
-    '"': ''
+    '"': '',
 })
 
 

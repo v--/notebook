@@ -1,12 +1,16 @@
 import abc
-from collections.abc import Iterable, Sequence
-from types import TracebackType
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokenizer_context import TokenizerContext
-from .tokens import Token
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+    from types import TracebackType
+
+    from .tokens import Token
 
 
 class Tokenizer[TokenKindT](abc.ABC):
@@ -55,7 +59,7 @@ class Tokenizer[TokenKindT](abc.ABC):
         self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
-        traceback: TracebackType | None
+        traceback: TracebackType | None,
      ) -> None:
         if exc_type is None:
             self.assert_exhausted()

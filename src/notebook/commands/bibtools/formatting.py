@@ -1,8 +1,6 @@
-from collections.abc import Sequence
 from dataclasses import replace
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
-import loguru
 from stdnum import isbn, issn
 
 from ...bibtex import BibAuthor, BibEntry, BibString, parse_bibtex
@@ -15,7 +13,14 @@ from .sources.common.entries import regenerate_entry_name
 from .sources.common.languages import get_main_entry_language, normalize_language_name
 from .sources.common.names import get_main_human_name, normalize_human_name
 from .sources.common.pages import normalize_pages
-from .sources.common.url_template import UrlTemplate
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import loguru
+
+    from .sources.common.url_template import UrlTemplate
 
 
 class BibEntryAdjuster:
@@ -81,8 +86,7 @@ class BibEntryAdjuster:
         return BibAuthor(full_name=full_name, short_name=short_name)
 
     def adjust_language(self, language: BibString) -> BibString:
-        normalized = normalize_language_name(language)
-        return normalized
+        return normalize_language_name(language)
 
     def adjust_entry_date(self) -> None:
         if self.adjusted.date:
@@ -282,7 +286,7 @@ class BibEntryAdjuster:
             # other
             pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
             isbn=isbn.format(self.adjusted.isbn) if isinstance(self.adjusted.isbn, str) else None,
-            issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn
+            issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn,
         )
 
         if isinstance(self.adjusted.issn, str) and ',' in self.adjusted.issn:

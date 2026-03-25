@@ -1,7 +1,10 @@
-from collections.abc import Iterable, MutableSet, Sequence
-from typing import NamedTuple, overload
+from typing import TYPE_CHECKING, NamedTuple, overload
 
 from ...support.collections.sequential_set import SequentialSet
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, MutableSet, Sequence
 
 
 class FiniteAutomatonTransition[StateT, SymbolT](NamedTuple):
@@ -19,7 +22,7 @@ class FiniteAutomaton[StateT, SymbolT]:
         self, *,
         transitions: Iterable[FiniteAutomatonTransition[StateT, SymbolT] | tuple[StateT, StateT, SymbolT]] | None = None,
         initial: Iterable[StateT] | None = None,
-        terminal: Iterable[StateT] | None = None
+        terminal: Iterable[StateT] | None = None,
     ) -> None:
         self.transitions = SequentialSet()
         self.initial = SequentialSet(initial) if initial else SequentialSet()
@@ -75,5 +78,5 @@ def reverse_automaton[StateT, SymbolT](aut: FiniteAutomaton[StateT, SymbolT]) ->
     return FiniteAutomaton(
         initial=aut.terminal,
         terminal=aut.initial,
-        transitions=[(dest, src, symbol) for (src, dest, symbol) in aut.transitions]
+        transitions=[(dest, src, symbol) for (src, dest, symbol) in aut.transitions],
     )

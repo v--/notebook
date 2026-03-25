@@ -1,11 +1,15 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ...formulas import ConnectiveFormula, Formula, NegationFormula, PropConstant
 from ..formula_visitor import PropFormulaVisitor
-from ..formulas import PropConnectiveFormula, PropFormula, PropNegationFormula, PropVariable
 from .base import PropFormulaTranslation
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ..formulas import PropConnectiveFormula, PropFormula, PropNegationFormula, PropVariable
 
 
 @dataclass(frozen=True)
@@ -29,7 +33,7 @@ class FormulaSubstitutionVisitor(PropFormulaVisitor[Formula]):
         return ConnectiveFormula(
             formula.conn,
             self.visit(formula.left),
-            self.visit(formula.right)
+            self.visit(formula.right),
         )
 
 

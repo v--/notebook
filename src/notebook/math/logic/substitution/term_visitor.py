@@ -1,9 +1,12 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ..terms import FunctionApplication, Term, TermTransformationVisitor, Variable
 from .substitution import AtomicLogicSubstitution
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 @dataclass(frozen=True)

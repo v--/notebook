@@ -1,10 +1,14 @@
-import pathlib
 import shutil
-from collections.abc import Iterable
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from .cli import CliTask
-from .runner import TaskRunner
+
+
+if TYPE_CHECKING:
+    import pathlib
+    from collections.abc import Iterable
+
+    from .runner import TaskRunner
 
 
 class AsymptoteTask(CliTask):

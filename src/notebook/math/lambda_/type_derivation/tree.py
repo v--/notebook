@@ -1,6 +1,5 @@
-from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
 from ....support.schemas import SchemaInstantiationError
@@ -10,10 +9,15 @@ from ..instantiation import (
     infer_instantiation_from_assertion,
     instantiate_assertion_schema,
 )
-from ..terms import Variable, VariablePlaceholder
-from ..type_system import TypingRule
-from ..types import SimpleType, TypePlaceholder
 from .exceptions import TypeDerivationError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping, Sequence
+
+    from ..terms import Variable, VariablePlaceholder
+    from ..type_system import TypingRule
+    from ..types import SimpleType, TypePlaceholder
 
 
 @dataclass(frozen=True)
@@ -55,7 +59,7 @@ class RuleApplicationPremise:
 def premise_config(
     *,
     tree: TypeDerivationTree,
-    attachments: Sequence[VariableTypeAssertion | None] = []
+    attachments: Sequence[VariableTypeAssertion | None] = [],
 ) -> RuleApplicationPremise:
     return RuleApplicationPremise(tree, attachments)
 
@@ -85,7 +89,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
     def get_locally_discharged_markers(self) -> Iterable[Variable]:
         return sorted(
             {assumption.term for assumption in self._filter_assumptions(discharged_at_current_step=True)},
-            key=str
+            key=str,
         )
 
     @override
@@ -94,7 +98,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
             str(self.conclusion),
             list(map(str, self.get_locally_discharged_markers())),
             self.rule.name,
-            [premise.tree.build_renderer() for premise in self.premises]
+            [premise.tree.build_renderer() for premise in self.premises],
         )
 
     def __str__(self) -> str:
@@ -144,7 +148,7 @@ def apply(
         rule,
         instantiation,
         application_premises,
-        instantiate_assertion_schema(rule.conclusion.main, instantiation)
+        instantiate_assertion_schema(rule.conclusion.main, instantiation),
     )
 
 

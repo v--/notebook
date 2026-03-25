@@ -1,10 +1,15 @@
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from ....support.schemas import SchemaInstantiationError
 from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
 from ..formulas import Formula, FormulaSchema
-from .base import AtomicLogicSchemaInstantiation
 from .formula_application import instantiate_formula_schema
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from .base import AtomicLogicSchemaInstantiation
 
 
 def _instantiate_context_schema_payload(schema: LogicalContextSchema, instantiation: AtomicLogicSchemaInstantiation) -> Iterable[Formula]:

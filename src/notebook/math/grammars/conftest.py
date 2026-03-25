@@ -1,13 +1,17 @@
-from collections.abc import Sequence
 from textwrap import dedent
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .grammar import Grammar
 from .parsing import parse_grammar_schema
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .grammar import Grammar
 
 
 class GrammarFixture(NamedTuple):
@@ -15,12 +19,15 @@ class GrammarFixture(NamedTuple):
     whitelist: Sequence[str]
     blacklist: Sequence[str]
 
+    # ruff: disable[S101]
     def assert_equivalent(self, other: Grammar) -> None:
         for string in self.whitelist:
             assert derives(other, string)
 
         for string in self.blacklist:
             assert not derives(other, string)
+
+    # ruff: enable[S101]
 
 
 @pytest.fixture
@@ -31,14 +38,14 @@ def an() -> GrammarFixture:
             <S> → <A>
             <A> → <A> "a"
             <A> → "a"
-            '''
-        )
+            ''',
+        ),
     )
 
     return GrammarFixture(
         grammar=schema.instantiate(NonTerminal('S')),
         whitelist=['', 'a', 'aaa', 'aaaaaa'],
-        blacklist=['b', 'ba', 'ab']
+        blacklist=['b', 'ba', 'ab'],
     )
 
 
@@ -50,14 +57,14 @@ def anbn() -> GrammarFixture:
             <S> → <A>
             <A> → "a" <A> "b"
             <A> → "a" "b"
-            '''
-        )
+            ''',
+        ),
     )
 
     return GrammarFixture(
         grammar=schema.instantiate(NonTerminal('S')),
         whitelist=['', 'ab', 'aaabbb'],
-        blacklist=['a', 'ba']
+        blacklist=['a', 'ba'],
     )
 
 
@@ -68,14 +75,14 @@ def s3() -> GrammarFixture:
             <S> → ε
             <S> → <S> <S> <S>
             <S> → "a"
-            '''
-        )
+            ''',
+        ),
     )
 
     return GrammarFixture(
         grammar=schema.instantiate(NonTerminal('S')),
         whitelist=['a', 'aa', 'aaa', 'aaaa'],
-        blacklist=['b']
+        blacklist=['b'],
     )
 
 
@@ -85,12 +92,12 @@ def binary() -> GrammarFixture:
         dedent('''\
             <N> → "0" | "1" | "1" <B>
             <B> → "0" | "0" <B> | "1" | "1" <B>
-            '''
-        )
+            ''',
+        ),
     )
 
     return GrammarFixture(
         grammar=schema.instantiate(NonTerminal('N')),
         whitelist=['0', '1', '10', '11', '100', '101'],
-        blacklist=['', '01']
+        blacklist=['', '01'],
     )

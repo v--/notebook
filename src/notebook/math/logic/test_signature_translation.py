@@ -5,10 +5,11 @@ from .signature import (
     FormalLogicSignature,
     FunctionSymbol,
     PredicateSymbol,
+    SignatureMorphism,
     SignatureMorphismError,
     SignatureSymbolNotation,
 )
-from .signature_translation import SignatureMorphism, translate_formula, translate_term
+from .signature_translation import translate_formula, translate_term
 
 
 def test_translation_kind_mismatch(dummy_signature: FormalLogicSignature) -> None:
@@ -28,7 +29,7 @@ def test_translate_term(dummy_signature: FormalLogicSignature) -> None:
 
     translation = SignatureMorphism(dummy_signature, {
         dummy_signature['f²']: target_signature['ф²'],
-        dummy_signature['g¹']: target_signature['г¹']
+        dummy_signature['g¹']: target_signature['г¹'],
     })
 
     term = parse_term('f²(g¹(x), y)', dummy_signature)
@@ -52,7 +53,7 @@ def test_translate_formula(dummy_signature: FormalLogicSignature) -> None:
 
     translation = SignatureMorphism(dummy_signature, {
         dummy_signature['f⁰']: target_signature['ф⁰'],
-        dummy_signature['p¹']: target_signature['п¹']
+        dummy_signature['p¹']: target_signature['п¹'],
     })
 
     formula = parse_formula('¬∃x.(p¹(x) → p¹(f⁰))', dummy_signature)

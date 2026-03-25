@@ -13,7 +13,7 @@ def test_latin_string() -> None:
     string = 'test'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('TEXT', 'test', 0)
+        LaTeXToken('TEXT', 'test', 0),
     ]
 
 
@@ -21,7 +21,7 @@ def test_cyrillic_string() -> None:
     string = 'тест'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('TEXT', 'тест', 0)
+        LaTeXToken('TEXT', 'тест', 0),
     ]
 
 
@@ -29,7 +29,7 @@ def test_numeric_string() -> None:
     string = '1153'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('TEXT', '1153', 0)
+        LaTeXToken('TEXT', '1153', 0),
     ]
 
 
@@ -38,7 +38,7 @@ def test_latin_escaped() -> None:
     tokens = tokenize_latex(string)
     assert tokens == [
         LaTeXToken('BACKSLASH', '\\', 0),
-        LaTeXToken('TEXT', 'test', 1)
+        LaTeXToken('TEXT', 'test', 1),
     ]
 
 
@@ -49,7 +49,7 @@ def test_escaped_with_underscore() -> None:
         LaTeXToken('BACKSLASH', '\\', 0),
         LaTeXToken('TEXT', 'test', 1),
         LaTeXToken('UNDERSCORE', '_', 5),
-        LaTeXToken('TEXT', 'test', 6)
+        LaTeXToken('TEXT', 'test', 6),
     ]
 
 
@@ -58,7 +58,7 @@ def test_escaped_whitespace() -> None:
     tokens = tokenize_latex(string)
     assert tokens == [
         LaTeXToken('BACKSLASH', '\\', 0),
-        LaTeXToken('WHITESPACE', ' ', 1)
+        LaTeXToken('WHITESPACE', ' ', 1),
     ]
 
 
@@ -66,7 +66,7 @@ def test_single_space() -> None:
     string = ' '
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('WHITESPACE', ' ', 0)
+        LaTeXToken('WHITESPACE', ' ', 0),
     ]
 
 
@@ -74,7 +74,7 @@ def test_multiple_spaces() -> None:
     string = '   '
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('WHITESPACE', '   ', 0)
+        LaTeXToken('WHITESPACE', '   ', 0),
     ]
 
 
@@ -82,7 +82,7 @@ def test_tab() -> None:
     string = '\t'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('WHITESPACE', '\t', 0)
+        LaTeXToken('WHITESPACE', '\t', 0),
     ]
 
 
@@ -90,7 +90,7 @@ def test_line_break() -> None:
     string = '\n'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('LINE_BREAK', '\n', 0)
+        LaTeXToken('LINE_BREAK', '\n', 0),
     ]
 
 
@@ -98,7 +98,7 @@ def test_ampersand() -> None:
     string = '&'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('AMPERSAND', '&', 0)
+        LaTeXToken('AMPERSAND', '&', 0),
     ]
 
 
@@ -106,7 +106,7 @@ def test_caret() -> None:
     string = '^'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('CARET', '^', 0)
+        LaTeXToken('CARET', '^', 0),
     ]
 
 
@@ -114,7 +114,7 @@ def test_underscore() -> None:
     string = '_'
     tokens = tokenize_latex(string)
     assert tokens == [
-        LaTeXToken('UNDERSCORE', '_', 0)
+        LaTeXToken('UNDERSCORE', '_', 0),
     ]
 
 

@@ -1,10 +1,13 @@
-from collections.abc import Iterable, Mapping
-from typing import Self, cast
+from typing import TYPE_CHECKING, Self, cast
 
 from ....support.iteration import list_accumulator
 from ...rings.types import ISemiring
 from ..monomial import Monomial, const
 from .base import BasePolynomial
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
 
 
 class PolynomialConstructorMixin[N: ISemiring](BasePolynomial[N]):
@@ -13,7 +16,7 @@ class PolynomialConstructorMixin[N: ISemiring](BasePolynomial[N]):
         pol = cls()
 
         if isinstance(value, int):
-            pol[const] = cast('N', cls.semiring(value))
+            pol[const] = cast(N, cls.semiring(value))
         else:
             pol[const] = value
 
@@ -31,7 +34,7 @@ class PolynomialConstructorMixin[N: ISemiring](BasePolynomial[N]):
     @classmethod
     def from_monomial(cls, monomial: Monomial) -> Self:
         pol = cls()
-        pol[monomial] = cast('N', cls.semiring(1))
+        pol[monomial] = cast(N, cls.semiring(1))
         return pol
 
     @classmethod

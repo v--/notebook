@@ -1,8 +1,13 @@
-from .....bibtex import BibEntry
+from typing import TYPE_CHECKING
+
 from ...exceptions import BibToolsError
 from .bib import stackexchange_entry_to_bib
 from .fetch import fetch_stackexchange_html
 from .model import parse_stackexchange_html
+
+
+if TYPE_CHECKING:
+    from .....bibtex import BibEntry
 
 
 def retrieve_stackexchange_entry(identifier: str, *, dump_as_fixture: bool) -> BibEntry:

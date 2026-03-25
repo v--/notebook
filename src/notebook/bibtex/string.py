@@ -1,5 +1,9 @@
 import io
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class VerbatimString:
@@ -78,7 +82,7 @@ class CompositeStringBuilder:
             self.buffer.truncate(0)
             self.buffer.seek(0)
             self.segments.append(
-                VerbatimString(value) if verbatim else value
+                VerbatimString(value) if verbatim else value,
             )
 
     def is_empty(self) -> bool:

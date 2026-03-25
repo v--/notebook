@@ -1,6 +1,6 @@
 import functools
 import inspect
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from ...parsing import LatinIdentifier
 from ...support.unicode import Capitalization, is_latin_string
@@ -8,6 +8,10 @@ from .exceptions import IndeterminateError
 from .monomial import Monomial
 from .polynomial import BooleanPolynomial
 from .polynomial import boolean as b
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 # This is alg:infer_zhegalkin_polynomial in the monograph

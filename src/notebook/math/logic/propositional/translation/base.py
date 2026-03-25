@@ -1,9 +1,14 @@
-from collections.abc import Mapping
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from ...formulas import Formula
-from ..formulas import PropVariable
 from .exceptions import UnspecifiedReplacementError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ...formulas import Formula
+    from ..formulas import PropVariable
 
 
 @dataclass(frozen=True)

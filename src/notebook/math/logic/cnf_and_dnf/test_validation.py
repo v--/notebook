@@ -9,7 +9,7 @@ from .validation import is_formula_in_cnf
         'p',
         '(p ∧ q)',
         '(p ∧ (q ∨ r))',
-    ]
+    ],
 )
 def test_is_formula_in_cnf_success(formula: str) -> None:
     formula_ = parse_prop_formula(formula)
@@ -20,7 +20,7 @@ def test_is_formula_in_cnf_success(formula: str) -> None:
     formula=[
         '(p → q)',
         '(p ∨ (q ∧ r))',
-    ]
+    ],
 )
 def test_is_formula_in_cnf_failure(formula: str) -> None:
     formula_ = parse_prop_formula(formula)

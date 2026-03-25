@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime  # noqa: TC003
 from typing import Annotated
 
 from annotated_types import Len
@@ -11,7 +11,7 @@ FIELD_NAMES_TO_BE_CAPITALIZED = ['url', 'doi', 'issn', 'isbn', 'orcid']
 class DoiBaseModel(BaseModel):
     model_config = ConfigDict(
         alias_generator=lambda name: name.upper() if name in FIELD_NAMES_TO_BE_CAPITALIZED else name.replace('_', '-'),
-        extra='forbid'
+        extra='forbid',
     )
 
 

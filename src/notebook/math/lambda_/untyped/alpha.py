@@ -1,32 +1,28 @@
-from collections.abc import Collection
+
+from typing import TYPE_CHECKING
 
 from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
 from ..variables import get_free_variables, new_variable
 from .substitution import substitute
 
 
+if TYPE_CHECKING:
+    from collections.abc import Collection
+
+
 # The assertions are needed because mypy doesn't handle such complicated type narrowing
 def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
     match (m, n):
         case (Constant(), Constant()):
-            assert isinstance(m, Constant)
-            assert isinstance(n, Constant)
             return m == n
 
         case (Variable(), Variable()):
-            assert isinstance(m, Variable)
-            assert isinstance(n, Variable)
             return m == n
 
         case (UntypedApplication(), UntypedApplication()):
-            assert isinstance(m, UntypedApplication)
-            assert isinstance(n, UntypedApplication)
             return are_terms_alpha_equivalent(m.left, n.left) and are_terms_alpha_equivalent(m.right, n.right)
 
         case (UntypedAbstraction(), UntypedAbstraction()):
-            assert isinstance(m, UntypedAbstraction)
-            assert isinstance(n, UntypedAbstraction)
-
             if m.var == n.var:
                 return are_terms_alpha_equivalent(m.body, n.body)
 
@@ -49,7 +45,7 @@ def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collectio
         case UntypedApplication():
             return UntypedApplication(
                 separate_free_and_bound_variables_impl(term.left, context),
-                separate_free_and_bound_variables_impl(term.right, context)
+                separate_free_and_bound_variables_impl(term.right, context),
             )
 
         case UntypedAbstraction():
@@ -62,7 +58,7 @@ def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collectio
                 new_var,
                 substitute(
                     separate_free_and_bound_variables_impl(term.body, {*context, new_var}),
-                    {term.var: new_var}
+                    {term.var: new_var},
                 ),
             )
 

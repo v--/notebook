@@ -1,4 +1,4 @@
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....parsing import GreekIdentifier
 from ...logic.alphabet import BinaryConnective, PropConstantSymbol
@@ -16,12 +16,15 @@ from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ...logic.propositional import PropVariableSymbol
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
-from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..type_derivation import UnknownDerivationRuleError
 from ..type_derivation import tree as dtree
-from ..type_system import TypingRule
 from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVariable, TypeVisitor
 from .exceptions import DerivationToProofError
+
+
+if TYPE_CHECKING:
+    from ..instantiation import AtomicLambdaSchemaInstantiation
+    from ..type_system import TypingRule
 
 
 def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryConnective:
@@ -61,7 +64,7 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
         return ConnectiveFormula(
             type_connective_to_formula_connective(type_.conn),
             self.visit(type_.left),
-            self.visit(type_.right)
+            self.visit(type_.right),
         )
 
 
@@ -87,7 +90,7 @@ def lambda_instantiation_to_logic_instantiation(instantiation: AtomicLambdaSchem
         formula_mapping={
             FormulaPlaceholder(placeholder.identifier): type_to_formula(type_)
             for placeholder, type_ in instantiation.type_mapping.items()
-        }
+        },
     )
 
 
@@ -122,14 +125,14 @@ def translate_instantiation(instantiation: AtomicLambdaSchemaInstantiation, **kw
                 type_to_formula(instantiation.type_mapping[TypePlaceholder(GreekIdentifier(key))])
 
             for key, value in kwargs.items()
-        }
+        },
     )
 
 
 def translate_application(
     derivation: dtree.RuleApplicationTree,
     rule: NaturalDeductionRule,
-    **kwargs: str
+    **kwargs: str,
 ) -> ptree.RuleApplicationTree:
     instantiation = translate_instantiation(derivation.instantiation, **kwargs)
     return ptree.apply(
@@ -158,21 +161,21 @@ def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree
             return translate_application(
                 derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
-                τ='φ'
+                τ='φ',
             )
 
         case '+₊ₗ':
             return translate_application(
                 derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
-                σ='ψ'
+                σ='ψ',
             )
 
         case '+₊ᵣ':
             return translate_application(
                 derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
-                τ='φ'
+                τ='φ',
             )
 
         case _:

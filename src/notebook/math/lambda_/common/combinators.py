@@ -1,3 +1,4 @@
+from ..exceptions import LambdaCalculusError
 from ..parsing import parse_untyped_term
 from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .variables import x
@@ -10,7 +11,8 @@ y = parse_untyped_term('(λf.((λx.(f(xx)))(λx.(f(xx)))))')
 
 
 def get_omega(n: int) -> UntypedTerm:
-    assert n >= 1
+    if n < 1:
+        raise LambdaCalculusError(f'Expected a positive integer, but got {n}')
 
     content: UntypedTerm = x
 

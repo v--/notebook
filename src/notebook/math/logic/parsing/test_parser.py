@@ -1,5 +1,5 @@
-from collections.abc import Sequence
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -7,7 +7,6 @@ from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..formulas import EqualityFormula
 from ..propositional import parse_prop_formula
-from ..signature import FormalLogicSignature
 from ..terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from .parser import (
     parse_formula,
@@ -21,19 +20,25 @@ from .parser import (
 )
 
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ..signature import FormalLogicSignature
+
+
 @pytest_parametrize_kwargs(
     dict(
         term='x',
-        expected=Variable(LatinIdentifier('x'))
+        expected=Variable(LatinIdentifier('x')),
     ),
     dict(
         term='y',
-        expected=Variable(LatinIdentifier('y'))
+        expected=Variable(LatinIdentifier('y')),
     ),
     dict(
         term='y₁₂',
-        expected=Variable(LatinIdentifier('y', index=12))
-    )
+        expected=Variable(LatinIdentifier('y', index=12)),
+    ),
 )
 def test_parsing_valid_variables(term: str, expected: Variable) -> None:
     assert parse_variable(term) == expected
@@ -43,28 +48,28 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
     dict(
         term='f⁰',
         name='f⁰',
-        arguments=[]
+        arguments=[],
     ),
     dict(
         term='f¹(x)',
         name='f¹',
-        arguments=['x']
+        arguments=['x'],
     ),
     dict(
         term='f³(x, y, z)',
         name='f³',
-        arguments=list('xyz')
+        arguments=list('xyz'),
     ),
     dict(
         term='f³(x,y,  z)',
         name='f³',
-        arguments=list('xyz')
-    )
+        arguments=list('xyz'),
+    ),
 )
 def test_parsing_valid_functions(term: str, name: str, arguments: Sequence[str], dummy_signature: FormalLogicSignature) -> None:
     expected = FunctionApplication(
         dummy_signature.get_function_symbol(name),
-        [parse_term(arg, dummy_signature) for arg in arguments]
+        [parse_term(arg, dummy_signature) for arg in arguments],
     )
 
     assert parse_term(term, dummy_signature) == expected
@@ -276,7 +281,7 @@ def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: Formal
     formula=[
         'p²((x ∘ y), z)',
         '((x ∘ y) ≠ f³(x, y, z))',
-    ]
+    ],
 )
 def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_formula(formula, dummy_signature)) == formula
@@ -289,7 +294,7 @@ def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalL
         'fᶜ²xg⁰',
         'fᶜ²xgᶜ¹y',
         'fᶜ¹(x ∘ y)',
-    ]
+    ],
 )
 def test_parsing_term_with_condensed_notation(term: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_term(term, dummy_signature)) == term
@@ -337,7 +342,7 @@ def test_parsing_condensed_function_with_missing_arguments(dummy_signature: Form
     dict(
         left='f¹(x)',
         right='f²(y, z)',
-    )
+    ),
 )
 def test_parsing_valid_equalities(left: str, right: str, dummy_signature: FormalLogicSignature) -> None:
     formula = f'({left} = {right})'
@@ -399,8 +404,8 @@ def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSigna
         '(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
         '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
         '∀y.(∀z.(¬r¹(z) → ¬q²(y, z)) → p¹(y))',
-        '∀z.∃z.(¬r¹(y) ∧ ¬r²(z, y))'
-    ]
+        '∀z.∃z.(¬r¹(y) ∧ ¬r²(z, y))',
+    ],
 )
 def test_rebuilding_formulas(formula: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_formula(formula, dummy_signature)) == formula
@@ -510,8 +515,8 @@ def test_quantifier_with_no_subformula(dummy_signature: FormalLogicSignature) ->
         '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
         '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
         '∀y₀.(∀z.(¬r¹(z) → ¬q²(y₀, z)) → p¹(y₀))',
-        '((∃x.p¹(x) ∧ ∃y.q¹(y)) ∨ (∃x.p¹(x) ∧ ∃y.q¹(y)))'
-    ]
+        '((∃x.p¹(x) ∧ ∃y.q¹(y)) ∨ (∃x.p¹(x) ∧ ∃y.q¹(y)))',
+    ],
 )
 def test_reparsing_formulas(formula: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_formula(str(parse_formula(formula, dummy_signature)), dummy_signature)) == formula
@@ -522,8 +527,8 @@ def test_reparsing_formulas(formula: str, dummy_signature: FormalLogicSignature)
         'φ',
         '(φ → ψ)',
         '(φ ∧ ψ)',
-        '∀x.(φ ∧ ψ)'
-    ]
+        '∀x.(φ ∧ ψ)',
+    ],
 )
 def test_rebuild_schemas(schema: str) -> None:
     assert str(parse_formula_schema(schema)) == schema
@@ -546,8 +551,8 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
         'φ ⊩ ψ',
         'φ₁, φ₂ ⊩ ψ',
         '[θ] φ ⊩ ψ',
-        '[θ] [φ] θ ⊩ [χ] ω'
-    ]
+        '[θ] [φ] θ ⊩ [χ] ω',
+    ],
 )
 def test_rebuilding_rules(rule: str) -> None:
     assert parse_natural_deduction_rule('name', rule).without_name() == rule
@@ -561,7 +566,7 @@ def test_parsing_empty_attached_schema() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [] φ ⊩ ψ
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -573,7 +578,7 @@ def test_parsing_attached_schema_with_no_closing_bracket() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [θ φ ⊩ ψ
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -585,7 +590,7 @@ def test_parsing_substitution_schema_with_no_connective() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ x
           │ ^
-        '''
+        ''',
     )
 
 
@@ -593,7 +598,7 @@ def test_parsing_eigenvariable_substitution_schema() -> None:
     parsed = parse_term_schema_substitution_spec('x ↦ y*')
     assert parsed == EigenSchemaSubstitutionSpec(
         src=VariablePlaceholder(LatinIdentifier('x')),
-        dest=VariablePlaceholder(LatinIdentifier('y'))
+        dest=VariablePlaceholder(LatinIdentifier('y')),
     )
 
 
@@ -605,7 +610,7 @@ def test_parsing_substitution_schema_with_star_on_term_placeholder() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ x ↦ τ*
           │      ^
-        '''
+        ''',
     )
 
 
@@ -617,7 +622,7 @@ def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ φ[x ↦ y
           │ ^^^^^^^
-        '''
+        ''',
     )
 
 
@@ -628,7 +633,7 @@ def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
         '(Γ, φ ⊢ ψ)',
         '(Γ ⊢ φ, ψ)',
         '(Γ ⊢ Δ)',
-    ]
+    ],
 )
 def test_parsing_sequent_schema(sequent: str) -> None:
     assert str(parse_sequent_schema(sequent)) == sequent

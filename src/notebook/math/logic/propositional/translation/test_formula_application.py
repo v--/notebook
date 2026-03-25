@@ -1,35 +1,40 @@
-from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 from .....support.pytest import pytest_parametrize_kwargs
 from ...parsing import parse_formula
-from ...signature import FormalLogicSignature
 from ..parsing import parse_prop_formula, parse_prop_variable
 from .formula_application import translate_prop_formula
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ...signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
     dict(
         formula='p',
         mapping=dict(p='⊤'),
-        expected='⊤'
+        expected='⊤',
     ),
     dict(
         formula='(p ∧ q)',
         mapping=dict(p='p⁰', q='q⁰'),
-        expected='(p⁰ ∧ q⁰)'
-    )
+        expected='(p⁰ ∧ q⁰)',
+    ),
 )
 def test_translate_prop_formula(
     formula: str,
     mapping: Mapping[str, str],
     expected: str,
-    dummy_signature: FormalLogicSignature
+    dummy_signature: FormalLogicSignature,
 ) -> None:
     formula_ = parse_prop_formula(formula)
     expected_ = parse_formula(expected, dummy_signature)
     result = translate_prop_formula(
         formula_,
-        {parse_prop_variable(key): parse_formula(value, dummy_signature) for key, value in mapping.items()}
+        {parse_prop_variable(key): parse_formula(value, dummy_signature) for key, value in mapping.items()},
     )
 
     assert result == expected_

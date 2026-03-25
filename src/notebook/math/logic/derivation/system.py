@@ -37,8 +37,8 @@ def derivation_system_to_natural_deduction_system(system: AxiomaticDerivationSys
             NaturalDeductionRule(
                 name,
                 premises=[],
-                conclusion=NaturalDeductionEntry(FormulaSchemaWithSubstitution(schema))
+                conclusion=NaturalDeductionEntry(FormulaSchemaWithSubstitution(schema)),
             )
             for name, schema in system.axiom_schemas.items()
-        )
+        ),
     ])

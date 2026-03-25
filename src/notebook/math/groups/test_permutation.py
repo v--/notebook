@@ -75,7 +75,7 @@ def test_complex_permutation_decomposition() -> None:
     perm: Permutation[int] = functools.reduce(
         operator.matmul,
         (Permutation.from_cycle(domain, c) for c in src_cycles),
-        Permutation.identity(domain)
+        Permutation.identity(domain),
     )
 
     assert list(perm.iter_decomposed()) == dest_cycles

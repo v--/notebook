@@ -1,8 +1,12 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
-from ..signature import PredicateSymbol
 from ..terms import SyntacticApplication, Term, Variable
+
+
+if TYPE_CHECKING:
+    from ..signature import PredicateSymbol
 
 
 @dataclass(frozen=True)

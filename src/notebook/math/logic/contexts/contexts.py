@@ -1,7 +1,11 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ..formulas import Formula
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ..formulas import Formula
 
 
 @dataclass(frozen=True)

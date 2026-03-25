@@ -1,5 +1,9 @@
 import re
-from datetime import datetime
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 def extract_year(date: str | None) -> str | None:

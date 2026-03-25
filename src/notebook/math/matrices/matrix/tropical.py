@@ -1,8 +1,11 @@
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from ...rings.tropical import MaxPlusFloat, MinPlusFloat
 from .common import ISemiringMatrix
-from .float import FloatMatrix
+
+
+if TYPE_CHECKING:
+    from .float import FloatMatrix
 
 
 class MinPlusMatrix(ISemiringMatrix[MinPlusFloat], semiring=MinPlusFloat):
@@ -11,7 +14,7 @@ class MinPlusMatrix(ISemiringMatrix[MinPlusFloat], semiring=MinPlusFloat):
         return cls.from_factory(
             mat.m,
             mat.n,
-            lambda i, j: MinPlusFloat(mat[i, j])
+            lambda i, j: MinPlusFloat(mat[i, j]),
         )
 
 
@@ -21,5 +24,5 @@ class MaxPlusMatrix(ISemiringMatrix[MaxPlusFloat], semiring=MaxPlusFloat):
         return cls.from_factory(
             mat.m,
             mat.n,
-            lambda i, j: MaxPlusFloat(mat[i, j])
+            lambda i, j: MaxPlusFloat(mat[i, j]),
         )

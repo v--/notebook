@@ -1,5 +1,6 @@
-from collections.abc import Iterable, Sequence
-from typing import Literal, overload
+# ruff: noqa: S101
+
+from typing import TYPE_CHECKING, Literal, overload
 
 from ....parsing import IdentifierParserMixin, Parser, ParserError
 from ..alphabet import BinaryTypeConnective, BinderSymbol
@@ -38,6 +39,10 @@ from ..types import (
 from .parser_context import LambdaParserContext
 from .tokenizer import tokenize_lambda_string
 from .tokens import LambdaToken, LambdaTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[LambdaToken]):

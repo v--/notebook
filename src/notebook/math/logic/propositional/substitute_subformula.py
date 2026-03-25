@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from .formula_visitor import PropFormulaTransformationVisitor
-from .formulas import PropFormula
+
+
+if TYPE_CHECKING:
+    from .formulas import PropFormula
 
 
 @dataclass(frozen=True)

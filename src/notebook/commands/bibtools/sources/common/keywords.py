@@ -1,8 +1,13 @@
-from collections.abc import Sequence
+
+from typing import TYPE_CHECKING
 
 import stop_words
 
 from .....math.nlp.rake import PhraseScoreContext, generate_phrase_scores
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def get_stop_words(language: str) -> Sequence[str]:
@@ -16,5 +21,5 @@ def generate_keyphrase_scores(main_text: str, language: str, *aux_texts: str) ->
     return generate_phrase_scores(
         main_text,
         get_stop_words(language),
-        *aux_texts
+        *aux_texts,
     )

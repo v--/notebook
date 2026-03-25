@@ -1,7 +1,8 @@
+# ruff: noqa: PLR0912
+
 from collections import deque
-from collections.abc import Collection, Iterable, Sequence
 from dataclasses import replace
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from ...parsing.parser import Parser
 from ...support.iteration import list_accumulator
@@ -10,6 +11,10 @@ from ..string import BibString, CompositeString, CompositeStringBuilder
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Sequence
 
 
 class BibParser(Parser[BibToken]):
@@ -402,7 +407,7 @@ class BibParser(Parser[BibToken]):
                 foreword=self.process_authors(properties, 'foreword'),
                 **{
                     key: context.string_builder.get_value() for key, context in properties.items()
-                }
+                },
             )
 
             self.skip_whitespace_and_comments()

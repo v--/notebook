@@ -1,6 +1,5 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Never, override
+from typing import TYPE_CHECKING, Never, override
 
 from ..alphabet import BinaryTypeConnective
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
@@ -15,6 +14,10 @@ from ..terms import (
 )
 from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise_config
 from ..types import SimpleConnectiveType, SimpleType
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 # This is alg:simply_typed_term_type_inference in the monograph
@@ -46,7 +49,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
         return apply(
             ARROW_ONLY_TYPE_SYSTEM['→₋'],
             premise_config(tree=left_subtree),
-            premise_config(tree=right_subtree)
+            premise_config(tree=right_subtree),
         )
 
     @override
@@ -55,7 +58,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
         return apply(
             ARROW_ONLY_TYPE_SYSTEM['→₊'],
-            premise_config(tree=subtree, attachments=[VariableTypeAssertion(term.var, term.var_type)])
+            premise_config(tree=subtree, attachments=[VariableTypeAssertion(term.var, term.var_type)]),
         )
 
 

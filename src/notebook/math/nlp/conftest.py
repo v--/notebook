@@ -1,7 +1,11 @@
-from collections.abc import Collection
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 
 @pytest.fixture

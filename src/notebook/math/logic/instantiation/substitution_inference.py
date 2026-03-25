@@ -1,14 +1,19 @@
+from typing import TYPE_CHECKING
+
 from ....support.schemas import SchemaInferenceError
-from ..formulas import FormulaSchemaWithSubstitution, FormulaWithSubstitution
-from ..terms import TermSchemaSubstitutionSpec, TermSubstitutionSpec
-from .base import AtomicLogicSchemaInstantiation
 from .formula_inference import infer_instantiation_from_formula
 from .term_inference import infer_instantiation_from_term
 
 
+if TYPE_CHECKING:
+    from ..formulas import FormulaSchemaWithSubstitution, FormulaWithSubstitution
+    from ..terms import TermSchemaSubstitutionSpec, TermSubstitutionSpec
+    from .base import AtomicLogicSchemaInstantiation
+
+
 def infer_instantiation_from_term_substitution_spec(
     schema_spec: TermSchemaSubstitutionSpec,
-    spec: TermSubstitutionSpec
+    spec: TermSubstitutionSpec,
 ) -> AtomicLogicSchemaInstantiation:
     return infer_instantiation_from_term(schema_spec.src, spec.src) | \
         infer_instantiation_from_term(schema_spec.dest, spec.dest)

@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING
+
 from ....support.pytest import pytest_parametrize_kwargs
 from ...rings.modular import Z5
 from ..parsing import parse_formula
-from ..signature import FormalLogicSignature
 from ..structure import evaluate_formula
 from ..theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
 from .prenex_formula import formula_to_prenex_form
 from .skolemize import skolemize
+
+
+if TYPE_CHECKING:
+    from ..signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

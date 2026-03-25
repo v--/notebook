@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
 from ..exceptions import NotebookSupportError
-from .rules import InferenceRule
+
+
+if TYPE_CHECKING:
+    from .rules import InferenceRule
 
 
 class UnknownInferenceRuleError(NotebookSupportError):

@@ -13,5 +13,5 @@ class TwoElementBooleanAlgebra(FormalLogicStructure[bool]):
             BOOLEAN_ALGEBRA_SIGNATURE['⩓']: lambda x, y: x and y,
             BOOLEAN_ALGEBRA_SIGNATURE['⩔']: lambda x, y: x or y,
             BOOLEAN_ALGEBRA_SIGNATURE['≤']: lambda x, y: x <= y,
-            BOOLEAN_ALGEBRA_SIGNATURE['≥']: lambda x, y: x >= y
+            BOOLEAN_ALGEBRA_SIGNATURE['≥']: lambda x, y: x >= y,
         }

@@ -1,8 +1,13 @@
-from collections.abc import Mapping
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from ..assertions import VariableTypeAssertion
 from .exceptions import MissingInterpretationError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ..assertions import VariableTypeAssertion
 
 
 @dataclass(frozen=True)

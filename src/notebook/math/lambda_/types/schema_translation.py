@@ -15,7 +15,7 @@ class TypeToSchemaTranslator(TypeVisitor[SimpleTypeSchema]):
         return SimpleConnectiveTypeSchema(
             type_.conn,
             self.visit(type_.left),
-            self.visit(type_.right)
+            self.visit(type_.right),
         )
 
 
@@ -34,7 +34,7 @@ class SchemaToTypeTranslator(TypeSchemaVisitor[SimpleType]):
         return SimpleConnectiveType(
             schema.conn,
             self.visit(schema.left),
-            self.visit(schema.right)
+            self.visit(schema.right),
         )
 
 

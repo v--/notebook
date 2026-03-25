@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_formula
-from ..signature import FormalLogicSignature
 from .formulas import is_subformula
+
+
+if TYPE_CHECKING:
+    from ..signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -10,11 +15,11 @@ from .formulas import is_subformula
     dict(formula='∀x.∃y.p²(x, y)', subformula='∃y.p²(x, y)'),
     dict(
         formula='((∀y.p¹(y) ∨ q¹(x)) ∧ ∃y.r¹(y))',
-        subformula='q¹(x)'
+        subformula='q¹(x)',
     ),
 )
 def test_is_subformula_success(formula: str, subformula: str, dummy_signature: FormalLogicSignature) -> None:
     assert is_subformula(
         parse_formula(formula, dummy_signature),
-        parse_formula(subformula, dummy_signature)
+        parse_formula(subformula, dummy_signature),
     )

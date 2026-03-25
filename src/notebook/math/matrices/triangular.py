@@ -1,9 +1,12 @@
+from .exceptions import IncompatibleMatrixError
 from .matrix import FloatMatrix, IFieldMatrix, ISemiringMatrix
 from .norm import is_unit
 
 
 def is_orthogonal(mat: FloatMatrix) -> bool:
-    assert mat.is_square()
+    if not mat.is_square():
+        raise IncompatibleMatrixError('Only a square matrix can be orthogonal')
+
     return is_unit(mat @ mat.transpose()) and is_unit(mat.transpose() @ mat)
 
 
@@ -18,8 +21,11 @@ def is_lower_triangular[M: ISemiringMatrix](mat: M, *, unitriangular: bool = Fal
 
 
 def lower_triangular_inv[M: IFieldMatrix](mat: M) -> M:
-    assert mat.is_square()
-    assert is_lower_triangular(mat)
+    if not mat.is_square():
+        raise IncompatibleMatrixError('Only a square matrix can be inverted')
+
+    if not is_lower_triangular(mat):
+        raise IncompatibleMatrixError('Expected a lower triangular matrix')
 
     l = mat[:, :]
     r = mat.eye(mat.n)

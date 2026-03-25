@@ -1,10 +1,14 @@
 import itertools
-from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from ...support.iteration import string_accumulator
 from .alphabet import NonTerminal, Terminal, empty
-from .exceptions import GrammarError, UnknownSymbolError
+from .exceptions import IncompatibleRuleError, UnknownSymbolError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Sequence
 
 
 @dataclass(frozen=True)
@@ -15,10 +19,10 @@ class GrammarRule:
     @property
     def src_symbol(self) -> NonTerminal:
         if len(self.src) != 1:
-            raise GrammarError('Only context-free rules have a source symbol')
+            raise IncompatibleRuleError('Only context-free rules have a source symbol')
 
         value = self.src[0]
-        assert isinstance(value, NonTerminal)
+        assert isinstance(value, NonTerminal)  # noqa: S101
         return value
 
     @string_accumulator()

@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from .string import BibString
+
+if TYPE_CHECKING:
+    from .string import BibString
 
 
 @dataclass(frozen=True)

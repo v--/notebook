@@ -1,7 +1,12 @@
-from ..substitution import AtomicLogicSubstitution
+from typing import TYPE_CHECKING
+
 from .assignment import VariableAssignment
-from .structure import FormalLogicStructure
 from .term_visitor import evaluate_term
+
+
+if TYPE_CHECKING:
+    from ..substitution import AtomicLogicSubstitution
+    from .structure import FormalLogicStructure
 
 
 # This is alg:fol_assignment_substitution in the monograph

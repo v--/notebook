@@ -21,7 +21,7 @@ from .collapse_repeated_negation import collapse_repeated_negation_prop
     ),
     dict(
         formula='¬¬¬(¬¬p ∧ ¬q)',
-        collapsed='¬(p ∧ ¬q)'
+        collapsed='¬(p ∧ ¬q)',
     ),
 )
 def test_collapse_repeated_negation_prop(formula: str, collapsed: str) -> None:

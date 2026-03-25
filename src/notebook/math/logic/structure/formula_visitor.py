@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ..formulas import (
     ConnectiveFormula,
@@ -12,8 +12,11 @@ from ..formulas import (
     QuantifierFormula,
 )
 from .assignment import VariableAssignment
-from .structure import FormalLogicStructure
 from .term_visitor import TermEvaluationVisitor
+
+
+if TYPE_CHECKING:
+    from .structure import FormalLogicStructure
 
 
 @dataclass

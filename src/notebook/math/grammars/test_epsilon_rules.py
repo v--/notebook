@@ -1,8 +1,8 @@
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .conftest import GrammarFixture
 from .epsilon_rules import (
     is_epsilon_free,
     is_essentially_epsilon_free,
@@ -11,13 +11,17 @@ from .epsilon_rules import (
 from .parsing import parse_grammar_schema
 
 
+if TYPE_CHECKING:
+    from .conftest import GrammarFixture
+
+
 # See ex:alg:epsilon_rule_removal/an in the monograph
 def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → ε | "a" <S>
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     an.assert_equivalent(grammar)
@@ -36,8 +40,8 @@ def test_remove_epsilon_rules_terminal_rule() -> None:
             <S> → <A> <B>
             <A> → ε | "a"
             <B> → ε
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     assert derives(grammar, '')
@@ -62,8 +66,8 @@ def test_remove_epsilon_rules_natural(binary: GrammarFixture) -> None:
         dedent('''\
             <N> → "0" | "1" <B>
             <B> → ε | "0" <B> | "1" <B>
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('N'))
 
     binary.assert_equivalent(grammar)

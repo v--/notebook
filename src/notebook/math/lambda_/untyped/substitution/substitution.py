@@ -1,9 +1,12 @@
-from collections.abc import Collection, Iterable, Mapping
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from .....support.substitution import AbstractAtomicSubstitution
 from ...terms import UntypedAbstraction, UntypedTerm, Variable
 from ...variables import get_free_variables, new_variable
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping
 
 
 class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm]):
@@ -41,6 +44,9 @@ class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm])
             return NotImplemented
 
         return self.variable_mapping == other.variable_mapping
+
+    def __hash__(self) -> int:
+        return hash(self.variable_mapping)
 
     def __str__(self) -> str:
         return '[' + ', '.join(f'{key} ↦ {value}' for key, value in self.variable_mapping.items()) + ']'

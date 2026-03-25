@@ -1,8 +1,13 @@
-from collections.abc import Iterator
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from ..alphabet import Quantifier
-from ..terms import Variable
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from ..terms import Variable
 
 
 @dataclass(frozen=True)

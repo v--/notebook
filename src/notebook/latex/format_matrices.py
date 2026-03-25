@@ -1,5 +1,5 @@
-from collections.abc import Iterable, MutableMapping, Sequence
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from ..support.iteration import get_strip_slice
 from .nodes import (
@@ -13,6 +13,10 @@ from .nodes import (
     stringify_nodes,
 )
 from .parsing import parse_latex
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, MutableMapping, Sequence
 
 
 INDENT = 2
@@ -103,7 +107,7 @@ class MatrixEnvironmentParser:
         env = MatrixEnvironment(
             SparseMatrix(default=[]),
             self.environment_name, None,
-            self.whitespace_prefix_length
+            self.whitespace_prefix_length,
         )
 
         self.skip_whitespace_and_line_breaks()
@@ -142,7 +146,7 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
             else:
                 new_cell = list(env.matrix[i, j])
                 new_cell.append(
-                    Whitespace(' ' * (max_col_width - len(stringify_nodes(env.matrix[i, j]))))
+                    Whitespace(' ' * (max_col_width - len(stringify_nodes(env.matrix[i, j])))),
                 )
 
                 new_matrix[i, j] = new_cell
@@ -151,7 +155,7 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
         name=env.name,
         options=env.options,
         whitespace_prefix_length=env.whitespace_prefix_length,
-        matrix=new_matrix
+        matrix=new_matrix,
     )
 
 
@@ -173,14 +177,14 @@ def matrix_to_environment(env: MatrixEnvironment) -> Environment:
 
     if h == 0:
         contents.append(
-            Whitespace(' ' * env.whitespace_prefix_length)
+            Whitespace(' ' * env.whitespace_prefix_length),
         )
 
     for i in range(h):
         for j in range(w):
             if j == 0:
                 contents.append(
-                    Whitespace(' ' * (env.whitespace_prefix_length + INDENT))
+                    Whitespace(' ' * (env.whitespace_prefix_length + INDENT)),
                 )
 
             contents.extend(env.matrix[i, j])

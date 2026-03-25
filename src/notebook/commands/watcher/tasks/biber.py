@@ -1,12 +1,16 @@
 import asyncio
-import pathlib
-from collections.abc import Iterable
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ..trigger import TaskTrigger, TaskTriggerKind
 from .cli import CliTask
 from .latex import LaTeXTask
-from .runner import TaskRunner
+
+
+if TYPE_CHECKING:
+    import pathlib
+    from collections.abc import Iterable
+
+    from .runner import TaskRunner
 
 
 class BiberTask(CliTask):
@@ -39,6 +43,6 @@ class BiberTask(CliTask):
             LaTeXTask(
                 TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                 reason=self.bcf_path.as_posix(),
-                base_logger=self.base_logger
-            )
+                base_logger=self.base_logger,
+            ),
         )

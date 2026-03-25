@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from .schemas import TermSchema, VariablePlaceholder
+
+if TYPE_CHECKING:
+    from .schemas import TermSchema, VariablePlaceholder
 
 
 @dataclass(frozen=True)

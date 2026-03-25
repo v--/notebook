@@ -1,15 +1,19 @@
 import io
+from typing import TYPE_CHECKING
 
 import loguru
 import pytest
-from pytest_benchmark.fixture import BenchmarkFixture
 
 from ...paths import BIB_PATH
 from .formatting import adjust_entry, read_entries, write_entries
 
 
+if TYPE_CHECKING:
+    from pytest_benchmark.fixture import BenchmarkFixture
+
+
 @pytest.mark.benchmark(
-    group='bib-format'
+    group='bib-format',
 )
 def benchmark_format(benchmark: BenchmarkFixture) -> None:
     with open(BIB_PATH / 'books.bib') as file:
@@ -18,12 +22,12 @@ def benchmark_format(benchmark: BenchmarkFixture) -> None:
     benchmark.pedantic(
         lambda: [adjust_entry(entry, None, loguru.logger) for entry in entries],
         warmup_rounds=5,
-        rounds=50
+        rounds=50,
     )
 
 
 @pytest.mark.benchmark(
-    group='bib-write'
+    group='bib-write',
 )
 def benchmark_write(benchmark: BenchmarkFixture) -> None:
     with open(BIB_PATH / 'books.bib') as file:
@@ -34,5 +38,5 @@ def benchmark_write(benchmark: BenchmarkFixture) -> None:
         lambda: write_entries(entries, output),
         setup=output.seek(0),
         warmup_rounds=5,
-        rounds=50
+        rounds=50,
     )

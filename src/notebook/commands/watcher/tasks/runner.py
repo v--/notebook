@@ -1,8 +1,12 @@
 import asyncio
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ..trigger import TaskTrigger, TaskTriggerKind
-from .base import Task
+
+
+if TYPE_CHECKING:
+    from .base import Task
 
 
 @dataclass
@@ -41,7 +45,7 @@ class TaskRunner:
         return min(
             (item for item in self._queue.values() if item.aio_task is None),
             key=lambda item: item.task.created.timestamp(),
-            default=None
+            default=None,
         )
 
     def _get_running_count(self) -> int:

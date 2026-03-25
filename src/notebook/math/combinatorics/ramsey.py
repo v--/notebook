@@ -1,13 +1,19 @@
+# ruff: noqa: DTZ005
+
 import itertools
-from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 from ...exceptions import UnreachableException
 from ..graphs.complete import max_edge_count
 from ..graphs.graph import UndirectedGraph
 from ..graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
 from .binomial import choose
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping
 
 
 ColorType = int
@@ -61,7 +67,7 @@ def naive_ramsey_computation_bounds(s: int, t: int, *rest: int) -> ExhaustiveRam
     return ExhaustiveRamseyComputationBounds(
         result_max=result_bound,
         max_edge_count=max_edge_count(result_bound - 1),
-        max_subgraphs_per_coloring={s_k: max_fixed_order_subgraph_count(result_bound - 1, s_k) for s_k in sizes}
+        max_subgraphs_per_coloring={s_k: max_fixed_order_subgraph_count(result_bound - 1, s_k) for s_k in sizes},
     )
 
 
@@ -87,7 +93,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
             result=bounds.result_max,
             run_time=timedelta(),
             colorings_traversed=0,
-            subgraphs_traversed=0
+            subgraphs_traversed=0,
         )
 
         return
@@ -112,7 +118,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
                         colorings_traversed=colorings_traversed,
                         subgraphs_traversed=subgraphs_traversed,
                         run_time=datetime.now() - start,
-                        result=None
+                        result=None,
                     )
 
                 if all(label == k for _, label in subgraph.edges.get_labeled()):
@@ -123,7 +129,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
                     colorings_traversed=colorings_traversed,
                     subgraphs_traversed=subgraphs_traversed,
                     run_time=datetime.now() - start,
-                    result=n + 1
+                    result=n + 1,
                 )
 
                 return

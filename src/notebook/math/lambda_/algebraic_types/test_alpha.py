@@ -1,5 +1,5 @@
 import re
-from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -20,6 +20,10 @@ from ..types import BaseType
 from .alpha import alpha_convert_derivation
 
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+
 @pytest_parametrize_kwargs(
     dict(m='x', n='x', context={'x': 'τ'}),
     dict(m='(fx)', n='(fx)', context={'f': '(τ → τ)', 'x': 'τ'}),
@@ -28,7 +32,7 @@ from .alpha import alpha_convert_derivation
     dict(
         m='(λx:(τ → σ).(λy:τ.(xy)))',
         n='(λa:(τ → σ).(λb:τ.(ab)))',
-        context={}
+        context={},
     ),
 )
 def test_alpha_convert_arrow_derivation_success(m: str, n: str, context: Mapping[str, str]) -> None:
@@ -37,7 +41,7 @@ def test_alpha_convert_arrow_derivation_success(m: str, n: str, context: Mapping
         {
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        }
+        },
     )
 
     equivalent_term = parse_typed_term(n)
@@ -51,7 +55,7 @@ def test_alpha_convert_arrow_derivation_success(m: str, n: str, context: Mapping
     dict(
         m='(λx:(τ → σ).(λy:τ.(xy)))',
         n='(λa:(τ → σ).(λa:τ.(aa)))',
-        context={}
+        context={},
     ),
 )
 def test_alpha_convert_arrow_derivation_failure(m: str, n: str, context: Mapping[str, str]) -> None:
@@ -60,7 +64,7 @@ def test_alpha_convert_arrow_derivation_failure(m: str, n: str, context: Mapping
         {
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        }
+        },
     )
 
     equivalent_term = parse_typed_term(n)
@@ -78,19 +82,19 @@ def test_alpha_convert_sum_elim() -> None:
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
                 assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
                 implicit_types={
-                    parse_type_placeholder('σ'): parse_type('σ')
-                }
+                    parse_type_placeholder('σ'): parse_type('σ'),
+                },
             ),
 
             premise_config(
                 tree=assume(VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))),
-                attachments=[VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))]
+                attachments=[VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))],
             ),
 
             premise_config(
                 tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
-                attachments=[VariableTypeAssertion(parse_variable(y), parse_type('σ'))]
-            )
+                attachments=[VariableTypeAssertion(parse_variable(y), parse_type('σ'))],
+            ),
         )
 
     tree = factory(x='a', y='b')

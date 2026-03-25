@@ -1,10 +1,14 @@
-from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
-from ..contexts import LogicalContextPlaceholder
-from ..formulas import Formula, FormulaPlaceholder
-from ..terms import Term, TermPlaceholder, Variable, VariablePlaceholder
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from ..contexts import LogicalContextPlaceholder
+    from ..formulas import Formula, FormulaPlaceholder
+    from ..terms import Term, TermPlaceholder, Variable, VariablePlaceholder
 
 
 class AtomicLogicSchemaInstantiation:
@@ -35,6 +39,9 @@ class AtomicLogicSchemaInstantiation:
             self.formula_mapping == other.formula_mapping and \
             self.context_mapping == other.context_mapping
 
+    def __hash__(self) -> int:
+        return hash((self.variable_mapping, self.term_mapping, self.formula_mapping, self.context_mapping))
+
     def __or__(self, other: object) -> AtomicLogicSchemaInstantiation:
         if not isinstance(other, AtomicLogicSchemaInstantiation):
             return NotImplemented
@@ -59,5 +66,5 @@ class AtomicLogicSchemaInstantiation:
             variable_mapping={**self.variable_mapping, **other.variable_mapping},
             term_mapping={**self.term_mapping, **other.term_mapping},
             formula_mapping={**self.formula_mapping, **other.formula_mapping},
-            context_mapping={**self.context_mapping, **other.context_mapping}
+            context_mapping={**self.context_mapping, **other.context_mapping},
         )

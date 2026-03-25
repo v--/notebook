@@ -30,7 +30,7 @@ class FormulaToCnfOrDnfVisitor(FormulaTransformationVisitor):
         match formula.conn:
             case BinaryConnective.CONDITIONAL:
                 return self.visit(
-                    ConnectiveFormula(BinaryConnective.DISJUNCTION, NegationFormula(formula.left), formula.right)
+                    ConnectiveFormula(BinaryConnective.DISJUNCTION, NegationFormula(formula.left), formula.right),
                 )
 
             case BinaryConnective.BICONDITIONAL:
@@ -39,16 +39,16 @@ class FormulaToCnfOrDnfVisitor(FormulaTransformationVisitor):
                         return self.visit(
                             ConnectiveFormula(BinaryConnective.CONJUNCTION,
                                 ConnectiveFormula(BinaryConnective.DISJUNCTION, NegationFormula(formula.left), formula.right),
-                                ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.left, NegationFormula(formula.right))
-                            )
+                                ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.left, NegationFormula(formula.right)),
+                            ),
                         )
 
                     case BinaryConnective.DISJUNCTION:
                         return self.visit(
                             ConnectiveFormula(BinaryConnective.DISJUNCTION,
                                 ConnectiveFormula(BinaryConnective.CONJUNCTION, formula.left, formula.right),
-                                ConnectiveFormula(BinaryConnective.CONJUNCTION, NegationFormula(formula.left), NegationFormula(formula.right))
-                            )
+                                ConnectiveFormula(BinaryConnective.CONJUNCTION, NegationFormula(formula.left), NegationFormula(formula.right)),
+                            ),
                         )
 
             case _ if formula.conn == self.outer:

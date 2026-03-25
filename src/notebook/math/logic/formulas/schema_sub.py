@@ -1,7 +1,10 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ..terms import EigenSchemaSubstitutionSpec, TermSchemaSubstitutionSpec
-from .schemas import FormulaSchema
+
+if TYPE_CHECKING:
+    from ..terms import EigenSchemaSubstitutionSpec, TermSchemaSubstitutionSpec
+    from .schemas import FormulaSchema
 
 
 @dataclass(frozen=True)

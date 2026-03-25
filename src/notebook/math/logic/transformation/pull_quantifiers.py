@@ -22,7 +22,7 @@ class PullQuantifiersVisitor(FormulaTransformationVisitor):
             return QuantifierFormula(
                 get_dual_quantifier(body.quant),
                 body.var,
-                collapse_repeated_negation(self.visit(NegationFormula(body.body)))
+                collapse_repeated_negation(self.visit(NegationFormula(body.body))),
             )
 
         return NegationFormula(body)
@@ -37,8 +37,8 @@ class PullQuantifiersVisitor(FormulaTransformationVisitor):
                 ConnectiveFormula(
                     BinaryConnective.CONJUNCTION,
                     ConnectiveFormula(BinaryConnective.CONDITIONAL, left, right),
-                    ConnectiveFormula(BinaryConnective.CONDITIONAL, right, left)
-                )
+                    ConnectiveFormula(BinaryConnective.CONDITIONAL, right, left),
+                ),
             )
 
         if isinstance(left, QuantifierFormula):
@@ -54,7 +54,7 @@ class PullQuantifiersVisitor(FormulaTransformationVisitor):
                     formula.conn,
                     substitute_in_formula(left.body, {left.var: left_new_var}),
                     right,
-                )
+                ),
             )
 
             match formula.conn:
@@ -77,7 +77,7 @@ class PullQuantifiersVisitor(FormulaTransformationVisitor):
                     formula.conn,
                     left,
                     substitute_in_formula(right.body, {right.var: right_new_var}),
-                )
+                ),
             )
 
             return QuantifierFormula(right.quant, right_new_var, body)

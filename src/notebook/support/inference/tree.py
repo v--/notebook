@@ -1,7 +1,10 @@
-from collections.abc import Collection
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from .rendering import InferenceTreeRenderer
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
+
+    from .rendering import InferenceTreeRenderer
 
 
 @runtime_checkable

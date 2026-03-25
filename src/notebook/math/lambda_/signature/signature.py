@@ -1,8 +1,13 @@
-from collections.abc import Iterator
+
+from typing import TYPE_CHECKING
 
 from ....support.collections import MissingKeyError, TrieMapping
 from .exceptions import LambdaSignatureError
 from .symbols import BaseTypeSymbol, ConstantTermSymbol, SignatureSymbol
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 class LambdaSignature:

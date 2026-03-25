@@ -12,7 +12,7 @@ def test_top() -> None:
     assert str(tree) == dedent('''\
         _____ H⊤
         H⊤: ο
-        '''
+        ''',
     )
 
 
@@ -22,9 +22,9 @@ def test_and() -> None:
         apply(
             BASE_HOL_TYPE_SYSTEM['→₋'],
             apply(BASE_HOL_TYPE_SYSTEM['H∧']),
-            assume(parse_variable_assertion('p: ο', PLAIN_HOL_SIGNATURE))
+            assume(parse_variable_assertion('p: ο', PLAIN_HOL_SIGNATURE)),
         ),
-        assume(parse_variable_assertion('q: ο', PLAIN_HOL_SIGNATURE))
+        assume(parse_variable_assertion('q: ο', PLAIN_HOL_SIGNATURE)),
     )
 
     assert str(tree) == dedent('''\
@@ -34,7 +34,7 @@ def test_and() -> None:
                 (H∧p): (ο → ο)               q: ο
         ___________________________________________ →₋
                         ((H∧p)q): ο
-        '''
+        ''',
     )
 
 
@@ -50,5 +50,5 @@ def test_forall() -> None:
         x: ι      H⊤: ο
         ________________ H∀
         (H∀(λx:ι.H⊤)): ο
-        '''
+        ''',
     )

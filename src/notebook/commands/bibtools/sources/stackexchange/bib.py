@@ -1,12 +1,17 @@
 import unicodedata
-from collections.abc import Iterable
-from datetime import datetime
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from .....bibtex import BibAuthor, BibEntry, BibString, VerbatimString
 from .....support.iteration import string_accumulator
 from ...exceptions import BibToolsParsingError
 from ..common.dates import to_iso_date
-from .model import StackExchangeEntry
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from .model import StackExchangeEntry
 
 
 SITE_ENTRY_PREFIX_MAP = {
@@ -45,8 +50,8 @@ def stackexchange_entry_to_bib(entry: StackExchangeEntry, identifier: str) -> Bi
         title=entry.title,
         titleaddon=entry.site,
         languages=['english'],
-        urldate=to_iso_date(datetime.now()),
+        urldate=to_iso_date(datetime.now(tz=UTC)),
         date=to_iso_date(entry.datetime),
         url=identifier,
-        addendum='Citation of question' if entry.answer_id is None else 'Citation of answer'
+        addendum='Citation of question' if entry.answer_id is None else 'Citation of answer',
     )

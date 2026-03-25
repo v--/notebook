@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING
+
 from .base import BaseGraph
 from .views.directed import DirectedEdge, DirectedEdgeView
-from .views.vertex import VertexView
+
+
+if TYPE_CHECKING:
+    from .views.vertex import VertexView
 
 
 class DirectedGraph[VertT, VertLabelT, EdgeSymbolT](BaseGraph[VertT, DirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_view=DirectedEdgeView):

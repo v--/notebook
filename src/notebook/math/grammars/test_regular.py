@@ -1,8 +1,8 @@
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from ..automata.finite import FiniteAutomaton
 from .alphabet import NonTerminal
-from .conftest import GrammarFixture
 from .parsing import parse_grammar_schema
 from .regular import (
     from_finite_automaton,
@@ -10,6 +10,10 @@ from .regular import (
     is_right_linear,
     to_finite_automaton,
 )
+
+
+if TYPE_CHECKING:
+    from .conftest import GrammarFixture
 
 
 def test_to_finite_automaton_an(an: GrammarFixture) -> None:
@@ -40,8 +44,8 @@ def test_to_finite_automaton_complex() -> None:
             <S> → "a" "b" "c" <D>
             <D> → "d" <E> | ε
             <E> → "e" "f" <E> | ε
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     aut = to_finite_automaton(grammar)

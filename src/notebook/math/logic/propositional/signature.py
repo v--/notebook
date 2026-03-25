@@ -30,7 +30,7 @@ class PropLogicSignature(FormalLogicSignature):
 
 
 DEFAULT_PROP_SIGNATURE = PropLogicSignature(
-    *(PropVariableSymbol(chr(i)) for i in range(ord('a'), ord('z') + 1))
+    *(PropVariableSymbol(chr(i)) for i in range(ord('a'), ord('z') + 1)),
 )
 
 

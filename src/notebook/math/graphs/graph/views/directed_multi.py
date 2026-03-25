@@ -3,7 +3,7 @@ from typing import NamedTuple
 from .binary_edge import BinaryEdgeView
 
 
-class DirectedMultiedge[VertT](NamedTuple):
+class DirectedMultiedge[VertT](NamedTuple):  # noqa: PLW1641
     src: VertT
     dest: VertT
 

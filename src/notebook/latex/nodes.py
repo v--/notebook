@@ -1,7 +1,11 @@
-from collections.abc import Iterable, Sequence
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
 from ..parsing import StringContainer
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class Text(StringContainer):
@@ -64,7 +68,7 @@ class Environment(Group):
         super().__init__(contents)
 
     def __str__(self) -> str:
-        return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
+        return f'\\begin{{{self.name}}}' + super().__str__() + f'\\end{{{self.name}}}'
 
 
 LaTeXNode = Text | Command | SpecialNode | Whitespace | BraceGroup | BracketGroup | Environment

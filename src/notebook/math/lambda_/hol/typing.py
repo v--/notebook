@@ -30,9 +30,9 @@ def generate_type_system(signature: HolSignature) -> ExplicitTypeSystem:
                 name='Ax',
                 premises=[],
                 conclusion=TypingRuleEntry(
-                    main=TypeAssertionSchema(Constant(sym), translate_type_to_schema(signature.get_type(sym)))
-                )
+                    main=TypeAssertionSchema(Constant(sym), translate_type_to_schema(signature.get_type(sym))),
+                ),
             )
             for sym in signature.iter_nonlogical()
-        )
+        ),
     ])

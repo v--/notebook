@@ -1,4 +1,5 @@
-from collections.abc import Mapping
+
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -8,6 +9,10 @@ from ....support.pytest import pytest_parametrize_kwargs
 from .. import monomial
 from ..exceptions import PolynomialEvaluationError
 from .int import IntPolynomial, const, x, y, z, zero
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 @pytest_parametrize_kwargs(
@@ -81,8 +86,8 @@ def test_str(pol: IntPolynomial, expected: str) -> None:
 
 
 @pytest_parametrize_kwargs(
-    dict(pol=zero,       e=dict(),         expected=0),
-    dict(pol=0 * const,  e=dict(),         expected=0),
+    dict(pol=zero,       e={},             expected=0),
+    dict(pol=0 * const,  e={},             expected=0),
     dict(pol=x,          e=dict(x=3),      expected=3),
     dict(pol=2 * x ** 2, e=dict(x=3),      expected=18),
     dict(pol=2 * x * y,  e=dict(x=3, y=2), expected=12),

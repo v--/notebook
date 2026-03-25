@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, alias_generators
 class GoogleBookBaseModel(BaseModel):
     model_config = ConfigDict(
         alias_generator=alias_generators.to_camel,
-        extra='forbid'
+        extra='forbid',
     )
 
 

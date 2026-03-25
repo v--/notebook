@@ -22,7 +22,7 @@ class DirectedWalk[VertT](BaseGraphWalk[VertT, DirectedEdge[VertT]]):
     @overload
     def append(self, segment: GraphWalkSegment[VertT, DirectedEdge[VertT]]) -> None: ...
     def append(self, *args, **kwargs) -> None:
-        segment: GraphWalkSegment[VertT, DirectedEdge[VertT]] | None = kwargs.get('segment', None)
+        segment: GraphWalkSegment[VertT, DirectedEdge[VertT]] | None = kwargs.get('segment')
 
         if segment is None and len(args) > 0 and isinstance(args[0], GraphWalkSegment):
             segment = args[0]

@@ -1,22 +1,25 @@
-from collections.abc import Callable, Iterable, Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from .iteration import repeat
 
 
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Mapping
+
+
 def pytest_parametrize_lists[**P](**kwargs: Iterable[Any]) -> Callable[[Callable[P, None]], Callable[[], None]]:
     return pytest.mark.parametrize(
         tuple(kwargs.keys()),
-        zip(*kwargs.values(), strict=True)
+        zip(*kwargs.values(), strict=True),
     )
 
 
 def pytest_parametrize_kwargs[**P](*args: Mapping[str, Any]) -> Callable[[Callable[P, None]], Callable[[], None]]:
     return pytest.mark.parametrize(
         tuple(args[0].keys()),
-        [tuple(kwargs.values()) for kwargs in args]
+        [tuple(kwargs.values()) for kwargs in args],
     )
 
 

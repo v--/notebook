@@ -1,4 +1,5 @@
-from collections.abc import Iterable
+
+from typing import TYPE_CHECKING
 
 import bs4
 from pydantic import BaseModel
@@ -7,6 +8,10 @@ from .....latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, 
 from .....latex.parsing import parse_latex
 from .....support.iteration import get_strip_slice, string_accumulator
 from ...exceptions import BibToolsNotFoundError, BibToolsParsingError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class MathNetEntry(BaseModel):

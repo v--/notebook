@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from nameparser import HumanName
 from stdnum import isbn, issn
@@ -9,7 +9,12 @@ from .....support.unicode import normalize_whitespace
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
 from ..common.pages import normalize_pages
-from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+    from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
 
 def doi_authors_to_bib(authors: Sequence[DoiAuthor]) -> Iterable[BibAuthor]:
@@ -138,7 +143,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         *(ref.volume_title for ref in data.reference),
         *(ref.series_title for ref in data.reference),
         editors=editors,
-        subtitle=subtitle
+        subtitle=subtitle,
     )
 
     return BibEntry(
@@ -160,5 +165,5 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         issn=get_issn(data.issn),
         series=container_title if entry_type == 'book' or entry_type == 'inbook' or entry_type == 'inproceedings' else None,
         journal=container_title if entry_type == 'article' else None,
-        url=data.url if data.url != f'http://dx.doi.org/{doi}' else None
+        url=data.url if data.url != f'http://dx.doi.org/{doi}' else None,
     )

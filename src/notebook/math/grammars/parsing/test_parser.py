@@ -14,7 +14,7 @@ from .parser import parse_grammar_rule_line, parse_grammar_schema, parse_nonterm
         '"T"',
         '"τ"',
         '"<"',
-    ]
+    ],
 )
 def test_parsing_valid_terminals(string: str) -> None:
     assert parse_terminal(string) == Terminal(string[1:-1])
@@ -39,7 +39,7 @@ def test_parsing_terminal_with_only_opening_quotes() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ "
           │ ^
-        '''
+        ''',
     )
 
 
@@ -51,7 +51,7 @@ def test_parsing_empty_terminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ""
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -63,7 +63,7 @@ def test_parsing_terminal_with_no_closing_quotes() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ "T
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -75,7 +75,7 @@ def test_parsing_two_symbol_terminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ "TT"
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -87,7 +87,7 @@ def test_parsing_two_symbol_non_text_terminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ "T<"
           │ ^^^^
-        '''
+        ''',
     )
 
 
@@ -97,7 +97,7 @@ def test_parsing_two_symbol_non_text_terminal() -> None:
         '<Text>',
         '<"Text">',
         '<Lorem ipsum>',
-    ]
+    ],
 )
 def test_parsing_valid_nonterminals(string: str) -> None:
     assert parse_nonterminal(string) == NonTerminal(string[1:-1])
@@ -126,7 +126,7 @@ def test_parsing_nonterminal_with_only_opening_chevron() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <
           │ ^
-        '''
+        ''',
     )
 
 
@@ -138,7 +138,7 @@ def test_parsing_empty_nonterminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <>
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -150,7 +150,7 @@ def test_parsing_nonterminal_with_no_closing_chevron() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <N
           │ ^^
-        '''
+        ''',
     )
 
 
@@ -162,7 +162,7 @@ def test_parsing_nested_nonterminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <N<N>>
           │ ^^^
-        '''
+        ''',
     )
 
 
@@ -181,7 +181,7 @@ def test_parsing_rule_with_empty_left_side() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ → ε
           │ ^
-        '''
+        ''',
     )
 
 
@@ -193,7 +193,7 @@ def test_parsing_rule_with_lone_terminal_on_left() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ "a" → ε
           │ ^^^
-        '''
+        ''',
     )
 
 
@@ -205,7 +205,7 @@ def test_parsing_rule_with_epsilon_on_left() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ε → ε
           │ ^
-        '''
+        ''',
     )
 
 
@@ -217,7 +217,7 @@ def test_parsing_rule_with_no_arrow() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S>
           │ ^^^
-        '''
+        ''',
     )
 
 
@@ -229,7 +229,7 @@ def test_parsing_rule_with_empty_right_side() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S> →
           │ ^^^^^
-        '''
+        ''',
     )
 
 
@@ -241,7 +241,7 @@ def test_parsing_rule_with_epsilon_and_nonterminal() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S> → ε <S>
           │       ^^^^^
-        '''
+        ''',
     )
 
 
@@ -251,43 +251,43 @@ def test_parsing_line_break_inside_rule() -> None:
             dedent('''\
                 <S>
                 → ε
-                '''
-            )
+                ''',
+            ),
         )
 
     assert str(excinfo.value) == 'Expected an arrow after the left side of a rule'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S>↵
           │ ^^^
-        '''
+        ''',
     )
 
 
 def test_parsing_rule_with_two_right_sides() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema(
-            dedent('<S> → →')
+            dedent('<S> → →'),
         )
 
     assert str(excinfo.value) == 'The right side of a rule must contain terminals and nonterminals and at most a single ε'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S> → →
           │       ^
-        '''
+        ''',
     )
 
 
 def test_parsing_rule_with_two_nonempty_right_sides() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema(
-            dedent('<S> → "A" → "A"')
+            dedent('<S> → "A" → "A"'),
         )
 
     assert str(excinfo.value) == 'The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ <S> → "A" → "A"
           │       ^^^^^^^^^
-        '''
+        ''',
     )
 
 
@@ -295,34 +295,34 @@ def test_parsing_rule_with_two_nonempty_right_sides() -> None:
     dict(
         schema=dedent('''\
             <S> → <S>
-            '''
+            ''',
         ),
         expected=GrammarSchema([
-            GrammarRule([NonTerminal('S')], [NonTerminal('S')])
-        ])
+            GrammarRule([NonTerminal('S')], [NonTerminal('S')]),
+        ]),
     ),
 
     dict(
         schema=dedent('''\
             <S> → ε | "a" <S>
-            '''
+            ''',
         ),
         expected=GrammarSchema([
             GrammarRule([NonTerminal('S')], []),
             GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
-        ])
+        ]),
     ),
 
     dict(
         schema=dedent('''\
             <S> → ε
             <S> → "a" <S>
-            '''
+            ''',
         ),
         expected=GrammarSchema([
             GrammarRule([NonTerminal('S')], []),
             GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
-        ])
+        ]),
     ),
 )
 def test_parse_schema_success(schema: str, expected: GrammarSchema) -> None:

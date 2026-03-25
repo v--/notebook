@@ -1,5 +1,9 @@
 import functools
-from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def exit_gracefully_on_exception[R, **P](*exceptions: type[BaseException]) -> Callable[[Callable[P, R]], Callable[P, R]]:

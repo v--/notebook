@@ -1,15 +1,18 @@
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
-from ..formulas import PropConstant
 from .formula_visitor import PropFormulaVisitor
-from .formulas import (
-    PropConnectiveFormula,
-    PropFormula,
-    PropNegationFormula,
-    PropVariable,
-)
-from .interpretation import PropInterpretation
+
+
+if TYPE_CHECKING:
+    from ..formulas import PropConstant
+    from .formulas import (
+        PropConnectiveFormula,
+        PropFormula,
+        PropNegationFormula,
+        PropVariable,
+    )
+    from .interpretation import PropInterpretation
 
 
 @dataclass

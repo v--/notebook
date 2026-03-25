@@ -1,10 +1,14 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryConnective, Quantifier, UnaryPrefix
-from ..signature import PredicateSymbol
 from ..terms import SyntacticApplication, TermSchema, VariablePlaceholder
 from .formulas import PropConstant
+
+
+if TYPE_CHECKING:
+    from ....parsing.identifiers import GreekIdentifier
+    from ..signature import PredicateSymbol
 
 
 @dataclass(frozen=True)

@@ -1,8 +1,13 @@
-from .....bibtex import BibEntry
+from typing import TYPE_CHECKING
+
 from ...exceptions import BibToolsError
 from .bib import isbn_book_to_bib
 from .fetch import fetch_isbn_json
 from .model import parse_isbn_json
+
+
+if TYPE_CHECKING:
+    from .....bibtex import BibEntry
 
 
 def retrieve_isbn_entry(identifier: str, *, dump_as_fixture: bool) -> BibEntry:

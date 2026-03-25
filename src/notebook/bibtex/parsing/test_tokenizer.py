@@ -12,7 +12,7 @@ def test_latin_token() -> None:
     string = 'latin'
     tokens = tokenize_bibtex(string)
     assert tokens == [
-        BibToken('WORD', string, 0)
+        BibToken('WORD', string, 0),
     ]
 
 
@@ -22,7 +22,7 @@ def test_latin_name() -> None:
     assert tokens == [
         BibToken('WORD', 'Svatopluk', 0),
         BibToken('SPACE', ' ', 9),
-        BibToken('WORD', 'Fučík', 10)
+        BibToken('WORD', 'Fučík', 10),
     ]
 
 
@@ -40,7 +40,7 @@ def test_cyrillic_name() -> None:
         BibToken('SPACE', ' ', 6),
         BibToken('WORD', 'Петрович', 7),
         BibToken('SPACE', ' ', 15),
-        BibToken('WORD', 'Киселёв', 16)
+        BibToken('WORD', 'Киселёв', 16),
     ]
 
 

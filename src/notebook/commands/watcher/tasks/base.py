@@ -1,13 +1,14 @@
+# ruff: noqa: DTZ005
+
 import abc
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-import loguru
-
-from ..trigger import TaskTrigger
-
 
 if TYPE_CHECKING:
+    import loguru
+
+    from ..trigger import TaskTrigger
     from .runner import TaskRunner
 
 

@@ -51,11 +51,11 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
             *(
                 alpha_convert_derivation_unsafe(
                     application_premise.tree,
-                    instantiate_term_schema(rule_premise.main.term, new_instantiation)
+                    instantiate_term_schema(rule_premise.main.term, new_instantiation),
                 )
                 for application_premise, rule_premise in zip(tree.premises, rule.premises, strict=True)
             ),
-            instantiation=new_instantiation
+            instantiation=new_instantiation,
         )
 
     def _visit_abstractor_premise(self, body_tree: TypeDerivationTree, assertion: VariableTypeAssertion, other: TypedTerm) -> RuleApplicationPremise:
@@ -74,12 +74,12 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
 
             adjusted_subtree = substitute_in_tree(
                 body_tree,
-                {abstraction.var: assume(assertion)}
+                {abstraction.var: assume(assertion)},
             )
 
         return premise_config(
             attachments=[assertion],
-            tree=alpha_convert_derivation_unsafe(adjusted_subtree, other.body)
+            tree=alpha_convert_derivation_unsafe(adjusted_subtree, other.body),
         )
 
     @override
@@ -94,7 +94,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
         # Unlike in the monograph, here we infer the instantiation needed to apply the rule
         return apply(
             tree.rule,
-            new_premise
+            new_premise,
         )
 
     @override

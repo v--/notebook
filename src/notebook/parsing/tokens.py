@@ -1,9 +1,12 @@
-from collections.abc import Collection, Iterable
-from enum import StrEnum
-from typing import NamedTuple, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 from ..support.iteration import dict_accumulator
 from .exceptions import InvalidTokenError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable
+    from enum import StrEnum
 
 
 class Token[TokenKindT](NamedTuple):

@@ -14,8 +14,8 @@ def test_apply_substitution_to_assignment() -> None:
     substitution = AtomicLogicSubstitution(
         variable_mapping={
             parse_variable('x'): parse_term('Sy', ARITHMETIC_SIGNATURE),
-            parse_variable('y'): parse_term('Sx', ARITHMETIC_SIGNATURE)
-        }
+            parse_variable('y'): parse_term('Sx', ARITHMETIC_SIGNATURE),
+        },
     )
     subst_term = apply_substitution_to_term(term, substitution)
 

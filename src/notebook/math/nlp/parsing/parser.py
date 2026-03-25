@@ -1,10 +1,15 @@
-from collections.abc import Collection, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from ....parsing.parser import Parser
-from ..phrases import Phrase
 from .parser_context import PhraseContext
 from .tokenizer import tokenize_text
 from .tokens import TextToken
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Sequence
+
+    from ..phrases import Phrase
 
 
 class TextParser(Parser[TextToken]):

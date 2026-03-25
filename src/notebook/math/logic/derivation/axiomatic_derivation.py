@@ -1,6 +1,5 @@
-from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from ....support.schemas import SchemaInferenceError
 from ..alphabet import BinaryConnective
@@ -18,6 +17,10 @@ from ..instantiation import AtomicLogicSchemaInstantiation, infer_instantiation_
 from ..parsing import parse_formula_placeholder
 from .exceptions import AxiomaticDerivationError
 from .system import AxiomaticDerivationSystem, derivation_system_to_natural_deduction_system
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Sequence
 
 
 class ModusPonensConfig(NamedTuple):
@@ -51,7 +54,9 @@ class AxiomaticDerivation:
         return None
 
     def truncate(self, index: int) -> AxiomaticDerivation:
-        assert index < len(self.payload)
+        if index >= len(self.payload):
+            raise AxiomaticDerivationError(f'Cannot truncate derivation to {index} formulas because it only has {len(self.payload)} formulas.')
+
         return AxiomaticDerivation(payload=self.payload[:index + 1])
 
 
@@ -79,10 +84,10 @@ def _are_derivations_equivalent_recurse(a: AxiomaticDerivation, b: AxiomaticDeri
 
     return _are_derivations_equivalent_recurse(
         a.truncate(a_config.conditional_index),
-        b.truncate(b_config.conditional_index)
+        b.truncate(b_config.conditional_index),
     ) and _are_derivations_equivalent_recurse(
         a.truncate(a_config.antecedent_index),
-        b.truncate(b_config.antecedent_index)
+        b.truncate(b_config.antecedent_index),
     )
 
 
@@ -124,7 +129,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
                 instantiation,
                 premises=[],
                 conclusion=conclusion,
-                implicit_variables=set()
+                implicit_variables=set(),
             )
 
     mp_config = derivation.get_mp_config()
@@ -134,20 +139,20 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
 
     conditional_premise = RuleApplicationPremise(
         tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
-        attachments=[]
+        attachments=[],
     )
 
     markers = conditional_premise.tree.get_locally_discharged_markers()
     antecedent_premise = RuleApplicationPremise(
         tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers}),
-        attachments=[]
+        attachments=[],
     )
 
     instantiation = AtomicLogicSchemaInstantiation(
         formula_mapping={
             parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion,
-            parse_formula_placeholder('ψ'): conclusion
-        }
+            parse_formula_placeholder('ψ'): conclusion,
+        },
     )
 
     return RuleApplicationTree(
@@ -155,7 +160,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         instantiation,
         premises=[conditional_premise, antecedent_premise],
         conclusion=conclusion,
-        implicit_variables=set()
+        implicit_variables=set(),
     )
 
 
@@ -170,5 +175,5 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
 # This is alg:axiomatic_proof_tree_to_derivation in the monograph
 def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
     return AxiomaticDerivation(
-        payload=list(_proof_tree_to_derivation_payload(tree))
+        payload=list(_proof_tree_to_derivation_payload(tree)),
     )

@@ -1,15 +1,19 @@
 import abc
 import asyncio
-import pathlib
-from collections.abc import Iterable
 from time import monotonic_ns
-from typing import override
-
-import loguru
+from typing import TYPE_CHECKING, override
 
 from ....paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
 from .base import Task
-from .runner import TaskRunner
+
+
+if TYPE_CHECKING:
+    import pathlib
+    from collections.abc import Iterable
+
+    import loguru
+
+    from .runner import TaskRunner
 
 
 def format_time(start: int, end: int) -> str:
@@ -67,7 +71,7 @@ class CliTask(Task):
             stdin=asyncio.subprocess.DEVNULL,
             stdout=self.get_build_out_buffer(),
             stderr=self.get_build_err_buffer(),
-            cwd=ROOT_PATH
+            cwd=ROOT_PATH,
         )
 
         exit_code = await proc.wait()

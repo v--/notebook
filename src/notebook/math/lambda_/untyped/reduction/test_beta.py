@@ -1,4 +1,5 @@
-from collections.abc import Sequence
+
+from typing import TYPE_CHECKING
 
 from .....support.pytest import pytest_parametrize_kwargs
 from ...common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
@@ -10,20 +11,24 @@ from .beta import BetaReduction, to_function
 from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_term_once, transitively_reduce_term
 
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+
 @pytest_parametrize_kwargs(
     dict(term=var.x, expected=None),
     dict(
         term=UntypedApplication(combinators.i, var.x),
-        expected=var.x
+        expected=var.x,
     ),
     dict(
         term=parse_untyped_term('((λx.(λy.(xy)))x)'),
-        expected=parse_untyped_term('(λy.(xy))')  # No need to rename
+        expected=parse_untyped_term('(λy.(xy))'),  # No need to rename
     ),
     dict(
         term=parse_untyped_term('((λx.(λy.(xy)))y)'),
-        expected=parse_untyped_term('(λa.(ya))')  # We rename to avoid capturing
-    )
+        expected=parse_untyped_term('(λa.(ya))'),  # We rename to avoid capturing
+    ),
 )
 def test_applicative_beta(term: UntypedTerm, expected: UntypedTerm | None) -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
@@ -47,7 +52,7 @@ def test_applicative_beta_skk() -> None:
 
     assert are_terms_alpha_equivalent(
         transitively_reduce_term(skk, strategy),
-        combinators.i
+        combinators.i,
     )
 
 
@@ -99,23 +104,23 @@ def test_beta_c0_omega_i() -> None:
     dict(
         term=combinators.i,
         params=[var.x],
-        expected=var.x
+        expected=var.x,
     ),
     dict(
         term=combinators.k,
         params=[var.x, var.y],
-        expected=var.x
+        expected=var.x,
     ),
     dict(
         term=church_numeral(0),
         params=[var.x, var.y],
-        expected=var.y
+        expected=var.y,
     ),
     dict(
         term=combinators.s,
         params=[var.x, var.y, var.z],
-        expected=parse_untyped_term('((xz)(yz))')
-    )
+        expected=parse_untyped_term('((xz)(yz))'),
+    ),
 )
 def test_to_function(term: UntypedTerm, params: Sequence[UntypedTerm], expected: UntypedTerm) -> None:
     assert to_function(term)(*params) == expected

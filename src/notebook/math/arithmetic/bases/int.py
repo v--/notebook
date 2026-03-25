@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
+from notebook.math.arithmetic.exceptions import InvalidArgumentError, NotebookZeroDivisionError, RadixError
+
 from ....parsing import common_identifiers as ci
 from ...polynomials import monomial
 from ...polynomials.polynomial.int import IntPolynomial, const, x
@@ -18,7 +20,9 @@ class IntRadixExpansion:
         return self.sign * self.polynomial[monomial.x ** k]
 
     def __setitem__(self, k: int, value: int) -> None:
-        assert 0 <= value < self.radix
+        if value < 0 or value >= self.radix:
+            raise InvalidArgumentError(f'Expected a nonnegative integer less than {self.radix}, but got {value}')
+
         self.polynomial[monomial.x ** k] = value
 
     def __int__(self) -> int:
@@ -51,7 +55,8 @@ class IntRadixExpansion:
 
 # This is alg:integer_radix_expansion in the monograph
 def get_integer_expansion(n: int, radix: int) -> IntRadixExpansion:
-    assert radix >= 2
+    if radix < 2:
+        raise RadixError(f'Invalid radix {radix}')
 
     if abs(n) < radix:
         return IntRadixExpansion(radix, abs(n) * const, sgn(n))
@@ -63,7 +68,8 @@ def get_integer_expansion(n: int, radix: int) -> IntRadixExpansion:
 
 # This is alg:addition_with_carrying in the monograph
 def add_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExpansion:
-    assert n.radix == m.radix
+    if n.radix != m.radix:
+        raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')
 
     if n.sign == -1:
         return -add_with_carrying(-n, -m)
@@ -88,7 +94,8 @@ def add_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExp
 
 # This is alg:single_digit_multiplication_with_carrying in the monograph
 def single_digit_mult_with_carrying(n: IntRadixExpansion, m: int) -> IntRadixExpansion:
-    assert abs(m) < n.radix
+    if abs(m) >= n.radix:
+        raise InvalidArgumentError(f'Expected an integer with absolute value less than {n.radix}, but got {m}')
 
     if n.sign == -1 and m < 0:
         return single_digit_mult_with_carrying(-n, -m)
@@ -115,7 +122,8 @@ def single_digit_mult_with_carrying(n: IntRadixExpansion, m: int) -> IntRadixExp
 
 # This is alg:multi_digit_multiplication_with_carrying in the monograph
 def multi_digit_mult_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExpansion:
-    assert n.radix == m.radix
+    if n.radix != m.radix:
+        raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')
 
     radix = n.radix
     exp = IntRadixExpansion(radix, IntPolynomial.new_zero(), sign=1)
@@ -135,8 +143,12 @@ class ExpansionDivMod(NamedTuple):
 
 # This is alg:long_integer_division in the monograph
 def long_division(n: IntRadixExpansion, m: IntRadixExpansion) -> ExpansionDivMod:
-    assert n.radix == m.radix
-    assert m.sign != 0
+    if n.radix != m.radix:
+        raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')
+
+    if m.sign == 0:
+        raise NotebookZeroDivisionError(int(m))
+
     radix = n.radix
 
     if n.sign == -1:
@@ -160,7 +172,7 @@ def long_division(n: IntRadixExpansion, m: IntRadixExpansion) -> ExpansionDivMod
 
         rem = add_with_carrying(
             rem,
-            -single_digit_mult_with_carrying(m_, q_k)
+            -single_digit_mult_with_carrying(m_, q_k),
         )
 
     return ExpansionDivMod(quot, rem)

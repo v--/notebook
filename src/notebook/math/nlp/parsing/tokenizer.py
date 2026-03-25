@@ -1,9 +1,12 @@
 import unicodedata
-from collections.abc import Collection, Sequence
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....parsing import Tokenizer, TokenizerContext
 from .tokens import TextToken, TextTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Sequence
 
 
 ALLOWED_INTERWORD_SYMBOLS: Collection[str] = {"'", '`', '-'}
@@ -59,7 +62,7 @@ class TextTokenizer(Tokenizer[TextTokenKind]):
                 return TextToken(
                     kind='WORD',
                     offset=num_token.offset,
-                    value=num_token.value + '-' + word_token.value
+                    value=num_token.value + '-' + word_token.value,
                 )
 
             return num_token

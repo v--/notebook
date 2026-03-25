@@ -40,7 +40,7 @@ class PropFormulaConversionVisitor(FormulaVisitor[PropFormula]):
         return PropConnectiveFormula(
             formula.conn,
             self.visit(formula.left),
-            self.visit(formula.right)
+            self.visit(formula.right),
         )
 
     @override

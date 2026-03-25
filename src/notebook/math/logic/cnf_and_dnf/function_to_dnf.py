@@ -1,5 +1,5 @@
 import inspect
-from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING
 
 from ..alphabet import BinaryConnective, PropConstantSymbol
 from ..formulas import PropConstant
@@ -12,6 +12,10 @@ from ..propositional import (
     iter_interpretations_for_variables,
 )
 from .exceptions import VariableNameError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
 
 
 def vararg_connect(conn: BinaryConnective, formulas: Iterable[PropFormula]) -> PropFormula:

@@ -1,14 +1,12 @@
 import functools
 import itertools
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import overload
+from typing import TYPE_CHECKING, overload
 
 from ....exceptions import UnreachableException
 from ....parsing import iter_latin_identifiers
 from ....support.unicode import itoa_superscripts
 from ..alphabet import Quantifier
-from ..formulas import Formula
 from ..signature import FormalLogicSignature, FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
 from ..structure import FormalLogicStructure, VariableAssignment, evaluate_formula
 from ..substitution import substitute_in_formula
@@ -16,6 +14,12 @@ from ..terms import FunctionApplication, Variable
 from .exceptions import InvalidModelError
 from .prefix import QuantifierPrefix
 from .prenex_formula import PrenexFormula
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ..formulas import Formula
 
 
 @dataclass(frozen=True)
@@ -45,7 +49,7 @@ def skolem_function_interpretation[T](
     model: FormalLogicStructure[T],
     prefix: QuantifierPrefix,
     suffix: QuantifierPrefix,
-    *args: T
+    *args: T,
 ) -> T:
     assignment = VariableAssignment[T]()
 
@@ -82,7 +86,7 @@ def skolemize[T](formula: PrenexFormula, signature: FormalLogicSignature, model:
                 new_symbol = FunctionSymbol(
                     generate_new_function_name(extended_signature, arity),
                     arity,
-                    SignatureSymbolNotation.PREFIX
+                    SignatureSymbolNotation.PREFIX,
                 )
 
                 extended_signature.add_symbol(new_symbol)
@@ -95,17 +99,17 @@ def skolemize[T](formula: PrenexFormula, signature: FormalLogicSignature, model:
 
                     interpretation[new_symbol] = functools.partial(
                         skolem_function_interpretation,
-                        matrix, var, expanded_model, universal_prefix, QuantifierPrefix(list(formula.prefix)[k:])
+                        matrix, var, expanded_model, universal_prefix, QuantifierPrefix(list(formula.prefix)[k:]),
                     )
 
                     expanded_model = FormalLogicStructure(
                         extended_signature,
                         expanded_model.universe,
-                        interpretation
+                        interpretation,
                     )
 
                 matrix = substitute_in_formula(matrix, {
-                    var: FunctionApplication(new_symbol, [v for _, v in universal_prefix])
+                    var: FunctionApplication(new_symbol, [v for _, v in universal_prefix]),
                 })
 
     resulting_formula = PrenexFormula(universal_prefix, matrix)

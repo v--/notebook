@@ -38,7 +38,7 @@ from .validation import is_formula_in_cnf
     dict(formula='(p ∧ ¬(q → r))', expected='(p ∧ (q ∧ ¬r))'),
     dict(
         formula='(p ∨ (q ∨ (r ∨ (s ∧ t))))',
-        expected='((p ∨ (q ∨ (r ∨ s))) ∧ (p ∨ (q ∨ (r ∨ t))))'
+        expected='((p ∨ (q ∨ (r ∨ s))) ∧ (p ∨ (q ∨ (r ∨ t))))',
     ),
     dict(formula='¬(p ∧ (q ∨ r))', expected='((¬p ∨ ¬q) ∧ (¬p ∨ ¬r))'), # We distribute the dual of the inner formula
 )

@@ -14,7 +14,7 @@ FIELDS = [
   'publishedDate',
   'publisher',
   'subtitle',
-  'title'
+  'title',
 ]
 
 
@@ -23,14 +23,14 @@ def fetch_isbn_json(identifier: str, *, dump_as_fixture: bool = False) -> str:
         {
             'q': 'isbn:' + identifier,
             'maxResults': 1,
-            'fields': f'items/volumeInfo({','.join(FIELDS)}),items/searchInfo(textSnippet)'
+            'fields': f'items/volumeInfo({','.join(FIELDS)}),items/searchInfo(textSnippet)',
         },
-        safe='(),/'
+        safe='(),/',
     )
 
     try:
         res = urlopen(
-            f'https://www.googleapis.com/books/v1/volumes?{search_query}'
+            f'https://www.googleapis.com/books/v1/volumes?{search_query}',
         )
     except HTTPError as err:
         raise BibToolsNetworkError('Error while fetching data') from err

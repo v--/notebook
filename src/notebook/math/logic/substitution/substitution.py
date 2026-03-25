@@ -1,10 +1,14 @@
-from collections.abc import Collection, Iterable, Mapping
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.substitution import AbstractAtomicSubstitution
-from ..formulas import Formula, FormulaWithSubstitution, QuantifierFormula
 from ..terms import Term, Variable
 from ..variables import get_formula_free_variables, get_term_variables, new_variable
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping
+
+    from ..formulas import Formula, FormulaWithSubstitution, QuantifierFormula
 
 
 class AtomicLogicSubstitution(AbstractAtomicSubstitution[Variable, Term]):
@@ -42,6 +46,9 @@ class AtomicLogicSubstitution(AbstractAtomicSubstitution[Variable, Term]):
             return NotImplemented
 
         return self.variable_mapping == other.variable_mapping
+
+    def __hash__(self) -> int:
+        return hash(self.variable_mapping)
 
     def __str__(self) -> str:
         return '[' + ', '.join(f'{key} ↦ {value}' for key, value in self.variable_mapping.items()) + ']'

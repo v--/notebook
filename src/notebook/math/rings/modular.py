@@ -1,8 +1,12 @@
 import functools
-from collections.abc import Callable
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from ..arithmetic.divisibility import rem
+from .exceptions import RingMetaError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class IntModuloMeta(type):
@@ -15,7 +19,9 @@ class IntModuloMeta(type):
         attrs: dict[str, Any],
         modulus: int = 2,
     ) -> T:
-        assert modulus > 1
+        if modulus <= 1:
+            raise RingMetaError(f'Expected a modulus larger than 1, but got {modulus}')
+
         attrs['modulus'] = modulus
         return type.__new__(meta, name, bases, attrs)
 

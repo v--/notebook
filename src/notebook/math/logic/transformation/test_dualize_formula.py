@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_formula
 from ..propositional import (
@@ -5,8 +7,11 @@ from ..propositional import (
     iter_interpretations,
     parse_prop_formula,
 )
-from ..signature import FormalLogicSignature
 from .dualize_formula import dualize_formula, dualize_formula_prop
+
+
+if TYPE_CHECKING:
+    from ..signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -30,7 +35,7 @@ from .dualize_formula import dualize_formula, dualize_formula_prop
     dict(formula='¬¬(p ↔ q)', dual='¬(p ↔ q)'),
     dict(
         formula='((¬¬¬p ∧ ⊥) ∨ (q → ⊥))',
-        dual='((p ∨ ⊤) ∧ ¬(q → ⊥))'
+        dual='((p ∨ ⊤) ∧ ¬(q → ⊥))',
     ),
 )
 def test_dualize_formula_prop(formula: str, dual: str) -> None:

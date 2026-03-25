@@ -10,12 +10,12 @@ def fetch_arxiv_xml(identifier: str, *, dump_as_fixture: bool = False) -> str:
     search_query = urlencode({
         'max_results': 1,
         'id_list': identifier,
-        'sortBy': 'submittedDate'
+        'sortBy': 'submittedDate',
     })
 
     try:
         res = urlopen(
-            f'https://export.arxiv.org/api/query?{search_query}'
+            f'https://export.arxiv.org/api/query?{search_query}',
         )
     except HTTPError as err:
         raise BibToolsNetworkError('Error while fetching data') from err

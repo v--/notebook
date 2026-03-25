@@ -1,10 +1,13 @@
-from collections.abc import Sequence
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
 from ....support.unicode import Capitalization
 from ..signature import LambdaSignature, SignatureSymbol
 from .tokens import SINGLETON_TOKEN_MAP, LambdaToken, LambdaTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class FormalLambdaTokenizer(IdentifierTokenizerMixin[LambdaTokenKind], TrieTokenizerMixin[LambdaTokenKind, SignatureSymbol], Tokenizer[LambdaTokenKind]):

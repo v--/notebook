@@ -1,16 +1,23 @@
 import itertools
 import math
 from collections import Counter
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from .divisibility import divides, quot
+from .exceptions import InvalidArgumentError, NotPositiveIntegerError
 from .gcd import gcd
 from .support import SignT, sgn
 
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+
 def build_erathostenes_sieve(ceiling: int) -> Sequence[bool]:
-    assert ceiling > 0
+    if ceiling <= 0:
+        raise InvalidArgumentError(f'Expected a positive ceiling, but got {ceiling}')
+
     ceil_sqrt = math.isqrt(ceiling)
 
     sieve = [True] * (ceiling + 1)
@@ -30,7 +37,9 @@ def build_erathostenes_sieve(ceiling: int) -> Sequence[bool]:
 
 
 def iter_primes(ceiling: int) -> Iterable[int]:
-    assert ceiling > 0
+    if ceiling <= 0:
+        raise InvalidArgumentError(f'Expected a positive ceiling, but got {ceiling}')
+
     sieve = build_erathostenes_sieve(ceiling)
 
     for k in range(2, ceiling + 1):
@@ -39,7 +48,8 @@ def iter_primes(ceiling: int) -> Iterable[int]:
 
 
 def is_prime_naive(n: int) -> bool:
-    assert n > 0
+    if n <= 0:
+        raise NotPositiveIntegerError(n)
 
     if n == 1:
         return False
@@ -50,13 +60,17 @@ def is_prime_naive(n: int) -> bool:
 
 
 def num_primes(n: int) -> int:
-    assert n > 0
+    if n <= 0:
+        raise NotPositiveIntegerError(n)
+
     return sum(build_erathostenes_sieve(ceiling=n))
 
 
 # thm:inclusion_exclusion_eratosthenes
 def num_primes_inclusion_exclusion(n: int) -> int:
-    assert n > 0
+    if n <= 0:
+        raise NotPositiveIntegerError(n)
+
     p = list(iter_primes(math.isqrt(n)))
     result = (n - 1) + len(p)
 
@@ -81,7 +95,7 @@ class PrimeFactorization:
     def __and__(self, other: PrimeFactorization) -> PrimeFactorization:
         return PrimeFactorization(
             multiset=self.multiset & other.multiset,
-            sign=sgn(self.sign * other.sign)
+            sign=sgn(self.sign * other.sign),
         )
 
 
@@ -103,7 +117,7 @@ def factor(n: int) -> PrimeFactorization:
 
     return PrimeFactorization(
         multiset=multiset,
-        sign=sgn(n)
+        sign=sgn(n),
     )
 
 
@@ -112,7 +126,8 @@ def are_coprime(n: int, m: int) -> bool:
 
 
 def build_coprimality_sieve(n: int) -> Sequence[bool]:
-    assert n > 0
+    if n <= 0:
+        raise NotPositiveIntegerError(n)
 
     factorization = factor(n)
     sieve = [True] * (n + 1)
@@ -129,5 +144,7 @@ def build_coprimality_sieve(n: int) -> Sequence[bool]:
 
 
 def totient(n: int) -> int:
-    assert n > 0
+    if n <= 0:
+        raise NotPositiveIntegerError(n)
+
     return sum(build_coprimality_sieve(n))

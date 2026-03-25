@@ -1,9 +1,14 @@
-from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from .exceptions import MissingInterpretationError
-from .formulas import PropVariable
 from .parsing import parse_prop_variable
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
+
+    from .formulas import PropVariable
 
 
 @dataclass(frozen=True)

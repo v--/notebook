@@ -1,6 +1,6 @@
 import asyncio
 import pathlib
-from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING
 
 import click
 import loguru
@@ -10,6 +10,10 @@ from ...paths import FIGURES_PATH, ROOT_PATH
 from ..common.logging import configure_loguru
 from .tasks import AsymptoteTask, LaTeXTask, PythonTask, TaskRunner
 from .trigger import TaskTrigger, TaskTriggerKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 
 BUILD_MASK = Mask.CLOSE_WRITE | Mask.MOVED_TO
@@ -63,8 +67,8 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                             LaTeXTask(
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
-                                base_logger=base_logger
-                            )
+                                base_logger=base_logger,
+                            ),
                         )
 
                 if (path.match('classes/*.cls') and not path.match('classes/notebook.cls')) or \
@@ -74,8 +78,8 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                             LaTeXTask(
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
-                                base_logger=base_logger
-                            )
+                                base_logger=base_logger,
+                            ),
                         )
 
             if (
@@ -92,8 +96,8 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                     LaTeXTask(
                         TaskTrigger(TaskTriggerKind.BUILD, ROOT_PATH / 'notebook.tex'),
                         reason=path.name,
-                        base_logger=base_logger
-                    )
+                        base_logger=base_logger,
+                    ),
                 )
 
 
@@ -110,8 +114,8 @@ def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
             setup_watchers(
                 manager,
                 base_logger=base_logger,
-                rebuild_all_figures=rebuild_all_figures
-            )
+                rebuild_all_figures=rebuild_all_figures,
+            ),
         )
     except KeyboardInterrupt:
         manager.finalize()

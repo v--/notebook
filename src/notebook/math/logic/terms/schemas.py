@@ -1,8 +1,12 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ..signature import FunctionSymbol
 from .terms import SyntacticApplication
+
+
+if TYPE_CHECKING:
+    from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
+    from ..signature import FunctionSymbol
 
 
 @dataclass(frozen=True)

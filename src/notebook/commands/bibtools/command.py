@@ -1,5 +1,5 @@
 import pathlib
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import click
 
@@ -13,6 +13,10 @@ from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
 from .sources.mathnet import retrieve_mathnet_entry
 from .sources.stackexchange import retrieve_stackexchange_entry
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 @click.group()
@@ -35,7 +39,7 @@ def format_(paths: Sequence[pathlib.Path]) -> None:
 
             write_entries(
                 sorted(entries, key=lambda entry: entry.entry_name),
-                context.dest
+                context.dest,
             )
 
 

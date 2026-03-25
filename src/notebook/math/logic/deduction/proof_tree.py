@@ -1,6 +1,5 @@
-from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.inference import (
     AssumptionRenderer,
@@ -26,7 +25,12 @@ from ..terms import Variable
 from ..variables import get_formula_free_variables, get_term_variables
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
-from .system import NaturalDeductionRule
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping, Sequence
+
+    from .system import NaturalDeductionRule
 
 
 @dataclass(frozen=True)
@@ -57,7 +61,7 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
     def get_open_variables(
         self,
         eigen: Collection[Variable] = set(),
-        discharged: Collection[Marker] = set()
+        discharged: Collection[Marker] = set(),
     ) -> Collection[Variable]:
         if self.marker in discharged:
             return set()
@@ -164,13 +168,13 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
             str(self.conclusion),
             [str(marker) for marker in self.get_locally_discharged_markers()],
             self.rule.name,
-            [premise.tree.build_renderer() for premise in self.premises]
+            [premise.tree.build_renderer() for premise in self.premises],
         )
 
     def _iter_open_variables(
         self,
         eigen: Collection[Variable],
-        discharged: Collection[Marker]
+        discharged: Collection[Marker],
     ) -> Iterable[Variable]:
         eigen_ = {*eigen, *self.get_local_eigenvariables()}
         discharged_ = {*discharged, *self.get_locally_discharged_markers()}
@@ -186,7 +190,7 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
     def get_open_variables(
         self,
         eigen: Collection[Variable] = set(),
-        discharged: Collection[Marker] = set()
+        discharged: Collection[Marker] = set(),
     ) -> Collection[Variable]:
         return set(self._iter_open_variables(eigen, discharged))
 
@@ -199,7 +203,7 @@ def _infer_application_instantiation(
     application_premises: Sequence[RuleApplicationPremiseConfig],
     instantiation: AtomicLogicSchemaInstantiation | None = None,
     implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
-    conclusion_config: FormulaWithSubstitution | None = None
+    conclusion_config: FormulaWithSubstitution | None = None,
 ) -> AtomicLogicSchemaInstantiation:
     if instantiation is None:
         instantiation = AtomicLogicSchemaInstantiation(formula_mapping=implicit)
@@ -212,7 +216,7 @@ def _infer_application_instantiation(
             if attachment:
                 instantiation |= infer_instantiation_from_formula_substitution_spec(
                     attachment_schema,
-                    attachment.payload
+                    attachment.payload,
                 )
 
         if application_premise.main:
@@ -242,12 +246,12 @@ def _infer_application_instantiation(
     return instantiation
 
 
-def apply(  # noqa: C901
+def apply(  # noqa: C901, PLR0912
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,
     implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
-    conclusion_config: FormulaWithSubstitution | None = None
+    conclusion_config: FormulaWithSubstitution | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
@@ -260,7 +264,7 @@ def apply(  # noqa: C901
     ]
 
     instantiation = _infer_application_instantiation(
-        rule, application_premises, instantiation, implicit, conclusion_config
+        rule, application_premises, instantiation, implicit, conclusion_config,
     )
 
     marker_map = dict[Marker, Formula]()
@@ -327,7 +331,7 @@ def apply(  # noqa: C901
         instantiation,
         [premise.eval() for premise in application_premises],
         conclusion,
-        get_term_variables(conclusion_config.sub.dest) if conclusion_config.sub else set()
+        get_term_variables(conclusion_config.sub.dest) if conclusion_config.sub else set(),
     )
 
 

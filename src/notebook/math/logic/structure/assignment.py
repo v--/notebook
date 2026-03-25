@@ -1,9 +1,14 @@
-from collections.abc import Mapping
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from ..parsing import parse_variable
-from ..terms import Variable
 from .exceptions import MissingInterpretationError
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ..terms import Variable
 
 
 @dataclass(frozen=True)

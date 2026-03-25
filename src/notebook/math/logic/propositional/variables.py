@@ -1,7 +1,6 @@
 from collections.abc import Collection
-from typing import override
+from typing import TYPE_CHECKING, override
 
-from ..formulas import PropConstant
 from .formula_visitor import PropFormulaVisitor
 from .formulas import (
     PropConnectiveFormula,
@@ -9,6 +8,10 @@ from .formulas import (
     PropNegationFormula,
     PropVariable,
 )
+
+
+if TYPE_CHECKING:
+    from ..formulas import PropConstant
 
 
 class VariableVisitor(PropFormulaVisitor[Collection[PropVariable]]):

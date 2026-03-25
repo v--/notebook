@@ -1,9 +1,14 @@
-from collections.abc import Collection
+from typing import TYPE_CHECKING
 
 from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_formula
-from .signature import FormalLogicSignature
 from .variables import get_formula_free_variables
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
+
+    from .signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -15,7 +20,7 @@ from .variables import get_formula_free_variables
     dict(formula='∀x.p¹(x)',  expected=set()),
     dict(
         formula='((∀y.p¹(y) ∨ q¹(x)) ∧ ∃y.r¹(y))',
-        expected={'x'}
+        expected={'x'},
     ),
 )
 def test_get_open_variables(formula: str, expected: Collection[str], dummy_signature: FormalLogicSignature) -> None:

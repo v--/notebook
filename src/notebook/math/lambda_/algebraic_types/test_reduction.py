@@ -1,5 +1,5 @@
 import re
-from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -10,43 +10,47 @@ from ..type_derivation import TypeDerivationError
 from .reduction import reduce_derivation
 
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+
 @pytest_parametrize_kwargs(
     # β−reduction
     dict(
         m='((λx:τ.x)y)',
         n='y',
-        context={'y': 'τ'}
+        context={'y': 'τ'},
     ),
     # β−reduction with α-conversion
     dict(
         m='((λf:(τ → τ).f)(λx:τ.x))',
         n='(λy:τ.y)',
-        context={}
+        context={},
     ),
     # β−reduction with nested α-conversion
     dict(
         m='((λf:(τ → τ).f)((λx:(τ → τ).x)(λx:τ.x)))',
         n='((λy:(τ → τ).y)(λy:τ.y))',
-        context={}
+        context={},
     ),
 
     # η−reduction
     dict(
         m='(λx:τ.(fx))',
         n='f',
-        context={'f': '(τ → τ)'}
+        context={'f': '(τ → τ)'},
     ),
     # η−reduction with α−conversion
     dict(
         m='(λx:τ.((λy:τ.y)x))',
         n='(λz:τ.z)',
-        context={}
+        context={},
     ),
     # η−reduction with deeper α−conversion
     dict(
         m='(λf:τ.(λx:τ.((λy:τ.y)x)))',
         n='(λg:τ.(λz:τ.z))',
-        context={}
+        context={},
     ),
 
     # Only one side of parallel β-reduction
@@ -59,7 +63,7 @@ def test_reduce_derivation_success(m: str, n: str, context: Mapping[str, str]) -
         {
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        }
+        },
     )
 
     reduct = parse_typed_term(n)
@@ -89,7 +93,7 @@ def test_reduce_derivation_failure(m: str, n: str, context: Mapping[str, str]) -
         {
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        }
+        },
     )
 
     reduct = parse_typed_term(n)

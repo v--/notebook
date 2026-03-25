@@ -1,7 +1,10 @@
-from collections.abc import Mapping, Sequence
-from typing import Literal, get_args
+from typing import TYPE_CHECKING, Literal, get_args
 
 from ....parsing import Token
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 
 GrammarTokenKind = Literal[

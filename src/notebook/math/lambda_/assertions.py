@@ -1,7 +1,10 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from .terms import TypedTerm, TypedTermSchema, Variable, VariablePlaceholder
-from .types import SimpleType, SimpleTypeSchema
+
+if TYPE_CHECKING:
+    from .terms import TypedTerm, TypedTermSchema, Variable, VariablePlaceholder
+    from .types import SimpleType, SimpleTypeSchema
 
 
 @dataclass(frozen=True)

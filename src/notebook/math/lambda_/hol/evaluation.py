@@ -1,7 +1,6 @@
 import itertools
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ....exceptions import UnreachableException
 from ..alphabet import BinaryTypeConnective
@@ -10,9 +9,14 @@ from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Var
 from ..types import BaseType, SimpleConnectiveType, SimpleType
 from .assignment import HolVariableAssignment
 from .exceptions import LambdaInterpretationError, MissingInterpretationError
-from .expressions import HolExpression
-from .structure import HolStructure
 from .symbols import NonLogicalConstantSymbol, SortSymbol, common_constants, common_types
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
+    from .expressions import HolExpression
+    from .structure import HolStructure
 
 
 # We should wait for a further development, e.g. PEP 827, so that we can introduce better typing here.
@@ -71,7 +75,7 @@ class HolBinderEvaluator[T]:
 
 
 # We suppose that only well-typed expressions reach this point.
-def evaluate_hol_term[T](  # noqa: C901, PLR0911
+def evaluate_hol_term[T](  # noqa: C901, PLR0911, PLR0912
     term: TypedTerm,
     context: Sequence[VariableTypeAssertion],
     structure: HolStructure[T],
@@ -120,7 +124,7 @@ def evaluate_hol_term[T](  # noqa: C901, PLR0911
 
     if isinstance(term, TypedApplication):
         fun = evaluate_hol_term(term.left, context, structure, assignment)
-        assert callable(fun)
+        assert callable(fun)  # noqa: S101
         arg = evaluate_hol_term(term.right, context, structure, assignment)
         return fun(arg)
 
@@ -133,7 +137,7 @@ def evaluate_hol_term[T](  # noqa: C901, PLR0911
 def evaluate_hol_expression[T](
     expression: HolExpression,
     structure: HolStructure[T],
-    assignment: HolVariableAssignment[T] | None = None
+    assignment: HolVariableAssignment[T] | None = None,
 ) -> HolEvaluationValue:
     return evaluate_hol_term(
         expression.term,

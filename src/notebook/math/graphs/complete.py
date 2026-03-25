@@ -27,6 +27,6 @@ def max_edge_count(n: int) -> int:
 
 
 def is_complete[VertT, VertLabelT, EdgeSymbolT](
-    graph: UndirectedGraph[VertT, VertLabelT, EdgeSymbolT]
+    graph: UndirectedGraph[VertT, VertLabelT, EdgeSymbolT],
 ) -> bool:
     return len(graph.edges) == max_edge_count(len(graph.vertices))

@@ -56,7 +56,7 @@ def test_add_with_carrying(n: int, m: int, radix: int) -> None:
     dict(n=3, m=-5, radix=10),
     dict(n=-3, m=5, radix=10),
     dict(n=-3, m=-5, radix=10),
-    dict(n=1, m=-9, radix=10)
+    dict(n=1, m=-9, radix=10),
 )
 def test_single_digit_mult_with_carrying(n: int, m: int, radix: int) -> None:
     n_ = get_integer_expansion(n, radix)

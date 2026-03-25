@@ -42,7 +42,7 @@ def test_parse_dan31411_rus(identifier: str = 'dan31411') -> None:
         pages='845-848',
         mathnet=identifier,
         mathscinet='0189928',
-        zbmath='0149.15905'
+        zbmath='0149.15905',
     )
 
 
@@ -65,7 +65,7 @@ def test_parse_sm5974_rus(identifier: str = 'sm5974') -> None:
         pages='163-188',
         mathnet=identifier,
         mathscinet='35428',
-        zbmath='0033.02602'
+        zbmath='0033.02602',
     )
 
 
@@ -88,7 +88,7 @@ def test_parse_tm1095_rus_no_journal(identifier: str = 'tm1095') -> None:
         pages='3-95',
         mathnet=identifier,
         mathscinet='43445',
-        zbmath='0041.31504'
+        zbmath='0041.31504',
     )
 
 
@@ -112,7 +112,7 @@ def test_parse_sm274_rus_modern(identifier: str = 'sm274') -> None:
         mathnet=identifier,
         doi='10.4213/sm274',
         mathscinet='1607438',
-        zbmath='0911.26009'
+        zbmath='0911.26009',
     )
 
 
@@ -137,5 +137,5 @@ def test_parse_sm274_eng_modern(identifier: str = 'sm274') -> None:
         doi='10.1070/sm1997v188n12ABEH000274',
         mathscinet='1607438',
         zbmath='0911.26009',
-        scopus='2-s2.0-0031284172'
+        scopus='2-s2.0-0031284172',
     )

@@ -118,7 +118,7 @@ class FormulaTransformationVisitor(FormulaVisitor[Formula]):
         return ConnectiveFormula(
             formula.conn,
             self.visit(formula.left),
-            self.visit(formula.right)
+            self.visit(formula.right),
         )
 
     @override
@@ -126,5 +126,5 @@ class FormulaTransformationVisitor(FormulaVisitor[Formula]):
         return QuantifierFormula(
             formula.quant,
             formula.var,
-            self.visit(formula.body)
+            self.visit(formula.body),
         )

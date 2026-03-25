@@ -1,4 +1,4 @@
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..formulas import (
@@ -18,8 +18,11 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from .base import AtomicLogicSchemaInstantiation
 from .term_application import TermInstantiationApplicationVisitor
+
+
+if TYPE_CHECKING:
+    from .base import AtomicLogicSchemaInstantiation
 
 
 class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
@@ -58,7 +61,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         return ConnectiveFormula(
             schema.conn,
             self.visit(schema.left),
-            self.visit(schema.right)
+            self.visit(schema.right),
         )
 
     @override
@@ -66,7 +69,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         return QuantifierFormula(
             schema.quant,
             self.term_visitor.visit_variable_placeholder(schema.var),
-            self.visit(schema.body)
+            self.visit(schema.body),
         )
 
 

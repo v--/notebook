@@ -8,8 +8,7 @@ class DiscreteLogarithmError(NotebookArithmeticError):
 
 
 def naive_discrete_logarithm[T: BaseIntModulo](base: T, x: T) -> int:
-    """Find a nonnegative integer y such that bʸ = x (mod p)"""
-
+    """Find a nonnegative integer y such that bʸ = x (mod p)."""
     if not is_prime_naive(base.modulus):
         raise DiscreteLogarithmError(f'Expected a prime modulus, got {base.modulus!r}')
 

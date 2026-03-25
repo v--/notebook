@@ -1,4 +1,5 @@
-from collections.abc import Mapping
+
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -18,35 +19,39 @@ from .base import AtomicLambdaSchemaInstantiation
 from .term_application import instantiate_term_schema
 
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+
 @pytest_parametrize_kwargs(
     dict(
         schema='x',
         expected='y',
         variable_mapping={'x': 'y'},
         term_mapping={},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='y',
         expected='y',
         variable_mapping={'y': 'y'},
         term_mapping={},
-        type_mapping={}
+        type_mapping={},
     ),
     dict(
         schema='(λx:τ.x)',
         expected='(λy:σ.y)',
         variable_mapping={'x': 'y'},
         term_mapping={},
-        type_mapping={'τ': 'σ'}
+        type_mapping={'τ': 'σ'},
     ),
     dict(
         schema='(Ix)',
         expected='((λx:τ.x)y)',
         variable_mapping={'x': 'y'},
         term_mapping={'I': '(λx:τ.x)'},
-        type_mapping={}
-    )
+        type_mapping={},
+    ),
 )
 def test_instantiation_success(
     expected: str,
@@ -58,7 +63,7 @@ def test_instantiation_success(
     instantiation = AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder(placeholder): parse_variable(value) for placeholder, value in variable_mapping.items()},
         term_mapping={parse_term_placeholder(placeholder): parse_typed_term(value) for placeholder, value in term_mapping.items()},
-        type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()}
+        type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()},
     )
 
     assert instantiate_term_schema(parse_typed_term_schema(schema), instantiation) == parse_typed_term(expected)
@@ -88,7 +93,7 @@ def test_abstraction_annotation_success() -> None:
     schema = parse_typed_term_schema('(λx:τ.x)')
     instantiation = AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        type_mapping={parse_type_placeholder('τ'): parse_type('τ')}
+        type_mapping={parse_type_placeholder('τ'): parse_type('τ')},
     )
 
     expected = parse_typed_term('(λx:τ.x)')
@@ -96,10 +101,10 @@ def test_abstraction_annotation_success() -> None:
 
 
 def test_abstraction_annotation_failure() -> None:
-    with pytest.raises(SchemaInstantiationError, match=r'No specification of how to instantiate the type placeholder τ'):
-        schema = parse_typed_term_schema('(λx:τ.x)')
-        instantiation = AtomicLambdaSchemaInstantiation(
-            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        )
+    schema = parse_typed_term_schema('(λx:τ.x)')
+    instantiation = AtomicLambdaSchemaInstantiation(
+        variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
+    )
 
+    with pytest.raises(SchemaInstantiationError, match=r'No specification of how to instantiate the type placeholder τ'):
         instantiate_term_schema(schema, instantiation)

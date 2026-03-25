@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import overload, override
+from typing import TYPE_CHECKING, overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
@@ -15,8 +15,11 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import AtomicLambdaSchemaInstantiation
 from .type_application import instantiate_type_schema
+
+
+if TYPE_CHECKING:
+    from .base import AtomicLambdaSchemaInstantiation
 
 
 @dataclass(frozen=True)
@@ -50,7 +53,7 @@ class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
         return TypedAbstraction(
             self.visit_variable_placeholder(schema.var),
             instantiate_type_schema(schema.var_type, self.instantiation),
-            self.visit(schema.body)
+            self.visit(schema.body),
         )
 
 

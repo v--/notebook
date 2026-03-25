@@ -1,4 +1,5 @@
-from collections.abc import Callable
+
+from typing import TYPE_CHECKING
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ..propositional import parse_prop_formula
@@ -6,63 +7,67 @@ from .function_to_dnf import function_to_dnf
 from .validation import is_formula_in_dnf
 
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+
 @pytest_parametrize_kwargs(
     # Canonically true
     dict(
         function=lambda: True,
-        formula='⊤'
+        formula='⊤',
     ),
     dict(
         function=lambda p: True,  # noqa: ARG005
-        formula='(p ∨ ¬p)'
+        formula='(p ∨ ¬p)',
     ),
     dict(
         function=lambda p, q: True,  # noqa: ARG005
-        formula='((p ∧ q) ∨ ((p ∧ ¬q) ∨ ((¬p ∧ q) ∨ (¬p ∧ ¬q))))'
+        formula='((p ∧ q) ∨ ((p ∧ ¬q) ∨ ((¬p ∧ q) ∨ (¬p ∧ ¬q))))',
     ),
 
     # Canonically false
     dict(
         function=lambda: False,
-        formula='⊥'
+        formula='⊥',
     ),
     dict(
         function=lambda p: False,  # noqa: ARG005
-        formula='⊥'
+        formula='⊥',
     ),
     dict(
         function=lambda p, q: False,  # noqa: ARG005
-        formula='⊥'
+        formula='⊥',
     ),
 
     # Nonconstant unary
     dict(
         function=lambda p: p,
-        formula='p'
+        formula='p',
     ),
     dict(
         function=lambda p: not p,
-        formula='¬p'
+        formula='¬p',
     ),
 
     # Nonconstant binary
     dict(
         function=lambda p, q: p and q,
-        formula='(p ∧ q)'
+        formula='(p ∧ q)',
     ),
     dict(
         function=lambda p, q: p or q,
-        formula='((p ∧ q) ∨ ((p ∧ ¬q) ∨ (¬p ∧ q)))'
+        formula='((p ∧ q) ∨ ((p ∧ ¬q) ∨ (¬p ∧ q)))',
     ),
     dict(
         function=lambda p, q: p == q,
-        formula='((p ∧ q) ∨ (¬p ∧ ¬q))'
+        formula='((p ∧ q) ∨ (¬p ∧ ¬q))',
     ),
 
     # Nonconstant ternary
     dict(
         function=lambda p, q, r: q if p else r,
-        formula='((p ∧ (q ∧ r)) ∨ ((p ∧ (q ∧ ¬r)) ∨ ((¬p ∧ (q ∧ r)) ∨ (¬p ∧ (¬q ∧ r)))))'
+        formula='((p ∧ (q ∧ r)) ∨ ((p ∧ (q ∧ ¬r)) ∨ ((¬p ∧ (q ∧ r)) ∨ (¬p ∧ (¬q ∧ r)))))',
     ),
 )
 def test_function_to_dnf(function: Callable[..., bool], formula: str) -> None:

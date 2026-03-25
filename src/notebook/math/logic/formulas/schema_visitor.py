@@ -13,7 +13,7 @@ from .schemas import (
 
 
 class FormulaSchemaVisitor[T]:
-    def visit(self, schema: FormulaSchema) -> T:  # noqa: PLR0911,C901
+    def visit(self, schema: FormulaSchema) -> T:  # noqa: PLR0911, C901
         match schema:
             case PropConstant():
                 match schema.value:

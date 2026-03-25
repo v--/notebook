@@ -58,7 +58,7 @@ def test_command_with_space() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        Whitespace(' ')
+        Whitespace(' '),
     ]
 
 
@@ -67,7 +67,7 @@ def test_command_with_brace_arg() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        BraceGroup([Text('a')])
+        BraceGroup([Text('a')]),
     ]
 
 
@@ -79,7 +79,7 @@ def test_unmatched_brace() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \test{a
           │      ^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -89,7 +89,7 @@ def test_command_with_bracket_arg() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        BracketGroup([Text('a')])
+        BracketGroup([Text('a')]),
     ]
 
 
@@ -101,7 +101,7 @@ def test_unmatched_bracket() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \test[a
           │      ^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -116,7 +116,7 @@ def test_command_with_mixed_args() -> None:
         Whitespace(' '),
         BracketGroup([
             Text('c'),
-            Whitespace(' ')
+            Whitespace(' '),
         ]),
         Whitespace(' '),
         SpecialNode.LINE_BREAK,
@@ -132,8 +132,8 @@ def test_basic_environment() -> None:
     assert nodes[0] == Environment(
         name='test',
         contents=[
-            Whitespace(' ')
-        ]
+            Whitespace(' '),
+        ],
     )
 
 
@@ -145,7 +145,7 @@ def test_unmatched_environment() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin{test}
           │ ^^^^^^^^^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -155,8 +155,8 @@ def test_mismatched_environment() -> None:
             dedent(r'''
                 \begin{test}
                 \end{tes}
-                '''[1:]
-            )
+                '''[1:],
+            ),
         )
 
     assert str(excinfo.value) == "Mismatched environment 'test'"
@@ -165,7 +165,7 @@ def test_mismatched_environment() -> None:
           │ ^^^^^^^^^^^^^
         2 │ \end{tes}↵
           │ ^^^^^^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -177,7 +177,7 @@ def test_missing_environment_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin
           │ ^^^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -189,7 +189,7 @@ def test_unclosed_and_missing_environment_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin{
           │ ^^^^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -201,7 +201,7 @@ def test_invalid_environment_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin{&}
           │ ^^^^^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -213,7 +213,7 @@ def test_unclosed_environment_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin{test
           │        ^^^^
-        '''[1:]
+        '''[1:],
     )
 
 
@@ -231,11 +231,11 @@ def test_different_nested_environments() -> None:
                 contents=[
                     Whitespace(' '),
                     Text('inner'),
-                    Whitespace(' ')
-                ]
+                    Whitespace(' '),
+                ],
             ),
-            Whitespace(' ')
-        ]
+            Whitespace(' '),
+        ],
     )
 
 
@@ -253,11 +253,11 @@ def test_same_nested_environment() -> None:
                 contents=[
                     Whitespace(' '),
                     Text('inner'),
-                    Whitespace(' ')
-                ]
+                    Whitespace(' '),
+                ],
             ),
-            Whitespace(' ')
-        ]
+            Whitespace(' '),
+        ],
     )
 
 
@@ -267,7 +267,7 @@ def test_matrix_environment() -> None:
           1 & 0 \\
           0 & 1
         \end{pmatrix}
-        '''
+        ''',
     )
 
     nodes = parse_latex(string)

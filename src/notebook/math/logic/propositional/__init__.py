@@ -1,5 +1,8 @@
-"""We only support propositional formulas encoded as first-order formulas with no terms and predicates acting as variables.
-This deviates from the monograph, but implementing support for propositional variables will be of no use for us."""
+"""Submodule for propositional formulas.
+
+We only support propositional formulas encoded as first-order formulas with no terms and predicates acting as variables.
+This deviates from the monograph, but implementing support for propositional variables will be of no use for us.
+"""
 
 from .evaluation import evaluate_prop_formula
 from .exceptions import (

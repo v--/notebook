@@ -1,5 +1,9 @@
-from ..exceptions import NotebookError
+from ..exceptions import NotebookError, NotebookException
 
 
-class NotebookMathError(NotebookError):
+class NotebookMathException(NotebookException):
+    pass
+
+
+class NotebookMathError(NotebookMathException, NotebookError):
     pass

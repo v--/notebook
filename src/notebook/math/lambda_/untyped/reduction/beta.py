@@ -1,9 +1,13 @@
 import inspect
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from ..substitution import substitute
 from .strategies import Reduction
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class BetaReduction(Reduction):
@@ -28,9 +32,7 @@ def to_function(term: UntypedTerm) -> Callable:
         i = 0
 
         while isinstance(result, UntypedAbstraction):
-            reduced = substitute(result.body, { result.var: args[i] })
-            assert reduced
-            result = reduced
+            result = substitute(result.body, { result.var: args[i] })
             i += 1
 
         return result

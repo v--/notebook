@@ -1,5 +1,5 @@
 import re
-from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from .....bibtex import BibAuthor, BibEntry, strip_braces
 from .....math.nlp.phrases import Phrase
@@ -8,6 +8,10 @@ from .....support.iteration import string_accumulator
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
 from .names import get_main_human_name
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 @string_accumulator()
@@ -91,5 +95,5 @@ def regenerate_entry_name(entry: BibEntry, main_language: str, *aux_texts: str |
         main_language,
         *aux_texts,
         editors=entry.editors,
-        subtitle=strip_braces(entry.subtitle) if entry.subtitle else None
+        subtitle=strip_braces(entry.subtitle) if entry.subtitle else None,
     )

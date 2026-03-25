@@ -62,7 +62,7 @@ class TokenizerContext[TokenKindT]:
         return Token(
             kind=token_kind,
             offset=self.offset_start,
-            value=self.get_context_string()
+            value=self.get_context_string(),
         )
 
     def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizerError:
@@ -76,7 +76,7 @@ class TokenizerContext[TokenKindT]:
             offset,
             offset,
             self.offset_start,
-            self.get_offset_end_safe()
+            self.get_offset_end_safe(),
         )
 
         err.add_note(highlighter.highlight())
@@ -88,7 +88,7 @@ class TokenizerContext[TokenKindT]:
         highlighter = ErrorHighlighter(
             self.tokenizer.source,
             self.offset_start,
-            self.get_offset_end_safe()
+            self.get_offset_end_safe(),
         )
 
         err.add_note(highlighter.highlight())

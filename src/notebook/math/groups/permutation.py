@@ -1,9 +1,13 @@
 import itertools
-from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ...support.adt.comparable import IComparable
 from .cycle import Cycle
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping, Sequence
 
 
 @dataclass(frozen=True)
@@ -70,6 +74,9 @@ class Permutation[T: IComparable]:
             return NotImplemented
 
         return self.get_mapping() == other.get_mapping()
+
+    def __hash__(self) -> int:
+        return hash(self.get_mapping())
 
     def inverse(self) -> Permutation[T]:
         return Permutation(self.domain, {self[value]: value for value in self.values})

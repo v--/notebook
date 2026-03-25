@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import overload, override
+from typing import TYPE_CHECKING, overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
@@ -12,7 +12,10 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import AtomicLogicSchemaInstantiation
+
+
+if TYPE_CHECKING:
+    from .base import AtomicLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)

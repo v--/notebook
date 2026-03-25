@@ -1,7 +1,11 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from ..alphabet import AuxImproperSymbol
-from ..contexts import LogicalContext
+
+
+if TYPE_CHECKING:
+    from ..contexts import LogicalContext
 
 
 @dataclass(frozen=True)

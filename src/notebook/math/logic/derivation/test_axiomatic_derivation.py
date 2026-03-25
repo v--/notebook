@@ -1,5 +1,5 @@
-from collections.abc import Sequence
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..propositional import parse_prop_formula
@@ -13,6 +13,10 @@ from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_deri
 from .system import derivation_system_to_natural_deduction_system
 
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+
 IDENTITY_DERIVATION = [
     str(f) for f in
     get_identity_derivation_payload(parse_prop_formula('p'))
@@ -23,28 +27,28 @@ IDENTITY_DERIVATION = [
     # Identical
     dict(
         a_payload=['p'],
-        b_payload=['p']
+        b_payload=['p'],
     ),
 
     # One has an unnecessary axiom
     dict(
         a_payload=['(p → (q → p))', 'p'],
-        b_payload=['p']
+        b_payload=['p'],
     ),
 
     # Distinct order of formulas
     dict(
         a_payload=['(p → q)', 'p', 'q'],
-        b_payload=['p', '(p → q)', 'q']
-    )
+        b_payload=['p', '(p → q)', 'q'],
+    ),
 )
 def test_are_derivations_equivalent_success(a_payload: Sequence[str], b_payload: Sequence[str]) -> None:
     a = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in a_payload]
+        payload=[parse_prop_formula(s) for s in a_payload],
     )
 
     b = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in b_payload]
+        payload=[parse_prop_formula(s) for s in b_payload],
     )
 
     assert are_derivations_equivalent(IMPLICATIONAL_AXIOMS, a, b)
@@ -54,22 +58,22 @@ def test_are_derivations_equivalent_success(a_payload: Sequence[str], b_payload:
     # One has an unnecessary premise
     dict(
         a_payload=['q', 'p'],
-        b_payload=['p']
+        b_payload=['p'],
     ),
 
     # Distinct instance of the same schema
     dict(
         a_payload=['(p → q)', 'p', 'q'],
-        b_payload=['(q → p)', 'q', 'p']
-    )
+        b_payload=['(q → p)', 'q', 'p'],
+    ),
 )
 def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload: Sequence[str]) -> None:
     a = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in a_payload]
+        payload=[parse_prop_formula(s) for s in a_payload],
     )
 
     b = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in b_payload]
+        payload=[parse_prop_formula(s) for s in b_payload],
     )
 
     assert not are_derivations_equivalent(IMPLICATIONAL_AXIOMS, a, b)
@@ -80,8 +84,8 @@ def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload:
         payload=['p'],
         expected=dedent('''\
             [p]ᵃ
-            '''
-        )
+            ''',
+        ),
     ),
 
     dict(
@@ -90,8 +94,8 @@ def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload:
             [(p → q)]ᵃ    [p]ᵇ
             __________________ MP
                     q
-            '''
-        )
+            ''',
+        ),
     ),
 
     dict(
@@ -103,13 +107,13 @@ def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload:
                                     ((p → (p → p)) → (p → p))                                (p → (p → p))
             ______________________________________________________________________________________________ MP
                                                        (p → p)
-            '''
-        )
-    )
+            ''',
+        ),
+    ),
 )
 def test_derivation_to_proof_tree(payload: Sequence[str], expected: str) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload],
     )
 
     assert str(derivation_to_proof_tree(IMPLICATIONAL_AXIOMS, derivation)) == expected
@@ -120,12 +124,12 @@ def test_derivation_to_proof_tree(payload: Sequence[str], expected: str) -> None
     payload=[
         ['p'],
         ['(p → q)', 'p', 'q'],
-        IDENTITY_DERIVATION
-    ]
+        IDENTITY_DERIVATION,
+    ],
 )
 def test_proof_tree_to_derivation(payload: Sequence[str]) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_prop_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload],
     )
 
     tree = derivation_to_proof_tree(IMPLICATIONAL_AXIOMS, derivation)

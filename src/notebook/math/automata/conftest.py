@@ -1,9 +1,14 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import pytest
 
 from .finite import FiniteAutomaton
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 @dataclass(frozen=True)
@@ -12,12 +17,15 @@ class FiniteAutomatonFixture:
     whitelist: Sequence[str]
     blacklist: Sequence[str]
 
+    # ruff: disable[S101]
     def assert_equivalent(self, other: FiniteAutomaton) -> None:
         for string in self.whitelist:
             assert other.recognize(string)
 
         for string in self.blacklist:
             assert not other.recognize(string)
+
+    # ruff: enable[S101]
 
 
 @pytest.fixture
@@ -38,7 +46,7 @@ def aabn() -> FiniteAutomatonFixture:
     return FiniteAutomatonFixture(
         aut=aut,
         whitelist=['a', 'b', 'bb', 'bbb', 'bbbbbbbbbbbb'],
-        blacklist=['', 'ab', 'abb', 'ba']
+        blacklist=['', 'ab', 'abb', 'ba'],
     )
 
 
@@ -63,5 +71,5 @@ def leucine() -> FiniteAutomatonFixture:
     return FiniteAutomatonFixture(
         aut=aut,
         whitelist=['TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG'],
-        blacklist=['', 'T', 'TT', 'TTT', 'TTAT']
+        blacklist=['', 'T', 'TT', 'TTT', 'TTAT'],
     )

@@ -48,7 +48,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
         except KeyError:
             raise MissingVertexError(f'The vertex {vertex!r} is in not in the graph') from None
 
-        for edge in self._edge_map.keys():
+        for edge in self._edge_map:
             if vertex in edge:
                 del self._edge_map[edge]
 

@@ -1,18 +1,25 @@
 import itertools
 import math
 import sys
-from collections.abc import Sequence
 from dataclasses import dataclass
 from fractions import Fraction
+from typing import TYPE_CHECKING
 
 from ..divisibility import divides, quot, rem
+from ..exceptions import InvalidArgumentError, RadixError
 from ..primes import factor, totient
 from ..support import SignT, sgn
 
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+
 # This is eq:alg:real_number_radix_expansion/direct in the monograph
 def get_digit(x: float, radix: int, index: int) -> int:
-    assert radix >= 2
+    if radix < 2:
+        raise RadixError(f'Invalid radix {radix}')
+
 
     if x < 0:
         return -get_digit(-x, radix, index)
@@ -22,9 +29,14 @@ def get_digit(x: float, radix: int, index: int) -> int:
 
 # This is eq:thm:alg:real_number_radix_expansion/rational_coefficient in the monograph
 def get_digit_rational(p: int, q: int, radix: int, index: int) -> int:
-    assert radix >= 2
-    assert index > 0
-    assert q > 0
+    if radix < 2:
+        raise RadixError(f'Invalid radix {radix}')
+
+    if index <= 0:
+        raise InvalidArgumentError(f'Expected a nonnegative index, but got {index}')
+
+    if q <= 0:
+        raise InvalidArgumentError(f'Expected a positive denominator, but got {q}')
 
     if p < 0:
         return -get_digit_rational(-p, q, radix, index)
@@ -33,7 +45,8 @@ def get_digit_rational(p: int, q: int, radix: int, index: int) -> int:
 
 
 def number_to_digit(n: int) -> str:
-    assert n >= 0
+    if n < 0:
+        raise InvalidArgumentError(f'Expected a nonnegative integer, but got {n}')
 
     if n < 10:
         return str(n)
@@ -119,8 +132,10 @@ class FloatRadixExpansion:
 
 
 # This is alg:real_number_radix_expansion in the monograph
-def get_number_expansion(x: int | float, radix: int) -> FloatRadixExpansion:
-    assert radix >= 2
+def get_number_expansion(x: float, radix: int) -> FloatRadixExpansion:
+    if radix < 2:
+        raise RadixError(f'Invalid radix {radix}')
+
     x_ = abs(x)
 
     max_power = max(itertools.takewhile(lambda k: radix ** k <= x_, itertools.count())) if x_ >= 1 else 0
@@ -142,7 +157,9 @@ def get_number_expansion(x: int | float, radix: int) -> FloatRadixExpansion:
 
 # This is alg:rational_number_to_positional_string in the monograph
 def get_rational_number_expansion(frac: Fraction, radix: int) -> FloatRadixExpansion:
-    assert radix >= 2
+    if radix < 2:
+        raise RadixError(f'Invalid radix {radix}')
+
     p, q = frac.as_integer_ratio()
     q_factorization = factor(q)
 
@@ -172,7 +189,7 @@ def get_rational_number_expansion(frac: Fraction, radix: int) -> FloatRadixExpan
         periodic_digits=[0] * max(0, period - rep_expansion.max_power - 1) + list(rep_expansion.digits),
         digits=int_expansion.digits,
         max_power=int_expansion.max_power - shift,
-        sign=sgn(p)
+        sign=sgn(p),
     )
 
 

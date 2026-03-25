@@ -54,7 +54,7 @@ def determinize[StateT, SymbolT](nondet: FiniteAutomaton[StateT, SymbolT]) -> Fi
         nondet,
         det,
         visited=SequentialSet(),
-        src_set=nondet.initial
+        src_set=nondet.initial,
     )
 
     for src, dest, _ in det.transitions:

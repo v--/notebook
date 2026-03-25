@@ -1,7 +1,10 @@
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class SourcePosition(NamedTuple):
@@ -33,7 +36,7 @@ class ErrorHighlighter:
         offset_hi_start: int,
         offset_hi_end: int,
         offset_shown_start: int | None = None,
-        offset_shown_end: int | None = None
+        offset_shown_end: int | None = None,
     ) -> None:
         if offset_shown_start is None:
             offset_shown_start = offset_hi_start
@@ -41,7 +44,7 @@ class ErrorHighlighter:
         if offset_shown_end is None:
             offset_shown_end = offset_hi_end
 
-        assert offset_shown_start <= offset_hi_start <= offset_hi_end <= offset_shown_end < len(source)
+        assert offset_shown_start <= offset_hi_start <= offset_hi_end <= offset_shown_end < len(source)  # noqa: S101
 
         lineno = 1
         column = 1

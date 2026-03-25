@@ -11,8 +11,8 @@ def test_collapse_renaming_rules_simple() -> None:
         dedent('''\
             <S> → <A>
             <A> → "a"
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     assert derives(grammar, 'a')
@@ -33,8 +33,8 @@ def test_collapse_renaming_rules_cyclic() -> None:
         dedent('''\
             <S> → <A>
             <A> → "a" | <S>
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     assert has_renaming_rules(grammar)
@@ -51,8 +51,8 @@ def test_collapse_renaming_rules_complex() -> None:
             <B> → <C>
             <C> → "d"
             <E> → "e"
-            '''
-        )
+            ''',
+        ),
     ).instantiate(NonTerminal('S'))
 
     assert derives(grammar, 'c')

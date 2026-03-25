@@ -1,9 +1,14 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ....parsing.identifiers import LatinIdentifier
 from ..exceptions import FormalLogicError
 from ..signature import FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ....parsing.identifiers import LatinIdentifier
 
 
 @dataclass(frozen=True)

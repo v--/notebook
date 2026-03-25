@@ -1,5 +1,4 @@
-from collections.abc import Sequence
-from typing import overload
+from typing import TYPE_CHECKING, overload
 
 from ..alphabet import BinaryConnective
 from ..formulas import ConnectiveFormula, Formula
@@ -7,6 +6,10 @@ from ..parsing import parse_formula_schema
 from ..propositional import PropConnectiveFormula, PropFormula
 from .axiomatic_derivation import AxiomaticDerivation, get_config_conditional_safe, get_premises
 from .system import AxiomaticDerivationSystem
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem({
@@ -27,7 +30,7 @@ def make_conditional_formula(left: Formula, right: Formula) -> ConnectiveFormula
 
 
 def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:
-    """Axiomatic derivation of (p → p)"""
+    """Axiomatic derivation of (p → p)."""
     goal = make_conditional_formula(formula, formula)
 
     # The first two are axioms from the first schema
@@ -62,11 +65,11 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
             payload=[
                 make_conditional_formula(
                     conclusion,
-                    make_conditional_formula(hypothesis, conclusion)
+                    make_conditional_formula(hypothesis, conclusion),
                 ),
                 conclusion,
-                goal
-            ]
+                goal,
+            ],
         )
 
     mp_config = derivation.get_mp_config()
@@ -80,7 +83,7 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
 
     dist = make_conditional_formula(
         make_conditional_formula(hypothesis, cond.left),
-        make_conditional_formula(hypothesis, cond.right)
+        make_conditional_formula(hypothesis, cond.right),
     )
 
     return AxiomaticDerivation(
@@ -89,6 +92,6 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
             make_conditional_formula(cond_deriv.get_conclusion(), dist),
             dist,
             *antecetent_deriv.payload,
-            goal
-        ]
+            goal,
+        ],
     )

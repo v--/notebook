@@ -23,7 +23,9 @@ def linearize_index(dimensions: Iterable[int], indices: Iterable[int]) -> int:
     result = 0
 
     for index, dim in zip(indices, dimensions, strict=True):
-        assert dim >= 0
+        if dim < 0:
+            raise MatrixValueError(f'Expected a nonnegative dimension, but got {dim}')
+
         result *= dim
         result += index % dim  # We thus support negative indexing
 
@@ -44,7 +46,7 @@ class MatrixMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
+class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):  # noqa: PLW1641
     m: int
     n: int
     payload: list[N]
@@ -58,8 +60,12 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
         return cls(m, n, factory)
 
     def __init__(self, m: int, n: int, factory: Callable[[int, int], N] | None = None) -> None:
-        assert m >= 0
-        assert n >= 0
+        if m < 0:
+            raise MatrixValueError(f'Expected a nonnegative row count, but got {m}')
+
+        if n < 0:
+            raise MatrixValueError(f'Expected a nonnegative column count, but got {n}')
+
         self.m = m
         self.n = n
         self.payload = [
@@ -112,7 +118,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
                 return self.from_factory(
                     len(i_range),
                     len(j_range),
-                    lambda i, j: self[i_range[i], j_range[j]]
+                    lambda i, j: self[i_range[i], j_range[j]],
                 )
 
     def __setitem_islice(self, i: slice, j: int, value: N | Sequence[N] | Self) -> None:
@@ -223,7 +229,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
         return self.from_factory(
             self.n,
             self.m,
-            lambda i, j: self[j, i]
+            lambda i, j: self[j, i],
         )
 
     def stringify_value(self, value: N) -> str:
@@ -295,14 +301,14 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
         return self.from_factory(
             self.m,
             self.n,
-            lambda i, j: self[i, j] + other[i, j]
+            lambda i, j: self[i, j] + other[i, j],
         )
 
     def __rmul__(self, c: N) -> Self:
         return self.from_factory(
             self.m,
             self.n,
-            lambda i, j: c * self[i, j]
+            lambda i, j: c * self[i, j],
         )
 
     def __matmul__(self, other: Self) -> Self:
@@ -313,7 +319,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
             self.m,
             self.n,
             # We avoid using sum since it starts at zero, perplexing tropical arithmetic
-            lambda i, j: functools.reduce(operator.add, (x * y for x, y in zip(self[i, :], other[:, j], strict=True)))
+            lambda i, j: functools.reduce(operator.add, (x * y for x, y in zip(self[i, :], other[:, j], strict=True))),
         )
 
 

@@ -1,3 +1,5 @@
+# ruff: noqa: S101, PLR0912
+
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Literal, cast, overload
@@ -198,7 +200,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         head = self.peek_unsafe()
         self.advance()
         return PropConstant(
-            PropConstantSymbol(head.value)
+            PropConstantSymbol(head.value),
         )
 
     @overload
@@ -683,12 +685,12 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         if parse_schema:
             return SequentSchema(
                 LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], left)),
-                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], right))
+                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], right)),
             )
 
         return Sequent(
             LogicalContext(cast(Sequence[Formula], left)),
-            LogicalContext(cast(Sequence[Formula], right))
+            LogicalContext(cast(Sequence[Formula], right)),
         )
 
 

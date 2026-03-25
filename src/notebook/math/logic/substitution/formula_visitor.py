@@ -1,6 +1,5 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ..formulas import (
     EqualityFormula,
@@ -10,9 +9,14 @@ from ..formulas import (
     PredicateApplication,
     QuantifierFormula,
 )
-from ..terms import Term, Variable
 from .substitution import AtomicLogicSubstitution, infer_substitution
 from .term_visitor import TermSubstitutionVisitor
+
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ..terms import Term, Variable
 
 
 @dataclass(frozen=True)

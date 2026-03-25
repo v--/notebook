@@ -19,7 +19,7 @@ class BaseGraphWalkMeta[VertT, EdgeT: Collection](type):
         return result
 
 
-class BaseGraphWalk[VertT, EdgeT: Collection](metaclass=BaseGraphWalkMeta):
+class BaseGraphWalk[VertT, EdgeT: Collection](metaclass=BaseGraphWalkMeta):  # noqa: PLW1641
     clone_initial: Callable[[], Self]
 
     _segments: list[GraphWalkSegment[VertT, EdgeT]]

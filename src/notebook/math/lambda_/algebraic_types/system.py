@@ -14,7 +14,7 @@ SIMPLE_ALGEBRAIC_SIGNATURE = LambdaSignature(
     ConstantTermSymbol('P₋ᵣ'),
     ConstantTermSymbol('S₊ₗ'),
     ConstantTermSymbol('S₊ᵣ'),
-    ConstantTermSymbol('S₋')
+    ConstantTermSymbol('S₋'),
 )
 
 

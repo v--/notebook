@@ -1,9 +1,12 @@
 from collections.abc import Collection, Iterator
+from typing import TYPE_CHECKING
 
-from ..payload import GraphPayload, LabeledEdge
+
+if TYPE_CHECKING:
+    from ..payload import GraphPayload, LabeledEdge
 
 
-class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
+class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:  # noqa: PLW1641
     payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]
 
     def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]) -> None:

@@ -28,12 +28,12 @@ def boolean_term_to_prop_formula(term: Term) -> PropFormula:
                 return PropConnectiveFormula(
                     TERM_CONNECTIVE_TO_FORMULA_CONNECTIVE[term.symbol],
                     boolean_term_to_prop_formula(term.arguments[0]),
-                    boolean_term_to_prop_formula(term.arguments[1])
+                    boolean_term_to_prop_formula(term.arguments[1]),
                 )
 
             if term.symbol == BOOLEAN_ALGEBRA_SIGNATURE.get_function_symbol('⫬'):
                 return PropNegationFormula(
-                    boolean_term_to_prop_formula(term.arguments[0])
+                    boolean_term_to_prop_formula(term.arguments[0]),
                 )
 
             raise UnrecognizedSymbolError(f'Expected a Boolean algebra function symbol, but got {term.symbol}')

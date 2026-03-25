@@ -1,9 +1,14 @@
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from .exceptions import ParserError
 from .highlighter import ErrorHighlighter
-from .parser import Parser
 from .tokens import Token
+
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .parser import Parser
 
 
 class ParserContext[TokenT: Token]:
@@ -79,7 +84,7 @@ class ParserContext[TokenT: Token]:
             token.offset,
             token.end_offset - 1,
             self.get_first_token().offset,
-            self.get_last_token_safe().end_offset - 1
+            self.get_last_token_safe().end_offset - 1,
         )
 
         err.add_note(highlighter.highlight())
@@ -91,7 +96,7 @@ class ParserContext[TokenT: Token]:
         highlighter = ErrorHighlighter(
             self.parser.source,
             self.get_first_token().offset,
-            self.get_last_token_safe().end_offset - 1
+            self.get_last_token_safe().end_offset - 1,
         )
 
         err.add_note(highlighter.highlight())

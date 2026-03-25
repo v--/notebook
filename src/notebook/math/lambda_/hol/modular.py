@@ -21,7 +21,7 @@ class ModularArithmeticStructure[T: BaseIntModulo](HolStructure[T]):
         self.ring = ring
         self.signature = ARITHMETIC_SIGNATURE
         self.frame = {
-            common_types.individual: {ring(n) for n in range(ring.modulus)}
+            common_types.individual: {ring(n) for n in range(ring.modulus)},
         }
 
         self.interpretation = {

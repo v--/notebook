@@ -17,20 +17,17 @@ def cardinality_formula_geq(n: int) -> Formula:
         addendum = NegationFormula(
             EqualityFormula(
                 Variable(LatinIdentifier(VAR_LETTER, i)),
-                var.y
-            )
+                var.y,
+            ),
         )
 
-        if body is None:
-            body = addendum
-        else:
-            body = ConnectiveFormula(BinaryConnective.CONJUNCTION, body, addendum)
+        body = addendum if body is None else ConnectiveFormula(BinaryConnective.CONJUNCTION, body, addendum)
 
     if body is None:
         return PropConstant(PropConstantSymbol.VERUM)
 
     return universal_closure(
-        QuantifierFormula(Quantifier.EXISTENTIAL, var.y, body)
+        QuantifierFormula(Quantifier.EXISTENTIAL, var.y, body),
     )
 
 
@@ -45,5 +42,5 @@ def cardinality_formula_equal(n: int) -> Formula:
     return ConnectiveFormula(
         BinaryConnective.CONJUNCTION,
         cardinality_formula_geq(n),
-        dualize_formula(cardinality_formula_geq(n + 1))
+        dualize_formula(cardinality_formula_geq(n + 1)),
     )

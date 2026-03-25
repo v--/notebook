@@ -1,8 +1,12 @@
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 @dataclass(frozen=True)
@@ -72,12 +76,12 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     for step in derivation.steps:
         new_subtree = ParseTree(
             step.rule.src_symbol,
-            [ParseTree(sym) for sym in step.rule.dest]
+            [ParseTree(sym) for sym in step.rule.dest],
         )
 
         tree = new_subtree if tree is None else _insert_subtree_leftmost(tree, new_subtree)
 
-    assert tree is not None
+    assert tree is not None  # noqa: S101
     return tree
 
 
@@ -93,10 +97,10 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
     last_step: DerivationStep | None = None
 
     for subtree in _iter_leftmost_parse_subtrees(tree):
-        assert isinstance(subtree.payload, NonTerminal)
+        assert isinstance(subtree.payload, NonTerminal)  # noqa: S101
         rule = GrammarRule(
             [subtree.payload],
-            [sstree.payload for sstree in subtree.subtrees]
+            [sstree.payload for sstree in subtree.subtrees],
         )
 
         if last_step is None:
@@ -106,7 +110,7 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
             new_step_payload = [
                 *last_step.payload[:index],
                 *rule.dest,
-                *last_step.payload[index + 1:]
+                *last_step.payload[index + 1:],
             ]
 
         last_step = DerivationStep(new_step_payload, rule)
@@ -115,5 +119,5 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
 
 # This is alg:derivation_to_parse_tree in the monograph
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
-    assert isinstance(tree.payload, NonTerminal)
+    assert isinstance(tree.payload, NonTerminal)  # noqa: S101
     return Derivation(tree.payload, list(_iter_leftmost_derivation_steps(tree)))

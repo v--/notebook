@@ -1,10 +1,13 @@
-from collections.abc import Collection, Iterable, Mapping
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from .....support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
 from ...terms import TypedAbstraction, TypedTerm, Variable
 from ...variables import get_free_variables, new_variable
 from ..tree import TypeDerivationTree
+
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable, Mapping
 
 
 class AtomicTypeDerivationSubstitution(AbstractAtomicSubstitution[Variable, TypeDerivationTree]):
@@ -47,3 +50,18 @@ class AtomicTypeDerivationSubstitution(AbstractAtomicSubstitution[Variable, Type
     @override
     def modify_at(self, var: Variable, replacement: TypeDerivationTree) -> AtomicTypeDerivationSubstitution:
         return AtomicTypeDerivationSubstitution(variable_mapping={**self.variable_mapping, var: replacement})
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, AtomicTypeDerivationSubstitution):
+            return NotImplemented
+
+        return self.variable_mapping == other.variable_mapping
+
+    def __hash__(self) -> int:
+        return hash(self.variable_mapping)
+
+    def __str__(self) -> str:
+        return '[' + ', '.join(f'{key} ↦ {value}' for key, value in self.variable_mapping.items()) + ']'
+
+    def __repr__(self) -> str:
+        return str(self)

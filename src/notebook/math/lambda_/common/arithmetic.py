@@ -5,7 +5,8 @@ from .variables import x, y
 
 
 def church_numeral(n: int) -> UntypedAbstraction:
-    assert n >= 0
+    if n < 0:
+        raise LambdaCalculusError(f'Expected a nonnegative integer, but got {n}')
 
     content: UntypedTerm = y
 

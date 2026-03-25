@@ -16,8 +16,8 @@ class UrlTemplate:
                 re.sub(
                     r'\\{(\w+)\\}',
                     r'(?P<\1>.+)',
-                    re.escape(template)
-                )
+                    re.escape(template),
+                ),
             )
         else:
             self.regex_pattern = re.compile(pattern_string)

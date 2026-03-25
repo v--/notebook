@@ -38,7 +38,7 @@ def test_factor_empty(n: int) -> None:
 
 
 @pytest_parametrize_lists(
-    n=itertools.chain(range(2, 10), repeat5(random.randint, 10, 100))
+    n=itertools.chain(range(2, 10), repeat5(random.randint, 10, 100)),
 )
 def test_factor(n: int) -> None:
     factorization = factor(n)
@@ -46,7 +46,7 @@ def test_factor(n: int) -> None:
 
 
 @pytest_parametrize_lists(
-    n=itertools.chain(range(1, 10), repeat5(random.randint, 10, 100))
+    n=itertools.chain(range(1, 10), repeat5(random.randint, 10, 100)),
 )
 def test_totient(n: int) -> None:
     assert totient(n) == sum(1 for k in range(1, n + 1) if are_coprime(k, n))
