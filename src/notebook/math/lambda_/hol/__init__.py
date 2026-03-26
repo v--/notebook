@@ -13,4 +13,5 @@ from .symbols import (
     NonLogicalConstantSymbol,
     SortSymbol,
 )
+from .translation import fol_signature_to_hol_signature, fol_symbol_to_hol_type
 from .typing import BASE_HOL_TYPE_SYSTEM, generate_type_system

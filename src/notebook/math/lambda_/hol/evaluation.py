@@ -2,7 +2,7 @@
 
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ....exceptions import UnreachableException
 from ..alphabet import BinaryTypeConnective
@@ -18,14 +18,10 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
     from .expressions import HolExpression
-    from .structure import HolStructure
+    from .structure import HolStructure, HolStructureValue
 
 
-# We should wait for a further development, e.g. PEP 827, so that we can introduce better typing here.
-HolEvaluationValue = Any
-
-
-def iter_type_values[T](type_: SimpleType, structure: HolStructure[T]) -> Iterable[HolEvaluationValue]:
+def iter_type_values[T](type_: SimpleType, structure: HolStructure[T]) -> Iterable[HolStructureValue[T]]:
     if isinstance(type_, BaseType):
         sym = type_.value
 
@@ -35,10 +31,10 @@ def iter_type_values[T](type_: SimpleType, structure: HolStructure[T]) -> Iterab
                 yield False
 
             case SortSymbol():
-                if sym not in structure.frame:
+                if sym not in structure.sort_universes:
                     raise MissingInterpretationError(f'Missing interpretation for sort {sym}')
 
-                yield from structure.frame[sym]
+                yield from structure.sort_universes[sym]
 
             case _:
                 raise LambdaInterpretationError(f'Unrecognized symbol {sym}')
@@ -62,10 +58,10 @@ class HolBinderEvaluator[T]:
     structure: HolStructure[T]
     assignment: HolVariableAssignment[T]
 
-    def get_domain(self) -> Iterable[HolEvaluationValue]:
+    def get_domain(self) -> Iterable[HolStructureValue[T]]:
         return list(iter_type_values(self.term.var_type, self.structure))
 
-    def __call__(self, value: HolEvaluationValue) -> HolEvaluationValue:
+    def __call__(self, value: HolStructureValue[T]) -> HolStructureValue[T]:
         assertion = VariableTypeAssertion(self.term.var, self.term.var_type)
 
         return evaluate_hol_term(
@@ -82,7 +78,7 @@ def evaluate_hol_term[T](  # noqa: C901
     context: Sequence[VariableTypeAssertion],
     structure: HolStructure[T],
     assignment: HolVariableAssignment[T],
-) -> HolEvaluationValue:
+) -> HolStructureValue[T]:
     if isinstance(term, Variable):
         return assignment.get_value(next(assertion for assertion in context if assertion.term == term))
 
@@ -140,7 +136,7 @@ def evaluate_hol_expression[T](
     expression: HolExpression,
     structure: HolStructure[T],
     assignment: HolVariableAssignment[T] | None = None,
-) -> HolEvaluationValue:
+) -> HolStructureValue[T]:
     return evaluate_hol_term(
         expression.term,
         expression.context,

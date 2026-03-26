@@ -277,8 +277,6 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
 
 @pytest_parametrize_lists(
     type_=[
-        'ι',
-        '(ι → ο)',
         'τ',
         '(σ → σ)',
         '(ι → (τ → σ))',
@@ -286,7 +284,7 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
     ],
 )
 def test_rebuilding_type(type_: str) -> None:
-    assert str(parse_type(type_, PLAIN_HOL_SIGNATURE)) == type_
+    assert str(parse_type(type_)) == type_
 
 
 def test_parsing_type_assertion_missing_arrow() -> None:

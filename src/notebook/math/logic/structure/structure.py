@@ -27,6 +27,6 @@ class FormalLogicStructure[T]:
             raise MissingInterpretationError(f'No interpretation specified for {sym}')
 
         if sym.arity != len(args):
-            raise FormalLogicInterpretationError(f'The {sym} has arity {sym.arity}, but {len(args)} are given.')
+            raise FormalLogicInterpretationError(f'The {sym} has arity {sym.arity}, but {len(args)} arguments are given.')
 
         return self.interpretation[sym](*args)

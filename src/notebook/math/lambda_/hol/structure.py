@@ -1,16 +1,21 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Protocol
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Collection, Mapping
+    from collections.abc import Collection, Mapping
 
     from .signature import HolSignature
     from .symbols import NonLogicalConstantSymbol, SortSymbol
 
 
+# We should wait for a further development, e.g. PEP 827, so that we can introduce better typing here.
+class HolStructureValue[T](Protocol):
+    pass
+
+
 @dataclass
 class HolStructure[T]:
     signature: HolSignature
-    frame: Mapping[SortSymbol, Collection[T]]
-    interpretation: Mapping[NonLogicalConstantSymbol, T | Callable[[T], Any]]
+    sort_universes: Mapping[SortSymbol, Collection[T]]
+    interpretation: Mapping[NonLogicalConstantSymbol, HolStructureValue[T]]

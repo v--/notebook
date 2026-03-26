@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
-from notebook.math.arithmetic.exceptions import InvalidArgumentError, NotebookZeroDivisionError, RadixError
-
 from ....parsing import common_identifiers as ci
 from ...polynomials import monomial
 from ...polynomials.polynomial.int import IntPolynomial, const, x
 from ..divisibility import int_divmod
+from ..exceptions import InvalidArgumentError, NotebookZeroDivisionError, RadixError
 from ..support import SignT, sgn
 
 

@@ -22,7 +22,7 @@ class ModularArithmeticStructure[T: BaseIntModulo](HolStructure[T]):
     def __init__(self, ring: type[T]) -> None:
         self.ring = ring
         self.signature = ARITHMETIC_SIGNATURE
-        self.frame = {
+        self.sort_universes = {
             common_types.individual: {ring(n) for n in range(ring.modulus)},
         }
 
