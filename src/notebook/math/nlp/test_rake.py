@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING
 
 from .rake import generate_phrase_scores

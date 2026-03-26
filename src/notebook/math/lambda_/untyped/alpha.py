@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING
 
 from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable

@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING
 
 from .alphabet import NonTerminal, Terminal, new_non_terminal

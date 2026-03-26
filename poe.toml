@@ -4,20 +4,42 @@ cmd = "pytest"
 [tool.poe.tasks.coverage]
 sequence = [
   { cmd = "coverage run" },
-  { cmd = "coverage html" }
+  { cmd = "coverage html" },
+]
+
+# We may need to keep this until ruff introduces a special rule for blank first lines
+# See https://github.com/astral-sh/ruff/issues/10086
+[tool.poe.tasks.find-blank-first-line]
+sequence = [
+  { shell = "ruff analyze graph $path | jq 'keys.[]' --raw-output | xargs --replace={} sed --quiet '/^$/{F;q1};q0' {}" }
+]
+args = [
+  { name = "path", positional = true, default = "" }
+]
+
+[tool.poe.tasks.trim-blank-first-line]
+sequence = [
+  { shell = "ruff analyze graph $path | jq 'keys.[]' --raw-output | xargs sed --in-place '1{/^$/d}'" }
+]
+args = [
+  { name = "path", positional = true, default = "" }
 ]
 
 [tool.poe.tasks.lint]
 sequence = [
   { cmd = "ruff check $path" },
-  { cmd = "mypy $path" }
+  { ref = "find-blank-first-line $path" },
+  { cmd = "mypy $path" },
 ]
 args = [
   { name = "path", positional = true, default = "" }
 ]
 
 [tool.poe.tasks.format]
-cmd = "ruff check --fix $path"
+sequence = [
+  { cmd = "ruff check --fix $path" },
+  { ref = "trim-blank-first-line $path" },
+]
 args = [
   { name = "path", positional = true, default = "" }
 ]

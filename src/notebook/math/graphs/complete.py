@@ -1,4 +1,3 @@
-
 from ..combinatorics.binomial import choose
 from .graph import UndirectedGraph
 
