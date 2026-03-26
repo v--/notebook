@@ -1,6 +1,6 @@
 import loguru
 import pytest
-import pytest_loguru.plugin
+import pytest_loguru.plugin  # noqa: F401
 
 
 @pytest.fixture(autouse=True)
