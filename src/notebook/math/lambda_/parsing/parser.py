@@ -1,4 +1,4 @@
-# ruff: noqa: S101
+# ruff: noqa: C901, S101
 
 from typing import TYPE_CHECKING, Literal, overload
 

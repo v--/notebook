@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class SimpleAlgebraicDerivationTreeVisitor[T]:
-    def visit(self, tree: TypeDerivationTree) -> T:  # noqa: PLR0911
+    def visit(self, tree: TypeDerivationTree) -> T:  # noqa: C901
         if isinstance(tree, AssumptionTree):
             return self.visit_assumption(tree)
 

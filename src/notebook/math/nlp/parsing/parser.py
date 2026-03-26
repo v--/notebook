@@ -1,3 +1,5 @@
+# ruff: noqa: C901
+
 from typing import TYPE_CHECKING
 
 from ....parsing.parser import Parser

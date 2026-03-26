@@ -1,3 +1,5 @@
+# ruff: noqa: C901
+
 from typing import TYPE_CHECKING
 
 from ...parsing import Parser
@@ -72,7 +74,7 @@ class LaTeXParser(Parser[LaTeXToken]):
                 next_tokens[1].kind == 'TEXT' and next_tokens[1].value == 'end' and \
                 next_tokens[2].kind == 'OPENING_BRACE' and \
                 next_tokens[3].kind == 'TEXT' and \
-                next_tokens[4].kind == 'CLOSING_BRACE':  # noqa: PLR0916
+                next_tokens[4].kind == 'CLOSING_BRACE':
                 self.advance(5)
 
                 if next_tokens[3].value == env_name_token.value:

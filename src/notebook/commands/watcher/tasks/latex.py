@@ -43,7 +43,7 @@ class LaTeXTask(CliTask):
         return asyncio.subprocess.DEVNULL
 
     @override
-    async def build_post_process(self, runner: TaskRunner) -> None:  # noqa: PLR0912
+    async def build_post_process(self, runner: TaskRunner) -> None:  # noqa: C901
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
         requires_biber_rerun = False

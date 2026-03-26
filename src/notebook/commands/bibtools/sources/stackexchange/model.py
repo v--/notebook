@@ -26,7 +26,7 @@ def get_tag_attribute(tag: bs4.Tag, attribute_name: str) -> str:
     return attribute
 
 
-def parse_stackexchange_html(html: str) -> StackExchangeEntry:
+def parse_stackexchange_html(html: str) -> StackExchangeEntry:  # noqa: C901
     soup = bs4.BeautifulSoup(html, 'html.parser')
     title_tag = soup.find('meta', property='og:title')
 

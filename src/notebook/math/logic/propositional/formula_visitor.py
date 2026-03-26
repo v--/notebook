@@ -11,7 +11,7 @@ from .formulas import (
 
 
 class PropFormulaVisitor[T]:
-    def visit(self, formula: PropFormula) -> T:
+    def visit(self, formula: PropFormula) -> T:  # noqa: C901
         match formula:
             case PropConstant():
                 match formula.value:

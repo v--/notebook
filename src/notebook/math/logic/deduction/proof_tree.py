@@ -198,7 +198,7 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         return self.build_renderer().render()
 
 
-def _infer_application_instantiation(
+def _infer_application_instantiation(  # noqa: C901
     rule: NaturalDeductionRule,
     application_premises: Sequence[RuleApplicationPremiseConfig],
     instantiation: AtomicLogicSchemaInstantiation | None = None,
@@ -246,7 +246,7 @@ def _infer_application_instantiation(
     return instantiation
 
 
-def apply(  # noqa: C901, PLR0912
+def apply(  # noqa: C901
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,

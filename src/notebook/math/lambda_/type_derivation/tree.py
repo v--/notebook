@@ -105,7 +105,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
         return self.build_renderer().render()
 
 
-def apply(
+def apply(  # noqa: C901
     rule: TypingRule,
     *args: TypeDerivationTree | RuleApplicationPremise,
     instantiation: AtomicLambdaSchemaInstantiation | None = None,

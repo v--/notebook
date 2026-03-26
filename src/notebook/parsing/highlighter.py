@@ -30,7 +30,7 @@ class ErrorHighlighter:
 
     lines_shown: Sequence[str]
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         source: str,
         offset_hi_start: int,

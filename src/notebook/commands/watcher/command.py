@@ -46,7 +46,7 @@ async def iter_build_file_changes(logger: loguru.Logger) -> AsyncIterator[TaskTr
                     yield TaskTrigger(TaskTriggerKind.CLEAN, relative)
 
 
-async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, rebuild_all_figures: bool) -> None:
+async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, rebuild_all_figures: bool) -> None:  # noqa: C901
     async for target in iter_build_file_changes(base_logger):
         path = target.path
 
@@ -83,7 +83,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                         )
 
             if (
-                path.match('notebook.tex') or  # noqa: PLR0916
+                path.match('notebook.tex') or
                 path.match('includeonly') or
                 path.match('classes/notebook.cls') or
                 path.match('bibliography/*.bib') or

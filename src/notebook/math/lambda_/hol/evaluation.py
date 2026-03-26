@@ -77,7 +77,7 @@ class HolBinderEvaluator[T]:
 
 
 # We suppose that only well-typed expressions reach this point.
-def evaluate_hol_term[T](  # noqa: C901, PLR0911, PLR0912
+def evaluate_hol_term[T](  # noqa: C901
     term: TypedTerm,
     context: Sequence[VariableTypeAssertion],
     structure: HolStructure[T],

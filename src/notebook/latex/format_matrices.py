@@ -159,7 +159,7 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
     )
 
 
-def matrix_to_environment(env: MatrixEnvironment) -> Environment:
+def matrix_to_environment(env: MatrixEnvironment) -> Environment:  # noqa: C901
     contents = list[LaTeXNode]()
 
     if env.options is not None:

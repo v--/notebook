@@ -1,4 +1,4 @@
-# ruff: noqa: PLR0912
+# ruff: noqa: C901
 
 from collections import deque
 from dataclasses import replace

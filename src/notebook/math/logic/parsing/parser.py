@@ -1,4 +1,4 @@
-# ruff: noqa: S101, PLR0912
+# ruff: noqa: C901, S101
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
@@ -252,7 +252,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema: ...
     @overload
     def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema: ...
-    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema:  # noqa: C901,PLR0915
+    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema:
         if not self.peek():
             raise context.annotate_context_error(f'Parenthesized {'expression schema' if parse_schema else 'expression'} must start with a subexpression')
 
