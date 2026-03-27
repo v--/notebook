@@ -256,6 +256,7 @@ We give here the following definition, and then proceed to explain it:
         \end{equation*}
       \end{nthcolumn}
     \end{paracol}
+    \columnratio{}
 
     We will use \hyperref[con:syntactic_abbreviation]{metalingual abbreviations} to emulate the familiar syntax of predicate logic. For example, we will abbreviate \( \synH_\top \) as \( \syntop \) and \( \synH_\neg \varphi \) as \( \synneg \varphi \), but we will retain \( \synH_\neg \) as a standalone expression.
 
@@ -645,3 +646,271 @@ We give here the following definition, and then proceed to explain it:
     Here \( \varphi \), as well as the formulas of \( \Gamma \), are assumed to be closed.
   \end{thmenum}
 \end{definition}
+
+\paragraph{Natural deduction}
+
+\begin{remark}\label{rem:hol_natural_deduction_formalization}
+  We will adapt the proof system from \fullref{sec:first_order_natural_deduction} to \hyperref[def:higher_order_logic]{higher-order logic}. As in \fullref{sec:dependent_types}, and for similar reasons, we will not formalize the rule schemas and proof trees completely.
+
+  One thing should be noted --- placeholders have a type attached, so we place the eigenvariable marker as a subscript, i.e. \( x^\tau_* \).
+
+  An alternative proof system is discussed in \cref{rem:hol_axiomatic_derivations}.
+\end{remark}
+
+\begin{definition}\label{def:hol_natural_deduction_system}\mimprovised
+  An \term{abstract higher-order natural deduction system} consists of a nonempty collection of \hyperref[def:natural_deduction_rule]{natural deduction rules} for \hyperref[def:hol_expression]{higher-order logic formulas} over the same \hyperref[def:hol_signature]{signature}. We require the rules to have distinct names, but otherwise impose no restrictions on them.
+\end{definition}
+\begin{comments}
+  \item We do not formalize these rules via schemas, as per \cref{rem:hol_natural_deduction_formalization}.
+\end{comments}
+
+\begin{definition}\label{def:hol_natural_deduction_proof_tree}
+  We can define natural deduction \hyperref[def:proof_tree]{proof trees} for \hyperref[def:higher_order_logic]{higher-order logic} based on how we defined \hyperref[def:proof_tree]{proof trees} proof trees for \hyperref[def:first_order_logic]{first-order logic} in \cref{def:fol_natural_deduction_proof_tree}.
+\end{definition}
+
+\begin{definition}\label{def:hol_natural_deduction}\mimprovised
+  We will now extend the rules for minimal, intuitionistic and classical systems for propositional natural deduction from \cref{def:propositional_natural_deduction}.
+
+  \begin{thmenum}
+    \thmitem{def:hol_natural_deduction/equality} We add more complicated rules for \hyperref[def:predicate_logic_alphabet/equality]{equality} than those for first-order logic from \cref{def:fol_natural_deduction/equality}:
+    \columnratio{0.3,0.3,0.4}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_+ }]{inf:def:hol_natural_deduction/equality/intro}
+          \begin{prooftree}
+            \hypo{ M^\tau \equivrel{\beta\eta} N^\tau }
+            \infer1[\ref{inf:def:hol_natural_deduction/equality/intro}]{ M^\tau \syneq N^\tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_\leftrightarrow }]{inf:def:hol_natural_deduction/equality/iff}
+          \begin{prooftree}
+            \hypo{ \varphi \syniff \psi }
+            \infer1[\ref{inf:def:hol_natural_deduction/equality/iff}]{ \varphi \syneq \psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_- }]{inf:def:hol_natural_deduction/equality/elim}
+          \begin{prooftree}
+            \hypo{ \varphi[x^\tau \mapsto M^\tau] }
+            \hypo{ M^\tau \syneq N^\tau }
+            \infer2[\ref{inf:def:hol_equality_rules/equality/elim}]{ \varphi[x^\tau \mapsto N^\tau] }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+    \columnratio{}
+
+    The first rule \ref{inf:def:hol_natural_deduction/equality/intro} is not strictly a generalization of its first-order counterpart --- not only every term equals itself, but any two \hyperref[def:beta_eta_reduction]{\( \beta\eta \)-equivalent} terms become equal. We state the more limited variant as a derived rule --- see \ref{inf:thm:hol_natural_deduction_equality/refl}.
+
+    The additional second rule \ref{inf:def:hol_natural_deduction/equality/iff} is simply auxiliary.
+
+    \thmitem{def:hol_natural_deduction/forall} The rules for \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} are straightforward adaptations of those for first-order logic from \cref{def:fol_natural_deduction/forall}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \forall_+ }]{inf:def:hol_natural_deduction/forall/intro}
+          \begin{prooftree}
+            \hypo{ \varphi[x^\tau \mapsto y_*^\tau] }
+            \infer1[\ref{inf:def:hol_natural_deduction/forall/intro}]{ \qforall {x^\tau} \varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \forall_- }]{inf:def:hol_natural_deduction/forall/elim}
+          \begin{prooftree}
+            \hypo{ \qforall {x^\tau} \varphi }
+            \infer1[\ref{inf:def:hol_natural_deduction/forall/elim}]{ \varphi[x^\tau \mapsto M^\tau] }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    \thmitem{def:hol_natural_deduction/exists} Similarly, the rules for \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} are adaptations of those for first-order logic from \cref{def:fol_natural_deduction/exists}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \exists_+ }]{inf:def:hol_natural_deduction/exists/intro}
+          \begin{prooftree}
+            \hypo{ \varphi[x^\tau \mapsto M^\tau] }
+            \infer1[\ref{inf:def:hol_natural_deduction/exists/intro}]{ \qexists {x^\tau} \varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \exists_- }]{inf:def:hol_natural_deduction/exists/elim}
+          \begin{prooftree}
+            \hypo{ \qexists {x^\tau} \varphi }
+
+            \hypo{ \varphi[x^\tau \mapsto y_*^\tau] }
+            \infer[dashed]1{ \psi }
+
+            \infer2[\ref{inf:def:hol_natural_deduction/exists/elim}]{ \psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:hol_natural_deduction_admissible_rules}
+  In \hyperref[def:hol_natural_deduction]{minimal higher-order natural deduction}, the hollowing rules are \hyperref[con:inference_rule_admissibility]{admissible}:
+
+  \begin{thmenum}
+    \thmitem{thm:hol_natural_deduction_admissible_rules/equality} Similarly to \cref{thm:fol_natural_deduction_equality}, equality acts like an \hyperref[def:equivalence_relation]{equivalence relation}:
+
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_R }]{inf:thm:hol_natural_deduction_equality/refl}
+          \begin{prooftree}
+            \infer0[\ref{inf:thm:hol_natural_deduction_equality/refl}]{ M^\tau \syneq M^\tau }.
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_S }]{inf:thm:hol_natural_deduction_equality/symm}
+          \begin{prooftree}
+            \hypo{ M^\tau \syneq N^\tau }
+            \infer1[\ref{inf:thm:hol_natural_deduction_equality/symm}]{ N^\tau \syneq M^\tau }.
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_T }]{inf:thm:hol_natural_deduction_equality/trans}
+          \begin{prooftree}
+            \hypo{ M^\tau \syneq N^\tau }
+            \hypo{ N^\tau \syneq K^\tau }
+            \infer2[\ref{inf:thm:hol_natural_deduction_equality/trans}]{ M^\tau \syneq K^\tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+
+    \thmitem{thm:hol_natural_deduction_admissible_rules/eq_to_iff} The converse rule of \ref{inf:def:hol_natural_deduction/equality/iff}:
+    \begin{equation*}\taglabel[\ensuremath{ =_{+\leftrightarrow} }]{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
+      \begin{prooftree}
+        \hypo{ \varphi \syneq \psi }
+        \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}]{ \varphi \syniff \psi }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{thm:hol_natural_deduction_admissible_rules/top_eq} A derivable formula should equal verum:
+    \begin{equation*}\taglabel[\ensuremath{ =_\top }]{inf:thm:hol_natural_deduction_admissible_rules/top_eq}
+      \begin{prooftree}
+        \hypo{ \varphi }
+        \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/top_eq}]{ \varphi \syneq \syntop }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:hol_natural_deduction_admissible_rules/equality} Analogous to \cref{thm:fol_natural_deduction_equality}.
+
+  \SubProofOf{thm:hol_natural_deduction_admissible_rules/eq_to_iff}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ \varphi \syniff \varphi }
+      \hypo{ [\varphi \syneq \psi]^v }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \varphi \syniff \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:hol_natural_deduction_admissible_rules/top_eq}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi]^u }
+      \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/intro}]{ \varphi \syneq \syntop }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{remark}\label{rem:hol_axiomatic_derivations}
+  We will outline the proof system of Andrews' \( \logic{Q}_0 \) from \cite[\S 51]{Andrews2002Logic} since it is the most refined of the Church-like systems listed in \cref{rem:higher_order_logic_and_type_theory/types}.
+
+  It is based on \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation systems}, but instead of \ref{inf:def:axiomatic_derivation_as_natural_deduction/mp}, it features a peculiar rule:
+  \begin{displayquote}
+    \textit{Rule R}. From \( \mathbf{C} \) and \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \) to infer the result of replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not (an occurrence of a variable) immediately preceded by \( \muplambda \).
+  \end{displayquote}
+
+  For conditional hypotheses, Andrews further refines this rule as follows:
+  \begin{displayquote}
+    (Rule R') If \( \mscrH \vdash \mathbf{A_\alpha} = \mathbf{B_\alpha} \), and \( \mscrH \vdash \mathbf{C} \), and \( \mathbf{D} \) is obtained from \( \mathbf{C} \) by replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), then \( \mscrH \vdash \mathbf{A_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a variable immediately preceded by \( \mathbf{\muplambda} \), and the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not in a wf part \( [\mathbf{\muplambda x_\beta E_\gamma}] \) of \( \mathbf{C} \), where \( \mathbf{x_\beta} \) is free in a member of \( \mscrH \) and free in \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \).
+  \end{displayquote}
+
+  We will show in \cref{ex:hol_equality_rules_and_rule_r} that this rule is a special case of rule \ref{inf:def:hol_equality_rules/elim} above.
+
+  Note that Andrews uses the abbreviations that we discuss in \cref{tab:rem:hol_formula_abbreviations}. Andrews spends considerable effort demonstrating that part of the familiar natural deduction rules from \cref{def:propositional_natural_deduction} are \hyperref[con:inference_rule_admissibility]{admissible}.
+
+  The axioms of the system are constructed so that they allow deriving many useful proofs. For example, axiom \( 4 \) allow performing \( \beta \)-reduction similarly to \ref{inf:def:hol_equality_rules/intro}. This axiom, along with rule \logic{R'}, allows proving \cref{thm:hol_equality_is_equivalence_relation}.
+
+  An immediate downside to his system is that hypothesis discharging in rules such as \ref{inf:def:propositional_natural_deduction/imp/intro} requires rewriting the entire proof, akin to \fullref{alg:derivation_conclusion_hypothesis_introduction}, but more complicated.
+
+  There are other subtleties. For example, we must be careful so that the choice of variable \( f \) from the abbreviation of \( \varphi \synwedge \psi \) so that it is compatible with substitution via rule \logic{R'}.
+\end{remark}
+
+\begin{example}\label{ex:hol_equality_rules_and_rule_r}
+  Andrews' rule \logic{R'} described in \cref{rem:hol_axiomatic_derivations} is also \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:hol_equality_rules/elim}, but the latter is more general.
+
+  Indeed, fix a formula \( \varphi \) and let \( \psi \) be the result of substituting a single occurrence of \( A^\tau \) for \( B^\tau \) in \( \varphi \). Rule \logic{R'} then allows us to infer \( \psi \) from the open hypotheses \( \Gamma \) as long as the substituted occurrence of \( A^\tau \) is not in the scope of a variable in
+  \begin{equation*}
+    \parens[\Bigg]{ \bigcup_{\chi \in \Gamma} \op*{Free}(\chi) } \cap \parens[\Bigg]{ \op*{Free}(A) \cup \op*{Free}(B) }.
+  \end{equation*}
+
+  As an example, let
+  \begin{align*}
+    \varphi &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f A^\tau A^\tau, \\
+    \psi    &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f B^\tau A^\tau  \\
+  \intertext{and}
+    \theta  &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f x^\tau A^\tau.
+  \end{align*}
+
+  Clearly
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \theta[x^\tau \mapsto A^\tau] }
+      \hypo{ A^\tau \syneq B^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \theta[x^\tau \mapsto A^\tau] }
+    \end{prooftree}
+  \end{equation*}
+
+  If \( f \) is not free in \( A^\tau \) nor \( B^\tau \), the substitution in both \( \varphi \) and \( \psi \) must use the non-renaming rule \eqref{eq:alg:lambda_term_substitution/abstraction/direct}, and thus \( \varphi = \theta[x^\tau \mapsto B^\tau] \) and \( \psi = \theta[x^\tau \mapsto B^\tau] \). In this case,
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \hypo{ A^\tau \syneq B^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  This is precisely an application of \( \logic{R'} \).
+
+  On the other hand, if \( f \) is free in \( B^\tau \) but not \( A^\tau \), then the substitution in \( \theta[x^\tau \mapsto B^\tau] \) must use the renaming rule \eqref{eq:alg:lambda_term_substitution/abstraction/renaming}, and thus
+  \begin{equation*}
+    \theta[x^\tau \mapsto B^\tau] = \qabs {g^{\tau \synimplies \tau \synimplies \syn\omicron}} g B^\tau (B^\tau[f \mapsto g]),
+  \end{equation*}
+  where \( g \) is not free in \( B^\tau \). Then
+  \begin{itemize}
+    \item \( \theta[x^\tau \mapsto B^\tau] \) does not equal \( \psi \), so we cannot deduce \( \psi \) from \( \varphi \) and \( A^\tau \syneq B^\tau \) using \ref{inf:def:hol_equality_rules/elim}.
+
+    \item \( \theta[x^\tau \mapsto B^\tau] \) is not \enquote{\( \varphi \) with a single instance of \( A^\tau \) substituted \( B^\tau \)}, and rule \logic{R'} is inapplicable.
+  \end{itemize}
+
+  Admissibility of rule \logic{R'} for arbitrary \( \varphi \) and \( \psi \) can be proven by induction on the abstract syntax tree of \( \varphi \).
+\end{example}
