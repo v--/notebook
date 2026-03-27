@@ -647,6 +647,21 @@ We give here the following definition, and then proceed to explain it:
   \end{thmenum}
 \end{definition}
 
+\begin{theorem}[Higher-order semantic deduction theorem]\label{thm:hol_semantic_deduction_theorem}
+  In any \hyperref[def:hol_institution]{higher-order logic institution}, we have
+  \begin{equation*}
+    \Gamma, \varphi \vDash \psi \T{if and only if} \Gamma \vDash \varphi \synimplies \psi.
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item As in the case of first-order logic, it is important here that the formulas are closed --- see \cref{rem:implicit_quantification_and_deduction}.
+
+  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list}.
+\end{comments}
+\begin{proof}
+  Analogous to \fullref{thm:fol_semantic_deduction_theorem}.
+\end{proof}
+
 \paragraph{Natural deduction}
 
 \begin{remark}\label{rem:hol_natural_deduction_formalization}
@@ -667,6 +682,22 @@ We give here the following definition, and then proceed to explain it:
 \begin{definition}\label{def:hol_natural_deduction_proof_tree}
   We can define natural deduction \hyperref[def:proof_tree]{proof trees} for \hyperref[def:higher_order_logic]{higher-order logic} based on how we defined \hyperref[def:proof_tree]{proof trees} proof trees for \hyperref[def:first_order_logic]{first-order logic} in \cref{def:fol_natural_deduction_proof_tree}.
 \end{definition}
+
+\begin{definition}\label{def:hol_natural_deduction_consequence}\mimprovised
+  Based on first-order \hyperref[def:consequence_relation]{consequence relation} from \cref{def:fol_natural_deduction_consequence}, for every \hyperref[def:hol_natural_deduction_system]{higher-order natural deduction system}, we define the following relation on \hi{closed formulas}: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:hol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \).
+
+  In accordance with \cref{def:general_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
+\end{definition}
+
+\begin{proposition}\label{thm:hol_natural_deduction_derivation_compact}
+  Every \hyperref[def:hol_natural_deduction_consequence]{higher-order natural deduction consequence relation} is \hyperref[def:consequence_relation/compactness]{compact}.
+\end{proposition}
+\begin{comments}
+  \item This is one of several compactness theorems presented here --- see \cref{rem:logical_compactness_theorems}.
+\end{comments}
+\begin{proof}
+  A proof tree is can have at most finitely many assumptions.
+\end{proof}
 
 \begin{definition}\label{def:hol_natural_deduction}\mimprovised
   We will now extend the rules for minimal, intuitionistic and classical systems for propositional natural deduction from \cref{def:propositional_natural_deduction}.
@@ -701,7 +732,7 @@ We give here the following definition, and then proceed to explain it:
           \begin{prooftree}
             \hypo{ \varphi[x^\tau \mapsto M^\tau] }
             \hypo{ M^\tau \syneq N^\tau }
-            \infer2[\ref{inf:def:hol_equality_rules/equality/elim}]{ \varphi[x^\tau \mapsto N^\tau] }
+            \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \varphi[x^\tau \mapsto N^\tau] }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
@@ -770,6 +801,7 @@ We give here the following definition, and then proceed to explain it:
   \begin{thmenum}
     \thmitem{thm:hol_natural_deduction_admissible_rules/equality} Similarly to \cref{thm:fol_natural_deduction_equality}, equality acts like an \hyperref[def:equivalence_relation]{equivalence relation}:
 
+    \columnratio{0.3,0.3,0.4}
     \begin{paracol}{3}
       \begin{nthcolumn}{0}
         \ParacolAlignmentHack
@@ -801,28 +833,57 @@ We give here the following definition, and then proceed to explain it:
         \end{equation*}
       \end{nthcolumn}
     \end{paracol}
+    \columnratio{}
 
-    \thmitem{thm:hol_natural_deduction_admissible_rules/eq_to_iff} The converse rule of \ref{inf:def:hol_natural_deduction/equality/iff}:
-    \begin{equation*}\taglabel[\ensuremath{ =_{+\leftrightarrow} }]{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
+    \thmitem{thm:hol_natural_deduction_admissible_rules/eq_to_iff} The converse rule of \ref{inf:def:hol_natural_deduction/equality/iff} is also admissible:
+    \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_= }]{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
       \begin{prooftree}
         \hypo{ \varphi \syneq \psi }
         \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}]{ \varphi \syniff \psi }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:hol_natural_deduction_admissible_rules/top_eq} A derivable formula should equal verum:
-    \begin{equation*}\taglabel[\ensuremath{ =_\top }]{inf:thm:hol_natural_deduction_admissible_rules/top_eq}
-      \begin{prooftree}
-        \hypo{ \varphi }
-        \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/top_eq}]{ \varphi \syneq \syntop }
-      \end{prooftree}
-    \end{equation*}
+    \thmitem{thm:hol_natural_deduction_admissible_rules/prop_eq} Derivable propositions equal verum, negations equal falsum \hi{in intuitionistic logic}, but both cannot hold simultaneously:
+    \columnratio{0.3,0.3,0.4}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_\top }]{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/top}
+          \begin{prooftree}
+            \hypo{ \varphi }
+            \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/top}]{ \varphi \syneq \syntop }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_\bot }]{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/bot}
+          \begin{prooftree}
+            \hypo{ \synneg \varphi }
+            \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/bot}]{ \varphi \syneq \synbot }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \bot_= }]{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/both}
+          \begin{prooftree}
+            \hypo{ \varphi \syneq \syntop }
+            \hypo{ \varphi \syneq \synbot }
+            \infer2[\ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/both}]{ \synbot }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+      \columnratio{}
+    \end{paracol}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
   \SubProofOf{thm:hol_natural_deduction_admissible_rules/equality} Analogous to \cref{thm:fol_natural_deduction_equality}.
 
-  \SubProofOf{thm:hol_natural_deduction_admissible_rules/eq_to_iff}
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
   \begin{equation*}
     \begin{prooftree}
       \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ \varphi \syniff \varphi }
@@ -831,12 +892,42 @@ We give here the following definition, and then proceed to explain it:
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:hol_natural_deduction_admissible_rules/top_eq}
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/top}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi]^u }
       \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
       \infer2[\ref{inf:def:propositional_natural_deduction/iff/intro}]{ \varphi \syneq \syntop }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/bot}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synbot]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \varphi }
+
+      \hypo{ [\synneg \varphi]^v }
+      \hypo{ [\varphi]^w }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+
+      \infer[left label={\( u, w \)}]2[\ref{inf:def:propositional_natural_deduction/iff/intro}]{ \varphi \syniff \synbot }
+      \infer1[\ref{inf:def:hol_natural_deduction/equality/iff}]{ \varphi \syneq \synbot }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/both}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
+
+      \hypo{ [\varphi \syneq \syntop]^u }
+      \infer1[\ref{inf:thm:hol_natural_deduction_equality/symm}]{ \syntop \syneq \varphi }
+
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \varphi }
+
+      \hypo{ [\varphi \syneq \synbot]^v }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \synbot }
     \end{prooftree}
   \end{equation*}
 \end{proof}
@@ -854,7 +945,7 @@ We give here the following definition, and then proceed to explain it:
     (Rule R') If \( \mscrH \vdash \mathbf{A_\alpha} = \mathbf{B_\alpha} \), and \( \mscrH \vdash \mathbf{C} \), and \( \mathbf{D} \) is obtained from \( \mathbf{C} \) by replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), then \( \mscrH \vdash \mathbf{A_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a variable immediately preceded by \( \mathbf{\muplambda} \), and the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not in a wf part \( [\mathbf{\muplambda x_\beta E_\gamma}] \) of \( \mathbf{C} \), where \( \mathbf{x_\beta} \) is free in a member of \( \mscrH \) and free in \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \).
   \end{displayquote}
 
-  We will show in \cref{ex:hol_equality_rules_and_rule_r} that this rule is a special case of rule \ref{inf:def:hol_equality_rules/elim} above.
+  We will show in \cref{ex:hol_equality_rules_and_rule_r} that this rule is a special case of rule \ref{inf:def:hol_natural_deduction/equality/elim} above.
 
   Note that Andrews uses the abbreviations that we discuss in \cref{tab:rem:hol_formula_abbreviations}. Andrews spends considerable effort demonstrating that part of the familiar natural deduction rules from \cref{def:propositional_natural_deduction} are \hyperref[con:inference_rule_admissibility]{admissible}.
 
@@ -866,7 +957,7 @@ We give here the following definition, and then proceed to explain it:
 \end{remark}
 
 \begin{example}\label{ex:hol_equality_rules_and_rule_r}
-  Andrews' rule \logic{R'} described in \cref{rem:hol_axiomatic_derivations} is also \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:hol_equality_rules/elim}, but the latter is more general.
+  Andrews' rule \logic{R'} described in \cref{rem:hol_axiomatic_derivations} is also \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:hol_natural_deduction/equality/elim}, but the latter is more general.
 
   Indeed, fix a formula \( \varphi \) and let \( \psi \) be the result of substituting a single occurrence of \( A^\tau \) for \( B^\tau \) in \( \varphi \). Rule \logic{R'} then allows us to infer \( \psi \) from the open hypotheses \( \Gamma \) as long as the substituted occurrence of \( A^\tau \) is not in the scope of a variable in
   \begin{equation*}
@@ -886,7 +977,7 @@ We give here the following definition, and then proceed to explain it:
     \begin{prooftree}
       \hypo{ \theta[x^\tau \mapsto A^\tau] }
       \hypo{ A^\tau \syneq B^\tau }
-      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \theta[x^\tau \mapsto A^\tau] }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \theta[x^\tau \mapsto A^\tau] }
     \end{prooftree}
   \end{equation*}
 
@@ -895,7 +986,7 @@ We give here the following definition, and then proceed to explain it:
     \begin{prooftree}
       \hypo{ \varphi }
       \hypo{ A^\tau \syneq B^\tau }
-      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \psi }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \psi }
     \end{prooftree}
   \end{equation*}
 
@@ -907,10 +998,24 @@ We give here the following definition, and then proceed to explain it:
   \end{equation*}
   where \( g \) is not free in \( B^\tau \). Then
   \begin{itemize}
-    \item \( \theta[x^\tau \mapsto B^\tau] \) does not equal \( \psi \), so we cannot deduce \( \psi \) from \( \varphi \) and \( A^\tau \syneq B^\tau \) using \ref{inf:def:hol_equality_rules/elim}.
+    \item \( \theta[x^\tau \mapsto B^\tau] \) does not equal \( \psi \), so we cannot deduce \( \psi \) from \( \varphi \) and \( A^\tau \syneq B^\tau \) using \ref{inf:def:hol_natural_deduction/equality/elim}.
 
     \item \( \theta[x^\tau \mapsto B^\tau] \) is not \enquote{\( \varphi \) with a single instance of \( A^\tau \) substituted \( B^\tau \)}, and rule \logic{R'} is inapplicable.
   \end{itemize}
 
   Admissibility of rule \logic{R'} for arbitrary \( \varphi \) and \( \psi \) can be proven by induction on the abstract syntax tree of \( \varphi \).
 \end{example}
+
+\begin{theorem}[Higher-order syntactic deduction theorem]\label{thm:hol_syntactic_deduction_theorem}
+  With respect to \hyperref[def:fol_natural_deduction]{minimal higher-order natural deduction}, we have
+  \begin{equation*}
+    \Gamma, \varphi \vdash \psi \T{if and only if} \Gamma \vdash \varphi \synimplies \psi.
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item The formulas here are assumed closed, although this is not strictly necessary.
+  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list}.
+\end{comments}
+\begin{proof}
+  Analogous to \fullref{thm:fol_syntactic_deduction_theorem}.
+\end{proof}
