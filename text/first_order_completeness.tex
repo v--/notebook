@@ -1,6 +1,6 @@
 \section{First-order completeness}\label{sec:first_order_completeness}
 
-\begin{remark}\label{rem:henkin_theories}
+\begin{remark}\label{rem:fol_henkin_theories}
    We will present a proof of \fullref{thm:fol_completeness} based on \bycite{Henkin1949FOLCompleteness}. The first proof of this theorem is attributed to Kurt G\"odel, thus it is also called \enquote{Go\"del's completeness theorem}.
 
    Our presentation follows the modern adaptation of \incite[\S 3.1]{VanDalen2004LogicAndStructure}. Other adaptations are given in \cite[\S 4.2]{Shoenfield1967MathematicalLogic}, \cite[\S 4.5]{ШеньВерещагин2017ЯзыкиИИсчисления} and \cite[\S 2.6.3]{Герасимов2014Вычислимость}, and similar constructions for proving \fullref{thm:fol_semantic_compactness} are given in \cite[ch. 3]{Hinman2005Logic}.
@@ -8,12 +8,14 @@
    The differences are subtle but important. For example, Gerasimov imposes a weaker condition than in \cref{def:fol_henkin_completeness} --- if \( \qexists x \varphi \) belongs to \( T \), there must exist a closed term \( \tau \) such that \( \varphi[x \mapsto \tau] \) belongs to \( T \). This makes the interaction between \hyperref[def:fol_henkin_extension]{Henkin extensions} and other extensions more intricate, which in turn requires adapting \fullref{thm:fol_lindenbaums_lemma}.
 
    Furthermore, we prefer working with theories rather than arbitrary sets of formulas like in \fullref{sec:propositional_completeness}. If needed, we can relax this to sets of closed formulas, but there will be no gains in doing so.
+
+   We also present Henkin's construction for higher-order logic --- see \cref{rem:hol_henkin_theories}.
 \end{remark}
 
 \paragraph{Henkin completion}
 
 \begin{definition}\label{def:fol_henkin_completeness}\mcite[def. 3.1.4(iii)]{VanDalen2004LogicAndStructure}
-  We say that the \hyperref[def:fol_theory]{first-order theory} \( T \) over \( \Sigma \) is \term[en=Henkin-complete (theory) (\cite[def. 3.1.7]{Hinman2005Logic}); Henkin theory (\cite[def. 3.1.4(iii)]{VanDalen2004LogicAndStructure})]{Henkin-complete} if, for every closed existentially quantified formula \( \qexists x \varphi \) over \( \Sigma \), there exists a constant \( c \) such that
+  We say that the \hyperref[def:fol_theory]{first-order theory} \( T \) over \( \Sigma \) is \term[en=Henkin-complete (theory) (\cite[def. 3.1.7]{Hinman2005Logic}); Henkin theory (\cite[def. 3.1.4(iii)]{VanDalen2004LogicAndStructure})]{Henkin-complete} if, for every closed existentially quantified formula \( \qexists x \varphi \) over \( \Sigma \) (not necessarily in \( T \)), there exists a constant \( c \) such that
   \begin{equation}\label{eq:def:fol_henkin_completeness/axiom}
     \qexists x \varphi \synimplies \varphi[x \mapsto c]
   \end{equation}
@@ -22,19 +24,21 @@
 \begin{comments}
   \item Note that we do not require neither \( \qexists x \varphi \) nor \( \varphi[x \mapsto c] \) to belong to \( T \).
 
-  This allows us to define completions in \cref{thm:fol_henkin_completion_is_complete} and ensure that they are compatible with further extensions. This is one of several possible definitions of Henkin theories --- see \cref{rem:henkin_theories}.
+  This allows us to define completions in \cref{thm:fol_henkin_completion_is_complete} and ensure that they are compatible with further extensions. This is one of several possible definitions of Henkin theories --- see \cref{rem:fol_henkin_theories}.
 
   \item Since \( \qexists x \varphi \) is assumed to be closed, \( x \) is the only variable possibly free in \( \varphi \).
+
+  \item We generalize this to higher-order logic in \cref{def:hol_henkin_completeness}.
 \end{comments}
 
 \begin{definition}\label{def:fol_henkin_extension}\mcite[def. 3.1.6]{VanDalen2004LogicAndStructure}
   Consider some \hyperref[def:fol_theory]{first-order theory} \( T \) over the signature \( \Sigma \).
 
-  Consider the \hyperref[def:fol_signature_extension]{extension} \( \Sigma^* \) of \( \Sigma \) where, for every existentially quantified formula \( \qexists x \varphi \) in \( T \), we add a new constant \( c_{x,\varphi} \). For the sake of determinism, suppose that \( c_{x,\varphi} \) is a symbol entirely determined by \( x \) and \( \varphi \).
+  Consider the \hyperref[def:fol_signature_extension]{extension} \( \Sigma^* \) of \( \Sigma \) where, for every existentially quantified formula \( \qexists x \varphi \) over \( \Sigma \) (not necessarily in \( T \)), we add a constant \( c_{x,\varphi} \). For the sake of determinism, suppose that \( c_{x,\varphi} \) is a symbol entirely determined by \( x \) and \( \varphi \). Thus, if such a constant already exists in \( \Sigma \), a new one does not need to be added.
 
   We define the (one-step) \term{Henkin extension} \( T^* \) as the consequence closure of
   \begin{equation}\label{eq:def:fol_henkin_extension}
-    T \cup \set[\big]{ (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \given* \qexists x \varphi \T{belongs to} T }.
+    T \cup \set[\big]{ (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \given* \qexists x \varphi \T{is a closed formula over} \Sigma }.
   \end{equation}
 \end{definition}
 \begin{comments}
@@ -148,7 +152,7 @@
   The (one-step) \hyperref[def:fol_henkin_extension]{Henkin extension} of a natural deduction theory is \hyperref[def:fol_theory/conservative]{conservative}.
 \end{proposition}
 \begin{proof}
-  Let \( T \) be a theory over \( \Sigma \). Let \( T^* \) be the Henkin extension of \( T \) with signature \( \Sigma^+ \). Denote by \( \Gamma \) the set of additional axioms from \( T^* \), so that \( T^* = \op*{Th}(T \cup \Gamma) \).
+  Let \( T \) be a theory over \( \Sigma \). Let \( T^* \) be the Henkin extension of \( T \) with signature \( \Sigma^* \). Denote by \( \Gamma \) the set of additional axioms from \( T^* \), so that \( T^* = \op*{Th}(T \cup \Gamma) \).
 
   Fix a formula \( \varphi \) over \( \Sigma \) that belongs to \( T^* \). Since \( T^* \) is a consequence closure of \( T \cup \Gamma \), there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} \( P \) for \( \varphi \) whose open assumptions are from \( T \cup \Gamma \).
 
@@ -213,7 +217,7 @@
 \end{proof}
 
 \begin{definition}\label{def:fol_henkin_completion}\mimprovised
-  With respect to some \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relation}, consider some \hyperref[def:fol_theory]{first-order theory} \( T \) over \( \Sigma \) as follows.
+  With respect to some \hyperref[def:consequence_relation/compactness]{compact} \hyperref[def:consequence_relation]{consequence relation}, consider some \hyperref[def:fol_theory]{first-order theory} \( T \) over \( \Sigma \).
 
   Define the \( \mu \)-indexed \hyperref[def:transfinite_sequence]{transfinite sequence} of \hyperref[def:fol_henkin_extension]{Henkin extensions}
   \begin{equation*}
@@ -248,12 +252,12 @@
     T^* = \bigcup_{k \in \mscrK} T_k^*.
   \end{equation*}
 
-  Indeed, let \( \psi = (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \) be a new axiom introduced in \( T^* \). Then there exists some index \( T_{k_0} \) to which \( \qexists x \varphi \) belongs. Then \( \psi \) is also present in \( T_{k_0}^* \). It follows that
+  Indeed, let \( \psi = (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \) be a new axiom introduced in \( T^* \). Then there exists some signature \( \Sigma_{k_0} \) to which \( \qexists x \varphi \) belongs. Then \( \psi \) is also present in \( T_{k_0}^* \). It follows that
   \begin{equation*}
     T^* \subseteq \bigcup_{k \in \mscrK} T_k^*.
   \end{equation*}
 
-  Conversely, let \( \psi = (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \) be a new axiom introduced in some \( T_{k_0}^* \) for some index \( k_0 \). Then \( \qexists x \varphi \) is in \( T_{k_0} \), so \( \psi \) belongs to \( T^* \).
+  Conversely, let \( \psi = (\qexists x \varphi) \synimplies \varphi[x \mapsto c_{x,\varphi}] \) be a new axiom introduced in some \( T_{k_0}^* \) for some index \( k_0 \). Then \( \qexists x \varphi \) is a formula over \( \Sigma_{k_0} \). Since \( \Sigma^* \) extends \( \Sigma_{k_0} \), the formula \( \psi \) belongs to \( T^* \).
 \end{proof}
 
 \begin{proposition}\label{thm:fol_henkin_completion_is_complete}
@@ -284,7 +288,7 @@
   We only construct \( \mscrT \) here, and delegate to \fullref{thm:fol_model_existence_theorem} the check that it satisfies \( T \).
 
   \begin{thmenum}
-    \thmitem{def:fol_term_model/intermediate} Let \( C \) be the set of all closed terms over \( T \). This set is nonempty because \( \Sigma \) contains a witness for \( \qexists x (x \syneq x) \).
+    \thmitem{def:fol_term_model/intermediate} Let \( C \) be the set of all closed terms over \( \Sigma \). This set is nonempty because \( T \) contains a witness of \( \qexists x \syntop \).
 
     We define an interpretation \( I \) for \( \Sigma \) on \( C \) as follows:
     \begin{thmenum}
@@ -319,8 +323,40 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item Compare this to its counterpart in higher-order logic, \cref{def:hol_term_model}, which is also due to Henkin.
+
   \item This construction resembles free term models of \hyperref[def:fol_equational_theory]{equational theories}, which we discuss in \cref{def:fol_free_term_model}.
 \end{comments}
+
+\begin{definition}\label{def:fol_frugal_structure}\mcite[128]{Andrews2002Logic}
+  We say that a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \Sigma \) is \term{frugal} if the cardinality of \( X \) does not exceed the number of terms over \( \Sigma \).
+\end{definition}
+\begin{comments}
+  \item Compare this to \cref{def:hol_frugal_structure}, where for higher-order structures frugality restricts all universes of functions.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_term_model_is_frugal}
+  \hyperref[def:fol_term_model]{First-order term models} are \hyperref[def:fol_frugal_structure]{frugal}.
+\end{proposition}
+\begin{proof}
+  A term model is defined as a quotient set of the set of all terms, so its cardinality cannot exceed the number of terms.
+\end{proof}
+
+\begin{proposition}\label{thm:fol_frugality_characterization}
+  A \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \Sigma \) is \hyperref[def:fol_frugal_structure]{frugal} if and only if
+  \begin{equation*}
+    \card(X) \leq \max\set{ \aleph_0, \kappa },
+  \end{equation*}
+  where \( \kappa \) is the amount of symbols in \( \Sigma \).
+\end{proposition}
+\begin{proof}
+  There are two cases:
+  \begin{itemize}
+    \item If \( \kappa \) is finite, \cref{thm:def:formal_language/finite_alphabet_cardinality} implies that the set of terms, as a language over \( \Sigma \), is countably infinite. In this case \( \card(X) \) must not exceed \( \aleph_0 \).
+
+    \item If \( \kappa \) is infinite, \cref{thm:def:formal_language/infinite_alphabet_cardinality} implies that the set of all terms also has cardinality \( \kappa \). In this case \( \card(X) \) must not exceed \( \kappa \).
+  \end{itemize}
+\end{proof}
 
 \begin{theorem}[First-order model existence theorem]\label{thm:fol_model_existence_theorem}\mcite[107]{VanDalen2004LogicAndStructure}
   As in \cref{def:fol_term_model}, fix a \hyperref[def:fol_henkin_completeness]{Henkin-complete}, \hyperref[def:fol_theory/complete]{complete} and \hyperref[def:fol_theory/consistent]{consistent} theory \( T \) (with respect to \hyperref[def:fol_natural_deduction_system]{natural deduction}).
@@ -429,25 +465,22 @@
 \end{proof}
 
 \begin{corollary}\label{thm:fol_consistent_implies_satisfiable}
-  Consider a \hyperref[def:fol_signature]{first-order signature} \( \Sigma \). Let \( \kappa \) be the (cardinal) number of symbols in \( \Sigma \).
-
-  If a set of closed formulas over \( \Sigma \) is \hyperref[def:fol_theory/consistent]{consistent} with respect to \hyperref[def:fol_natural_deduction_system]{classical natural deduction}, it has a \hyperref[def:fol_semantics/model]{model} of cardinality at most \( \max\set{ \aleph_0, \kappa } \) --- at most \( \aleph_0 \) when \( \kappa \) is finite and at most \( \kappa \) otherwise.
+  If a set of closed formulas is \hyperref[def:fol_theory/consistent]{consistent} with respect to \hyperref[def:fol_natural_deduction_system]{classical natural deduction}, it has a \hyperref[def:fol_frugal_structure]{frugal} \hyperref[def:fol_semantics/model]{model}.
 \end{corollary}
 \begin{comments}
-  \item This statement has an analog for \hyperref[def:propositional_logic]{propositional logic} --- see \cref{thm:propositional_consistent_implies_satisfiable}.
+  \item This statement has an analog for both \hyperref[def:propositional_logic]{propositional logic} and \hyperref[def:higher_order_logic]{higher-order logic} --- see \cref{thm:propositional_consistent_implies_satisfiable} and \cref{thm:hol_consistent_implies_satisfiable}, respectively.
 \end{comments}
 \begin{proof}
   Let \( T \coloneqq \op*{Th}(\Gamma) \) be the theory generated by \( \Gamma \). Apply \fullref{thm:fol_lindenbaums_lemma} to the \hyperref[def:fol_henkin_completion]{Henkin completion} \( T^{*\omega} \) of \( T \) to obtain a theory \( T^+ \) that is consistent, complete and Henkin-complete.
 
-  This allows us to construct a \hyperref[def:fol_term_model]{term model} \( \mscrT \) satisfying \( T^+ \).
+  This allows us to construct a \hyperref[def:fol_term_model]{term model} \( \mscrT \) satisfying \( T^+ \). Its \hyperref[def:fol_reduct_along_morphism]{reduct} along the inclusion \( \iota: T \to T^+ \) is then a model of \( T \).
 
-  By construction, the universe of \( \mscrT \) is a quotient of the set \( C \) of all closed terms over \( \Sigma \). Its cardinality is thus at most that of \( C \).
+  Furthermore, \cref{thm:fol_term_model_is_frugal} shows that \( \mscrT \) is frugal over the Henkin completion \( \Sigma^{*\omega} \). To show that it is also frugal over \( \Sigma \), we will use \cref{thm:fol_frugality_characterization} and prove that \( \Sigma^{*\omega} \) has at most \( \max\set{ \aleph_0, \kappa } \) symbols, where \( \kappa \) is the number of symbols in \( \Sigma \).
+
   \begin{itemize}
     \item If \( \kappa \) is finite, by \cref{thm:def:formal_language/finite_alphabet_cardinality} there are countably many formulas over \( \Sigma \), so the Henkin extension \( \Sigma^* \) can add only \( \aleph_0 \) new constants. By induction, we conclude that \( \Sigma^{*k} \) is countably infinite for any positive integer \( k \), and \cref{thm:countably_infinite_union_of_countably_infinite_sets} implies that so is \( \Sigma^{*\omega} \).
 
-    In this case, \cref{thm:def:formal_language/finite_alphabet_cardinality} implies that \( C \), as a language over \( \Sigma^{*\omega} \), is countably infinite.
-
-    \item If \( \kappa \) is infinite, \cref{thm:def:formal_language/infinite_alphabet_cardinality} implies that each of the Henkin extensions \( \Sigma^{*k} \) have \( \kappa \) symbols, and hence so does \( \Sigma^{*\omega} \). Therefore, \( C \) also has cardinality \( \kappa \).
+    \item If \( \kappa \) is infinite, \cref{thm:def:formal_language/infinite_alphabet_cardinality} implies that each of the Henkin extensions \( \Sigma^{*k} \) have \( \kappa \) symbols, and hence so does \( \Sigma^{*\omega} \).
   \end{itemize}
 \end{proof}
 
@@ -455,9 +488,9 @@
   The \hyperref[def:fol_natural_deduction]{classical first-order natural deduction system} is \hyperref[def:general_logic/completeness]{complete} with respect to \hyperref[def:fol_semantics]{first-order semantics}.
 \end{theorem}
 \begin{comments}
-  \item This theorem is attributed to both Kurt G\"odel and to Leon Henkin; see \cref{rem:henkin_theories}.
+  \item This theorem is attributed to both Kurt G\"odel and to Leon Henkin; see \cref{rem:fol_henkin_theories}.
 
-  \item This is the first-order counterpart of \fullref{thm:classical_propositional_completeness}.
+  \item This is the first-order counterpart of \fullref{thm:classical_propositional_completeness} and \fullref{thm:hol_weak_completeness}.
 \end{comments}
 \begin{proof}
   We can proceed similarly to \cref{thm:classical_propositional_completeness}, but we have to use \cref{thm:fol_consistent_implies_satisfiable} instead of \cref{thm:propositional_consistent_implies_satisfiable}.
@@ -494,7 +527,7 @@
   \item This is one of several compactness theorems presented here --- see \cref{rem:logical_compactness_theorems}.
 \end{comments}
 \begin{proof}
-  \Cref{thm:fol_semantic_compactness/relation} Follows from \fullref{thm:classical_propositional_semantic_compactness} via \cref{thm:completeness_implies_compactness}.
+  \Cref{thm:fol_semantic_compactness/relation} Follows from \fullref{thm:fol_completeness} via \cref{thm:completeness_implies_compactness}.
 
   The equivalence between the different conditions can be shown as in \fullref{thm:classical_propositional_semantic_compactness}.
 \end{proof}

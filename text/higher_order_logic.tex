@@ -21,7 +21,7 @@
 
 We give here the following definition, and then proceed to explain it:
 \begin{definition}\label{def:higher_order_logic}\mimprovised
-  We call \term[en=higher-order logic (\cite[267]{Farmer2008STTVirtues})]{higher-order logic} the \hyperref[def:general_logic]{general logic} specified by the (\hyperref[def:truth_value_algebra/classical]{classical}) \hyperref[def:hol_institution]{higher-order logic institution} and the corresponding \hyperref[def:hol_natural_deduction]{natural deduction system}.
+  We call \term[en=higher-order logic (\cite[267]{Farmer2008STTVirtues})]{higher-order logic} the \hyperref[def:general_logic]{general logic} specified by a (\hyperref[def:truth_value_algebra/classical]{classical}) \hyperref[def:hol_institution]{higher-order logic institution} and the corresponding \hyperref[def:hol_natural_deduction]{natural deduction system}.
 \end{definition}
 \begin{comments}
   \item The soundness requirement in general logics from \cref{def:general_logic} is satisfied due to \fullref{thm:hol_natural_deduction_soundness}.
@@ -362,7 +362,7 @@ We give here the following definition, and then proceed to explain it:
 \paragraph{Henkin semantics}
 
 \begin{remark}\label{rem:henkin_semantics}
-  The general construction of \hyperref[def:fol_term_model]{term models} for \fullref{thm:fol_model_existence_theorem} is due to Henkin, as discussed in \cref{rem:henkin_theories}. For this reason, certain authors like \cite[xii]{Hinman2005Logic} refer to them as \enquote{Henkin models}.
+  The general constructions of term models for \fullref{thm:fol_model_existence_theorem} and \fullref{thm:hol_model_existence_theorem} are due to Henkin, as discussed in \cref{rem:fol_henkin_theories} and \cref{rem:hol_henkin_theories}. For this reason, certain authors like \cite[xii]{Hinman2005Logic} refer to them as \enquote{Henkin models}.
 
   \incite*{Henkin1950CompletenessInTheoryOfTypes} generalizes \hyperref[def:fol_structure]{first-order structures} to \hyperref[def:higher_order_logic]{higher-order logic} and calls them \enquote{standard models} and \enquote{general models}. In accordance with \cref{rem:model_theory_structure_terminology}, in \cref{def:hol_structure} we call these generalizations \term{structures} rather than \enquote{models}.
 
@@ -565,9 +565,9 @@ We give here the following definition, and then proceed to explain it:
     Then
     \begin{equation*}
       h_{\syn\iota \synimplies \syn\iota}\parens[\big]{ I(c) }\parens[\big]{ h(a) }
-      \reloset {\eqref{eq:ex:fol_to_hol_homomorphism/fol_unary/fol_homomorphism}} =
+      \reloset{\eqref{eq:ex:fol_to_hol_homomorphism/fol_unary/fol_homomorphism}} =
       J(c)\parens[\big]{ h(a) }
-      \reloset {\eqref{eq:ex:fol_to_hol_homomorphism/fol_unary/intermediate}} =
+      \reloset{\eqref{eq:ex:fol_to_hol_homomorphism/fol_unary/intermediate}} =
       h\parens[\big]{ I(c)(a) }.
     \end{equation*}
 
@@ -577,6 +577,8 @@ We give here the following definition, and then proceed to explain it:
 
 \begin{definition}\label{def:hol_institution}\mimprovised
   For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe}, we can define an \hyperref[def:institution]{institution} for \hyperref[def:hol_structure]{higher-order structures} and \hyperref[def:hol_homomorphism]{their homomorphisms} with componentwise composition, similarly to the institutions for \hyperref[def:first_order_logic]{first-order logic} from \cref{def:fol_institution}.
+
+  For \fullref{thm:hol_weak_completeness}, we must additionally distinguish between institutions allowing only standard models and ones allowing general models.
 \end{definition}
 
 \begin{definition}\label{def:hol_isomorphism}
@@ -641,11 +643,62 @@ We give here the following definition, and then proceed to explain it:
 
     If all assignments of \( \mscrX \) satisfy \( \varphi \), we say that \( \mscrX \) itself satisfies \( \varphi \).
 
+    \thmitem{def:hol_semantics/tautology} Based on \cref{def:tautology}, We call the closed formula \( \varphi \) a \term{tautology} if \( \varphi \) is satisfied in every model, and a \term{contradiction} if it is satisfied in no model.
+
     \thmitem{def:hol_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if \( \mscrX \) satisfies \( \varphi \) whenever it satisfies \( \Gamma \).
 
     Here \( \varphi \), as well as the formulas of \( \Gamma \), are assumed to be closed.
+
+    \thmitem{def:hol_semantics/standard} We distinguish between \term{standard} and \term{general} semantics depending on whether only standard models are allowed in the institution.
   \end{thmenum}
 \end{definition}
+
+\begin{proposition}\label{thm:hol_expression_semantics_of_compatible_substitutions}
+  Fix an \hyperref[def:hol_expression]{expression} \( M^\tau \) of higher-order logic and \hyperref[def:atomic_lambda_term_substitution]{atomic substitutions} \( \Bbbs \) and \( \Bbbt \). Fix also \hyperref[def:hol_variable_assignment]{variable assignments} \( v \) and \( w \) in some \hyperref[def:hol_structure]{structure} \( \mscrX = (X, I) \).
+
+  If \( \Bracks{\Bbbs(x^\sigma)}_\mscrX^v = \Bracks{\Bbbt(x^\sigma)}_\mscrX^w \) for every \hi{free} typed variable \( x^\sigma \) in \( M^\tau \), then \( \Bracks{M^\tau[\Bbbs]}_\mscrX^v = \Bracks{M^\tau[\Bbbt]}_\mscrX^w \).
+\end{proposition}
+\begin{comments}
+  \item An analogous statement holds for first-order terms --- see \cref{thm:fol_term_semantics_of_compatible_substitutions} --- and for first-order formulas --- see \cref{thm:fol_formula_semantics_of_compatible_substitutions}.
+\end{comments}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on \( M^\tau \), simultaneously on all substitutions and assignments.
+  \begin{itemize}
+    \item If \( M^\tau \) is a constant (either logical or nonlogical), it is invariant under substitution, so there is nothing to prove.
+    \item If \( M^\tau \) is a variable, say \( x \), by assumption
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      =
+      \Bbbs(x^\tau)
+      =
+      \Bbbt(x^\tau)
+      =
+      \Bracks{M^\tau}_\mscrX^w.
+    \end{equation*}
+
+    \item If \( M^\tau = N^{\sigma \synimplies \tau} K^\sigma \), where the inductive hypothesis holds for \( N^{\sigma \synimplies \tau} \) and \( K^\sigma \), then
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/app}} =
+      \Bracks{N^{\sigma \synimplies \tau}}_\mscrX^v \parens[\big]{ \Bracks{K^\sigma}_\mscrX^v }
+      \reloset{\T{ind.}} =
+      \Bracks{N^{\sigma \synimplies \tau}}_\mscrX^w \parens[\big]{ \Bracks{K^\sigma}_\mscrX^w }
+      \reloset{\eqref{eq:alg:hol_denotation/app}} =
+      \Bracks{M^\tau}_\mscrX^w.
+    \end{equation*}
+
+    \item Finally, if \( M^\tau = \qabs {x^\sigma} N^\rho \), where \( \tau = \sigma \synimplies \rho \) and the inductive hypothesis holds for \( N^\rho \), then
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \parens[\Big]{ a \mapsto \Bracks{N^\rho}_\mscrX^{v_{x^\sigma \mapsto a}} }
+      \reloset{\T{ind.}} =
+      \parens[\Big]{ a \mapsto \Bracks{N^\rho}_\mscrX^{w_{x^\sigma \mapsto a}} }
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \Bracks{N^\tau}_\mscrX^w.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
 
 \begin{theorem}[Higher-order semantic deduction theorem]\label{thm:hol_semantic_deduction_theorem}
   In any \hyperref[def:hol_institution]{higher-order logic institution}, we have
@@ -684,7 +737,7 @@ We give here the following definition, and then proceed to explain it:
 \end{definition}
 
 \begin{definition}\label{def:hol_natural_deduction_consequence}\mimprovised
-  Based on first-order \hyperref[def:consequence_relation]{consequence relation} from \cref{def:fol_natural_deduction_consequence}, for every \hyperref[def:hol_natural_deduction_system]{higher-order natural deduction system}, we define the following relation on \hi{closed formulas}: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:hol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \).
+  Based on first-order \hyperref[def:consequence_relation]{consequence relation} from \cref{def:fol_natural_deduction_consequence}, for every \hyperref[def:hol_natural_deduction_system]{higher-order natural deduction system}, we define the following relation on \hi{closed} formulas: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:hol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \).
 
   In accordance with \cref{def:general_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
@@ -710,10 +763,10 @@ We give here the following definition, and then proceed to explain it:
         \ParacolAlignmentHack
         \begin{equation*}\taglabel[\ensuremath{ =_+ }]{inf:def:hol_natural_deduction/equality/intro}
           \begin{prooftree}
-            \hypo{ M^\tau \equivrel{\beta\eta} N^\tau }
-            \infer1[\ref{inf:def:hol_natural_deduction/equality/intro}]{ M^\tau \syneq N^\tau }
+            \infer0[\ref{inf:def:hol_natural_deduction/equality/intro}]{ M^\tau \syneq N^\tau },
           \end{prooftree}
         \end{equation*}
+        where \( M^\tau \equivrel{\beta\eta} N^\tau \).
       \end{nthcolumn}
 
       \begin{nthcolumn}{1}
@@ -739,7 +792,7 @@ We give here the following definition, and then proceed to explain it:
     \end{paracol}
     \columnratio{}
 
-    The first rule \ref{inf:def:hol_natural_deduction/equality/intro} is not strictly a generalization of its first-order counterpart --- not only every term equals itself, but any two \hyperref[def:beta_eta_reduction]{\( \beta\eta \)-equivalent} terms become equal. We state the more limited variant as a derived rule --- see \ref{inf:thm:hol_natural_deduction_equality/refl}.
+    In the first second rule \ref{inf:def:hol_natural_deduction/equality/intro}, we utilize the fact from \fullref{alg:simply_typed_reduction} that \( \beta\eta \)-equivalent \( \muplambda \)-terms inhabit identical types.
 
     The additional second rule \ref{inf:def:hol_natural_deduction/equality/iff} is simply auxiliary.
 
@@ -799,41 +852,64 @@ We give here the following definition, and then proceed to explain it:
   In \hyperref[def:hol_natural_deduction]{minimal higher-order natural deduction}, the hollowing rules are \hyperref[con:inference_rule_admissibility]{admissible}:
 
   \begin{thmenum}
-    \thmitem{thm:hol_natural_deduction_admissible_rules/equality} Similarly to \cref{thm:fol_natural_deduction_equality}, equality acts like an \hyperref[def:equivalence_relation]{equivalence relation}:
+    \thmitem{thm:hol_natural_deduction_admissible_rules/equality} Similarly to \cref{thm:fol_natural_deduction_equality}, equality acts like an \hyperref[def:equivalence_relation]{equivalence relation} compatible with \( \muplambda \)-term construction:
 
     \columnratio{0.3,0.3,0.4}
     \begin{paracol}{3}
       \begin{nthcolumn}{0}
         \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ =_R }]{inf:thm:hol_natural_deduction_equality/refl}
+        \begin{equation*}\taglabel[\ensuremath{ =_R }]{inf:thm:hol_natural_deduction_admissible_rules/equality/refl}
           \begin{prooftree}
-            \infer0[\ref{inf:thm:hol_natural_deduction_equality/refl}]{ M^\tau \syneq M^\tau }.
+            \infer0[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/refl}]{ M^\tau \syneq M^\tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
 
       \begin{nthcolumn}{1}
         \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ =_S }]{inf:thm:hol_natural_deduction_equality/symm}
+        \begin{equation*}\taglabel[\ensuremath{ =_S }]{inf:thm:hol_natural_deduction_admissible_rules/equality/symm}
           \begin{prooftree}
             \hypo{ M^\tau \syneq N^\tau }
-            \infer1[\ref{inf:thm:hol_natural_deduction_equality/symm}]{ N^\tau \syneq M^\tau }.
+            \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/symm}]{ N^\tau \syneq M^\tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
 
       \begin{nthcolumn}{2}
         \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ =_T }]{inf:thm:hol_natural_deduction_equality/trans}
+        \begin{equation*}\taglabel[\ensuremath{ =_T }]{inf:thm:hol_natural_deduction_admissible_rules/equality/trans}
           \begin{prooftree}
             \hypo{ M^\tau \syneq N^\tau }
             \hypo{ N^\tau \syneq K^\tau }
-            \infer2[\ref{inf:thm:hol_natural_deduction_equality/trans}]{ M^\tau \syneq K^\tau }
+            \infer2[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/trans}]{ M^\tau \syneq K^\tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
     \end{paracol}
     \columnratio{}
+
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_{\logic{App}} }]{inf:thm:hol_natural_deduction_admissible_rules/equality/app}
+          \begin{prooftree}
+            \hypo{ A^{\tau \synimplies \sigma} \syneq C^{\tau \synimplies \sigma} }
+            \hypo{ B^\tau \syneq D^\tau }
+            \infer2[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/app}]{ AB \syneq CD }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ =_{\logic{Abs}} }]{inf:thm:hol_natural_deduction_admissible_rules/equality/abs}
+          \begin{prooftree}
+            \hypo{ M^\sigma \syneq N^\sigma }
+            \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/abs}]{ \qabs {x^\tau} M^\sigma \syneq \qabs {x^\tau} N^\sigma }.
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
 
     \thmitem{thm:hol_natural_deduction_admissible_rules/eq_to_iff} The converse rule of \ref{inf:def:hol_natural_deduction/equality/iff} is also admissible:
     \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_= }]{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
@@ -881,7 +957,29 @@ We give here the following definition, and then proceed to explain it:
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:hol_natural_deduction_admissible_rules/equality} Analogous to \cref{thm:fol_natural_deduction_equality}.
+  \SubProofOf{thm:hol_natural_deduction_admissible_rules/equality} The equivalence relation rules are analogous to \cref{thm:fol_natural_deduction_equality}.
+
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/equality/app}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:hol_natural_deduction/equality/intro}]{ AB \syneq AB }
+      \hypo{ [A^{\tau \synimplies \sigma} \syneq C^{\tau \synimplies \sigma}]^u }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ AB \syneq CB }
+
+      \hypo{ [B^\tau \syneq D^\tau]^v }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ AB \syneq CD }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/equality/abs} Let \( y \) be a variable not free in \( M^\sigma \) nor \( N^\sigma \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:hol_natural_deduction/equality/intro}]{ \parens[\big]{ \qabs {x^\tau} M^\sigma \syneq \qabs {x^\tau} y^\sigma}[y^\sigma \mapsto M^\sigma] }
+
+      \hypo{ [M^\sigma \syneq N^\sigma]^u }
+      \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \parens[\big]{ \qabs {x^\tau} M^\sigma \syneq \qabs {x^\tau} y^\sigma}[y^\sigma \mapsto N^\sigma] }
+    \end{prooftree}
+  \end{equation*}
 
   \SubProofOf{inf:thm:hol_natural_deduction_admissible_rules/eq_to_iff}
   \begin{equation*}
@@ -922,7 +1020,7 @@ We give here the following definition, and then proceed to explain it:
       \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
 
       \hypo{ [\varphi \syneq \syntop]^u }
-      \infer1[\ref{inf:thm:hol_natural_deduction_equality/symm}]{ \syntop \syneq \varphi }
+      \infer1[\ref{inf:thm:hol_natural_deduction_admissible_rules/equality/symm}]{ \syntop \syneq \varphi }
 
       \infer2[\ref{inf:def:hol_natural_deduction/equality/elim}]{ \varphi }
 
@@ -1018,4 +1116,354 @@ We give here the following definition, and then proceed to explain it:
 \end{comments}
 \begin{proof}
   Analogous to \fullref{thm:fol_syntactic_deduction_theorem}.
+\end{proof}
+
+\begin{theorem}[Higher-order natural deduction soundness]\label{thm:hol_natural_deduction_soundness}
+  \hyperref[def:hol_natural_deduction]{Classical higher-order natural deduction} is \hyperref[def:general_logic]{sound} with respect to \hyperref[def:truth_value_algebra/classical]{classical} \hyperref[def:hol_semantics]{semantics}.
+\end{theorem}
+\begin{comments}
+  \item This provides a proof that the higher-order general logic in \cref{def:first_order_logic} is well-defined.
+  \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
+\end{comments}
+\begin{proof}
+  We can proceed analogously to \fullref{thm:fol_natural_deduction_soundness} to show that, whenever a proof tree \( P \) whose open assumptions are universally valid in some \hyperref[def:hol_structure]{structure} \( \mscrX = (X, I) \), its conclusion is also universally valid in \( \mscrX \).
+
+  We will use \fullref{thm:induction_on_rooted_trees} on \( P \), but only consider the rules that are principally different from \fullref{thm:fol_natural_deduction_soundness}.
+
+  \SubProofOf{inf:def:hol_natural_deduction/equality/intro} Let \( M^\tau \syneq N^\tau \) be the conclusion of \( P \). Then \( M^\tau \) and \( N^\tau \) are \( \beta\eta \)-equivalent expressions.
+
+  Since equality is an equivalence relation, there is no need to verify closure conditions for the \( \beta\eta \)-equivalence relation. It is sufficient to show that, for any assignment \( v \), \( \Bracks{M^\tau}_\mscrX^v = \Bracks{N^\tau}_\mscrX^v \) whenever \( M^\tau \redrel{\beta\eta} N^\tau \).
+
+  We proceed via \fullref{thm:induction_on_recursively_defined_relations}:
+  \begin{itemize}
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:lambda_term_reduction/app_left}, then \( M^\tau = A^{\sigma \synimplies \tau} B^\sigma \) and \( N^\tau = C^{\sigma \synimplies \tau} B^\sigma \), where \( A^{\sigma \synimplies \tau} \redrel{\beta\eta} C^{\sigma \synimplies \tau} \) and the inductive hypothesis holds for the latter.
+
+    Then
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/app}} =
+      \Bracks{A^{\sigma \synimplies \tau}}_\mscrX^v \parens[\Big]{ \Bracks{B^\sigma}_\mscrX^v }
+      \reloset{\T{ind.}} =
+      \Bracks{C^{\sigma \synimplies \tau}}_\mscrX^v \parens[\Big]{ \Bracks{B^\sigma}_\mscrX^v }
+      \reloset{\eqref{eq:alg:hol_denotation/app}} =
+      \Bracks{N^\tau}_\mscrX^v.
+    \end{equation*}
+
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:lambda_term_reduction/app_right}, we proceed similarly.
+
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:typed_term_reduction/abs}, then \( \tau = \sigma \synimplies \rho \) for some types \( \sigma \) and \( \rho \), and \( M^\tau = \qabs {x^\sigma} A^\rho \) and \( N^\tau = \qabs {x^\sigma} B^\rho \), where \( A^\rho = B^\rho \) and the inductive hypothesis holds for the latter.
+
+    Then
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \parens[\Big]{ a \mapsto \Bracks{A^\rho}_\mscrX^{v_{x^\sigma \mapsto a}} }
+      \reloset{\T{ind.}} =
+      \parens[\Big]{ a \mapsto \Bracks{B^\rho}_\mscrX^{v_{x^\sigma \mapsto a}} }
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \Bracks{N^\tau}_\mscrX^v.
+    \end{equation*}
+
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:lambda_term_reduction/alpha}, then \( M^\tau \aequiv A^\tau \) and \( N^\tau \aequiv N^\tau \), where \( A^\tau \redrel{\beta\eta} B^\tau \) and the inductive hypothesis holds for the latter.
+
+    We can check by induction on \( M^\tau \aequiv A^\tau \) that \( \Bracks{M^\tau}_\mscrX^v = \Bracks{A^\tau}_\mscrX^v \) since the denotations do not depend on the names of bound variables, and similarly for \( N^\tau \aequiv B^\tau \).
+
+    Therefore,
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v = \Bracks{A^\tau}_\mscrX^v = \Bracks{B^\tau}_\mscrX^v = \Bracks{N^\tau}_\mscrX^v.
+    \end{equation*}
+
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:typed_term_reduction/beta}, then \( M^\tau = (\qabs {x^\sigma} A^\tau) B^\sigma \) and \( N^\tau = A^\tau[x^\sigma \mapsto B^\sigma] \).
+
+    Denote \( \Bracks{ B^\sigma }_\mscrX^v \) by \( a_0 \). We have
+    \begin{balign*}
+      \Bracks{ M^\tau }_\mscrX^v
+      &=
+      \Bracks{ (\qabs {x^\sigma} A^\tau) B^\sigma }_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/app}} = \\ &=
+      \Bracks{ \qabs {x^\sigma} A^\tau }_\mscrX^v \parens[\big]{ \underbrace{\Bracks{ B^\sigma }_\mscrX^v}_{a_0} }
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} = \\ &=
+      \parens[\Big]{ a \mapsto \Bracks{ A^\tau }_\mscrX^{v_{x^\sigma \mapsto a}} } (a_0)
+      = \\ &=
+      \Bracks{ A^\tau }_\mscrX^{v_{x^\sigma \mapsto a_0}}.
+    \end{balign*}
+
+    On the other hand, \cref{thm:hol_expression_semantics_of_compatible_substitutions} implies that
+    \begin{equation*}
+      \Bracks{ N^\tau }_\mscrX^v
+      =
+      \Bracks{ A^\tau[x^\sigma \mapsto B^\sigma] }_\mscrX^v
+      =
+      \Bracks{ A^\tau }_\mscrX^{v_{x^\sigma \mapsto a_0}}.
+    \end{equation*}
+
+    Therefore, as desired,
+    \begin{equation*}
+      \Bracks{ M^\tau }_\mscrX^v = \Bracks{ N^\tau }_\mscrX^v.
+    \end{equation*}
+
+    \item If \( M^\tau \redrel{\beta\eta} N^\tau \) due to \ref{inf:def:typed_term_reduction/eta}, then \( M^\tau = \qabs {x^\sigma} N^\tau x^\sigma \) for some variable \( x \) not free in \( N \).
+
+    Clearly
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      =
+      \Bracks{ \qabs {x^\sigma} (N^\tau x^\sigma) }_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \parens[\Big]{ a \mapsto \Bracks{ N^\tau }_\mscrX^{v_{x^\sigma \mapsto a}} }
+      \reloset{\ref{thm:lambda_substitution_noop}} =
+      \Bracks{ N^\tau }_\mscrX^v.
+    \end{equation*}
+
+    \SubProofOf{inf:def:hol_natural_deduction/equality/iff} Let \( \varphi \syneq \psi \) be the conclusion of \( P \). Then the premise \( P_1 \) of \( P \) has conclusion \( \varphi \syniff \psi = \synH_\leftrightarrow \varphi \psi \).
+
+    By the inductive hypothesis, we have \( \Bracks{ \synH_\leftrightarrow \varphi \psi }_\mscrX^v = \semtop \). But
+    \begin{equation*}
+      \Bracks{ \synH_\leftrightarrow \varphi \psi }_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \Bracks{ \synH_\leftrightarrow }_\mscrX^v \parens[\big]{ \Bracks{ \varphi }_\mscrX^v } \parens[\big]{ \Bracks{ \psi }_\mscrX^v }
+      \reloset{\eqref{eq:alg:hol_denotation/l_const/conn}} =
+      \Bracks{ \varphi }_\mscrX^v \leftrightarrow \Bracks{ \psi }_\mscrX^v,
+    \end{equation*}
+    so \cref{thm:def:heyting_algebra/eq} implies that \( \Bracks{ \varphi }_\mscrX^v = \Bracks{ \psi }_\mscrX^v \), and thus \( \Bracks{ \varphi \syneq \psi }_\mscrX^v = \semtop \).
+  \end{itemize}
+\end{proof}
+
+\paragraph{Completeness}
+
+\begin{remark}\label{rem:hol_henkin_theories}
+  We will present a proof of \fullref{thm:hol_weak_completeness} based on \bycite{Henkin1950CompletenessInTheoryOfTypes}.
+
+  The term model construction, which we present in \cref{def:hol_term_model}, is based on Henkin's work. Henkin himself bases it on earlier construction for first-order logic presented in \cite{Henkin1949FOLCompleteness}.
+
+  We also present Henkin's construction for first-order logic --- see \cref{rem:hol_henkin_theories}.
+\end{remark}
+
+\begin{definition}\label{def:hol_theory}\mimprovised
+  We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
+
+  First and foremost, a (syntactic or semantic) \term{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \cat{Th}(\Gamma) \), and say that \( \Gamma \) \term{axiomatizes} \( \cat{Th}(\Gamma) \).
+
+  \begin{thmenum}
+    \thmitem{def:hol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:hol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Sigma' \) a \term{theory morphisms} from \( (\Sigma, T) \) to \( (\Sigma', T') \) if the translation of the formulas in \( T \) belong to \( T' \).
+
+    \thmitem{def:hol_theory/extension} As for first-order theories, we call \( T^+ \) an \term{extension} of \( T \) if \( t \) is an inclusion map that only adds new signature symbols.
+
+    \thmitem{def:hol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a category of (syntactic or semantic) theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
+
+    \thmitem{def:hol_theory/conservative} Based on \cref{def:entailment_system_theory/conservative}, we say that a theory morphism \( t: (\Sigma, T) \to (\Sigma', T') \) is \term{conservative} when \( \varphi \) belongs to \( T \) if and only if \( \op*{Sen}(t)(\varphi) \) belongs to \( T' \).
+
+    Sufficiency is obvious for both semantic entailment and natural deduction, so it usually suffices to check that \( \op*{Sen}(t)(\varphi) \in T' \) implies \( \varphi \in T \).
+
+    \thmitem{def:hol_theory/consistent} We call a higher-order theory \term{consistent} if \( T \) contains no \hyperref[def:hol_semantics/tautology]{contradictions}, i.e. if \( T \) does not contain \( \synbot \).
+
+    See \cref{def:fol_theory/consistent} for remarks on consistent first-order theories that are also valid here.
+
+    \thmitem{def:hol_theory/complete} We call a higher-order theory \term{complete} if, for every sentence \( \varphi \), \( T \) contains either \( \varphi \) or \( \synneg \varphi \) (or possibly both, if the theory is inconsistent).
+
+    See \cref{def:fol_theory/complete} for remarks on consistent first-order theories that are also valid here.
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:hol_henkin_completeness}\mimprovised
+  We extend the notion of Henkin-completeness from \cref{def:fol_henkin_completeness} to \hyperref[def:hol_theory]{higher-order logic theories} as follows: we say that the theory \( T \) over \( \Sigma \) is \term{Henkin complete} if, for every closed existentially quantified formula \( \qexists {x^\tau} \varphi \) over \( \Sigma \) (not necessarily in \( T \)), there exists a constant \( c \) such that
+  \begin{equation}\label{eq:def:hol_henkin_completeness/axiom}
+    \qexists {x^\tau} \varphi \synimplies \varphi[x^\tau \mapsto c]
+  \end{equation}
+  belongs to \( T \).
+\end{definition}
+\begin{comments}
+  \item Compare this to the Henkin-completeness for first-order theories, which we define in \cref{def:fol_henkin_completeness}.
+\end{comments}
+
+\begin{definition}\label{def:hol_term_model}\mcite[thm. 1]{Henkin1950CompletenessInTheoryOfTypes}
+  We adapt \hyperref[def:fol_term_model]{first-order term models} as follows. With respect to \hyperref[def:hol_natural_deduction_system]{higher-order natural deduction}, fix a \hyperref[def:hol_henkin_completeness]{Henkin-complete}, \hyperref[def:hol_theory/complete]{complete} and \hyperref[def:hol_theory/consistent]{consistent} theory \( T \) over the \hyperref[def:hol_signature]{signature} \( \Sigma \).
+
+  For every quantifiable type \( \tau \) over \( \Sigma \), let \( E_\tau \) be the set of all closed expressions over \( \Sigma \). This set is nonempty because \( T \) contains a witness for \( \qexists {x^\tau} \syntop \).
+
+  We will now use these sets to define a \hyperref[def:hol_frame]{frame} \( X = \seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}} \) and maps \( \Phi_\tau: E_\tau \to X_\tau \) for every quantifiable type \( \tau \). Our term model will then be \( \mscrT = (X, I) \), where the interpretation \( I(c) \) of the nonlogical constant \( (c: \tau) \) is \( \Phi_\tau(c) \).
+
+  We will additionally need the relation
+  \begin{equation*}
+    M^\tau \cong_\tau N^\tau \T{if and only if} (M^\tau \syneq N^\tau) \in T.
+  \end{equation*}
+
+  \Cref{thm:hol_natural_deduction_admissible_rules/equality} implies that \( {\cong_\tau} \) is an \hyperref[def:equivalence_relation]{equivalence relation} on \( E_\tau \) compatible with \( \muplambda \)-term construction. We will make sure that \( \Phi_\tau \) is compatible with \( {\cong_\tau} \), i.e. that \( M^\tau \cong_\tau N^\tau \) implies \( \Phi_\tau(M) = \Phi_\tau(N) \).
+
+  \begin{thmenum}
+    \thmitem{def:hol_term_model/prop} For type of propositions \( \syn\omicron \), the universe \( X_{\syn\omicron} \) is by definition the two-valued Boolean algebra \( \set{ \semtop, \sembot } \).
+
+    We let
+    \begin{equation*}
+      \Phi_{\syn\omicron}(\varphi) \coloneqq \begin{cases}
+        \semtop, &\varphi \cong_{\syn\omicron} \syntop, \\
+        \sembot, &\varphi \cong_{\syn\omicron} \synbot.
+      \end{cases}
+    \end{equation*}
+
+    This map is well-defined, as can be shown easily.
+
+    Since \( T \) is complete, for every formula \( \varphi \) over \( \Sigma \), either \( T \) contains \( \varphi \) and \ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/top} implies that \( \varphi \cong_{\syn\omicron} \syntop \), or \( T \) contains \( \varphi \) and \ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/bot} implies that \( \varphi \cong_{\syn\omicron} \synbot \).
+
+    Furthermore, since \( T \) is consistent, we cannot have both \( \varphi \cong_{\syn\omicron} \syntop \) and \( \varphi \cong_{\syn\omicron} \synbot \) because \ref{inf:thm:hol_natural_deduction_admissible_rules/prop_eq/both} would allow deriving \( \synbot \).
+
+    \thmitem{def:hol_term_model/sort} For every sort \( \tau \), we define the universe \( X_\tau \) as the quotient of \( E_\tau \) by \( {\cong_\tau} \). In this case \( \Phi_\tau \) is simply the quotient map.
+
+    \thmitem{def:hol_term_model/arrow} For the arrow type \( \tau \synimplies \sigma \), every term \( M^{\tau \synimplies \sigma} \) induces a function as follows:
+    \begin{equation*}
+      \Phi_{\tau \synimplies \sigma}(M) \coloneqq \parens[\Big]{ \Phi_\tau(N) \mapsto \Phi_\sigma(MN) }.
+    \end{equation*}
+
+    Well-definedness of \( \Phi_{\tau \synimplies \sigma} \) follows the consistency properties in \cref{thm:hol_natural_deduction_admissible_rules/equality}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This construction is taken from Henkin's \cite[thm. 1]{Henkin1950CompletenessInTheoryOfTypes} and is loosely based on his earlier construction for first-order logic presented in \cite{Henkin1949FOLCompleteness}. Our term models for first-order logic are also based on Henkin's.
+\end{comments}
+
+\begin{definition}\label{def:hol_frugal_structure}\mcite[128]{Andrews2002Logic}
+  We say that a \hyperref[def:hol_structure]{higher-order structure} \( \mscrX = (X, I) \) over \( \Sigma \) is \term{frugal} if the cardinality of each universe \( X_\tau \) in the \hyperref[def:hol_frame]{frame} \( X \) does not exceed the number of expressions over \( \Sigma \).
+\end{definition}
+\begin{comments}
+  \item Compare this to \cref{def:fol_frugal_structure}, where for first-order structures frugality restricts only the universe of individuals.
+\end{comments}
+
+\begin{proposition}\label{thm:hol_term_model_is_frugal}
+  \hyperref[def:hol_term_model]{Higher-order logic term models} are \hyperref[def:hol_frugal_structure]{frugal}.
+\end{proposition}
+\begin{proof}
+  The cardinality of each universe is restricted by the number of closed expressions of the corresponding type.
+\end{proof}
+
+\begin{proposition}\label{thm:hol_frugality_characterization}
+  A \hyperref[def:hol_structure]{higher-order logic structure} \( \mscrX = (X, I) \) over \( \Sigma \) is \hyperref[def:hol_frugal_structure]{frugal} if and only if, for each quantifiable type \( \tau \), we have
+  \begin{equation*}
+    \card(X_\tau) \leq \max\set{ \aleph_0, \kappa },
+  \end{equation*}
+  where \( \kappa \) is the amount of symbols in \( \Sigma \).
+\end{proposition}
+\begin{proof}
+  Analogous to \cref{thm:fol_frugality_characterization}, with the insignificant caveat that each purely syntactic \( \muplambda \)-term possibly has multiple type contexts.
+\end{proof}
+
+\begin{theorem}[Higher-order model existence theorem]\label{thm:hol_model_existence_theorem}\mimprovised
+  As in \cref{def:hol_term_model}, fix a \hyperref[def:hol_henkin_completeness]{Henkin-complete}, \hyperref[def:hol_theory/complete]{complete} and \hyperref[def:hol_theory/consistent]{consistent} theory \( T \) (with respect to \hyperref[def:hol_natural_deduction_system]{natural deduction}).
+
+  We claim that the term model \( \mscrT \) is indeed a model of \( T \).
+\end{theorem}
+\begin{proof}
+  We will use induction on the \hyperref[def:graph_cardinality/order]{graph order} of the \hyperref[def:lambda_term_ast]{abstract syntax tree} of the \hi{closed} expression \( M^\tau \) to show that \( \Bracks{M^\tau}_\mscrT = \Phi(M^\tau) \). Since \( \Phi_\tau(\varphi) = \semtop \) if and only if \( T \vdash \varphi \), it will follow that \( \mscrT \) is a model of \( T \).
+
+  \begin{itemize}
+    \item If \( M^\tau \) is a constant, either logical or nonlogical, its denotation is by definition \( \Phi_\tau(M) \).
+
+    \item Since \( M^\tau \) is closed, it cannot be a variable.
+
+    \item If \( M^\tau = N^{\sigma \synimplies \tau} K^\sigma \), where the inductive hypothesis holds for \( N^{\sigma \synimplies \tau} \) and \( K^\sigma \), then
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v
+      \reloset{\eqref{eq:alg:hol_denotation/app}} =
+      \Bracks{N^{\sigma \synimplies \tau}}_\mscrX^v \parens[\big]{ \Bracks{K^\sigma}_\mscrX^v }
+      \reloset{\T{ind.}} =
+      \Phi_{\sigma \synimplies \tau}(N) \parens[\big]{ \Phi_\sigma(K) }
+      =
+      \Phi_\tau(NK).
+    \end{equation*}
+
+    \item Finally, suppose that \( M^\tau = \qabs {x^\sigma} N^\rho \), where \( \tau = \sigma \synimplies \rho \) and the inductive hypothesis holds for \( N^\rho \).
+
+    Since \( T \) is Henkin-complete, for every closed expression \( K^\sigma \), there exists a witness \( c_K \) for the formula
+    \begin{equation*}
+      \qexists {y^\sigma} (y \syneq K^\sigma).
+    \end{equation*}
+
+    Then \( \Phi_\sigma(c_K) = \Phi_\sigma(K) \). Furthermore, since \( c_K \) is a constant, we have \( \Bracks{c_K^\sigma}_\mscrT = \Phi_\sigma(c_K) \).
+
+    For any variable assignment \( v \), we have
+    \begin{equation*}
+      \Bracks{M^\tau}_\mscrX^v\parens[\big]{ \Phi_\sigma(K) }
+      =
+      \Bracks{M^\tau}_\mscrX^v\parens[\big]{ \Phi_\sigma(c_K) }
+      \reloset{\eqref{eq:alg:hol_denotation/abs}} =
+      \Bracks{N^\rho}_\mscrX^{v_{x^\sigma \mapsto \Phi_\sigma(c_K)}}
+      \reloset{\ref{thm:hol_expression_semantics_of_compatible_substitutions}} =
+      \Bracks{N^\rho[x^\sigma \mapsto c_K^\sigma]}_\mscrX^v.
+    \end{equation*}
+
+    By the inductive hypothesis, the above equals \( \Phi_\rho(N^\rho[x^\sigma \mapsto c_a^\sigma]) \). Since
+    \begin{equation*}
+      M^\tau c_K^\sigma \bred N^\rho[x^\sigma \mapsto c_K^\sigma],
+    \end{equation*}
+    via an application of \ref{inf:def:hol_natural_deduction/equality/intro} it follows that the two are congruent in \( \mscrT \), thus
+    \begin{equation*}
+      \Phi_\sigma(N[x^\sigma \mapsto c_K^\sigma])
+      =
+      \Phi_\sigma(M c_K)
+      =
+      \Phi_\tau(M) \parens[\big]{ \Phi_\sigma(c_K) }
+      =
+      \Phi_\tau(M) \parens[\big]{ \Phi_\sigma(K) }.
+    \end{equation*}
+
+    We have obtained that \( \Phi_\tau(M) = \Bracks{M^\tau}_\mscrT \), as desired.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:hol_consistent_implies_satisfiable}
+  If a set of closed formulas is \hyperref[def:hol_theory/consistent]{consistent} with respect to \hyperref[def:hol_natural_deduction_system]{classical natural deduction}, it has a \hyperref[def:hol_frugal_structure]{frugal} \hyperref[def:fol_semantics/model]{model}.
+\end{corollary}
+\begin{comments}
+  \item This statement has an analog for both \hyperref[def:propositional_logic]{propositional logic} and \hyperref[def:first_order_logic]{first-order logic} --- see \cref{thm:propositional_consistent_implies_satisfiable} and \cref{thm:fol_consistent_implies_satisfiable}, respectively.
+\end{comments}
+\begin{proof}
+  We have skipped several steps of the proof compared to \cref{thm:fol_consistent_implies_satisfiable} because they are similar to the case of first-order logic.
+
+  Let \( T \coloneqq \op*{Th}(\Gamma) \) be the theory generated by \( \Gamma \). We have not defined Henkin completions, but the process is analogous to the first-order case, which we study in detail in \fullref{sec:first_order_completeness}. Anyhow, let \( T^{*\omega} \) be the similarly constructed Henkin completion of \( T \).
+
+  We can then use an analog of \fullref{thm:fol_lindenbaums_lemma} to build an extension \( T^+ \) of \( T^{*\omega} \) that is consistent, complete and Henkin-complete. As an extension of \( T \), \( T^+ \) is \hyperref[def:hol_theory/conservative]{conservative}.
+
+  This allows us to construct a \hyperref[def:hol_term_model]{term model} \( \mscrT \), which satisfies \( T^+ \) by \fullref{thm:hol_model_existence_theorem}. Its reduct along the inclusion \( \iota: T \to T^+ \) is thus a model of \( T \).
+
+  Furthermore, \cref{thm:fol_term_model_is_frugal} shows that \( \mscrT \) is frugal over the Henkin completion \( \Sigma^{*\omega} \), so similarly to the first-order case we can show that it is also frugal over \( \Sigma \).
+\end{proof}
+
+\begin{theorem}[Weak higher-order completeness]\label{thm:hol_weak_completeness}
+  The \hyperref[def:fol_natural_deduction]{classical higher-order natural deduction system} is \hyperref[def:general_logic/completeness]{complete} with respect to \hyperref[def:fol_semantics/standard]{general higher-order semantics}.
+\end{theorem}
+\begin{comments}
+  \item As discussed by \incite{Henkin1950CompletenessInTheoryOfTypes}, this does not hold for standard semantics.
+
+  \item This is the higher-order counterpart of \fullref{thm:classical_propositional_completeness} and \fullref{thm:fol_completeness}.
+\end{comments}
+\begin{proof}
+  We will spell out the details to highlight where frugality is used.
+
+  Suppose that \( \Gamma \vDash \varphi \). Then the set \( \Gamma \cup \set{ \neg \varphi } \) is \hyperref[def:hol_semantics/satisfaction]{unsatisfiable} because \( \Bracks{\neg \varphi}_\mscrX = \sembot \) for every model \( \mscrX \) of \( \Gamma \).
+
+  The set \( \Gamma \cup \set{ \neg \varphi } \) must be \hyperref[def:hol_theory/consistent]{inconsistent} since otherwise \cref{thm:hol_consistent_implies_satisfiable} would imply that it has a \hi{frugal} model.
+
+  Since is inconsistent, there exists a proof tree deriving \( \bot \) from \( \Gamma \cup \set{ \neg \varphi } \). Then we can apply \ref{inf:def:propositional_natural_deduction/bot/raa} and obtain a proof of \( \varphi \) from \( \Gamma \).
+\end{proof}
+
+\paragraph{Compactness}
+
+\begin{theorem}[Weak higher-order semantic compactness]\label{thm:hol_weak_semantic_compactness}
+  All of the hollowing equivalent statements hold for the \hyperref[def:hol_semantics/entailment]{higher-order entailment relation} for \hyperref[def:hol_semantics/standard]{general semantics} over finite signatures:
+  \begin{thmenum}
+    \thmitem{thm:hol_weak_semantic_compactness/relation} The relation is \hyperref[def:consequence_relation/compactness]{compact}: if \( \Gamma \vDash \varphi \), there exists a finite subset \( \Gamma_0 \) of \( \Gamma \) such that \( \Gamma_0 \vDash \varphi \).
+
+    \thmitem{thm:hol_weak_semantic_compactness/satisfiable} A set of sentences is \hyperref[def:hol_semantics/model]{satisfiable} (has a model) if and only if it is \hyperref[def:finitely_satisfiable_set_of_sentences]{finitely satisfiable} (every finite subset has a model).
+
+    \thmitem{thm:hol_weak_semantic_compactness/consistent} A set of sentences is \hyperref[def:hol_theory/consistent]{consistent} (does not entail \( \synbot \)) if and only if it is \hyperref[def:finitely_consistent_set_of_sentences]{finitely consistent} (no finite subset entails \( \synbot \)).
+  \end{thmenum}
+\end{theorem}
+\begin{comments}
+  \item \Cref{thm:propositional_semantic_inconsistency} gives several equivalent conditions for a set of closed formulas to be semantically consistent. Satisfiability is among them.
+
+  \item This is one of several compactness theorems presented here --- see \cref{rem:logical_compactness_theorems}.
+\end{comments}
+\begin{proof}
+  \Cref{thm:hol_weak_semantic_compactness/relation} Follows from \fullref{thm:hol_compactness} via \cref{thm:completeness_implies_compactness}.
+
+  The equivalence between the different conditions can be shown as in \fullref{thm:classical_propositional_semantic_compactness}.
 \end{proof}
