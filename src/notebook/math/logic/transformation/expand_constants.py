@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective, PropConstantSymbol
 from ..formulas import (
     ConnectiveFormula,
@@ -35,7 +36,7 @@ def expand_constants(formula: Formula, default: Formula) -> Formula:
     return ExpandConstantsVisitor(default).visit(formula)
 
 
-# This is alg:propositional_constant_expansion in the monograph
+@collector.ref('alg:propositional_constant_expansion')
 def expand_constants_prop(formula: PropFormula) -> PropFormula:
     variables = get_prop_variables(formula)
     p = min(variables) if len(variables) > 0 else DEFAULT_PROP_VARIABLE

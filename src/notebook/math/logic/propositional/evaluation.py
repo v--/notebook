@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from .formula_visitor import PropFormulaVisitor
 
 
@@ -52,6 +53,6 @@ class FormulaEvaluationVisitor[T](PropFormulaVisitor[bool]):
         return self.visit(formula.left) == self.visit(formula.right)
 
 
-# This is alg:propositional_denotation in the monograph
+@collector.ref('alg:propositional_denotation')
 def evaluate_prop_formula(formula: PropFormula, interpretation: PropInterpretation) -> bool:
     return FormulaEvaluationVisitor(interpretation).visit(formula)

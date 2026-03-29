@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from .....support.coderefs import collector
 from ....logic.terms import FunctionApplication, Term, TermVisitor
 from ....logic.terms import Variable as LogicVariable
 from ...assertions import VariableTypeAssertion
@@ -37,7 +38,7 @@ class TermTranslationVisitor(TermVisitor):
         return result
 
 
-# alg:fol_term_to_hol_expression
+@collector.ref('alg:fol_term_to_hol_expression')
 def fol_term_to_hol_expression(fol_signature: FormalLogicSignature, fol_term: Term) -> HolExpression:
     hol_signature = fol_signature_to_hol_signature(fol_signature)
     hol_term = TermTranslationVisitor(fol_signature, hol_signature).visit(fol_term)

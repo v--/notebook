@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from .....support.coderefs import collector
 from ....polynomials.monomial import Monomial
 from ....polynomials.polynomial.int import IntPolynomial, const, zero
 from ...terms import FunctionApplication, Term, TermVisitor, Variable
@@ -39,6 +40,6 @@ class TermToPolynomialVisitor(TermVisitor[IntPolynomial]):
                 raise UnrecognizedSymbolError(f'Unknown {term.symbol.get_kind_string()} symbol {term.symbol}')
 
 
-# This is alg:logical_term_to_integer_polynomial in the monograph
+@collector.ref('alg:logical_term_to_integer_polynomial')
 def term_to_polynomial(term: Term) -> IntPolynomial:
     return TermToPolynomialVisitor().visit(term)

@@ -1,9 +1,10 @@
 import math
 
+from ...support.coderefs import collector
 from .exceptions import InvalidArgumentError
 
 
-# This is eq:thm:stirlings_gamma_approximation/mu in the monograph
+@collector.ref('eq:thm:stirlings_gamma_approximation/mu')
 def stirling_mu(x: float, terms: int) -> float:
     return sum(
         (x + k + 1 / 2) * math.log(1 + 1 / (x + k)) - 1
@@ -11,7 +12,7 @@ def stirling_mu(x: float, terms: int) -> float:
     )
 
 
-# This is eq:thm:stirlings_gamma_approximation in the monograph
+@collector.ref('eq:thm:stirlings_gamma_approximation')
 def stirling(x: float) -> float:
     if x <= 0:
         raise InvalidArgumentError(f'Expected a positive number, but got {x:.3f}')

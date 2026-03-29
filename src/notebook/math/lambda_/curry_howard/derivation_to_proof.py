@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, override
 
 from ....parsing import GreekIdentifier
+from ....support.coderefs import collector
 from ...logic.alphabet import BinaryConnective, PropConstantSymbol
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import MarkedFormula, Marker, NaturalDeductionRule
@@ -145,7 +146,7 @@ def translate_application(
     )
 
 
-# This is alg:type_derivation_to_proof_tree in the monograph
+@collector.ref('alg:type_derivation_to_proof_tree')
 def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree.ProofTree:
     if isinstance(derivation, dtree.AssumptionTree):
         return ptree.assume(

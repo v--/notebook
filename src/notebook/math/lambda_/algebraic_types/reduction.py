@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ...exceptions import NotebookMathException
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
 from ..assertions import VariableTypeAssertion
@@ -141,7 +142,7 @@ def reduce_derivation_unsafe(tree: TypeDerivationTree, reduct: TypedTerm) -> Typ
     return ReductionVisitor(reduct).visit(tree)
 
 
-# This is alg:simply_typed_reduction in the monograph
+@collector.ref('alg:simply_typed_reduction')
 def reduce_derivation(tree: TypeDerivationTree, reduct: TypedTerm) -> TypeDerivationTree:
     try:
         return reduce_derivation_unsafe(tree, reduct)

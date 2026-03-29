@@ -1,3 +1,4 @@
+from ...support.coderefs import collector
 from .matrix import FloatMatrix, IntMatrix
 from .norm import are_close, is_unit
 from .plu import plu, plu_inv
@@ -33,7 +34,7 @@ def test_plu_inv(mat123f: FloatMatrix) -> None:
     assert is_unit(mat123f @ plu_inv(mat123f))
 
 
-# ex:def:group_commutator/gl2
+@collector.ref('ex:def:group_commutator/gl2')
 def test_commutator_example() -> None:
     a = IntMatrix.from_rows([[1, 1], [0, 1]])
     b = IntMatrix.from_rows([[1, 1], [1, 0]])

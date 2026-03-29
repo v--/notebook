@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
+from ...support.coderefs import collector
 from .terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, TypedTermVisitor, Variable
 from .types import BaseType, SimpleConnectiveType, SimpleType, TypeVariable, TypeVisitor
 
@@ -30,7 +31,7 @@ class TypeTranslationVisitor(TypeVisitor[SimpleType]):
         )
 
 
-# This is alg:fol_formula_signature_translation in the monograph
+@collector.ref('alg:fol_formula_signature_translation')
 def translate_type(translation: SignatureMorphism, type_: SimpleType) -> SimpleType:
     return TypeTranslationVisitor(translation).visit(type_)
 
@@ -67,6 +68,6 @@ class TermTranslationVisitor(TypedTermVisitor[TypedTerm]):
         )
 
 
-# This is alg:fol_term_signature_translation in the monograph
+@collector.ref('alg:fol_term_signature_translation')
 def translate_term(translation: SignatureMorphism, term: TypedTerm) -> TypedTerm:
     return TermTranslationVisitor(translation).visit(term)

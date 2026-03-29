@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInferenceError
 from ..terms import (
     Constant,
@@ -60,7 +61,7 @@ class InferInstantiationVisitor(TypedTermSchemaVisitor[AtomicLambdaSchemaInstant
             infer_instantiation_from_term(schema.body, self.term.body)
 
 
-# This is alg:lambda_term_schema_inference in the monograph
+@collector.ref('alg:lambda_term_schema_inference')
 def infer_instantiation_from_term(schema: TypedTermSchema, term: TypedTerm) -> AtomicLambdaSchemaInstantiation:
     return InferInstantiationVisitor(term).visit(schema)
 

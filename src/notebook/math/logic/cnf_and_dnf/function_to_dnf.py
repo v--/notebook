@@ -1,6 +1,7 @@
 import inspect
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective, PropConstantSymbol
 from ..formulas import PropConstant
 from ..propositional import (
@@ -35,7 +36,7 @@ def function_params_as_variables(fun: Callable[..., bool]) -> Iterable[PropVaria
             raise VariableNameError(f'The parameter name {param.name!r} is not a valid propositional variable name.') from None
 
 
-# This is alg:function_to_dnf in the monograph
+@collector.ref('alg:function_to_dnf')
 def function_to_dnf(fun: Callable[..., bool]) -> PropFormula:
     variables = list(function_params_as_variables(fun))
 

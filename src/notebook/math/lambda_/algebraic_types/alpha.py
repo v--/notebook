@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInferenceError
 from ..assertions import VariableTypeAssertion
 from ..instantiation import AtomicLambdaSchemaInstantiation, infer_instantiation_from_term, instantiate_term_schema
@@ -133,7 +134,7 @@ def alpha_convert_derivation_unsafe(tree: TypeDerivationTree, other: TypedTerm) 
     return AlphaConversionVisitor(other).visit(tree)
 
 
-# This is alg:simply_typed_reduction in the monograph
+@collector.ref('alg:simply_typed_reduction')
 def alpha_convert_derivation(tree: TypeDerivationTree, other: TypedTerm) -> TypeDerivationTree:
     try:
         return alpha_convert_derivation_unsafe(tree, other)

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
     Constant,
@@ -57,10 +58,10 @@ class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
         )
 
 
-# This is alg:lambda_term_schema_instantiation in the monograph
 @overload
 def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLambdaSchemaInstantiation) -> Variable: ...
 @overload
 def instantiate_term_schema(schema: TypedTermSchema, instantiation: AtomicLambdaSchemaInstantiation) -> TypedTerm: ...
+@collector.ref('alg:lambda_term_schema_instantiation')
 def instantiate_term_schema(schema: TypedTermSchema, instantiation: AtomicLambdaSchemaInstantiation) -> TypedTerm:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

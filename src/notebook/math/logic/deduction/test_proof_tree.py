@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from ....support.coderefs import collector
 from ..classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ..parsing import (
     parse_formula,
@@ -128,7 +129,7 @@ def test_or_intro() -> None:
     )
 
 
-# ex:def:propositional_natural_deduction/efq_vs_dne
+@collector.ref('ex:def:propositional_natural_deduction/efq_vs_dne')
 def test_dne() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
@@ -251,7 +252,7 @@ def test_invalid_application_duplicate_marker() -> None:
         )
 
 
-# ex:def:fol_natural_deduction/verum
+@collector.ref('ex:def:fol_natural_deduction/verum')
 def test_forall_introduction() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
@@ -288,7 +289,7 @@ def test_forall_elimination(dummy_signature: FormalLogicSignature) -> None:
     )
 
 
-# ex:def:fol_natural_deduction/reintroduction
+@collector.ref('ex:def:fol_natural_deduction/reintroduction')
 def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
@@ -364,7 +365,7 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
     )
 
 
-# ex:def:fol_natural_deduction/forall_to_exists
+@collector.ref('ex:def:fol_natural_deduction/forall_to_exists')
 def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
@@ -390,7 +391,7 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     )
 
 
-# ex:def:fol_natural_deduction/quantifier_duality
+@collector.ref('ex:def:fol_natural_deduction/quantifier_duality')
 def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('¬∀x.¬p¹(x)', dummy_signature)
     v = parse_formula('¬∃x.p¹(x)', dummy_signature)
@@ -506,7 +507,7 @@ def test_forall_introduction_eigenvariable_failure_free_in_derivation(dummy_sign
         )
 
 
-# ex:def:fol_natural_deduction/exists_elimination
+@collector.ref('ex:def:fol_natural_deduction/exists_elimination')
 def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('∃x.p¹(x)', dummy_signature)
     v = parse_formula('∀y.(p¹(y) → q¹(z))', dummy_signature)

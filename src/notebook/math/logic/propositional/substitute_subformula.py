@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from .formula_visitor import PropFormulaTransformationVisitor
 
 
@@ -21,6 +22,6 @@ class FormulaSubstitutionVisitor(PropFormulaTransformationVisitor):
         return super().visit(formula)
 
 
-# This is alg:propositional_subformula_substitution in the monograph
+@collector.ref('alg:propositional_subformula_substitution')
 def substitute_subformula(formula: PropFormula, src: PropFormula, dest: PropFormula) -> PropFormula:
     return FormulaSubstitutionVisitor(src, dest).visit(formula)

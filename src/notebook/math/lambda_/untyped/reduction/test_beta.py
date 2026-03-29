@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from .....support.coderefs import collector
 from .....support.pytest import pytest_parametrize_kwargs
 from ...common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
 from ...common import variables as var
@@ -55,7 +56,7 @@ def test_applicative_beta_skk() -> None:
     )
 
 
-# ex:def:beta_eta_reduction/omega
+@collector.ref('ex:def:beta_eta_reduction/omega')
 def test_applicative_beta_omega() -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
 
@@ -63,7 +64,7 @@ def test_applicative_beta_omega() -> None:
     assert reduce_term_once(UntypedApplication(omega3, omega3), strategy) == UntypedApplication(UntypedApplication(omega3, omega3), omega3)
 
 
-# ex:def:beta_eta_reduction/pairs
+@collector.ref('ex:def:beta_eta_reduction/pairs')
 def test_applicative_pairs() -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
 
@@ -75,7 +76,7 @@ def test_applicative_pairs() -> None:
     assert transitively_reduce_term(p2, strategy) == var.y
 
 
-# ex:def:beta_eta_reduction/boolean
+@collector.ref('ex:def:beta_eta_reduction/boolean')
 def test_applicative_not() -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
 
@@ -87,7 +88,7 @@ def test_applicative_not() -> None:
     assert transitively_reduce_term(UntypedApplication(n, f), strategy) == t
 
 
-# ex:normal_vs_applicative_strategy
+@collector.ref('ex:normal_vs_applicative_strategy')
 def test_beta_c0_omega_i() -> None:
     applicative = ApplicativeOrderStrategy(BetaReduction())
     normal = NormalOrderStrategy(BetaReduction())

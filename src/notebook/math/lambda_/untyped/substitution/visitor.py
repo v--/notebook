@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from .....support.coderefs import collector
 from ...terms import (
     Constant,
     UntypedAbstraction,
@@ -40,7 +41,7 @@ class UntypedSubstitutionApplicationVisitor(UntypedTermVisitor[UntypedTerm]):
         return UntypedAbstraction(new_var, new_subterm)
 
 
-# This is alg:lambda_term_substitution in the monograph
+@collector.ref('alg:lambda_term_substitution')
 def apply_substitution_to_term(term: UntypedTerm, substitution: UntypedTermSubstitution) -> UntypedTerm:
     return UntypedSubstitutionApplicationVisitor(substitution).visit(term)
 

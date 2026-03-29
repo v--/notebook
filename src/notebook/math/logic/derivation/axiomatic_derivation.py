@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, NamedTuple
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInferenceError
 from ..alphabet import BinaryConnective
 from ..deduction import (
@@ -109,7 +110,7 @@ def get_premises(ad_system: AxiomaticDerivationSystem, derivation: AxiomaticDeri
     }
 
 
-# This is alg:proof_tree_to_axiomatic_derivation in the monograph
+@collector.ref('alg:proof_tree_to_axiomatic_derivation')
 def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: AxiomaticDerivation, used_markers: Collection[Marker] = set()) -> ProofTree:
     conclusion = derivation.get_conclusion()
 
@@ -172,7 +173,7 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
     yield tree.conclusion
 
 
-# This is alg:axiomatic_proof_tree_to_derivation in the monograph
+@collector.ref('alg:axiomatic_proof_tree_to_derivation')
 def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
     return AxiomaticDerivation(
         payload=list(_proof_tree_to_derivation_payload(tree)),

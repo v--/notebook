@@ -1,5 +1,4 @@
 # ruff: noqa: ARG005, FURB118
-
 from typing import TYPE_CHECKING
 
 from ...support.pytest import pytest_parametrize_kwargs

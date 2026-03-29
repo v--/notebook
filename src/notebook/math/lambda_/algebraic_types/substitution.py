@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ....support.substitution import UnspecifiedReplacementError
 from ..assertions import VariableTypeAssertion
 from ..instantiation import AtomicLambdaSchemaInstantiation
@@ -104,7 +105,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         )
 
 
-# This is def:atomic_lambda_term_substitution in the monograph
+@collector.ref('def:atomic_lambda_term_substitution')
 def apply_substitution_to_tree(tree: TypeDerivationTree, substitution: AtomicTypeDerivationSubstitution) -> TypeDerivationTree:
     return TreeSubstitutionVisitor(substitution).visit(tree)
 

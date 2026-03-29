@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Never, override
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryTypeConnective
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
 from ..assertions import VariableTypeAssertion
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
 
-# This is alg:simply_typed_term_type_inference in the monograph
+@collector.ref('alg:simply_typed_term_type_inference')
 @dataclass(frozen=True)
 class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
     context: Mapping[Variable, SimpleType]

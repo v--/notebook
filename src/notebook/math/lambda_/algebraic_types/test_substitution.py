@@ -2,6 +2,7 @@ import re
 
 import pytest
 
+from ....support.coderefs import collector
 from ....support.inference import ImproperInferenceRuleSymbol
 from ..arrow_types import derive_type
 from ..common import variables
@@ -95,7 +96,7 @@ def test_substitute_abstraction_renaming() -> None:
     assert substitute_in_tree(tree, variable_mapping={src: dest}) == expected
 
 
-# ex:alg:lambda_term_substitution/composed_vs_iterated
+@collector.ref('ex:alg:lambda_term_substitution/composed_vs_iterated')
 def test_substitute_abstraction_renaming_simultaneous() -> None:
     tree = derive_type(
         parse_typed_term('(λa:(τ → σ).(xb))'),

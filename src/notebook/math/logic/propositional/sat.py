@@ -1,6 +1,7 @@
 from itertools import product
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from .evaluation import evaluate_prop_formula
 from .interpretation import PropInterpretation
 from .variables import get_prop_variables
@@ -23,7 +24,7 @@ def iter_interpretations(*formulas: PropFormula) -> Iterable[PropInterpretation]
     )
 
 
-# This is thm:brute_force_prop_satisfaction in the monograph
+@collector.ref('thm:brute_force_prop_satisfaction')
 def brute_force_satisfy(formula: PropFormula) -> PropInterpretation | None:
     for interp in iter_interpretations(formula):
         if evaluate_prop_formula(formula, interp):

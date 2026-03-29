@@ -3,6 +3,7 @@ import inspect
 from typing import TYPE_CHECKING
 
 from ...parsing import LatinIdentifier
+from ...support.coderefs import collector
 from ...support.unicode import Capitalization, is_latin_string
 from .exceptions import IndeterminateError
 from .monomial import Monomial
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-# This is alg:infer_zhegalkin_polynomial in the monograph
+@collector.ref('alg:infer_zhegalkin_polynomial')
 def infer_zhegalkin(fun: Callable[..., bool]) -> BooleanPolynomial:
     fun_params = inspect.signature(fun).parameters
 

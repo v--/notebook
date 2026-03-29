@@ -1,6 +1,7 @@
 from collections.abc import Collection
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ....support.collections.sequential_set import SequentialSet
 
 
@@ -22,7 +23,7 @@ def is_cycle[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> boo
     )
 
 
-# This is alg:cycle_removal in the monograph
+@collector.ref('alg:cycle_removal')
 def remove_cycles[VertT](walk: DirectedWalk[VertT]) -> DirectedWalk[VertT]:
     if len(walk.segments) == 0:
         return walk

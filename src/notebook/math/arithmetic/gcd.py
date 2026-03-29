@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
+from ...support.coderefs import collector
 from ..matrices.matrix import IntMatrix
 from .support import sgn
 
 
-# This is alg:euclidean_algorithm in the monograph
+@collector.ref('alg:euclidean_algorithm')
 def gcd(n: int, m: int) -> int:
     while m != 0:
         n, m = m, n % m
@@ -24,7 +25,7 @@ class ExtendedGcdResult:
         return self.a * self.n + self.b * self.m
 
 
-# This is alg:extended_euclidean_algorithm in the monograph
+@collector.ref('alg:extended_euclidean_algorithm')
 def extended_gcd(n: int, m: int) -> ExtendedGcdResult:
     i_r = 0
     i_a = 1

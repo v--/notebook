@@ -1,3 +1,4 @@
+from .....support.coderefs import collector
 from ...formulas import PropConstant
 from ...propositional import (
     DEFAULT_PROP_SIGNATURE,
@@ -14,7 +15,7 @@ from .signature import (
 )
 
 
-# This is alg:propositional_formula_to_boolean_term in the monograph
+@collector.ref('alg:propositional_formula_to_boolean_term')
 def boolean_term_to_prop_formula(term: Term) -> PropFormula:
     match term:
         case Variable():

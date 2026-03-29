@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
 from ...exceptions import UnreachableException
+from ...support.coderefs import collector
 from ..graphs.complete import max_edge_count
 from ..graphs.graph import UndirectedGraph
 from ..graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
@@ -80,7 +81,7 @@ class ExhaustiveRamseyComputationState:
     subgraphs_traversed: int
 
 
-# This approach is discussed in rem:estimating_ramsey_numbers in the monograph.
+@collector.ref('rem:estimating_ramsey_numbers')
 def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, batch_size: int | None = None) -> Iterable[ExhaustiveRamseyComputationState]:
     bounds = naive_ramsey_computation_bounds(s, t, *rest)
     sizes = [s, t, *rest]

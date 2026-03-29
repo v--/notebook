@@ -1,5 +1,4 @@
 # ruff: noqa: E222
-
 from .sources.common.url_template import UrlTemplate
 
 

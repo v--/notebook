@@ -1,3 +1,4 @@
+from ...support.coderefs import collector
 from ..automata.finite import FiniteAutomaton, reverse_automaton
 from ..automata.finite_determinize import determinize
 from .alphabet import NonTerminal, Terminal, new_non_terminal
@@ -34,7 +35,7 @@ def is_regular(grammar: Grammar) -> bool:
     return is_left_linear(grammar) or is_right_linear(grammar)
 
 
-# This is alg:regular_grammar_to_automaton in the monograph
+@collector.ref('alg:regular_grammar_to_automaton')
 def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
     if not is_regular(grammar):
         raise IncompatibleGrammarError('Expected a regular grammar')

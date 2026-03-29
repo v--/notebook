@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInstantiationError
 from ..formulas import (
     ConnectiveFormula,
@@ -73,6 +74,6 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         )
 
 
-# This is alg:fol_formula_schema_instantiation in the monograph
+@collector.ref('alg:fol_formula_schema_instantiation')
 def instantiate_formula_schema(schema: FormulaSchema, instantiation: AtomicLogicSchemaInstantiation) -> Formula:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

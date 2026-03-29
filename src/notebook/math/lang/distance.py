@@ -1,3 +1,4 @@
+from ...support.coderefs import collector
 from ..matrices.matrix import IntMatrix
 from .exceptions import FormalLanguageError
 
@@ -9,7 +10,7 @@ def hamming(v: str, w: str) -> int:
     return sum(a != b for a, b in zip(v, w, strict=True))
 
 
-# This is alg:wagner_fisher in the monograph
+@collector.ref('alg:wagner_fisher')
 def wagner_fisher(v: str, w: str) -> int:
     mat = IntMatrix.zeros(len(v) + 1, len(w) + 1)
 

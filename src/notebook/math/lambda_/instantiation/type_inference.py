@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInferenceError, SchemaInstantiationError
 from ..types import (
     BaseType,
@@ -39,7 +40,7 @@ class BuildInstantiationVisitor(TypeSchemaVisitor[AtomicLambdaSchemaInstantiatio
         return left | right
 
 
-# This is alg:simple_type_schema_inference in the monograph
+@collector.ref('alg:simple_type_schema_inference')
 def infer_instantiation_from_type(schema: SimpleTypeSchema, type_: SimpleType) -> AtomicLambdaSchemaInstantiation:
     return BuildInstantiationVisitor(type_).visit(schema)
 

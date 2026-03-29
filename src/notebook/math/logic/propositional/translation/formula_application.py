@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from .....support.coderefs import collector
 from ...formulas import ConnectiveFormula, Formula, NegationFormula, PropConstant
 from ..formula_visitor import PropFormulaVisitor
 from .base import PropFormulaTranslation
@@ -37,7 +38,7 @@ class FormulaSubstitutionVisitor(PropFormulaVisitor[Formula]):
         )
 
 
-# This is alg:fol_propositional_formula_translation in the monograph
+@collector.ref('alg:fol_propositional_formula_translation')
 def apply_prop_formula_translation(formula: PropFormula, translation: PropFormulaTranslation) -> Formula:
     return FormulaSubstitutionVisitor(translation).visit(formula)
 

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, cast, override
 
+from .....support.coderefs import collector
 from ...alphabet import LatticeConnective
 from ...parsing import parse_variable
 from ...propositional import (
@@ -49,6 +50,6 @@ class FormulaToTermVisitor(PropFormulaVisitor[Term]):
         )
 
 
-# This is alg:propositional_formula_to_boolean_term in the monograph
+@collector.ref('alg:propositional_formula_to_boolean_term')
 def prop_formula_to_boolean_term(formula: PropFormula) -> Term:
     return FormulaToTermVisitor().visit(formula)

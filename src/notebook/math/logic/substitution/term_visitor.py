@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ..terms import FunctionApplication, Term, TermTransformationVisitor, Variable
 from .substitution import AtomicLogicSubstitution
 
@@ -22,7 +23,7 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
         return FunctionApplication(term.symbol, [self.visit(arg) for arg in term.arguments])
 
 
-# This is alg:fol_term_substitution in the monograph
+@collector.ref('alg:fol_term_substitution')
 def apply_substitution_to_term(term: Term, substitution: AtomicLogicSubstitution) -> Term:
     return TermSubstitutionVisitor(substitution).visit(term)
 

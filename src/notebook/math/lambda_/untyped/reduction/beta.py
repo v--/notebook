@@ -1,6 +1,7 @@
 import inspect
 from typing import TYPE_CHECKING
 
+from .....support.coderefs import collector
 from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from ..substitution import substitute
 from .strategies import Reduction
@@ -18,7 +19,7 @@ class BetaReduction(Reduction):
         return None
 
 
-# This is alg:untyped_lambda_term_to_function in the monograph
+@collector.ref('alg:untyped_lambda_term_to_function')
 def to_function(term: UntypedTerm) -> Callable:
     arg_names = list[str]()
 

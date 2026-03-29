@@ -1,10 +1,11 @@
 from typing import NamedTuple
 
+from ...support.coderefs import collector
 from .exceptions import NotebookZeroDivisionError
 from .support import sgn
 
 
-# This is eq:rem:integer_division_uniqueness/max/q in the monograph
+@collector.ref('eq:rem:integer_division_uniqueness/max/q')
 def quot_max(n: int, m: int) -> int:
     if m == 0:
         raise NotebookZeroDivisionError(m)
@@ -16,7 +17,7 @@ def quot_max(n: int, m: int) -> int:
     )
 
 
-# This is eq:rem:integer_division_uniqueness/trunc/q in the monograph
+@collector.ref('eq:rem:integer_division_uniqueness/trunc/q')
 def quot_trunc(n: int, m: int) -> int:
     if m == 0:
         raise NotebookZeroDivisionError(m)
@@ -25,7 +26,7 @@ def quot_trunc(n: int, m: int) -> int:
     return sgn(n) * sgn(m) * max(k for k in domain if k * abs(m) <= abs(n))
 
 
-# This is eq:rem:integer_division_uniqueness/floor/q in the monograph
+@collector.ref('eq:rem:integer_division_uniqueness/floor/q')
 def quot_floor(n: int, m: int) -> int:
     if m == 0:
         raise NotebookZeroDivisionError(m)
@@ -34,7 +35,7 @@ def quot_floor(n: int, m: int) -> int:
     return max(k for k in domain if k * abs(m) <= sgn(m) * n)
 
 
-# This is eq:rem:integer_division_uniqueness/dist/q in the monograph
+@collector.ref('eq:rem:integer_division_uniqueness/dist/q')
 def quot_dist(n: int, m: int) -> int:
     if m == 0:
         raise NotebookZeroDivisionError(m)

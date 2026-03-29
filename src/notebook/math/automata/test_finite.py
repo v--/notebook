@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .finite import FiniteAutomaton
 
 
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from .conftest import FiniteAutomatonFixture
 
 
-# ex:def:formal_language/an
+@collector.ref('ex:def:formal_language/an')
 def test_finite_automaton_recognizes_an() -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(src=1, dest=1, symbol='a')

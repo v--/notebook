@@ -1,3 +1,4 @@
+from .....support.coderefs import collector
 from ....polynomials.monomial import Monomial
 from ....polynomials.polynomial.int import IntPolynomial
 from ...terms import FunctionApplication, Term, Variable
@@ -46,7 +47,7 @@ def monomial_to_term(mon: Monomial) -> Term:
     ])
 
 
-# This is alg:integer_polynomial_to_logical_term in the monograph
+@collector.ref('alg:integer_polynomial_to_logical_term')
 def polynomial_to_term(pol: IntPolynomial) -> Term:
     monomials = pol.get_monomials()
 

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from .....support.coderefs import collector
 from ...deduction import AssumptionTree, MarkedFormula, ProofTree, RuleApplicationTree, apply, assume, premise_config
 from ...instantiation import AtomicLogicSchemaInstantiation
 from ..formula_conversion import convert_to_prop_formula
@@ -23,7 +24,7 @@ def convert_and_apply_formula_translation(formula: Formula, translation: PropFor
     )
 
 
-# This is alg:fol_propositional_proof_tree_translation in the monograph
+@collector.ref('alg:fol_propositional_proof_tree_translation')
 def apply_prop_proof_tree_translation(tree: ProofTree, translation: PropFormulaTranslation) -> ProofTree:
     match tree:
         case AssumptionTree():

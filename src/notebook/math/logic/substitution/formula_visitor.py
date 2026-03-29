@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ..formulas import (
     EqualityFormula,
     Formula,
@@ -40,7 +41,7 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
         return QuantifierFormula(formula.quant, new_var, new_subformula)
 
 
-# This is alg:fol_formula_substitution in the monograph
+@collector.ref('alg:fol_formula_substitution')
 def apply_substitution_to_formula(formula: Formula, substitution: AtomicLogicSubstitution) -> Formula:
     return FormulaSubstitutionVisitor(substitution).visit(formula)
 

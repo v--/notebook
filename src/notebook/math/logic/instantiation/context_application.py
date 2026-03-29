@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInstantiationError
 from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
 from ..formulas import Formula, FormulaSchema
@@ -24,6 +25,6 @@ def _instantiate_context_schema_payload(schema: LogicalContextSchema, instantiat
             yield from instantiation.context_mapping[entry]
 
 
-# This is alg:logical_context_instantiation in the monograph
+@collector.ref('alg:logical_context_instantiation')
 def instantiate_context_schema(schema: LogicalContextSchema, instantiation: AtomicLogicSchemaInstantiation) -> LogicalContext:
     return LogicalContext(list(_instantiate_context_schema_payload(schema, instantiation)))

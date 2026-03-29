@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from ...support.coderefs import collector
 from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_equation, parse_term, parse_variable
 from .substitution import AtomicLogicSubstitution
@@ -15,8 +16,7 @@ if TYPE_CHECKING:
 
 
 @pytest_parametrize_kwargs(
-    # ex:alg:first_order_unification/noop
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/noop',
         system=['(x = x)'],
         unifier={},
     ),
@@ -32,8 +32,7 @@ if TYPE_CHECKING:
         system=['(x = f¹(y))', '(y = f⁰)'],
         unifier=dict(x='f¹(f⁰)', y='f⁰'),
     ),
-    # ex:alg:first_order_unification/glue
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/glue',
         system=['(x = f¹(y))', '(x = f¹(z))'],
         unifier=dict(x='f¹(z)', y='z'),
     ),
@@ -41,13 +40,11 @@ if TYPE_CHECKING:
         system=['(x = f¹(y))', '(y = f⁰)'],
         unifier=dict(x='f¹(f⁰)', y='f⁰'),
     ),
-    # ex:alg:first_order_unification/418a
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/418a',
         system=['(f²(x, y) = f²(g¹(f⁰), x))'],
         unifier=dict(x='g¹(f⁰)', y='g¹(f⁰)'),
     ),
-    # ex:alg:first_order_unification/418c
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/418c',
         system=['(f²(x, f⁰) = f²(g¹(y), z))'],
         unifier=dict(x='g¹(y)', z='f⁰'),
     ),
@@ -68,8 +65,7 @@ def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signatur
     dict(
         system=['(x = f⁰)', '(x = g⁰)'],
     ),
-    # ex:alg:first_order_unification/loop
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/loop',
         system=['(x = f¹(x))'],
     ),
     dict(
@@ -78,12 +74,10 @@ def test_unify(system: Sequence[str], unifier: Mapping[str, str], dummy_signatur
     dict(
         system=['(x = f¹(y))', '(y = f¹(x))'],
     ),
-    # ex:alg:first_order_unification/418b
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/418b',
         system=['(f²(x, y) = f²(g¹(x), x))'],
     ),
-    # ex:alg:first_order_unification/418d
-    dict(
+    collector.ref_proxy('ex:alg:first_order_unification/418d',
         system=['(f²(x, x) = f²(g¹(y), y))'],
     ),
 )

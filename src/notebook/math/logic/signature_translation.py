@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
+from ...support.coderefs import collector
 from .formulas import (
     EqualityFormula,
     Formula,
@@ -26,7 +27,7 @@ class TermTranslationVisitor(TermTransformationVisitor):
         )
 
 
-# This is alg:fol_term_signature_translation in the monograph
+@collector.ref('alg:fol_term_signature_translation')
 def translate_term(translation: SignatureMorphism, term: Term) -> Term:
     return TermTranslationVisitor(translation).visit(term)
 
@@ -54,6 +55,6 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
         )
 
 
-# This is alg:fol_formula_signature_translation in the monograph
+@collector.ref('alg:fol_formula_signature_translation')
 def translate_formula(translation: SignatureMorphism, formula: Formula) -> Formula:
     return FormulaTranslationVisitor(translation).visit(formula)

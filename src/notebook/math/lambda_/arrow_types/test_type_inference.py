@@ -1,5 +1,6 @@
 from textwrap import dedent
 
+from ....support.coderefs import collector
 from ..parsing import parse_type, parse_typed_term, parse_variable
 from .type_inference import derive_type
 
@@ -28,7 +29,7 @@ def test_arrow_elim() -> None:
     )
 
 
-# ex:def:type_derivation_tree/i
+@collector.ref('ex:def:type_derivation_tree/i')
 def test_arrow_intro() -> None:
     term = parse_typed_term('(λx:τ.x)')
     assert str(derive_type(term)) == dedent('''\
@@ -51,7 +52,7 @@ def test_nested_arrow_intro() -> None:
     )
 
 
-# ex:def:type_derivation_tree/pairs
+@collector.ref('ex:def:type_derivation_tree/pairs')
 def test_cons() -> None:
     term = parse_typed_term('(λx:τ.(λy:σ.(λf:(τ→(σ→ρ)).((fx)y))))')
 

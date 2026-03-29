@@ -1,5 +1,6 @@
 from textwrap import dedent
 
+from ....support.coderefs import collector
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..common import combinators, pairs
 from ..erasure import erase_annotations
@@ -17,7 +18,7 @@ def test_assumption_tree() -> None:
     )
 
 
-# ex:def:type_derivation_tree/i
+@collector.ref('ex:def:type_derivation_tree/i')
 def test_arrow_intro() -> None:
     assumption = parse_variable_assertion('x: τ')
     tree = apply(
@@ -37,7 +38,7 @@ def test_arrow_intro() -> None:
     )
 
 
-# ex:def:type_derivation_tree/k
+@collector.ref('ex:def:type_derivation_tree/k')
 def test_nested_arrow_intro() -> None:
     assumption_x = parse_variable_assertion('x: τ')
     assumption_y = parse_variable_assertion('y: σ')
@@ -67,7 +68,7 @@ def test_nested_arrow_intro() -> None:
     )
 
 
-# ex:def:type_derivation_tree/pairs
+@collector.ref('ex:def:type_derivation_tree/pairs')
 def test_cons() -> None:
     assumption_f = parse_variable_assertion('f: (τ → (σ → ρ))')
     assumption_x = parse_variable_assertion('x: τ')

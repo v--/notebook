@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective, LatticeConnective, get_dual_connective
 from ..formulas import (
     ConnectiveFormula,
@@ -82,7 +83,7 @@ class FormulaToCnfOrDnfVisitor(FormulaTransformationVisitor):
         raise UnsupportedFormulaError('We only allow quantifier-free formulas to be converted to conjunctive normal form')
 
 
-# This is alg:formula_to_cnf_and_dnf in the monograph
+@collector.ref('alg:formula_to_cnf_and_dnf')
 def formula_to_cnf_or_dnf(formula: Formula, outer: LatticeConnective) -> Formula:
     return FormulaToCnfOrDnfVisitor(outer).visit(formula)
 

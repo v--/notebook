@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize, is_automata_deterministic
 
@@ -35,7 +36,7 @@ def test_determinize_aabn(aabn: FiniteAutomatonFixture) -> None:
     aabn.assert_equivalent(det)
 
 
-# ex:def:formal_language/leucine
+@collector.ref('ex:def:formal_language/leucine')
 def test_determinize_leucine(leucine: FiniteAutomatonFixture) -> None:
     det = determinize(leucine.aut)
     assert is_automata_deterministic(det)

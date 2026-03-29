@@ -1,8 +1,6 @@
 # The schema here is extracted from a few example responses and guided by
 # https://arxiv.org/schemas/atom.xsd
-
 # ruff: noqa: E222
-
 from dataclasses import dataclass, field
 
 from xsdata.formats.dataclass.parsers import XmlParser

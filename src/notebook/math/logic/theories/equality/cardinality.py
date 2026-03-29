@@ -1,4 +1,5 @@
 from .....parsing import LatinIdentifier
+from .....support.coderefs import collector
 from ...alphabet import BinaryConnective, PropConstantSymbol, Quantifier
 from ...common import variables as var
 from ...formulas import ConnectiveFormula, EqualityFormula, Formula, NegationFormula, PropConstant, QuantifierFormula
@@ -9,7 +10,7 @@ from ...transformation import dualize_formula, universal_closure
 VAR_LETTER = 'x'
 
 
-# ex:cardinality_control_formulas
+@collector.ref('ex:cardinality_control_formulas')
 def cardinality_formula_geq(n: int) -> Formula:
     body: Formula | None = None
 

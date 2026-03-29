@@ -1,9 +1,10 @@
 from fractions import Fraction
 
+from ...support.coderefs import collector
 from .exceptions import InvalidArgumentError
 
 
-# This is alg:rational_number_power_bisection in the monograph
+@collector.ref('alg:rational_number_power_bisection')
 def power_bisection(x: Fraction, y: Fraction, n: int) -> Fraction:
     if n <= 0:
         raise InvalidArgumentError(f'Expected a positive power, but got {n}')

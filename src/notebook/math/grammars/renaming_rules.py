@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .alphabet import NonTerminal, Terminal
 from .epsilon_rules import is_essentially_epsilon_free
 from .exceptions import IncompatibleGrammarError
@@ -30,7 +31,7 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
             yield rule.dest
 
 
-# This is alg:renaming_rule_collapse in the monograph
+@collector.ref('alg:renaming_rule_collapse')
 def collapse_renaming_rules(grammar: Grammar) -> Grammar:
     if not is_essentially_epsilon_free(grammar):
         raise IncompatibleGrammarError('Expected an essentially ε-free grammar')

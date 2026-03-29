@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
     FunctionApplication,
@@ -41,10 +42,10 @@ class TermInstantiationApplicationVisitor(TermSchemaVisitor[Term]):
         return FunctionApplication(schema.symbol, [self.visit(arg) for arg in schema.arguments])
 
 
-# This is alg:fol_term_schema_instantiation in the monograph
 @overload
 def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLogicSchemaInstantiation) -> Variable: ...
 @overload
 def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term: ...
+@collector.ref('alg:fol_term_schema_instantiation')
 def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term:
     return TermInstantiationApplicationVisitor(instantiation).visit(schema)

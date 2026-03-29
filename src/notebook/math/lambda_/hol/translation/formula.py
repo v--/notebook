@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
+from .....support.coderefs import collector
 from ....logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
 from ....logic.formulas import (
     ConnectiveFormula,
@@ -106,7 +107,7 @@ class FormulaTranslationVisitor(FormulaVisitor):
         )
 
 
-# alg:fol_formula_to_hol_expression
+@collector.ref('alg:fol_formula_to_hol_expression')
 def fol_formula_to_hol_expression(fol_signature: FormalLogicSignature, fol_formula: Formula) -> HolExpression:
     hol_signature = fol_signature_to_hol_signature(fol_signature)
     hol_term = FormulaTranslationVisitor(fol_signature, hol_signature).visit(fol_formula)

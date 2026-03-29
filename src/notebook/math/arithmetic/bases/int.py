@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 from ....parsing import common_identifiers as ci
+from ....support.coderefs import collector
 from ...polynomials import monomial
 from ...polynomials.polynomial.int import IntPolynomial, const, x
 from ..divisibility import int_divmod
@@ -52,7 +53,7 @@ class IntRadixExpansion:
         return str(int(self))
 
 
-# This is alg:integer_radix_expansion in the monograph
+@collector.ref('alg:integer_radix_expansion')
 def get_integer_expansion(n: int, radix: int) -> IntRadixExpansion:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
@@ -65,7 +66,7 @@ def get_integer_expansion(n: int, radix: int) -> IntRadixExpansion:
     return IntRadixExpansion(radix, pol * x + r * const, sgn(n))
 
 
-# This is alg:addition_with_carrying in the monograph
+@collector.ref('alg:addition_with_carrying')
 def add_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExpansion:
     if n.radix != m.radix:
         raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')
@@ -91,7 +92,7 @@ def add_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExp
     return exp
 
 
-# This is alg:single_digit_multiplication_with_carrying in the monograph
+@collector.ref('alg:single_digit_multiplication_with_carrying')
 def single_digit_mult_with_carrying(n: IntRadixExpansion, m: int) -> IntRadixExpansion:
     if abs(m) >= n.radix:
         raise InvalidArgumentError(f'Expected an integer with absolute value less than {n.radix}, but got {m}')
@@ -119,7 +120,7 @@ def single_digit_mult_with_carrying(n: IntRadixExpansion, m: int) -> IntRadixExp
     return exp
 
 
-# This is alg:multi_digit_multiplication_with_carrying in the monograph
+@collector.ref('alg:multi_digit_multiplication_with_carrying')
 def multi_digit_mult_with_carrying(n: IntRadixExpansion, m: IntRadixExpansion) -> IntRadixExpansion:
     if n.radix != m.radix:
         raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')
@@ -140,7 +141,7 @@ class ExpansionDivMod(NamedTuple):
     rem: IntRadixExpansion
 
 
-# This is alg:long_integer_division in the monograph
+@collector.ref('alg:long_integer_division')
 def long_division(n: IntRadixExpansion, m: IntRadixExpansion) -> ExpansionDivMod:
     if n.radix != m.radix:
         raise RadixError(f'Incompatible radixes {n.radix} and {m.radix}')

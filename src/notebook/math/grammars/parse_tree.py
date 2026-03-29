@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
 
@@ -69,7 +70,7 @@ def _insert_subtree_leftmost(tree: ParseTree, new_subtree: ParseTree) -> ParseTr
     return ParseTree(payload=tree.payload, subtrees=subtrees)
 
 
-# This is alg:parse_tree_to_leftmost_derivation in the monograph
+@collector.ref('alg:parse_tree_to_leftmost_derivation')
 def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     tree: ParseTree | None = None
 
@@ -117,7 +118,7 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
         yield last_step
 
 
-# This is alg:derivation_to_parse_tree in the monograph
+@collector.ref('alg:derivation_to_parse_tree')
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)  # noqa: S101
     return Derivation(tree.payload, list(_iter_leftmost_derivation_steps(tree)))

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
 from ..variables import get_free_variables, new_variable
 from .substitution import substitute
@@ -32,7 +33,7 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
             return False
 
 
-# This is alg:separation_of_free_and_bound_variables in the monograph
+@collector.ref('alg:separation_of_free_and_bound_variables')
 def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collection[Variable] = set()) -> UntypedTerm:
     match term:
         case Constant():

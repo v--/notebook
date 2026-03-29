@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_untyped_term, parse_variable
 from .substitution import substitute
@@ -28,16 +29,14 @@ if TYPE_CHECKING:
     ),
 
     # Multiple replacements in abstractions
-    ## ex:alg:lambda_term_substitution/simultaneous
-    dict(
+    collector.ref_proxy('ex:alg:lambda_term_substitution/simultaneous',
         term='(λx.((xy)z))',
         mapping=dict(x='a', y='b', z='c'),
         expected='(λx.((xb)c))',
     ),
 
     # Combinators should remain unchanged
-    ## ex:alg:lambda_term_substitution/nested_noop
-    dict(
+    collector.ref_proxy('ex:alg:lambda_term_substitution/nested_noop',
         term='(λx.x)',
         mapping=dict(y='x'),
         expected='(λx.x)',
@@ -49,20 +48,17 @@ if TYPE_CHECKING:
     ),
 
     # Renaming
-    ## ex:alg:lambda_term_substitution/capture
-    dict(
+    collector.ref_proxy('ex:alg:lambda_term_substitution/capture',
         term='(λx.(xy))',
         mapping=dict(y='x'),
         expected='(λa.(ax))',
     ),
-    ## ex:alg:lambda_term_substitution/ignoring
-    dict(
+    collector.ref_proxy('ex:alg:lambda_term_substitution/ignoring',
         term='(λx.(xy))',
         mapping=dict(y='z'),
         expected='(λx.(xz))',
     ),
-    ## ex:alg:lambda_term_substitution/composed_vs_iterated
-    dict(
+    collector.ref_proxy('ex:alg:lambda_term_substitution/composed_vs_iterated',
         term='(λa.(xb))',
         mapping=dict(x='a', b='x'),
         expected='(λb.(ax))',
@@ -72,8 +68,7 @@ if TYPE_CHECKING:
         mapping=dict(x='a'),
         expected='(λc.(ab))',
     ),
-    ## athm:lambda_substitutions_agree
-    dict(
+    collector.ref_proxy('thm:lambda_substitutions_agree',
         term='(λx.(xy))',
         mapping=dict(y='x'),
         expected='(λa.(ax))',

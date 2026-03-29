@@ -1,5 +1,4 @@
 # ruff: noqa: C901, S101
-
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Literal, cast, overload

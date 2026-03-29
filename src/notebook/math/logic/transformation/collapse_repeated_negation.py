@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ..formulas import Formula, FormulaTransformationVisitor, NegationFormula
 from ..propositional import PropFormula, convert_to_prop_formula
 
@@ -21,6 +22,6 @@ def collapse_repeated_negation(formula: Formula) -> Formula:
     return CollapseRepeatedNegationVisitor().visit(formula)
 
 
-# This is alg:propositional_repeated_negation_collapse in the monograph
+@collector.ref('alg:propositional_repeated_negation_collapse')
 def collapse_repeated_negation_prop(formula: PropFormula) -> PropFormula:
     return convert_to_prop_formula(collapse_repeated_negation(formula))

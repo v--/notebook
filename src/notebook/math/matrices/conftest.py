@@ -1,5 +1,4 @@
 # ruff: noqa: E221
-
 import pytest
 
 from .matrix import FloatMatrix, IntMatrix

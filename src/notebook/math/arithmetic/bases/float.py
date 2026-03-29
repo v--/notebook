@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import TYPE_CHECKING
 
+from ....support.coderefs import collector
 from ..divisibility import divides, quot, rem
 from ..exceptions import InvalidArgumentError, RadixError
 from ..primes import factor, totient
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-# This is eq:alg:real_number_radix_expansion/direct in the monograph
+@collector.ref('eq:alg:real_number_radix_expansion/direct')
 def get_digit(x: float, radix: int, index: int) -> int:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
@@ -26,7 +27,7 @@ def get_digit(x: float, radix: int, index: int) -> int:
     return rem(math.floor(x * radix ** index), radix)
 
 
-# This is eq:thm:alg:real_number_radix_expansion/rational_coefficient in the monograph
+@collector.ref('eq:thm:alg:real_number_radix_expansion/rational_coefficient')
 def get_digit_rational(p: int, q: int, radix: int, index: int) -> int:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
@@ -130,7 +131,7 @@ class FloatRadixExpansion:
         return self.sign * result
 
 
-# This is alg:real_number_radix_expansion in the monograph
+@collector.ref('alg:real_number_radix_expansion')
 def get_number_expansion(x: float, radix: int) -> FloatRadixExpansion:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
@@ -154,7 +155,7 @@ def get_number_expansion(x: float, radix: int) -> FloatRadixExpansion:
     return FloatRadixExpansion(radix=radix, max_power=max_power, digits=digits, sign=sgn(x), periodic_digits=[0])
 
 
-# This is alg:rational_number_to_positional_string in the monograph
+@collector.ref('alg:rational_number_to_positional_string')
 def get_rational_number_expansion(frac: Fraction, radix: int) -> FloatRadixExpansion:
     if radix < 2:
         raise RadixError(f'Invalid radix {radix}')
@@ -192,7 +193,7 @@ def get_rational_number_expansion(frac: Fraction, radix: int) -> FloatRadixExpan
     )
 
 
-# This is alg:positional_string_to_rational_number in the monograph
+@collector.ref('alg:positional_string_to_rational_number')
 def get_fraction(expansion: FloatRadixExpansion) -> Fraction:
     radix = expansion.radix
     l = len(expansion.periodic_digits)

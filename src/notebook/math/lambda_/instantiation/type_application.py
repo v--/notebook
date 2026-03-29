@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
+from ....support.coderefs import collector
 from ....support.schemas import SchemaInstantiationError
 from ..types import (
     BaseType,
@@ -37,10 +38,10 @@ class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
         return SimpleConnectiveType(schema.conn, self.visit(schema.left), self.visit(schema.right))
 
 
-# This is alg:simple_type_schema_instantiation in the monograph
 @overload
 def instantiate_type_schema(schema: BaseType, instantiation: AtomicLambdaSchemaInstantiation) -> BaseType: ...
 @overload
 def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: AtomicLambdaSchemaInstantiation) -> SimpleType: ...
+@collector.ref('alg:simple_type_schema_instantiation')
 def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: AtomicLambdaSchemaInstantiation) -> SimpleType:
     return InstantiationVisitor(instantiation).visit(schema)

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from .....support.coderefs import collector
 from ..signature import common_types
 from ..structure import HolStructure, HolStructureValue
 from .signature import fol_signature_to_hol_signature
@@ -18,7 +19,7 @@ def _curry_fol_interpretation[T](fol_structure: FormalLogicStructure[T], sym: Si
     return lambda a: _curry_fol_interpretation(fol_structure, sym, *args, a)
 
 
-# alg:fol_structure_to_hol_structure
+@collector.ref('alg:fol_structure_to_hol_structure')
 def fol_structure_to_hol_structure[T](fol_structure: FormalLogicStructure[T]) -> HolStructure[T]:
     hol_signature = fol_signature_to_hol_signature(fol_structure.signature)
 

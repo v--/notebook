@@ -1,3 +1,4 @@
+from ...support.coderefs import collector
 from ..matrices.matrix import IntMatrix
 
 
@@ -11,7 +12,7 @@ def choose(n: int, k: int) -> int:
     return choose(n - 1, k) + choose(n - 1, k - 1)
 
 
-# This is def:pascal_matrix/lower in the monograph
+@collector.ref('def:pascal_matrix/lower')
 def pascals_lower_matrix(n: int) -> IntMatrix:
     matrix = IntMatrix.zeros(n)
 
@@ -26,12 +27,12 @@ def pascals_lower_matrix(n: int) -> IntMatrix:
     return matrix
 
 
-# This is def:pascal_matrix/upper in the monograph
+@collector.ref('def:pascal_matrix/upper')
 def pascals_upper_matrix(n: int) -> IntMatrix:
     return pascals_lower_matrix(n).transpose()
 
 
-# This is def:pascal_matrix/symmetric in the monograph
+@collector.ref('def:pascal_matrix/symmetric')
 def pascals_symmetric_matrix(n: int) -> IntMatrix:
     matrix = IntMatrix.zeros(n)
 

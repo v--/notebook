@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ..formulas import (
     ConnectiveFormula,
     EqualityFormula,
@@ -79,6 +80,6 @@ class FormulaEvaluationVisitor[T](FormulaVisitor[bool]):
         )
 
 
-# This is alg:fol_formula_denotation in the monograph
+@collector.ref('alg:fol_formula_denotation')
 def evaluate_formula[T](formula: Formula, structure: FormalLogicStructure[T], assignment: VariableAssignment[T] | None = None) -> bool:
     return FormulaEvaluationVisitor(structure, assignment or VariableAssignment()).visit(formula)

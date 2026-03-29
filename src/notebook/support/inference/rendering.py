@@ -1,5 +1,4 @@
 # ruff: noqa: S101
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, override
 

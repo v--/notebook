@@ -1,3 +1,4 @@
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective, PropConstantSymbol, get_dual_prop_constant
 from ..formulas import (
     ConnectiveFormula,
@@ -110,6 +111,6 @@ def collapse_constants(formula: Formula) -> Formula:
     return CollapseConstantsVisitor().visit(formula)
 
 
-# This is alg:propositional_constant_collapse in the monograph
+@collector.ref('alg:propositional_constant_collapse')
 def collapse_constants_prop(formula: PropFormula) -> PropFormula:
     return convert_to_prop_formula(collapse_constants(formula))

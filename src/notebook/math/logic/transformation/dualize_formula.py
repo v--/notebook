@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective, get_dual_prop_constant, get_dual_quantifier
 from ..formulas import (
     ConnectiveFormula,
@@ -64,6 +65,6 @@ def dualize_formula(formula: Formula) -> Formula:
     return FormulaDualizationVisitor().visit(formula)
 
 
-# This is alg:propositional_formula_dualization in the monograph
+@collector.ref('alg:propositional_formula_dualization')
 def dualize_formula_prop(formula: PropFormula) -> PropFormula:
     return convert_to_prop_formula(dualize_formula(formula))

@@ -2,6 +2,7 @@ import itertools
 from collections.abc import Collection, Iterable, Sequence
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
 from .epsilon_rules import is_epsilon_rule
@@ -64,7 +65,7 @@ def parse_impl(grammar: Grammar, string: str, traversed: Collection[tuple[NonTer
                     yield ParseTree(grammar.start, list(subtrees))
 
 
-# This is alg:brute_force_parsing in the monograph
+@collector.ref('alg:brute_force_parsing')
 def parse(grammar: Grammar, string: str) -> Iterable[ParseTree]:
     trees = list(parse_impl(grammar, string, set()))
 

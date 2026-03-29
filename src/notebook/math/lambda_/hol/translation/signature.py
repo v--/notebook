@@ -1,3 +1,4 @@
+from .....support.coderefs import collector
 from ....logic.signature import FormalLogicSignature, PredicateSymbol, SignatureSymbol
 from ...alphabet import BinaryTypeConnective
 from ...types import BaseType, SimpleConnectiveType, SimpleType
@@ -17,7 +18,7 @@ def fol_symbol_to_hol_type(sym: SignatureSymbol) -> SimpleType:
     return type_
 
 
-# alg:fol_signature_to_hol_signature
+@collector.ref('alg:fol_signature_to_hol_signature')
 def fol_signature_to_hol_signature(fol_signature: FormalLogicSignature) -> HolSignature:
     hol_signature = HolSignature(common_types.individual)
 

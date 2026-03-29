@@ -1,6 +1,7 @@
 import functools
 import operator
 
+from ...support.coderefs import collector
 from .exceptions import IncompatibleMatrixError
 from .matrix import IFieldMatrix, ISemiringMatrix
 from .triangular import lower_triangular_inv, upper_triangular_inv
@@ -27,7 +28,7 @@ def transvection_matrix[M: ISemiringMatrix](cls: type[M], n: int, i: int, j: int
     return result
 
 
-# This is alg:plu_decomposition in the monograph
+@collector.ref('alg:plu_decomposition')
 def plu[M: IFieldMatrix](a: M) -> tuple[M, M, M]:
     """PLU decomposition done entirely via multiplication of elementary matrices."""
     if not a.is_square():

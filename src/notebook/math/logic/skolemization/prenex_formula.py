@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from ....support.coderefs import collector
 from ..formulas import Formula, QuantifierFormula
 from ..transformation import pull_quantifiers
 from .prefix import QuantifierPrefix
@@ -28,7 +29,7 @@ class PrenexFormula:
         return self.prefix.is_existential()
 
 
-# This is alg:fol_formula_to_prenex_normal_form in the monograph
+@collector.ref('alg:fol_formula_to_prenex_normal_form')
 def formula_to_prenex_form(formula: Formula) -> PrenexFormula:
     transformed = pull_quantifiers(formula)
 
