@@ -1,4 +1,4 @@
-from .symbol import LogicalTypeSymbol, SortSymbol
+from .symbols import LogicalTypeSymbol, SortSymbol
 
 
 prop = LogicalTypeSymbol('ο')

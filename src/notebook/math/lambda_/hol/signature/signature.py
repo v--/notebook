@@ -1,22 +1,23 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
-from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
+from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
+from . import common_constants, common_types
 from .exceptions import HolSignatureError
 from .symbols import (
+    HolSignatureSymbol,
     LogicalConstantSymbol,
     LogicalTypeSymbol,
     NonLogicalConstantSymbol,
     SortSymbol,
-    common_constants,
-    common_types,
 )
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, MutableMapping
+    from collections.abc import MutableMapping
 
-    from ..types import SimpleType
+    from ...types import SimpleType
 
 
 @dataclass
@@ -110,6 +111,9 @@ class HolSignature(LambdaSignature):
         for sym in super().__iter__():
             if isinstance(sym, NonLogicalConstantSymbol):
                 yield sym
+
+    def __iter__(self) -> Iterator[HolSignatureSymbol]:
+        return cast(Iterator[HolSignatureSymbol], iter(self.trie.values()))
 
 
 PLAIN_HOL_SIGNATURE = HolSignature(common_types.individual)

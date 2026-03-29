@@ -16,7 +16,7 @@ from ...terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
 from ...types import BaseType
 from ...variables import get_free_variables
 from ..expressions import HolExpression
-from ..symbols import LogicalConstantSymbol, common_constants, common_types
+from ..signature import LogicalConstantSymbol, common_constants, common_types
 from .signature import fol_signature_to_hol_signature
 from .term import TermTranslationVisitor
 

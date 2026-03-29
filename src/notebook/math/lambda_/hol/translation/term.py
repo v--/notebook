@@ -9,7 +9,7 @@ from ...terms import Variable as LambdaVariable
 from ...types import BaseType
 from ...variables import get_free_variables
 from ..expressions import HolExpression
-from ..symbols import common_types
+from ..signature import common_types
 from .signature import fol_signature_to_hol_signature
 
 

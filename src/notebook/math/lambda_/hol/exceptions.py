@@ -5,10 +5,6 @@ class HolError(LambdaCalculusError):
     pass
 
 
-class HolSignatureError(HolError):
-    pass
-
-
 class LambdaInterpretationError(HolError):
     pass
 

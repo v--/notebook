@@ -1,1 +1,4 @@
+from .formula import fol_formula_to_hol_expression
 from .signature import fol_signature_to_hol_signature, fol_symbol_to_hol_type
+from .structure import fol_structure_to_hol_structure
+from .term import fol_term_to_hol_expression

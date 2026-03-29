@@ -1,8 +1,7 @@
 from ....logic.signature import FormalLogicSignature, PredicateSymbol, SignatureSymbol
 from ...alphabet import BinaryTypeConnective
 from ...types import BaseType, SimpleConnectiveType, SimpleType
-from ..signature import HolSignature
-from ..symbols import NonLogicalConstantSymbol, common_types
+from ..signature import HolSignature, NonLogicalConstantSymbol, common_types
 
 
 def fol_symbol_to_hol_type(sym: SignatureSymbol) -> SimpleType:

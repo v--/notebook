@@ -1,4 +1,4 @@
-from .symbol import LogicalConstantSymbol
+from .symbols import LogicalConstantSymbol
 
 
 verum = LogicalConstantSymbol('H⊤')

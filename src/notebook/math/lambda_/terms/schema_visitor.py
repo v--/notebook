@@ -26,11 +26,14 @@ class TypedTermSchemaVisitor[T]:
             case TypedAbstractionSchema():
                 return self.visit_abstraction(schema)
 
-    def visit_constant(self, schema: Constant) -> T:
-        return self.generic_visit(schema)
+    def visit_atomic(self, term: Constant | VariablePlaceholder) -> T:
+        return self.generic_visit(term)
+
+    def visit_constant(self, term: Constant) -> T:
+        return self.visit_atomic(term)
 
     def visit_variable_placeholder(self, schema: VariablePlaceholder) -> T:
-        return self.generic_visit(schema)
+        return self.visit_atomic(schema)
 
     def visit_term_placeholder(self, schema: TermPlaceholder) -> T:
         return self.generic_visit(schema)

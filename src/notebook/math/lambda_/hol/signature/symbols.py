@@ -38,4 +38,5 @@ class NonLogicalConstantSymbol(ConstantTermSymbol):
         return 'nonlogical constant'
 
 
-HolSymbol = SortSymbol | LogicalTypeSymbol | ConstantTermSymbol | NonLogicalConstantSymbol
+HolSignatureSymbol = SortSymbol | NonLogicalConstantSymbol
+HolSymbol = LogicalTypeSymbol | LogicalConstantSymbol | HolSignatureSymbol

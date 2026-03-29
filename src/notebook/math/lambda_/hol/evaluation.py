@@ -11,7 +11,7 @@ from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Var
 from ..types import BaseType, SimpleConnectiveType, SimpleType
 from .assignment import HolVariableAssignment
 from .exceptions import LambdaInterpretationError, MissingInterpretationError
-from .symbols import NonLogicalConstantSymbol, SortSymbol, common_constants, common_types
+from .signature import NonLogicalConstantSymbol, SortSymbol, common_constants, common_types
 
 
 if TYPE_CHECKING:

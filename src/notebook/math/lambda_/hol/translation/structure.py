@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
+from ..signature import common_types
 from ..structure import HolStructure, HolStructureValue
-from ..symbols import common_types
 from .signature import fol_signature_to_hol_signature
 
 

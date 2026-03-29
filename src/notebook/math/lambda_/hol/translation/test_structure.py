@@ -2,7 +2,7 @@ import itertools
 from typing import TYPE_CHECKING, cast
 
 from ..modular import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
-from ..symbols import common_types
+from ..signature import common_types
 from .structure import fol_structure_to_hol_structure
 
 

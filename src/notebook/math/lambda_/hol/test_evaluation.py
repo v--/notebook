@@ -7,7 +7,7 @@ from ..types import BaseType
 from .evaluation import evaluate_hol_expression
 from .expressions import HolExpression
 from .modular import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
-from .symbols import common_types
+from .signature import common_types
 
 
 @pytest_parametrize_kwargs(

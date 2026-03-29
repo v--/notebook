@@ -143,27 +143,6 @@ We give here the following definition, and then proceed to explain it:
   \end{thmenum}
 \end{remark}
 
-\begin{definition}\label{def:hol_signature_category}\mimprovised
-  For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), assumed by default to be the universe \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)} of hereditarily finite sets, we define the \hyperref[def:category]{category} \( \ucat{Sign} \) of \( \mscrU \)-small \hyperref[def:hol_signature]{higher-order signatures} as follows:
-  \begin{thmenum}
-    \thmitem{def:hol_signature_category/objects} The objects are, unsurprisingly, the \( \mscrU \)-small signatures.
-
-    \thmitem{def:hol_signature_category/morphisms} A signature morphism \( t: \Sigma \to \Sigma' \) maps the symbols in \( \Sigma \) to those in \( \Sigma' \) as follows:
-    \begin{thmenum}
-      \thmitem{def:hol_signature_category/morphisms/sort} A sort in \( \Sigma \) must map to a sort in \( \Sigma' \).
-
-      \thmitem{def:hol_signature_category/morphisms/nl_const} A nonlogical constant of type \( \tau \) in \( \Sigma \) must map to a \hi{compatible} nonlogical constant in \( \Sigma' \), in which the sorts in \( \tau \) are substituted according to \( t \).
-    \end{thmenum}
-
-    \thmitem{def:hol_signature_category/composition} The composition of morphisms is their set-theoretic composition.
-
-    \thmitem{def:hol_signature_category/identity} The identity on \( \Sigma \) is simply the set-theoretic identity.
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item We simply generalize the categories of first-order signatures from \cref{def:fol_signature_category}.
-\end{comments}
-
 \paragraph{Well-formed expressions}
 
 \begin{definition}\label{def:hol_expression}\mimprovised
@@ -358,6 +337,56 @@ We give here the following definition, and then proceed to explain it:
     This requires us to state new rules rather than reuse those from \fullref{sec:dependent_types}.
   \end{thmenum}
 \end{remark}
+
+\paragraph{Signature translation}
+
+\begin{definition}\label{def:simple_type_signature_category}\mimprovised
+  For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we can define a \hyperref[def:category]{category} \( \ucat{Sign} \) of \( \mscrU \)-small \hyperref[def:simple_type_signature]{simple type signature}, analogously to how we defined the category of \( \mscrU \)-small signatures for first-order logic in \cref{def:fol_signature_category}.
+\end{definition}
+\begin{comments}
+  \item We use this definition only as a building step for categories of higher-order signatures --- see \cref{def:hol_signature_category}.
+\end{comments}
+
+\begin{algorithm}[Signature translation of simple types]\label{alg:simple_type_signature_translation}
+  Given a \hyperref[def:simple_type_signature_category]{signature morphism} \( t: \Sigma \to \Sigma' \), we can easily translate any \hyperref[def:simple_type]{simple type} over \( \Sigma \) to \( \Sigma' \):
+  \begin{equation*}
+    \tau[t] \coloneqq \begin{cases}
+      t(\tau),                    &\tau \in \op*{Base}_\Sigma, \\
+      \sigma[t] \syncirc \rho[t], &\tau = \sigma \syncirc \rho, {\syncirc} \in \op*{Conn}.
+    \end{cases}
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.lambda_.signature_translation.translate_type} in \cite{notebook:code}.
+\end{comments}
+
+\begin{algorithm}[Signature translation of simply typed \( \muplambda \)-terms]\label{alg:simply_typed_term_signature_translation}
+  Given a \hyperref[def:simple_type_signature_category]{signature morphism} \( t: \Sigma \to \Sigma' \), we can easily translate any \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms} over \( \Sigma \) to \( \Sigma' \) with the aid of \fullref{alg:simple_type_signature_translation}:
+  \begin{equation*}
+    M[t] \coloneqq \begin{cases}
+      t(M),                     &M \op*{Const}_\Sigma, \\
+      N[t] \thinspace K[t],     &M = NK, \\
+      \qabs {x^{\tau[t]}} N[t], &M = \qabs {x^\tau} N.
+    \end{cases}
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.lambda_.signature_translation.translate_term} in \cite{notebook:code}.
+\end{comments}
+
+\begin{definition}\label{def:hol_signature_category}\mimprovised
+  For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we can define a \hyperref[def:category]{category} \( \ucat{Sign} \) of \( \mscrU \)-small \hyperref[def:hol_signature]{higher-order logic signatures} as the \hyperref[def:subcategory]{subcategory} of that of \hyperref[def:simple_type_signature_category]{simple type signatures}, with the following restrictions on morphisms:
+  \begin{thmenum}
+    \thmitem{def:hol_signature_category/logical} Morphisms must preserve logical types (i.e. \( \syn\omicron \)) and constants (i.e. \( \mscrH_\top, \mscrH_\bot, \ldots \)).
+
+    \thmitem{def:hol_signature_category/sorts} Morphisms must send sorts to sorts.
+
+    \thmitem{def:hol_signature_category/nonlogical} Morphisms must send each nonlogical constant to a nonlogical constant whose type coincides with the one translated via \fullref{alg:simple_type_signature_translation}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We simply generalize the categories of first-order signatures from \cref{def:fol_signature_category}.
+\end{comments}
 
 \paragraph{Henkin semantics}
 
@@ -1272,9 +1301,6 @@ We give here the following definition, and then proceed to explain it:
   \end{equation}
   belongs to \( T \).
 \end{definition}
-\begin{comments}
-  \item Compare this to the Henkin-completeness for first-order theories, which we define in \cref{def:fol_henkin_completeness}.
-\end{comments}
 
 \begin{definition}\label{def:hol_term_model}\mcite[thm. 1]{Henkin1950CompletenessInTheoryOfTypes}
   We adapt \hyperref[def:fol_term_model]{first-order term models} as follows. With respect to \hyperref[def:hol_natural_deduction_system]{higher-order natural deduction}, fix a \hyperref[def:hol_henkin_completeness]{Henkin-complete}, \hyperref[def:hol_theory/complete]{complete} and \hyperref[def:hol_theory/consistent]{consistent} theory \( T \) over the \hyperref[def:hol_signature]{signature} \( \Sigma \).

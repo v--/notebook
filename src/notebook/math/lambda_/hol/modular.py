@@ -2,9 +2,8 @@
 
 from ...rings.modular import BaseIntModulo
 from ..parsing import parse_type
-from .signature import HolSignature
+from .signature import HolSignature, NonLogicalConstantSymbol, common_types
 from .structure import HolStructure
-from .symbols import NonLogicalConstantSymbol, common_types
 
 
 ARITHMETIC_SIGNATURE = HolSignature(common_types.individual)

@@ -25,11 +25,14 @@ class UntypedTermVisitor[T]:
             case UntypedAbstraction():
                 return self.visit_abstraction(term)
 
-    def visit_constant(self, term: Constant) -> T:
+    def visit_atomic(self, term: Constant | Variable) -> T:
         return self.generic_visit(term)
 
+    def visit_constant(self, term: Constant) -> T:
+        return self.visit_atomic(term)
+
     def visit_variable(self, term: Variable) -> T:
-        return self.generic_visit(term)
+        return self.visit_atomic(term)
 
     def visit_application(self, term: UntypedApplication) -> T:
         return self.generic_visit(term)
@@ -56,11 +59,14 @@ class TypedTermVisitor[T]:
             case TypedAbstraction():
                 return self.visit_abstraction(term)
 
-    def visit_constant(self, term: Constant) -> T:
+    def visit_atomic(self, term: Constant | Variable) -> T:
         return self.generic_visit(term)
 
+    def visit_constant(self, term: Constant) -> T:
+        return self.visit_atomic(term)
+
     def visit_variable(self, term: Variable) -> T:
-        return self.generic_visit(term)
+        return self.visit_atomic(term)
 
     def visit_application(self, term: TypedApplication) -> T:
         return self.generic_visit(term)
@@ -93,11 +99,14 @@ class TermVisitor[T]:
             case TypedAbstraction():
                 return self.visit_typed_abstraction(term)
 
-    def visit_constant(self, term: Constant) -> T:
+    def visit_atomic(self, term: Constant | Variable) -> T:
         return self.generic_visit(term)
 
+    def visit_constant(self, term: Constant) -> T:
+        return self.visit_atomic(term)
+
     def visit_variable(self, term: Variable) -> T:
-        return self.generic_visit(term)
+        return self.visit_atomic(term)
 
     def visit_untyped_application(self, term: UntypedApplication) -> T:
         return self.visit_application(term)

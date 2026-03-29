@@ -4,7 +4,7 @@ from ...assertions import VariableTypeAssertion
 from ...terms import Variable as HolVariable
 from ...types import BaseType
 from ..assignment import HolVariableAssignment
-from ..symbols import common_types
+from ..signature import common_types
 
 
 if TYPE_CHECKING:
