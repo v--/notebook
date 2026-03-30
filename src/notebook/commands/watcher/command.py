@@ -32,6 +32,7 @@ async def iter_build_file_changes(logger: loguru.Logger) -> AsyncIterator[TaskTr
         inotify.add_watch(ROOT_PATH / 'bibliography', MASK)
         inotify.add_watch(ROOT_PATH / 'asymptote', MASK)
         inotify.add_watch(ROOT_PATH / 'classes', MASK)
+        inotify.add_watch(ROOT_PATH / 'aux', MASK)
         inotify.add_watch(ROOT_PATH / 'output', MASK)
         logger.info('Started daemon and initialized watchers')
 
@@ -89,6 +90,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                 path.match('bibliography/*.bib') or
                 path.match('text/*.tex') or
                 path.match('images/*') or
+                path.match('aux/coderefs.tex') or
                 (path.match('output/*') and not path.match('output/notebook.pdf')) or
                 path.match('packages/*.sty')
             ):

@@ -31,7 +31,7 @@ class TypeTranslationVisitor(TypeVisitor[SimpleType]):
         )
 
 
-@collector.ref('alg:fol_formula_signature_translation')
+@collector.ref('alg:simple_type_signature_translation')
 def translate_type(translation: SignatureMorphism, type_: SimpleType) -> SimpleType:
     return TypeTranslationVisitor(translation).visit(type_)
 
@@ -68,6 +68,6 @@ class TermTranslationVisitor(TypedTermVisitor[TypedTerm]):
         )
 
 
-@collector.ref('alg:fol_term_signature_translation')
+@collector.ref('alg:simply_typed_term_signature_translation')
 def translate_term(translation: SignatureMorphism, term: TypedTerm) -> TypedTerm:
     return TermTranslationVisitor(translation).visit(term)

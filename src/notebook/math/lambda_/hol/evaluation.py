@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from ....exceptions import UnreachableException
+from ....support.coderefs import collector
 from ..alphabet import BinaryTypeConnective
 from ..assertions import VariableTypeAssertion
 from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Variable
@@ -131,6 +132,7 @@ def evaluate_hol_term[T](  # noqa: C901
     raise UnreachableException
 
 
+@collector.ref('alg:hol_denotation')
 def evaluate_hol_expression[T](
     expression: HolExpression,
     structure: HolStructure[T],
