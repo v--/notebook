@@ -5,7 +5,7 @@ FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out
 PYTHON_SOURCE := $(wildcard src/*.py)
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy packages/*.sty text/*.tex aux/coderefs.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
 
-.PHONY: figures clean clean-text clean-figures
+.PHONY: figures clean clean-text clean-figures touch-figures
 .DEFAULT_GOAL := output/notebook.pdf
 
 aux:
@@ -41,6 +41,11 @@ output/%.pdf: src/notebook/figures/%.py | aux output
 	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
+
+# This is occasionally useful in those cases when some TeX/asymptote module is updated,
+# but the update does not require rebuilding all figures
+touch-figures:
+	touch $(FIGURES_TEX_PDF)
 
 aux/metadata: .git/refs/heads/master | aux
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'commit={%h},date={%cd}' --date='format:%d %B %Y' HEAD > aux/metadata
