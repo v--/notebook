@@ -12,7 +12,7 @@ def stirling_mu(x: float, terms: int) -> float:
     )
 
 
-@collector.ref('eq:thm:stirlings_gamma_approximation')
+@collector.ref('thm:stirlings_gamma_approximation')
 def stirling(x: float) -> float:
     if x <= 0:
         raise InvalidArgumentError(f'Expected a positive number, but got {x:.3f}')

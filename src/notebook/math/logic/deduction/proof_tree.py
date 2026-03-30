@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.inference import (
-    AssumptionRenderer,
-    InferenceTree,
-    RuleApplicationRenderer,
-)
+from ....support.coderefs import collector
+from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
 from ....support.schemas import SchemaInstantiationError
 from ..formulas import (
     Formula,
@@ -246,6 +243,7 @@ def _infer_application_instantiation(  # noqa: C901
     return instantiation
 
 
+@collector.ref('def:fol_natural_deduction_proof_tree')
 def apply(  # noqa: C901
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,

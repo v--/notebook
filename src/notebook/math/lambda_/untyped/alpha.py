@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 
 # The assertions are needed because mypy doesn't handle such complicated type narrowing
+@collector.ref('thm:alpha_equivalence_simplified')
 def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
     match (m, n):
         case (Constant(), Constant()):

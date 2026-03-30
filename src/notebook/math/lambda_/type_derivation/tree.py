@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
+from ....support.coderefs import collector
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
 from ....support.schemas import SchemaInstantiationError
 from ..assertions import TypeAssertion, VariableTypeAssertion
@@ -105,6 +106,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
         return self.build_renderer().render()
 
 
+@collector.ref('def:type_derivation_tree')
 def apply(  # noqa: C901
     rule: TypingRule,
     *args: TypeDerivationTree | RuleApplicationPremise,
