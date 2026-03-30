@@ -118,6 +118,7 @@
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorems}
 \RequirePackage{packages/metadata}
+\RequirePackage{packages/coderefs}
 \RequirePackage{packages/compilation}
 
 % All paracol margins will go to the right and then \reversemarginpar will put them on the left

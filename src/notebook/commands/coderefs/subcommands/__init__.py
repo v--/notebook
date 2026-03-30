@@ -1,1 +1,1 @@
-from .list import list_refs
+from .collect import collect

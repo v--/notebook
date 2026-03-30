@@ -1,9 +1,9 @@
 import contextlib
+import pathlib
 import pkgutil
 from typing import TYPE_CHECKING, cast
 
-from rich.console import Console
-from rich.table import Table
+import click
 
 from ....paths import CODE_PATH
 from ....support.coderefs import collector
@@ -11,8 +11,6 @@ from ..command import coderefs
 
 
 if TYPE_CHECKING:
-    import pathlib
-
     from _typeshed.importlib import PathEntryFinderProtocol
 
 
@@ -33,15 +31,18 @@ def recursively_load_modules(path: pathlib.Path) -> None:
             recursively_load_modules(subpath)
 
 
-@coderefs.command('list')
-def list_refs() -> None:
+@coderefs.command()
+@click.argument('output-path', type=click.Path(writable=True, dir_okay=False, path_type=pathlib.Path), default='aux/coderefs.tex')
+def collect(output_path: pathlib.Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     recursively_load_modules(CODE_PATH / 'math')
-    table = Table()
-    table.add_column('Monograph reference')
-    table.add_column('Function')
 
-    for doc_ref, fun in collector.mapping.items():
-        table.add_row(doc_ref, f'{fun.__module__.removeprefix('notebook.')}.{fun.__qualname__}')
+    with output_path.open('w', encoding='utf-8') as file:
+        file.write('\\ExplSyntaxOn\n')
 
-    console = Console()
-    console.print(table)
+        for doc_ref, fun in collector.mapping.items():
+            module_name = fun.__module__.removeprefix('notebook.math.')
+            code_ref = f'{module_name}.{fun.__qualname__}'
+            file.write(f'\\prop_gput:Nnn \\g_nb_coderef_prop {{{doc_ref}}} {{{code_ref}}} \n')
+
+        file.write('\\ExplSyntaxOff\n')
