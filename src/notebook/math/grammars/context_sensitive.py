@@ -1,14 +1,9 @@
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, cast
-
 from ...support.coderefs import collector
 from .epsilon_rules import is_epsilon_rule
 from .exceptions import IncompatibleGrammarError
-from .symbols import Terminal, new_non_terminal
+from .grammar import Grammar, GrammarRule, GrammarSchema
 from .length_increasing import is_essentially_length_increasing_grammar
-from .grammar import GrammarRule, Grammar, GrammarSchema
-
-from .symbols import NonTerminal
+from .symbols import NonTerminal, Terminal, new_non_terminal
 
 
 def is_context_sensitive_rule(rule: GrammarRule) -> bool:
@@ -37,24 +32,24 @@ def length_increasing_to_context_sensitive(grammar: Grammar) -> Grammar:
 
     non_terminals = list(grammar.schema.get_non_terminals())
     terminal_map = dict[Terminal, NonTerminal]()
-    current_schema = GrammarSchema()
+    new_rules = list[GrammarRule]()
 
-    for sym in grammar.schema.get_terminals():
-        active_non_terminal = new_non_terminal(sym.value, non_terminals)
-        current_schema.rules.append(
+    for term_sym in grammar.schema.get_terminals():
+        active_non_terminal = new_non_terminal(term_sym.value, non_terminals)
+        new_rules.append(
             GrammarRule(
                 src=[active_non_terminal],
-                dest=[sym]
-            )
+                dest=[term_sym],
+            ),
         )
 
-        terminal_map[sym] = active_non_terminal
+        terminal_map[term_sym] = active_non_terminal
         non_terminals.append(active_non_terminal)
 
     # We iterate over rules from the original grammar and modify the result at every step
     for rule in grammar.schema.rules:
         if is_epsilon_rule(rule):
-            current_schema.rules.append(rule)
+            new_rules.append(rule)
             continue
 
         modified_src = [terminal_map[sym] if isinstance(sym, Terminal) else sym for sym in rule.src]
@@ -65,25 +60,22 @@ def length_increasing_to_context_sensitive(grammar: Grammar) -> Grammar:
         for i, sym in enumerate(rule.src):
             tail = modified_src[i + 1:] if i + 1 < len(rule.src) else dest_tail
             active_non_terminal = new_non_terminal(sym.value, non_terminals)
-            current_schema.rules.append(
+            new_rules.append(
                 GrammarRule(
                     src=[*new_non_terminals, *modified_src[i:]],
-                    dest=[*new_non_terminals, active_non_terminal, *tail]
-                )
+                    dest=[*new_non_terminals, active_non_terminal, *tail],
+                ),
             )
 
             new_non_terminals.append(active_non_terminal)
             non_terminals.append(active_non_terminal)
 
         for i in range(len(new_non_terminals)):
-            current_schema.rules.append(
+            new_rules.append(
                 GrammarRule(
                     src=[*modified_dest[:i], *new_non_terminals[i:], *dest_tail],
                     dest=[*modified_dest[:i + 1], *new_non_terminals[i + 1:], *dest_tail],
-                )
+                ),
             )
 
-    print()
-    print(current_schema)
-
-    return current_schema.instantiate(grammar.start)
+    return GrammarSchema(new_rules).instantiate(grammar.start)
