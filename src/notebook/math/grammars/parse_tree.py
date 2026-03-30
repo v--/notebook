@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ...support.coderefs import collector
-from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
+from .symbols import NonTerminal, Terminal
 
 
 if TYPE_CHECKING:

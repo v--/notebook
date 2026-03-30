@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from ....parsing import Parser, ParserError
-from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
+from ..symbols import NonTerminal, Terminal
 from .parser_context import GrammarNonterminalContext, GrammarSymbolRunContext, GrammarTerminalContext
 from .tokenizer import tokenize_grammar
 from .tokens import GrammarToken

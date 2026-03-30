@@ -2,7 +2,6 @@ from textwrap import dedent
 from typing import TYPE_CHECKING
 
 from ..automata.finite import FiniteAutomaton
-from .alphabet import NonTerminal
 from .parsing import parse_grammar_schema
 from .regular import (
     from_finite_automaton,
@@ -10,6 +9,7 @@ from .regular import (
     is_right_linear,
     to_finite_automaton,
 )
+from .symbols import NonTerminal
 
 
 if TYPE_CHECKING:

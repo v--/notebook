@@ -420,7 +420,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \end{comments}
 
 \begin{definition}\label{def:length_increasing_grammar}\mcite[15]{Salomaa1973FormalLanguages}
-  We say that the grammar \( G = (V, \Sigma, \to, S) \) is \term[ru=неукорачивающая (граматика) (\cite[83]{Гладкий1973ГрамматикиИЯзыки})]{length-increasing} if \( \len(v) \leq \len(w) \) for every rule \( v \to w \) and \term{essentially length-increasing} if it is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and if \( \len(v) \leq \len(w) \) for any non-\( \varepsilon \) rule.
+  We say that the grammar \( G = (V, \Sigma, \to, S) \) is \term[ru=неукорачивающая (грамматика) (\cite[83]{Гладкий1973ГрамматикиИЯзыки})]{length-increasing} if \( \len(v) \leq \len(w) \) for every rule \( v \to w \) and \term[ru=почти неукорачивающая (грамматика\cite[88]{Гладкий1973ГрамматикиИЯзыки}]{essentially length-increasing} if it is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and if \( \len(v) \leq \len(w) \) for any non-\( \varepsilon \) rule.
 \end{definition}
 
 \begin{lemma}\label{thm:length_increasing_grammar}
@@ -516,6 +516,9 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \item This algorithm can be used to test whether a string belongs to a \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive language}, hence the name.
 
   \item Compare this to the more complicated \fullref{alg:brute_force_parsing} that is intended for more restricted cases, but also handles \( \varepsilon \) rules.
+
+  \item This algorithm is implemented in \cite{notebook:code} as
+    \WriteCodeRef{alg:context_sensitive_string_membership}
 \end{comments}
 
 \paragraph{Hierarchy of grammars}
@@ -597,18 +600,29 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
       \end{aligned}
     \end{equation*}
 
-    \thmitem{ex:def:chomsky_hierarchy/anbn} Consider the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar}
+    \thmitem{ex:def:chomsky_hierarchy/anbncn} Now consider the following grammar, which we shall denote by \( G \):
     \begin{equation*}
       \begin{aligned}
-        S &\to A \mid \varepsilon, \\
-        A &\to aAb \mid ab
+        S &\to abc \mid aSBc \mid \varepsilon, \\
+        cB &\to Bc, \\
+        bB &\to bb.
       \end{aligned}
     \end{equation*}
-    describing \( \mscrL = \set{ a^n b^n \given n \geq 0 } \) from \cref{ex:def:formal_language/anbn}.
 
-    We have shown in \cref{ex:def:finite_automaton/anbn} that this language cannot be recognized by a finite automaton. In \fullref{sec:regular_languages} we will prove \cref{thm:regular_languages}, which suggests that \( \mscrL \) is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
+    It allows the following derivations:
+    \begin{itemize}
+      \item \( S \Rightarrow \varepsilon \).
+      \item \( S \Rightarrow abc \).
+      \item \( S \Rightarrow aSBc \Rightarrow a\hi{abc}Bc \Rightarrow aab\hi{Bc}c \Rightarrow a^2 b^2 c^2 \).
+      \item \( S \Rightarrow aSBc \Rightarrow a\hi{aSBc}Bc \Rightarrow aa\hi{abc}BcBc \Rightarrow \cdots \Rightarrow a^3 b B^2 c^3 \Rightarrow a^3 b^3 c^3 \).
+    \end{itemize}
 
-    Hence, \( \mscrL \) is a context-free language that is not regular.
+    We can show by induction on string length that the language of \( G \) is
+    \begin{equation*}
+      \mscrL = \set{ a^n b^n c^n \given n \geq 0 }.
+    \end{equation*}
+
+    Since \( G \) is essentially length-increasing, its language is context-sensitive. In fact, \tcite{#1 shows in #2 that}[example 6.2]{Salomaa1973FormalLanguages} the language \( \mscrL \) cannot be context-free.
 
     \thmitem{ex:def:chomsky_hierarchy/length_increasing_not_context_sensitive} In a \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive grammar}, the only possible production rules replace a nonterminal with some nonempty string. In general, it is possible to replace terminal symbols with arbitrary strings. For example, consider the grammar
     \begin{equation*}
@@ -626,6 +640,8 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     It is reasonable to expect that grammars are context-sensitive, i.e. that terminals should never get replaced. Unfortunately, as we just saw, this is not so general \hyperref[def:length_increasing_grammar]{length-increasing} grammars. \Fullref{alg:length_increasing_to_context_sensitive} however allows us to convert general (essentially) length-increasing grammars to equivalent context-sensitive grammars.
   \end{thmenum}
+
+  \thmitem{ex:def:chomsky_hierarchy/anbncn}
 \end{example}
 
 \paragraph{Context-sensitive languages}

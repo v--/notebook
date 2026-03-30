@@ -4,8 +4,8 @@ import pytest
 
 from ....parsing import ParserError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
+from ..symbols import NonTerminal, Terminal
 from .parser import parse_grammar_rule_line, parse_grammar_schema, parse_nonterminal, parse_terminal
 
 

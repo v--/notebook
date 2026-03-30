@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from ...support.pytest import pytest_parametrize_kwargs
-from .alphabet import NonTerminal, new_non_terminal
+from .symbols import NonTerminal, new_non_terminal
 
 
 if TYPE_CHECKING:

@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
-from .alphabet import NonTerminal
+from ...support.coderefs import collector
 from .brute_force_parse import derives
 from .parsing import parse_grammar_schema
+from .symbols import NonTerminal
 
 
 if TYPE_CHECKING:
@@ -31,6 +32,7 @@ class GrammarFixture(NamedTuple):
 
 
 @pytest.fixture
+@collector.ref('ex:def:chomsky_hierarchy/an')
 def an() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
@@ -50,6 +52,7 @@ def an() -> GrammarFixture:
 
 
 @pytest.fixture
+@collector.ref('ex:def:chomsky_hierarchy/anbn')
 def anbn() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
@@ -65,6 +68,27 @@ def anbn() -> GrammarFixture:
         grammar=schema.instantiate(NonTerminal('S')),
         whitelist=['', 'ab', 'aaabbb'],
         blacklist=['a', 'ba'],
+    )
+
+
+@pytest.fixture
+@collector.ref('ex:def:chomsky_hierarchy/anbncn')
+def anbncn() -> GrammarFixture:
+    schema = parse_grammar_schema(
+        dedent('''\
+            <S> → "a" "b" "c"
+            <S> → "a" <S> <B> "c"
+            <S> → ε
+            "c" <B> → <B> "c"
+            "b" <B> → "b" "b"
+            ''',
+        ),
+    )
+
+    return GrammarFixture(
+        grammar=schema.instantiate(NonTerminal('S')),
+        whitelist=['', 'abc', 'aabbcc'],
+        blacklist=['abbcc', 'aabcc', 'aabbc'],
     )
 
 

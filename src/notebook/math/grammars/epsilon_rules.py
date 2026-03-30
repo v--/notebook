@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
-from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .exceptions import IncompatibleRuleError
 from .grammar import Grammar, GrammarRule, GrammarSchema
+from .symbols import NonTerminal, Terminal, new_non_terminal
 
 
 if TYPE_CHECKING:

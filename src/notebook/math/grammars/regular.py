@@ -1,12 +1,12 @@
 from ...support.coderefs import collector
 from ..automata.finite import FiniteAutomaton, reverse_automaton
 from ..automata.finite_determinize import determinize
-from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .context_free import reverse_grammar
 from .epsilon_rules import is_epsilon_free, is_epsilon_rule, remove_epsilon_rules
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .renaming_rules import collapse_renaming_rules
+from .symbols import NonTerminal, Terminal, new_non_terminal
 
 
 def is_left_linear_rule(rule: GrammarRule) -> bool:

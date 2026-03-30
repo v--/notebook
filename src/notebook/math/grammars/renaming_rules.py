@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
 from ...support.coderefs import collector
-from .alphabet import NonTerminal, Terminal
 from .epsilon_rules import is_essentially_epsilon_free
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
+from .symbols import NonTerminal, Terminal
 
 
 if TYPE_CHECKING:

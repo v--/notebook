@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ...support.iteration import string_accumulator
-from .alphabet import NonTerminal, Terminal, empty
 from .exceptions import IncompatibleRuleError, UnknownSymbolError
+from .symbols import NonTerminal, Terminal, empty
 
 
 if TYPE_CHECKING:

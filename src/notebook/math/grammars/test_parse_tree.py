@@ -1,4 +1,3 @@
-from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
 from .parse_tree import (
     Derivation,
@@ -7,6 +6,7 @@ from .parse_tree import (
     derivation_to_parse_tree,
     parse_tree_to_derivation,
 )
+from .symbols import NonTerminal, Terminal
 
 
 def test_derivation_and_parse_tree_basic() -> None:

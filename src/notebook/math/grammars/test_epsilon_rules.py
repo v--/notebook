@@ -1,7 +1,6 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from .alphabet import NonTerminal
 from .brute_force_parse import derives
 from .epsilon_rules import (
     is_epsilon_free,
@@ -9,6 +8,7 @@ from .epsilon_rules import (
     remove_epsilon_rules,
 )
 from .parsing import parse_grammar_schema
+from .symbols import NonTerminal
 
 
 if TYPE_CHECKING:
