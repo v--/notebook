@@ -24,7 +24,7 @@ def iter_interpretations(*formulas: PropFormula) -> Iterable[PropInterpretation]
     )
 
 
-@collector.ref('thm:brute_force_prop_satisfaction')
+@collector.ref('alg:brute_force_propositional_satisfaction')
 def brute_force_satisfy(formula: PropFormula) -> PropInterpretation | None:
     for interp in iter_interpretations(formula):
         if evaluate_prop_formula(formula, interp):

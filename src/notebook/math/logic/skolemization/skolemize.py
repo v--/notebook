@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, overload
 
 from ....exceptions import UnreachableException
 from ....parsing import iter_latin_identifiers
+from ....support.coderefs import collector
 from ....support.unicode import itoa_superscripts
 from ..alphabet import Quantifier
 from ..signature import FormalLogicSignature, FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
@@ -70,6 +71,7 @@ def skolem_function_interpretation[T](
 def skolemize(formula: PrenexFormula, signature: FormalLogicSignature) -> SkolemConfiguration: ...
 @overload
 def skolemize[T](formula: PrenexFormula, signature: FormalLogicSignature, model: FormalLogicStructure[T]) -> SkolemConfigurationWithModel[T]: ...
+@collector.ref('alg:fol_skolemization')
 def skolemize[T](formula: PrenexFormula, signature: FormalLogicSignature, model: FormalLogicStructure[T] | None = None) -> SkolemConfiguration:
     universal_prefix = QuantifierPrefix()
     matrix = formula.matrix

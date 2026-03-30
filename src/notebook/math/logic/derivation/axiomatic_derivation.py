@@ -110,7 +110,7 @@ def get_premises(ad_system: AxiomaticDerivationSystem, derivation: AxiomaticDeri
     }
 
 
-@collector.ref('alg:proof_tree_to_axiomatic_derivation')
+@collector.ref('alg:propositional_axiomatic_derivation_to_proof_tree')
 def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: AxiomaticDerivation, used_markers: Collection[Marker] = set()) -> ProofTree:
     conclusion = derivation.get_conclusion()
 
@@ -173,7 +173,7 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
     yield tree.conclusion
 
 
-@collector.ref('alg:axiomatic_proof_tree_to_derivation')
+@collector.ref('alg:propositional_proof_tree_to_axiomatic_derivation')
 def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
     return AxiomaticDerivation(
         payload=list(_proof_tree_to_derivation_payload(tree)),

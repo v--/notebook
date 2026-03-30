@@ -61,10 +61,10 @@ class FormulaDualizationVisitor(FormulaTransformationVisitor):
         return QuantifierFormula(get_dual_quantifier(formula.quant), formula.var, dual_body)
 
 
+@collector.ref('alg:fol_formula_dualization')
 def dualize_formula(formula: Formula) -> Formula:
     return FormulaDualizationVisitor().visit(formula)
 
 
-@collector.ref('alg:propositional_formula_dualization')
 def dualize_formula_prop(formula: PropFormula) -> PropFormula:
     return convert_to_prop_formula(dualize_formula(formula))

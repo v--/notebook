@@ -87,7 +87,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
     return reverse_automaton(aut)
 
 
-# This is alg:finite_automaton_to_right_linear_grammar from the text
+@collector.ref('alg:finite_automaton_to_right_linear_grammar')
 def from_finite_automaton[StateT, SymbolT](aut: FiniteAutomaton[StateT, SymbolT]) -> Grammar:
     det = determinize(aut)
     schema = GrammarSchema([

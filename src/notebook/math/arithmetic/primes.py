@@ -4,6 +4,7 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .divisibility import divides, quot
 from .exceptions import InvalidArgumentError, NotPositiveIntegerError
 from .gcd import gcd
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 
+@collector.ref('alg:sieve_of_eratosthenes')
 def build_erathostenes_sieve(ceiling: int) -> Sequence[bool]:
     if ceiling <= 0:
         raise InvalidArgumentError(f'Expected a positive ceiling, but got {ceiling}')

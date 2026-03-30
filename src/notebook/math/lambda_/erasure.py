@@ -1,5 +1,6 @@
 from typing import override
 
+from ...support.coderefs import collector
 from .terms import (
     Constant,
     TypedAbstraction,
@@ -31,5 +32,6 @@ class TypeErasureVisitor(TypedTermVisitor[UntypedTerm]):
         return UntypedAbstraction(term.var, self.visit(term.body))
 
 
+@collector.ref('alg:type_erasure')
 def erase_annotations(term: TypedTerm) -> UntypedTerm:
     return TypeErasureVisitor().visit(term)

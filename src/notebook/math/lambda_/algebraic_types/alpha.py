@@ -134,7 +134,7 @@ def alpha_convert_derivation_unsafe(tree: TypeDerivationTree, other: TypedTerm) 
     return AlphaConversionVisitor(other).visit(tree)
 
 
-@collector.ref('alg:simply_typed_reduction')
+@collector.ref('alg:simply_typed_alpha_conversion')
 def alpha_convert_derivation(tree: TypeDerivationTree, other: TypedTerm) -> TypeDerivationTree:
     try:
         return alpha_convert_derivation_unsafe(tree, other)

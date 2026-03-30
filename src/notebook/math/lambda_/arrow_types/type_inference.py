@@ -63,6 +63,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
         )
 
 
+@collector.ref('alg:simply_typed_combinator_type_derivation')
 def derive_type(term: TypedTerm, context: Mapping[Variable, SimpleType] = {}) -> TypeDerivationTree:
     return TypeInferenceVisitor(context=context).visit(term)
 

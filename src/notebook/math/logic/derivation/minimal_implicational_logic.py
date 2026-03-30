@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, overload
 
+from ....support.coderefs import collector
 from ..alphabet import BinaryConnective
 from ..formulas import ConnectiveFormula, Formula
 from ..parsing import parse_formula_schema
@@ -46,6 +47,7 @@ def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:
     return [a, b, c, i, goal]
 
 
+@collector.ref('alg:derivation_conclusion_hypothesis_introduction')
 def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivation: AxiomaticDerivation, hypothesis: Formula) -> AxiomaticDerivation:
     if len(derivation.payload) == 0:
         return derivation

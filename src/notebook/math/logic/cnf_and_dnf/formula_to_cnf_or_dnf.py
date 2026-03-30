@@ -83,7 +83,7 @@ class FormulaToCnfOrDnfVisitor(FormulaTransformationVisitor):
         raise UnsupportedFormulaError('We only allow quantifier-free formulas to be converted to conjunctive normal form')
 
 
-@collector.ref('alg:formula_to_cnf_and_dnf')
+@collector.ref('alg:propositional_formula_to_cnf_or_dnf')
 def formula_to_cnf_or_dnf(formula: Formula, outer: LatticeConnective) -> Formula:
     return FormulaToCnfOrDnfVisitor(outer).visit(formula)
 
