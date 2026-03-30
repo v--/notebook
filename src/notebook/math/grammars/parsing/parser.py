@@ -158,7 +158,7 @@ class GrammarParser(Parser[GrammarToken]):
         if is_epsilon_rule == is_non_epsilon_rule:
             raise context.annotate_context_error('The right side of a rule must contain terminals and nonterminals and at most a single ε')
 
-    def iter_rules_on_line(self) -> Iterable[GrammarRule]:
+    def _iter_rules_on_line(self) -> Iterable[GrammarRule]:
         head = self._skip_spaces()
 
         if not head:
@@ -192,7 +192,10 @@ class GrammarParser(Parser[GrammarToken]):
                 if head.kind == 'LINE_BREAK':
                     return
 
-            if not head or head.kind != 'PIPE':
+            if head is None:
+                return
+
+            if head.kind != 'PIPE':
                 break
 
         while (head := self.peek()) and head.kind != 'LINE_BREAK':
@@ -201,15 +204,15 @@ class GrammarParser(Parser[GrammarToken]):
         context.close_at_previous_token()
         raise context.annotate_context_error('The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε')
 
-    def iter_rules(self) -> Iterable[GrammarRule]:
+    def _iter_rules(self) -> Iterable[GrammarRule]:
         self._skip_empty_lines()
 
         while self.peek():
-            yield from self.iter_rules_on_line()
+            yield from self._iter_rules_on_line()
             self._skip_empty_lines()
 
     def parse_schema(self) -> GrammarSchema:
-        rules = list(self.iter_rules())
+        rules = list(self._iter_rules())
 
         if len(rules) == 0:
             raise ParserError('Expected at least one grammar rule')
@@ -222,13 +225,6 @@ def parse_grammar_schema(source: str) -> GrammarSchema:
 
     with GrammarParser(source, tokens) as parser:
         return parser.parse_schema()
-
-
-def parse_grammar_rule_line(source: str) -> GrammarSchema:
-    tokens = tokenize_grammar(source)
-
-    with GrammarParser(source, tokens) as parser:
-        return GrammarSchema(list(parser.iter_rules_on_line()))
 
 
 def parse_terminal(source: str) -> Terminal:

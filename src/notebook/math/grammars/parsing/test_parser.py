@@ -6,7 +6,7 @@ from ....parsing import ParserError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..grammar import GrammarRule, GrammarSchema
 from ..symbols import NonTerminal, Terminal
-from .parser import parse_grammar_rule_line, parse_grammar_schema, parse_nonterminal, parse_terminal
+from .parser import parse_grammar_schema, parse_nonterminal, parse_terminal
 
 
 @pytest_parametrize_lists(
@@ -168,14 +168,14 @@ def test_parsing_nested_nonterminal() -> None:
 
 def test_parsing_empty_rule() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_grammar_rule_line('')
+        parse_grammar_schema('')
 
-    assert str(excinfo.value) == 'Expected a rule'
+    assert str(excinfo.value) == 'Expected at least one grammar rule'
 
 
 def test_parsing_rule_with_empty_left_side() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_grammar_rule_line('→ ε')
+        parse_grammar_schema('→ ε')
 
     assert str(excinfo.value) == 'The left side of a rule must be nonempty'
     assert excinfo.value.__notes__[0] == dedent('''\

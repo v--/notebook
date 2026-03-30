@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .exceptions import IncompatibleRuleError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .symbols import NonTerminal, Terminal, new_non_terminal
@@ -61,6 +62,7 @@ def iter_rules_without_nullables(nullable: Collection[NonTerminal], dest: Sequen
                 yield part
 
 
+@collector.ref('alg:epsilon_rule_removal')
 def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     nullable = identify_nullable_non_terminals(grammar)
     new_start = new_non_terminal(

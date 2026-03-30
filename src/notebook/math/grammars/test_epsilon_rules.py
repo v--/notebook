@@ -1,6 +1,7 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
+from ...support.coderefs import collector
 from .brute_force_parse import derives
 from .epsilon_rules import (
     is_epsilon_free,
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from .conftest import GrammarFixture
 
 
-# See ex:alg:epsilon_rule_removal/an in the monograph
+@collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
         dedent('''\
@@ -33,7 +34,7 @@ def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
     an.assert_equivalent(new_grammar)
 
 
-# See ex:alg:epsilon_rule_removal/dead in the monograph
+@collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_terminal_rule() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
@@ -60,7 +61,7 @@ def test_remove_epsilon_rules_terminal_rule() -> None:
     assert len(list(new_grammar.schema.instantiate(NonTerminal('B')).iter_starting_rules())) == 0
 
 
-# See ex:alg:epsilon_rule_removal/natural in the monograph
+@collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_natural(binary: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
         dedent('''\
