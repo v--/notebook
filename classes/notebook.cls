@@ -52,8 +52,7 @@
 \RequirePackage{subcaption}
 \RequirePackage{longtable}
 \RequirePackage{booktabs}
-\RequirePackage{seqsplit}
-\RequirePackage{xspace}
+\RequirePackage{xspace} % \ignorespaces
 \RequirePackage{enumitem}
 \RequirePackage{graphbox} % \includegraphics[align=?]
 \RequirePackage{csquotes}
