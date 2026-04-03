@@ -78,13 +78,13 @@ def test_parsing_invalid_variable_suffix() -> None:
 
 @pytest_parametrize_kwargs(
     dict(
-        term='H∧',
-        expected=Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H∧')),
+        term='L∧',
+        expected=Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('L∧')),
     ),
     dict(
-        term='((H=x)x)',
+        term='((L=x)x)',
         expected=TypedApplication(
-            TypedApplication(Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('H=')), Variable(LatinIdentifier('x'))),
+            TypedApplication(Constant(PLAIN_HOL_SIGNATURE.get_logical_constant_symbol('L=')), Variable(LatinIdentifier('x'))),
             Variable(LatinIdentifier('x')),
         ),
     ),
@@ -201,9 +201,9 @@ def test_parsing_valid_type_variables(term: str, expected: TypeVariable) -> None
 @pytest_parametrize_lists(
     term=[
         'x',
-        'H¬',
-        '(H¬p)',
-        '(λx:ι.(H¬p))',
+        'L¬',
+        '(L¬p)',
+        '(λx:ι.(L¬p))',
     ],
 )
 def test_rebuilding_term_with_constants(term: str) -> None:
@@ -213,10 +213,10 @@ def test_rebuilding_term_with_constants(term: str) -> None:
 @pytest_parametrize_lists(
     schema=[
         'x',
-        'H¬',  # Constant term
+        'L¬',  # Constant term
         'M',  # Placeholder
-        '(H¬M)',
-        '(λx:ι.(H¬M))',
+        '(L¬M)',
+        '(λx:ι.(L¬M))',
     ],
 )
 def test_rebuilding_schema(schema: str) -> None:

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import pytest
 
 from ...logic.conftest import dummy_signature  # noqa: F401
@@ -6,17 +8,22 @@ from ...logic.signature import (
     FunctionSymbol,
     SignatureMorphism,
 )
-from ...logic.structure import FormalLogicStructure, reduct_along_signature_morphism
-from ...logic.theories.arithmetic import ARITHMETIC_SIGNATURE
+from ...logic.structure import FormalLogicStructure, expand_along_signature_morphism
+from ...logic.theories.arithmetic import ARITHMETIC_SIGNATURE as FOL_ARITHMETIC_SIGNATURE
 from ...logic.theories.arithmetic import ModularArithmeticStructure as FolModularStructure
 from ...rings.modular import Z3
-from .modular import ModularArithmeticStructure as HolModularStructure
+from .theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from .theories.arithmetic import ModularArithmeticStructure as HolModularStructure
+
+
+if TYPE_CHECKING:
+    from .signature import HolSignature
 
 
 @pytest.fixture
 def arithmetic_signature_morphism() -> SignatureMorphism:
     return SignatureMorphism(
-        ARITHMETIC_SIGNATURE,
+        FOL_ARITHMETIC_SIGNATURE,
         {FunctionSymbol(name='S', arity=1): FunctionSymbol(name='S⁺', arity=1)},
     )
 
@@ -28,10 +35,15 @@ def fol_z3_signature(arithmetic_signature_morphism: SignatureMorphism) -> Formal
 
 @pytest.fixture
 def fol_z3_model(arithmetic_signature_morphism: SignatureMorphism) -> FormalLogicStructure:
-    return reduct_along_signature_morphism(
-        arithmetic_signature_morphism.get_reverse_morphism(),
+    return expand_along_signature_morphism(
+        arithmetic_signature_morphism,
         FolModularStructure(Z3),
     )
+
+
+@pytest.fixture
+def hol_z3_signature() -> HolSignature:
+    return HOL_ARITHMETIC_SIGNATURE
 
 
 @pytest.fixture

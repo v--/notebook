@@ -5,9 +5,5 @@ class HolError(LambdaCalculusError):
     pass
 
 
-class LambdaInterpretationError(HolError):
-    pass
-
-
-class MissingInterpretationError(LambdaInterpretationError):
+class HolTranslationError(HolError):
     pass

@@ -8,6 +8,6 @@ if TYPE_CHECKING:
     from .views.vertex import VertexView
 
 
-class DirectedGraph[VertT, VertLabelT, EdgeSymbolT](BaseGraph[VertT, DirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_view=DirectedEdgeView):
+class DirectedGraph[VertT, VertLabelT = None, EdgeSymbolT = None](BaseGraph[VertT, DirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_view=DirectedEdgeView):
     vertices: VertexView[VertT, DirectedEdge[VertT], VertLabelT, EdgeSymbolT]
     edges: DirectedEdgeView[VertT, VertLabelT, EdgeSymbolT]

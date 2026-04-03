@@ -1,4 +1,5 @@
 from ...support.coderefs import collector
+from ...support.name_collision import get_name_without_collision
 from ..automata.finite import FiniteAutomaton, reverse_automaton
 from ..automata.finite_determinize import determinize
 from .context_free import reverse_grammar
@@ -6,7 +7,7 @@ from .epsilon_rules import is_epsilon_free, is_epsilon_rule, remove_epsilon_rule
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .renaming_rules import collapse_renaming_rules
-from .symbols import NonTerminal, Terminal, new_non_terminal
+from .symbols import NonTerminal, Terminal
 
 
 def is_left_linear_rule(rule: GrammarRule) -> bool:
@@ -45,7 +46,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
     g2 = remove_epsilon_rules(g1)
     g3 = collapse_renaming_rules(g2)
     g4_rules = list[GrammarRule]()
-    new_names = set(g3.schema.get_non_terminals())
+    new_names = {sym.value for sym in g3.schema.get_non_terminals()}
 
     for rule in g3.schema.rules:
         if is_epsilon_rule(rule):
@@ -57,18 +58,19 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
         last_index = -1 if isinstance(rule.dest[-1], Terminal) else -2
 
         for sym in rule.dest[:last_index]:
-            new_var = new_non_terminal(rule.src_symbol.value, new_names)
-            new_names.add(new_var)
-            g4_rules.append(GrammarRule(src=[last], dest=[sym, new_var]))
-            last = new_var
+            new_sym_name = get_name_without_collision(rule.src_symbol.value, new_names)
+            new_names.add(new_sym_name)
+            new_sym = NonTerminal(new_sym_name)
+            g4_rules.append(GrammarRule(src=[last], dest=[sym, new_sym]))
+            last = new_sym
 
         g4_rules.append(GrammarRule(src=[last], dest=rule.dest[last_index:]))
 
-    final = new_non_terminal('F', new_names)
+    final_sym = NonTerminal(get_name_without_collision('F', new_names))
     aut = FiniteAutomaton[str, str]()
 
     aut.initial.add(g3.start.value)
-    aut.terminal.add(final.value)
+    aut.terminal.add(final_sym.value)
 
     if not is_epsilon_free(g3):
         aut.terminal.add(g3.start.value)
@@ -77,7 +79,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
         if not is_epsilon_rule(rule):
             aut.add_transition(
                 src=rule.src_symbol.value,
-                dest=rule.dest[1].value if len(rule.dest) > 1 else final.value,
+                dest=rule.dest[1].value if len(rule.dest) > 1 else final_sym.value,
                 symbol=rule.dest[0].value,
             )
 

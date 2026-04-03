@@ -1,9 +1,7 @@
-import itertools
 from typing import TYPE_CHECKING, Literal
 
-from ...exceptions import UnreachableException
 from ...parsing import StringContainer
-from ...support.unicode import atoi_subscripts, is_numeric_subscript_char, itoa_subscripts
+from ...support.name_collision import get_name_without_collision
 
 
 if TYPE_CHECKING:
@@ -26,22 +24,13 @@ class NonTerminal(StringContainer):
         return f'NonTerminal({self.value!r})'
 
 
-def new_non_terminal(base_name: str, context: Collection[NonTerminal]) -> NonTerminal:
-    numeric_subscript = ''.join(itertools.takewhile(is_numeric_subscript_char, reversed(base_name)))
-    index: int = -1
-
-    if len(numeric_subscript) > 0:
-        index = atoi_subscripts(numeric_subscript)
-
-    name_base = base_name[:len(base_name) - len(numeric_subscript)]
-
-    for i in itertools.count(start=index + 1):
-        candidate = NonTerminal(name_base + itoa_subscripts(i))
-
-        if candidate not in context:
-            return candidate
-
-    raise UnreachableException
+def new_non_terminal(base: NonTerminal | Terminal | str, context: Collection[NonTerminal]) -> NonTerminal:
+    return NonTerminal(
+        get_name_without_collision(
+            base if isinstance(base, str) else base.value,
+            {sym.value for sym in context},
+        ),
+    )
 
 
 Empty = Literal['ε']

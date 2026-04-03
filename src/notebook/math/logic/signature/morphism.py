@@ -41,14 +41,5 @@ class SignatureMorphism:
 
         raise MissingSignatureSymbolError(f'The {symbol.get_kind_string()} symbol {symbol} is not present in the source signature')
 
-    def get_reverse_morphism(self) -> SignatureMorphism:
-        if len(set(self.mapping.values())) < len(self.mapping):
-            raise MissingSignatureSymbolError('Cannot invert a non-invertible morphism')
-
-        return SignatureMorphism(
-            self.get_modified_signature(),
-            {value: key for key, value in self.mapping.items()},
-        )
-
     def get_modified_signature(self) -> FormalLogicSignature:
         return FormalLogicSignature(*(self(sym) for sym in self.source))

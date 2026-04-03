@@ -15,6 +15,7 @@ from ..parsing import (
     parse_variable_assertion,
 )
 from ..signature import BaseTypeSymbol
+from ..type_context import TypeContext
 from ..type_derivation import RuleApplicationTree, TypeDerivationError, apply, assume, premise_config
 from ..types import BaseType
 from .alpha import alpha_convert_derivation
@@ -38,10 +39,10 @@ if TYPE_CHECKING:
 def test_alpha_convert_arrow_derivation_success(m: str, n: str, context: Mapping[str, str]) -> None:
     tree = derive_type(
         parse_typed_term(m),
-        {
+        TypeContext({
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        },
+        }),
     )
 
     equivalent_term = parse_typed_term(n)
@@ -61,10 +62,10 @@ def test_alpha_convert_arrow_derivation_success(m: str, n: str, context: Mapping
 def test_alpha_convert_arrow_derivation_failure(m: str, n: str, context: Mapping[str, str]) -> None:
     tree = derive_type(
         parse_typed_term(m),
-        {
+        TypeContext({
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        },
+        }),
     )
 
     equivalent_term = parse_typed_term(n)

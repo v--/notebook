@@ -41,6 +41,10 @@ def get_free_variables(term: UntypedTerm | TypedTerm) -> Collection[Variable]:
     return FreeVariableVisitor().visit(term)
 
 
+def is_closed_term(term: UntypedTerm | TypedTerm) -> bool:
+    return len(get_free_variables(term)) == 0
+
+
 class BoundVariableVisitor(TermVisitor[Collection[Variable]]):
     @override
     def visit_constant(self, term: Constant) -> Collection[Variable]:

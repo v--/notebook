@@ -35,7 +35,7 @@ def length_increasing_to_context_sensitive(grammar: Grammar) -> Grammar:
     new_rules = list[GrammarRule]()
 
     for term_sym in grammar.schema.get_terminals():
-        active_non_terminal = new_non_terminal(term_sym.value, non_terminals)
+        active_non_terminal = new_non_terminal(term_sym, non_terminals)
         new_rules.append(
             GrammarRule(
                 src=[active_non_terminal],
@@ -59,7 +59,7 @@ def length_increasing_to_context_sensitive(grammar: Grammar) -> Grammar:
 
         for i, sym in enumerate(rule.src):
             tail = modified_src[i + 1:] if i + 1 < len(rule.src) else dest_tail
-            active_non_terminal = new_non_terminal(sym.value, non_terminals)
+            active_non_terminal = new_non_terminal(sym, non_terminals)
             new_rules.append(
                 GrammarRule(
                     src=[*new_non_terminals, *modified_src[i:]],

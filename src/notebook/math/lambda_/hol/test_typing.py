@@ -7,11 +7,11 @@ from .typing import BASE_HOL_TYPE_SYSTEM
 
 
 def test_top() -> None:
-    tree = apply(BASE_HOL_TYPE_SYSTEM['H⊤'])
+    tree = apply(BASE_HOL_TYPE_SYSTEM['L⊤'])
 
     assert str(tree) == dedent('''\
-        _____ H⊤
-        H⊤: ο
+        _____ L⊤
+        L⊤: ο
         ''',
     )
 
@@ -21,34 +21,34 @@ def test_and() -> None:
         BASE_HOL_TYPE_SYSTEM['→₋'],
         apply(
             BASE_HOL_TYPE_SYSTEM['→₋'],
-            apply(BASE_HOL_TYPE_SYSTEM['H∧']),
+            apply(BASE_HOL_TYPE_SYSTEM['L∧']),
             assume(parse_variable_assertion('p: ο', PLAIN_HOL_SIGNATURE)),
         ),
         assume(parse_variable_assertion('q: ο', PLAIN_HOL_SIGNATURE)),
     )
 
     assert str(tree) == dedent('''\
-        _________________ H∧
-        H∧: (ο → (ο → ο))       p: ο
+        _________________ L∧
+        L∧: (ο → (ο → ο))       p: ο
         ______________________________ →₋
-                (H∧p): (ο → ο)               q: ο
+                (L∧p): (ο → ο)               q: ο
         ___________________________________________ →₋
-                        ((H∧p)q): ο
+                        ((L∧p)q): ο
         ''',
     )
 
 
 def test_forall() -> None:
     tree = apply(
-        BASE_HOL_TYPE_SYSTEM['H∀'],
+        BASE_HOL_TYPE_SYSTEM['L∀'],
         assume(parse_variable_assertion('x: ι')),
-        apply(BASE_HOL_TYPE_SYSTEM['H⊤']),
+        apply(BASE_HOL_TYPE_SYSTEM['L⊤']),
     )
 
     assert str(tree) == dedent('''\
-                  _____ H⊤
-        x: ι      H⊤: ο
-        ________________ H∀
-        (H∀(λx:ι.H⊤)): ο
+                  _____ L⊤
+        x: ι      L⊤: ο
+        ________________ L∀
+        (L∀(λx:ι.L⊤)): ο
         ''',
     )

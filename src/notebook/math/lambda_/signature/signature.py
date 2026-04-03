@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-class LambdaSignature:
+class LambdaSignature:  # noqa: PLW1641
     trie: TrieMapping[SignatureSymbol]
 
     def __init__(self, *symbols: SignatureSymbol) -> None:
@@ -55,6 +55,12 @@ class LambdaSignature:
 
     def __iter__(self) -> Iterator[SignatureSymbol]:
         return iter(self.trie.values())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LambdaSignature):
+            return NotImplemented
+
+        return list(self) == list(other)
 
 
 EMPTY_SIGNATURE = LambdaSignature()

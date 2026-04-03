@@ -2,12 +2,13 @@ from textwrap import dedent
 
 from ....support.coderefs import collector
 from ..parsing import parse_type, parse_typed_term, parse_variable
+from ..type_context import TypeContext
 from .type_inference import derive_type
 
 
 def test_assumption() -> None:
     term = parse_typed_term('x')
-    context = {parse_variable('x'): parse_type('τ')}
+    context = TypeContext({parse_variable('x'): parse_type('τ')})
     assert str(derive_type(term, context)) == dedent('''\
         x: τ
         ''',
@@ -15,10 +16,10 @@ def test_assumption() -> None:
 
 
 def test_arrow_elim() -> None:
-    context = {
+    context = TypeContext({
         parse_variable('x'): parse_type('(τ → τ)'),
         parse_variable('y'): parse_type('τ'),
-    }
+    })
 
     term = parse_typed_term('(xy)')
     assert str(derive_type(term, context)) == dedent('''\

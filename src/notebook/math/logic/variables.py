@@ -33,6 +33,10 @@ def get_term_variables(term: Term) -> Collection[Variable]:
     return TermVariableVisitor().visit(term)
 
 
+def is_closed_term(term: Term) -> bool:
+    return len(get_term_variables(term)) == 0
+
+
 class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
     def visit_prop_constant(self, formula: PropConstant) -> Collection[Variable]:
@@ -95,3 +99,7 @@ def get_formula_bound_variables(formula: Formula) -> Collection[Variable]:
 
 def get_formula_variables(formula: Formula) -> Collection[Variable]:
     return {*get_formula_free_variables(formula), *get_formula_bound_variables(formula)}
+
+
+def is_closed_formula(formula: Formula) -> bool:
+    return len(get_formula_variables(formula)) == 0

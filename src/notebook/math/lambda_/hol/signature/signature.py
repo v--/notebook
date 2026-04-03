@@ -1,9 +1,7 @@
-from collections.abc import Iterator
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
-from . import common_constants, common_types
+from ..alphabet import LogicalConstantName, LogicalTypeName, SortName
 from .exceptions import HolSignatureError
 from .symbols import (
     HolSignatureSymbol,
@@ -15,50 +13,36 @@ from .symbols import (
 
 
 if TYPE_CHECKING:
-    from collections.abc import MutableMapping
-
-    from ...types import SimpleType
+    from collections.abc import Iterable, Iterator
 
 
-@dataclass
 class HolSignature(LambdaSignature):
-    _assignment: MutableMapping[ConstantTermSymbol, SimpleType]
-
-    def __init__(self, *symbols: SortSymbol) -> None:
+    def __init__(self, *symbols: SortSymbol | NonLogicalConstantSymbol) -> None:
         super().__init__()
-        super().add_symbol(common_types.prop)
-        super().add_symbol(common_constants.verum)
-        super().add_symbol(common_constants.falsum)
-        super().add_symbol(common_constants.negation)
-        super().add_symbol(common_constants.conjunction)
-        super().add_symbol(common_constants.disjunction)
-        super().add_symbol(common_constants.conditional)
-        super().add_symbol(common_constants.biconditional)
-        super().add_symbol(common_constants.equality)
-        super().add_symbol(common_constants.forall)
-        super().add_symbol(common_constants.exists)
+        super().add_symbol(LogicalTypeSymbol(LogicalTypeName.PROP))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.VERUM))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.FALSUM))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.NEGATION))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.CONJUNCTION))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.DISJUNCTION))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.CONDITIONAL))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.BICONDITIONAL))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.EQUALITY))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.FORALL))
+        super().add_symbol(LogicalConstantSymbol(LogicalConstantName.EXISTS))
 
         for sym in symbols:
-            super().add_symbol(sym)
+            self.add_symbol(sym)
 
-        self._assignment = {}
-
-    def add_symbol(self, symbol: SignatureSymbol, type_sym: SimpleType | None = None) -> None:
+    def add_symbol(self, symbol: SignatureSymbol) -> None:
         match symbol:
             case ConstantTermSymbol():
                 if not isinstance(symbol, NonLogicalConstantSymbol):
                     raise HolSignatureError('Only non-logical constant symbols can be added')
 
-                if type_sym is None:
-                    raise HolSignatureError('Constant symbols must have an associated type')
-
                 super().add_symbol(symbol)
-                self._assignment[symbol] = type_sym
 
             case BaseTypeSymbol():
-                if type_sym is not None:
-                    raise HolSignatureError('Base types cannot have associated types')
-
                 if not isinstance(symbol, SortSymbol):
                     raise HolSignatureError('Only sorts are allowed as base types')
 
@@ -96,24 +80,19 @@ class HolSignature(LambdaSignature):
 
         return sym
 
-    def get_type(self, symbol: NonLogicalConstantSymbol) -> SimpleType:
-        if symbol not in self:
-            raise HolSignatureError(f'The symbol {symbol} is not part of the signature')
-
-        return self._assignment[symbol]
-
     def iter_sorts(self) -> Iterator[SortSymbol]:
         for sym in super().__iter__():
             if isinstance(sym, SortSymbol):
                 yield sym
 
-    def iter_nonlogical(self) -> Iterator[NonLogicalConstantSymbol]:
+    def iter_nonlogical(self) -> Iterable[NonLogicalConstantSymbol]:
         for sym in super().__iter__():
             if isinstance(sym, NonLogicalConstantSymbol):
                 yield sym
 
     def __iter__(self) -> Iterator[HolSignatureSymbol]:
-        return cast(Iterator[HolSignatureSymbol], iter(self.trie.values()))
+        yield from self.iter_sorts()
+        yield from self.iter_nonlogical()
 
 
-PLAIN_HOL_SIGNATURE = HolSignature(common_types.individual)
+PLAIN_HOL_SIGNATURE = HolSignature(SortSymbol(SortName.INDIVIDUAL))

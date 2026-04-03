@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Never, override
+from typing import Never, override
 
 from ....support.coderefs import collector
 from ..alphabet import BinaryTypeConnective
@@ -13,18 +13,15 @@ from ..terms import (
     TypedTermVisitor,
     Variable,
 )
+from ..type_context import EMPTY_CONTEXT, TypeContext
 from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise_config
 from ..types import SimpleConnectiveType, SimpleType
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @collector.ref('alg:simply_typed_term_type_inference')
 @dataclass(frozen=True)
 class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
-    context: Mapping[Variable, SimpleType]
+    context: TypeContext
 
     @override
     def visit_constant(self, term: Constant) -> Never:
@@ -55,7 +52,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
     @override
     def visit_abstraction(self, term: TypedAbstraction) -> TypeDerivationTree:
-        subtree = TypeInferenceVisitor({**self.context, term.var: term.var_type}).visit(term.body)
+        subtree = TypeInferenceVisitor(self.context.modify(term.var, term.var_type)).visit(term.body)
 
         return apply(
             ARROW_ONLY_TYPE_SYSTEM['→₊'],
@@ -64,9 +61,9 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
 
 @collector.ref('alg:simply_typed_combinator_type_derivation')
-def derive_type(term: TypedTerm, context: Mapping[Variable, SimpleType] = {}) -> TypeDerivationTree:
+def derive_type(term: TypedTerm, context: TypeContext = EMPTY_CONTEXT) -> TypeDerivationTree:
     return TypeInferenceVisitor(context=context).visit(term)
 
 
-def infer_type(term: TypedTerm, context: Mapping[Variable, SimpleType]) -> SimpleType:
+def infer_type(term: TypedTerm, context: TypeContext = EMPTY_CONTEXT) -> SimpleType:
     return derive_type(term, context).conclusion.type

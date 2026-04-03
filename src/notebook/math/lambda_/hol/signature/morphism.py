@@ -5,7 +5,7 @@ from ...signature import SignatureMorphism
 from ...signature_translation import translate_type
 from .exceptions import HolSignatureMorphismError
 from .signature import HolSignature
-from .symbols import LogicalConstantSymbol, LogicalTypeSymbol
+from .symbols import LogicalConstantSymbol, LogicalTypeSymbol, NonLogicalConstantSymbol
 
 
 class HolSignatureMorphism(SignatureMorphism):
@@ -26,6 +26,11 @@ class HolSignatureMorphism(SignatureMorphism):
             signature.add_symbol(self(sort_sym))
 
         for const_sym in self.source.iter_nonlogical():
-            signature.add_symbol(self(const_sym), translate_type(self, self.source.get_type(const_sym)))
+            signature.add_symbol(
+                NonLogicalConstantSymbol(
+                    const_sym.name,
+                    translate_type(self, const_sym.type),
+                ),
+            )
 
         return signature

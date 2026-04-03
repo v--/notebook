@@ -9,13 +9,12 @@ from ..alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
 from .exceptions import LambdaSignatureError
 
 
-@dataclass(unsafe_hash=True)
+@dataclass(frozen=True)
 class BaseSignatureSymbol(abc.ABC):
     name: str
 
-    def __init__(self, name: str) -> None:
-        self.validate(name)
-        self.name = name
+    def __post_init__(self) -> None:
+        self.validate(self.name)
 
     @abc.abstractmethod
     def validate(self, name: str) -> None:

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-class FormalLogicSignature:
+class FormalLogicSignature:  # noqa: PLW1641
     """A collection of symbols with certain restrictions.
 
     What we call here function and predicate symbols can have multiple Unicode graphemes, yet they are guaranteed to correspond to one lexeme ("token").
@@ -63,6 +63,12 @@ class FormalLogicSignature:
 
     def __iter__(self) -> Iterator[SignatureSymbol]:
         return iter(self.trie.values())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FormalLogicSignature):
+            return NotImplemented
+
+        return list(self) == list(other)
 
 
 EMPTY_SIGNATURE = FormalLogicSignature()

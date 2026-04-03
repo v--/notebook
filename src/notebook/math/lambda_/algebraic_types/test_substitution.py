@@ -14,6 +14,7 @@ from ..parsing import (
     parse_variable_assertion,
 )
 from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
+from ..type_context import TypeContext
 from ..type_derivation import TypeDerivationError, UnknownDerivationRuleError, apply, assume, premise_config
 from .substitution import substitute_in_tree
 from .system import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
@@ -45,11 +46,11 @@ def test_substitute_variable() -> None:
 
 
 def test_substitute_application() -> None:
-    context = {
+    context = TypeContext({
         variables.x: parse_type('(τ → σ)'),
         variables.y: parse_type('τ'),
         variables.z: parse_type('τ'),
-    }
+    })
 
     tree = derive_type(
         parse_typed_term('(xy)'),
@@ -70,9 +71,9 @@ def test_substitute_application() -> None:
 
 
 def test_substitute_abstraction_noop() -> None:
-    context = {
+    context = TypeContext({
         variables.x: parse_type('τ'),
-    }
+    })
     tree = derive_type(
         parse_typed_term('(λx:τ.x)'),
     )
@@ -84,13 +85,13 @@ def test_substitute_abstraction_noop() -> None:
 def test_substitute_abstraction_renaming() -> None:
     tree = derive_type(
         parse_typed_term('(λx:(τ → σ).(xy))'),
-        {variables.y: parse_type('τ')},
+        TypeContext({variables.y: parse_type('τ')}),
     )
     src = variables.y
     dest = assume(parse_variable_assertion('x: τ'))
     expected = derive_type(
         parse_typed_term('(λa:(τ → σ).(ax))'),
-        {variables.x: parse_type('τ')},
+        TypeContext({variables.x: parse_type('τ')}),
     )
 
     assert substitute_in_tree(tree, variable_mapping={src: dest}) == expected
@@ -100,10 +101,10 @@ def test_substitute_abstraction_renaming() -> None:
 def test_substitute_abstraction_renaming_simultaneous() -> None:
     tree = derive_type(
         parse_typed_term('(λa:(τ → σ).(xb))'),
-        {
+        TypeContext({
             variables.x: parse_type('(τ → σ)'),
             variables.b: parse_type('τ'),
-        },
+        }),
     )
     mapping = {
         variables.x: assume(parse_variable_assertion('a: (τ → σ)')),
@@ -111,10 +112,10 @@ def test_substitute_abstraction_renaming_simultaneous() -> None:
     }
     expected = derive_type(
         parse_typed_term('(λb:(τ → σ).(ax))'),
-        {
+        TypeContext({
             variables.a: parse_type('(τ → σ)'),
             variables.x: parse_type('τ'),
-        },
+        }),
     )
 
     assert substitute_in_tree(tree, variable_mapping=mapping) == expected
@@ -123,14 +124,14 @@ def test_substitute_abstraction_renaming_simultaneous() -> None:
 def test_substitute_abstraction_no_renaming() -> None:
     tree = derive_type(
         parse_typed_term('(λx:(τ → σ).(xy))'),
-        {variables.y: parse_type('τ')},
+        TypeContext({variables.y: parse_type('τ')}),
     )
     src = variables.y
     dest = assume(parse_variable_assertion('z: τ'))
 
     expected = derive_type(
         parse_typed_term('(λx:(τ → σ).(xz))'),
-        {variables.z: parse_type('τ')},
+        TypeContext({variables.z: parse_type('τ')}),
     )
 
     assert substitute_in_tree(tree, variable_mapping={src: dest}) == expected

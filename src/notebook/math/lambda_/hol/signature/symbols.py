@@ -1,8 +1,13 @@
-from typing import override
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, override
 
 from .....support.inference import ImproperInferenceRuleSymbol
 from ...alphabet import AuxImproperSymbol, BinaryTypeConnective
 from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignatureError
+
+
+if TYPE_CHECKING:
+    from ...types import SimpleType
 
 
 # We allow Greek identifiers as sorts since we forbid type variables
@@ -32,7 +37,10 @@ class LogicalConstantSymbol(ConstantTermSymbol):
         return 'logical constant'
 
 
+@dataclass(frozen=True)
 class NonLogicalConstantSymbol(ConstantTermSymbol):
+    type: SimpleType
+
     @override
     def get_kind_string(self) -> str:
         return 'nonlogical constant'

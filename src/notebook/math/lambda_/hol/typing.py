@@ -10,15 +10,15 @@ from .signature import PLAIN_HOL_SIGNATURE, HolSignature
 BASE_HOL_TYPE_SYSTEM = ExplicitTypeSystem([
     *ARROW_ONLY_TYPE_SYSTEM.rules,
 
-    parse_typing_rule('H⊤', '⊩ H⊤: ο', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H⊥', '⊩ H⊥: ο', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H∧', '⊩ H∧: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H∨', '⊩ H∨: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H→', '⊩ H→: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H↔', '⊩ H↔: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H=', 'M: τ, N: τ ⊩ ((H=M)N): ο', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H∀', 'x: τ, M: ο ⊩ (H∀(λx:τ.M)): ο', PLAIN_HOL_SIGNATURE),
-    parse_typing_rule('H∃', 'x: τ, M: ο ⊩ (H∃(λx:τ.M)): ο', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L⊤', '⊩ L⊤: ο', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L⊥', '⊩ L⊥: ο', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L∧', '⊩ L∧: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L∨', '⊩ L∨: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L→', '⊩ L→: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L↔', '⊩ L↔: (ο → (ο → ο))', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L=', 'M: τ, N: τ ⊩ ((L=M)N): ο', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L∀', 'x: τ, M: ο ⊩ (L∀(λx:τ.M)): ο', PLAIN_HOL_SIGNATURE),
+    parse_typing_rule('L∃', 'x: τ, M: ο ⊩ (L∃(λx:τ.M)): ο', PLAIN_HOL_SIGNATURE),
 ])
 
 
@@ -30,7 +30,7 @@ def generate_type_system(signature: HolSignature) -> ExplicitTypeSystem:
                 name='Ax',
                 premises=[],
                 conclusion=TypingRuleEntry(
-                    main=TypeAssertionSchema(Constant(sym), translate_type_to_schema(signature.get_type(sym))),
+                    main=TypeAssertionSchema(Constant(sym), translate_type_to_schema(sym.type)),
                 ),
             )
             for sym in signature.iter_nonlogical()

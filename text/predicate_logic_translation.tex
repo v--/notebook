@@ -1,149 +1,261 @@
 \section{Predicate logic translation}\label{sec:predicate_logic_translation}
 
-\paragraph{First-order logic to higher-order logic}
+\paragraph{Mechanical translation}
 
-\begin{algorithm}[First-order signature to higher-order signature]\label{alg:fol_signature_to_hol_signature}
-  We will describe a procedure for converting a \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) to a \hyperref[def:hol_signature]{higher-order signature} \( \Sigma' \).
+\begin{algorithm}[First-order logic to higher-order logic]\label{alg:fol_to_hol}
+  We will describe a procedure for translating \hyperref[def:fol_term]{terms} and \hyperref[def:fol_formula]{formulas} in \hyperref[def:first_order_logic]{first-order logic} to \hyperref[def:higher_order_logic]{higher-order logic}.
 
   \begin{thmenum}
-    \thmitem{alg:fol_signature_to_hol_signature/sort} The only sort in \( \Sigma' \) is the type of individuals, \( \syn\iota \).
-    \thmitem{alg:fol_signature_to_hol_signature/function} For every \( n \)-ary function symbol \( f \) in \( \Sigma \), we introduce into \( \Sigma' \) a nonlogical constant with the same name and with type
-    \begin{equation*}
-      \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{times}} \synimplies \syn\iota.
-    \end{equation*}
-
-    \thmitem{alg:fol_signature_to_hol_signature/predicate} For every \( n \)-ary predicate symbol \( p \) in \( \Sigma \), we introduce into \( \Sigma' \) a nonlogical constant with the same name and with type
-    \begin{equation*}
-      \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{times}} \synimplies \syn\omicron.
-    \end{equation*}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item This algorithm can be found in \cite{notebook:code} as
-\WriteCodeRef{alg:fol_signature_to_hol_signature}
-\end{comments}
-
-\begin{algorithm}[First-order term to higher-order expression]\label{alg:fol_term_to_hol_expression}
-  Fix a \hyperref[def:fol_term]{first-order term} \( T \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \). Fix also a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) and a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \).
-
-  Via recursion on \( T \), we will translate \( T \) into a \hyperref[def:hol_expression]{well-formed expression} \( T' \):
-  \begin{thmenum}
-    \thmitem{alg:fol_term_to_hol_expression/variable} If \( T \) is a variable, say \( x \), simply let \( T' = x \).
-    \thmitem{alg:fol_term_to_hol_expression/application} If \( T = f(S_1, \ldots, S_n) \), let \( S_k' \) be the translation of \( S_k \) and let
-    \begin{equation*}
-      T \coloneqq (\ldots ((f S_1) S_2) \ldots S_n).
-    \end{equation*}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item This translation is justified in \cref{thm:fol_to_hol_translation}.
-  \item This algorithm is implemented in \cite{notebook:code} as
-\WriteCodeRef{alg:fol_term_to_hol_expression}
-\end{comments}
-
-\begin{algorithm}[First-order formula to higher-order expression]\label{alg:fol_formula_to_hol_expression}
-  Fix a \hyperref[def:fol_formula]{first-order formula} \( \varphi \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \).
-
-  Via recursion on \( \varphi \), we will translate \( \varphi \) into a \hyperref[def:hol_expression]{well-formed expression} \( \varphi' \):
-  \begin{thmenum}
-    \thmitem{alg:fol_formula_to_hol_expression/verum} If \( \varphi = \syntop \), simply let \( \varphi' \coloneqq \synH_\top \).
-    \thmitem{alg:fol_formula_to_hol_expression/falsum} Similarly, if \( \varphi = \synbot \), simply let \( \varphi' \coloneqq \synH_\bot \).
-    \thmitem{alg:fol_formula_to_hol_expression/application} If \( \varphi = p(\psi_1, \ldots, \psi_n) \), let \( \psi'_k \) be the translation of \( \psi_k \) and let
-    \begin{equation*}
-      \varphi' \coloneqq (\ldots ((p \psi'_1) \psi'_2) \ldots \psi'_n).
-    \end{equation*}
-
-    \thmitem{alg:fol_formula_to_hol_expression/connective} If \( \varphi = \psi \syncirc \theta \) , let \( \psi' \) and \( \theta' \) be the translations of \( \psi \) and \( \theta \), and let
-    \begin{equation*}
-      \varphi' \coloneqq (\synH_{\syncirc} \psi') \theta'.
-    \end{equation*}
-
-    \thmitem{alg:fol_formula_to_hol_expression/quantifier} If \( \varphi = \quantifier Q x \psi \) , let \( \psi' \) be the translations of \( \psi \), and let
-    \begin{equation*}
-      \varphi' \coloneqq \synH_Q (\qabs {x^{\syn\iota}} \psi').
-    \end{equation*}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item This translation is justified in \cref{thm:fol_to_hol_translation}.
-  \item This algorithm is implemented in \cite{notebook:code} as
-\WriteCodeRef{alg:fol_formula_to_hol_expression}
-\end{comments}
-
-\begin{algorithm}[First-order structure to higher-order structure]\label{alg:fol_structure_to_hol_structure}
-  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \).
-
-  we will translate \( \mscrX \) into a \hi{standard} \hyperref[def:hol_structure]{higher-order structure} \( \mscrX' = (X', I') \) as follows:
-  \begin{thmenum}
-    \thmitem{alg:fol_signature_to_hol_signature/frame} We define the frame \( X' = \seq{ X'_\tau }_{\tau \in \op*{\BbbQ_{\Sigma'}}} \) as follows:
+    \thmitem{alg:fol_to_hol/signature} First, we must describe the translation of a \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) to a \hyperref[def:hol_signature]{higher-order signature} \( T_{\logic{HOL}}(\Sigma) \).
     \begin{thmenum}
-      \thmitem{alg:fol_signature_to_hol_signature/frame/individuals} For the type of individuals, we let \( X'_{\syn\iota} \) be the first-order universe \( X \).
+      \thmitem{alg:fol_to_hol/signature/sort} The only sort in \( T_{\logic{HOL}}(\Sigma) \) is the type of individuals, \( \syn\iota \).
 
-      \thmitem{alg:fol_signature_to_hol_signature/frame/arrow} For the arrow type \( \tau \synimplies \sigma \), we define the universe \( X'_{\tau \synimplies \sigma} \) as the set of all functions from \( X'_\tau \) to \( X'_\sigma \).
+      \thmitem{alg:fol_to_hol/signature/function} For every \( n \)-ary function symbol \( f \) in \( \Sigma \), we introduce into \( \Sigma' \) a nonlogical constant
+      \begin{equation*}
+        T_{\logic{HOL}}(f): \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{times}} \synimplies \syn\iota.
+      \end{equation*}
+
+      The constant's name, \( T_{\logic{HOL}}(f) \), should be deterministically derived from \( f \) --- either \( f \) itself or some variation in case \( f \) is invalid as a constant term.
+
+      \thmitem{alg:fol_to_hol/signature/predicate} For every \( n \)-ary predicate symbol \( p \) in \( \Sigma \), we introduce into \( T_{\logic{HOL}}(\Sigma) \) a nonlogical constant \( T_{\logic{HOL}}(p) \) with type
+      \begin{equation*}
+        T_{\logic{HOL}}(p): \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{times}} \synimplies \syn\omicron.
+      \end{equation*}
     \end{thmenum}
 
-    \thmitem{alg:fol_signature_to_hol_signature/interpretation} We define interpretation \( I' \) as follows: for every \( n \)-ary function or predicate symbol \( s \) in \( \Sigma \), let \( I'(s) \) be \( I_s \), where
+    \thmitem{alg:fol_to_hol/term} Translating first-order terms is straightforward:
     \begin{equation*}
-      I_{s,a_1,\ldots,a_k} \coloneqq \begin{cases}
-        I(s)(a_1, \ldots, a_n),                       &k = n, \\
+      T_{\logic{HOL}}(A) \coloneqq \begin{cases}
+        A,                                    &A \in \op*{Var}, \\
+        (\ldots ((f' A_1') A_2') \ldots A_n'), &A = f(A_1, \ldots, A_n),
+      \end{cases}
+    \end{equation*}
+    where \( f' = T_{\logic{HOL}}(f) \) and \( A_k' = T_{\logic{HOL}}(A_k) \).
+
+    \thmitem{alg:fol_to_hol/formula} Translating formulas is also straightforward:
+    \begin{equation*}
+      T_{\logic{HOL}}(\varphi) \coloneqq \begin{cases}
+        \synL_\top,                                                       &\varphi = \syntop, \\
+        \synL_\bot,                                                       &\varphi = \synbot, \\
+        (H_= A) B,                                                        &\varphi = A \syneq B, \\
+        (\ldots ((p' A_1') A_2') \ldots A_n'),                            &\varphi = p(A_1, \ldots, A_n), \\
+        (\synL_{\syncirc} T_{\logic{HOL}}(\psi)) T_{\logic{HOL}}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
+        \synL_Q (\qabs {x^{\syn\iota}} T_{\logic{HOL}}(\psi)),            &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}. \\
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:fol_to_hol/structure} Given a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \Sigma \), we can define a \hyperref[def:hol_structure]{higher-order structure} \( T_{\logic{HOL}}(\mscrX) = (X', I') \) as follows:
+    \begin{thmenum}
+      \thmitem{alg:fol_to_hol/structure/frame} We define a frame \( X' = \seq{ X'_\tau }_{\tau \in \op*{\BbbQ_{\Sigma'}}} \) as follows:
+      \begin{thmenum}
+        \thmitem{alg:fol_to_hol/structure/frame/individuals} For the type of individuals, we let \( X'_{\syn\iota} \) be the first-order universe \( X \).
+
+        \thmitem{alg:fol_to_hol/structure/frame/arrow} For the arrow type \( \tau \synimplies \sigma \), we define the universe \( X'_{\tau \synimplies \sigma} \) as the set of all functions from \( X'_\tau \) to \( X'_\sigma \).
+      \end{thmenum}
+
+      \thmitem{alg:fol_to_hol/structure/interpretation} Finally, we define an interpretation \( I' \) as follows: for every \( n \)-ary function or predicate symbol \( s \) in \( \Sigma \), let \( I'(s) \) be \( I_s \), where
+      \begin{equation*}
+        I_{s,a_1,\ldots,a_k} \coloneqq \begin{cases}
+          I(s)(a_1, \ldots, a_n),                       &k = n, \\
+          a_{k+1} \mapsto I_{s,a_1,\ldots,a_k,a_{k+1}}, &k < n.
+        \end{cases}
+      \end{equation*}
+    \end{thmenum}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item It seems reasonable to define \( X'_{\tau \synimplies \sigma} \) as the set of only those functions from \( X'_\tau \) to \( X'_\sigma \) expressible in first-order logic. This would unfortunately leave \( X'_{\tau \synimplies \sigma} \) empty in many cases, for example if \( \tau = \syn\omicron \).
+
+  \item Correctness of this algorithm is shown in \cref{thm:fol_to_hol_translation}.
+
+  \item This algorithm is implemented in \cite{notebook:code} in four parts:
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:fol_to_hol/signature} \\
+    \GetCodeRef{alg:fol_to_hol/term} \\
+    \GetCodeRef{alg:fol_to_hol/formula} \\
+    \GetCodeRef{alg:fol_to_hol/structure}
+  \end{CodeRefDisplay}
+\end{comments}
+
+\begin{proposition}\label{thm:fol_to_hol_translation}
+  The translation procedures in \fullref{alg:fol_to_hol} satisfy some compatibility conditions.
+
+  Fix a first-order structure \( \mscrX \) and any \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \). Let \( v' \) be any \hyperref[def:hol_variable_assignment]{higher-order assignment} into \( T_{\logic{HOL}}(\mscrX) \) that coincides with \( v \) on individuals.
+
+  \begin{thmenum}
+    \thmitem{thm:fol_to_hol_translation/term} For any first-order term \( A \), we have
+    \begin{equation*}
+      \Bracks{T_{\logic{HOL}}(A)}_{T_{\logic{HOL}}(\mscrX)}^{v'} = \Bracks{A}_\mscrX^v.
+    \end{equation*}
+
+    \thmitem{thm:fol_to_hol_translation/formula} Similarly, for any first-order formula \( \varphi \), we have
+    \begin{equation*}
+      \Bracks{T_{\logic{HOL}}(\varphi)}_{T_{\logic{HOL}}(\mscrX)}^{v'} = \Bracks{\varphi}_\mscrX^v.
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:fol_to_hol_translation/term} We proceed by \fullref{thm:induction_on_abstract_syntax} on \( A \) to show that \( \Bracks{A'}_{\mscrX'}^{v'} = \Bracks{A}_\mscrX^v \).
+  \begin{itemize}
+    \item If \( A \) is a variable, say \( x \), then \( v'(x^{\syn\iota}) = v(x) \) by assumption.
+    \item If \( A = f(B_1, \ldots, B_n) \), where the inductive hypothesis holds for \( B_1, \ldots, B_n \), then
+    \begin{balign*}
+      \Bracks{T_{\logic{HOL}}(A)}_{T_{\logic{HOL}}(\mscrX)}^{v'}
+      &=
+      \Bracks{(\ldots ((f B'_1) B'_2) \ldots B'_n)}_{T_{\logic{HOL}}(\mscrX)}^{v'}
+      \reloset {\eqref{eq:alg:hol_denotation/app}} = \\ &=
+      \Bracks{f}_{T_{\logic{HOL}}(\mscrX)}^{v'} \parens[\big]{ \Bracks{B'_1}_{T_{\logic{HOL}}(\mscrX)}^{v'} } \ldots \parens[\big]{ \Bracks{B'_n}_{T_{\logic{HOL}}(\mscrX)}^{v'} }
+      \reloset {\T{ind.}} = \\ &=
+      \Bracks{f}_{T_{\logic{HOL}}(\mscrX)}^{v'} \parens[\big]{ \Bracks{B_1}_\mscrX^v } \ldots \parens[\big]{ \Bracks{B_n}_\mscrX^v }
+      \reloset {\eqref{eq:alg:hol_denotation/abs}} = \\ &=
+      I'(f) \parens[\big]{ \Bracks{B_1}_\mscrX^v } \ldots \parens[\big]{ \Bracks{B_n}_\mscrX^v }
+      \reloset {\ref{alg:fol_to_hol/signature/interpretation}} = \\ &=
+      I(f) \parens[\big]{ \Bracks{B_1}_\mscrX^v, \ldots, \Bracks{B_n}_\mscrX^v }
+      = \\ &=
+      \Bracks{A}_\mscrX^v.
+    \end{balign*}
+  \end{itemize}
+
+  \SubProofOf{thm:fol_to_hol_translation/formula} We can use induction on the formula \( \varphi \), similarly to \cref{thm:fol_to_hol_translation/term}, to show that
+  \begin{equation*}
+    \Bracks{T_{\logic{HOL}}(\varphi)}_{T_{\logic{HOL}}(\mscrX)}^{v'} = \Bracks{\varphi}_\mscrX^v.
+  \end{equation*}
+\end{proof}
+
+\begin{algorithm}[Higher-order logic to first-order logic]\label{alg:hol_to_fol}
+  Fix a \hyperref[def:closed_hol_expression]{\hi{closed} expression} \( M^\tau \) over the \hyperref[def:hol_signature]{higher-order signature} \( \Sigma \).
+
+  We will construct a \hyperref[def:fol_signature]{first-order signature} \( T_{\logic{FOL}}(\Sigma) \) and then attempt to translate \( M^\tau \) to a \hyperref[def:fol_term]{first-order term} or \hyperref[def:fol_formula]{formula} \( T_{\logic{FOL}}(M^\tau) \) over it.
+
+  The algorithm may error out, in which case modifying the higher-order signature itself is necessary via auxiliary procedures like \fullref{alg:hol_abstraction_elimination}. Partial applications of logical connectives or using formulas as values similarly requires first extending \( \Sigma \).
+
+  Additionally, if a \hyperref[def:hol_structure]{higher-order structure} \( \mscrX = (X, I) \) is given, we will build a first-order structure \( T_{\logic{FOL}}(\mscrX) \) such that
+  \begin{equation*}
+    \Bracks{ M^\tau }_\mscrX = \Bracks{ T_{\logic{FOL}}(M^\tau) }_{T_{\logic{FOL}}(\mscrX)}.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:hol_to_fol/signature} We introduce to \( T_{\logic{FOL}}(\Sigma) \) the following symbols:
+    \begin{thmenum}
+      \thmitem{alg:hol_to_fol/signature/abstractor} For every type \( \sigma = \rho_1 \synimplies \cdots \synimplies \rho_n \) that occurs in an abstractor annotation in \( M^\tau \), we introduce a unary predicate symbol \( ?_\sigma \), whose role is to \enquote{determine} whether its argument inhabits \( \sigma \).
+
+      Additionally, if \( n > 1 \), we introduce a binary symbol \( !_\sigma \) --- a predicate or function symbol depending on whether \( \rho_n = \syn\omicron \) --- whose role is to \enquote{apply} an argument of type \( \rho_1 \) to a function of type \( \sigma \).
+
+      \thmitem{alg:hol_to_fol/signature/nonlogical} To handle partial applications of a nonlogical constant \( c \) of type \( \sigma = \rho_1 \synimplies \cdots \synimplies \rho_n \), we introduce \( n + 1 \) symbols \( s_c^0, \ldots, s_c^n \), where \( s_c^k \) is a \( k \)-ary predicate symbol if \( \rho_n = \syn\omicron \) and a \( k \)-ary function symbol otherwise.
+    \end{thmenum}
+
+    \thmitem{alg:hol_to_fol/expression} We define \( T_{\logic{FOL}}(M) \) via recursion on \( M^\tau \):
+    \begin{equation*}
+      T_{\logic{FOL}}(M) \coloneqq \begin{cases}
+        M,                                                                                &M \in \op*{Var}, \\
+        s_c^m\parens[\big]{ T_{\logic{FOL}}(N_1), \ldots, T_{\logic{FOL}}(N_m) },         &M = c N_1 \ldots N_m, \T{where} c \in \op*{NLConst} \\
+        !_\sigma^m\parens[\big]{ f, T_{\logic{FOL}}(N_1), \ldots, T_{\logic{FOL}}(N_m) }, &M = f N_1 \ldots N_m, \T{where} v \in \op*{Var}.
+      \end{cases}
+    \end{equation*}
+
+    For the logical constants from \cref{def:hol_typing_rules}, we use straightforward translation:
+    \begin{equation*}
+      T_{\logic{FOL}}(M) \coloneqq \begin{cases}
+        \syntop,                                                                  &M = \synL_\top, \\
+        \synbot,                                                                  &M = \synL_\bot, \\
+        \synneg T_{\logic{FOL}}(N),                                               &M = \synL_\neg N, \\
+        T_{\logic{FOL}}(N) \syncirc T_{\logic{FOL}}(K),                           &M = \synL_{\syncirc} N K, {\syncirc} \in \op*{Conn}, \\
+        \qforall x \parens[\big]{ ?_\sigma(x) \synimplies T_{\logic{FOL}}(N) },   &M = \synL_\forall (\qabs {x^\sigma} N), \\
+        \qexists x \parens[\big]{ ?_\sigma(x) \synwedge T_{\logic{FOL}}(N) },     &M = \synL_\exists (\qabs {x^\sigma} N).
+      \end{cases}
+    \end{equation*}
+
+    In all other cases, the algorithm should error out.
+
+    \thmitem{alg:hol_to_fol/structure} Given a higher-order structure \( \mscrX = (X, I) \), we can define a \hyperref[def:fol_structure]{first-order structure} \( T_{\logic{FOL}}(\mscrX) = (X', I') \) over \( T_{\logic{FOL}}(\Sigma) \) as follows:
+    \begin{thmenum}
+      \thmitem{alg:hol_to_fol/structure/universe} Define the set \( X' \) as the union of all universes \( X_\sigma \), where \( \sigma \) ranges over the types of all bound variables and nonlogical constants in \( M^\tau \), as well as their subtypes, excluding \( \syn\omicron \).
+
+      \thmitem{alg:hol_to_fol/structure/placeholder} Fix any value \( e \) from \( X' \) that is to be used as a \enquote{placeholder} value on type mismatch.
+
+      \thmitem{alg:hol_to_fol/structure/interpretation} It remains to define interpretations for the symbols in \( T_{\logic{FOL}}(\Sigma) \):
+      \begin{align*}
+        I'(?_\sigma)(a) &\coloneqq \begin{cases}
+          \semtop, &a \in X_\sigma, \\
+          \sembot, &\T{otherwise.}
+        \end{cases}
+        \\
+        I'(!_\sigma^m)(f, a_1, \ldots, a_m) &\coloneqq \begin{cases}
+          f(a_1) \cdots (a_m), &f \in X_\sigma, a_1 \in X_{\rho_1}, \ldots, a_m \in X_{\rho_m}, \\
+          e,                   &\T{otherwise.}
+        \end{cases}
+        \\
+        I'(s_c^m)(a_1, \ldots, a_m) &\coloneqq \begin{cases}
+          I(c)(a_1) \cdots (a_m), &a_1 \in X_{\rho_1}, \ldots, a_m \in X_{\rho_m}, \\
+          e,                      &\T{otherwise.}
+        \end{cases},
+      \end{align*}
+      where
+      \begin{equation*}
+        \sigma: \rho_1 \synimplies \cdots \synimplies \rho_n.
+      \end{equation*}
+    \end{thmenum}
+
+    It is straightforward to show that
+    \begin{equation*}
+      \Bracks{ M^\tau }_\mscrX = \Bracks{ T_{\logic{FOL}}(M^\tau) }_{T_{\logic{FOL}}(\mscrX)}.
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item Unlike \fullref{alg:fol_to_hol}, the translation depends both on \( \Sigma \) and on \( M^\tau \).
+
+  \item This algorithm is implemented in \cite{notebook:code} in three parts:
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:hol_to_fol/signature} \\
+    \GetCodeRef{alg:hol_to_fol/expression} \\
+    \GetCodeRef{alg:hol_to_fol/structure}
+  \end{CodeRefDisplay}
+\end{comments}
+
+\begin{algorithm}[Higher-order logic abstraction elimination]\label{alg:hol_abstraction_elimination}
+  Fix an \hyperref[def:hol_expression]{expression} \( M^\tau \) over the \hyperref[def:hol_signature]{higher-order signature} \( \Sigma \).
+
+  We will construct a \hyperref[def:hol_signature_extension]{signature extension} \( T_\Lambda(\Sigma) \) and an expression \( T_\Lambda(M) \) over \( T_\Lambda(\Sigma) \) that contains no explicit \( \muplambda \)-abstractions, i.e. only ones used for defining quantifier formulas.
+
+  If a structure \( \mscrX \) is given, we will expand it to a structure \( T_\Lambda(\mscrX) = (X, I') \) over \( T_\Lambda(\Sigma) \) so that, for every assignment \( v \), we have
+  \begin{equation*}
+    \Bracks{M^\tau}_\mscrX^v = \Bracks{T_\Lambda(M)}_{T_\Lambda(\mscrX)}^v.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:hol_abstraction_elimination/expression} We define \( T_\Lambda(M) \) via recursion on \( M^\tau \):
+    \begin{equation*}
+      T_\Lambda(M) \coloneqq \begin{cases}
+        M,                                                                    &M \in \op*{Atom}_\Sigma, \\
+        \synL_\forall \parens[\big]{ \qabs {x^\sigma} T_\Lambda(N) },         &M = \synL_\forall (\qabs {x^\sigma} N), \\
+        \synL_\exists \parens[\big]{ \qabs {x^\sigma} T_\Lambda(N) },         &M = \synL_\exists (\qabs {x^\sigma} N), \\
+        T_\Lambda(N) \thinspace T_\Lambda(K),                                 &M = NK, \\
+        (\ldots ((\Lambda_M x_1^{\rho_1}) x_2^{\rho_2}) \ldots x_n^{\rho_n}), &M = \qabs {x^\sigma} N \T{and} \op*{Free}(M) = \set{ x_1^{\rho_1}, \ldots, x_n^{\rho_n} },
+      \end{cases}
+    \end{equation*}
+    where \( \Lambda_M \) is a constant deterministically derived from \( M \).
+
+    We assume here that \( x_1^{\rho_1}, \ldots, x_n^{\rho_n} \) is the enumeration of the free variable of \( M \) in their order of appearance.
+
+    \thmitem{alg:hol_abstraction_elimination/signature} The signature \( T_\Lambda(\Sigma) \) over which \( T_\Lambda(M) \) is defined extends \( \Sigma \) with the aforementioned constants, assigning to \( \Lambda_M \) the type
+    \begin{equation*}
+      \syn\rho_1 \synimplies \cdots \synimplies \syn\rho_n \synimplies \sigma.
+    \end{equation*}
+
+    \thmitem{alg:hol_abstraction_elimination/interpretation} Finally, we extend the interpretation \( I \) with \( I'(\Lambda_M) \coloneqq I_M \), where
+    \begin{equation*}
+      I_{M,a_1,\ldots,a_k} \coloneqq \begin{cases}
+        \Bracks{M}_\mscrX(a_1, \ldots, a_n),          &k = n, \\
         a_{k+1} \mapsto I_{s,a_1,\ldots,a_k,a_{k+1}}, &k < n.
       \end{cases}
     \end{equation*}
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item It seems reasonable to define \( X'_{\tau \synimplies \sigma} \) as the set of only those functions from \( X'_\tau \) to \( X'_\sigma \) expressible in first-order logic. This would unfortunately leave \( X'_{\tau \synimplies \sigma} \) empty in many cases, for example if \( \tau = \syn\omicron \).
-
+  \item This is one of the algorithms that makes \fullref{alg:hol_to_fol} possible.
   \item This algorithm is implemented in \cite{notebook:code} as
-\WriteCodeRef{alg:fol_structure_to_hol_structure}
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:hol_abstraction_elimination}
+  \end{CodeRefDisplay}
 \end{comments}
-
-\begin{proposition}\label{thm:fol_to_hol_translation}
-  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \). Fix also a \hyperref[def:fol_variable_assignment]{first-order variable assignment} \( v \) into \( \mscrX \).
-
-  Let \( \Sigma' \) be the signature translated using \fullref{alg:fol_signature_to_hol_signature}, let \( \mscrX' \) be the structure translated using \fullref{alg:fol_structure_to_hol_structure} and let \( v' \) be any \hyperref[def:hol_variable_assignment]{higher-order assignment} that coincides with \( v \) on individuals.
-
-  \begin{thmenum}
-    \thmitem{thm:fol_to_hol_translation/term} For any \hyperref[def:fol_term]{first-order term} \( T \), for the translation \( T' \), obtained via \fullref{alg:fol_term_to_hol_expression}, we have
-    \begin{equation*}
-      \Bracks{T'}_{\mscrX'}^{v'} = \Bracks{T}_\mscrX^v.
-    \end{equation*}
-
-    \thmitem{thm:fol_to_hol_translation/formula} Similarly, for any \hyperref[def:fol_formula]{first-order formula} \( \varphi \), for the translation \( \varphi' \), obtained via \fullref{alg:fol_formula_to_hol_expression}, we have
-    \begin{equation*}
-      \Bracks{\varphi'}_{\mscrX'}^{v'} = \Bracks{\varphi}_\mscrX^v.
-    \end{equation*}
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:fol_to_hol_translation/term} We proceed by \fullref{thm:induction_on_abstract_syntax} on \( T \) to show that \( \Bracks{T'}_{\mscrX'}^{v'} = \Bracks{T}_\mscrX^v \).
-  \begin{itemize}
-    \item If \( T \) is a variable, say \( x \), then \( v'(x^{\syn\iota}) = v(x) \) by assumption.
-    \item If \( T = f(S_1, \ldots, S_n) \), where the inductive hypothesis holds for \( S_1, \ldots, S_n \), then
-    \begin{balign*}
-      \Bracks{T'}_{\mscrX'}^{v'}
-      &=
-      \Bracks{(\ldots ((f S'_1) S'_2) \ldots S'_n)}_{\mscrX'}^{v'}
-      \reloset {\eqref{eq:alg:hol_denotation/app}} = \\ &=
-      \Bracks{f}_{\mscrX'}^{v'} \parens[\big]{ \Bracks{S'_1}_{\mscrX'}^{v'} } \ldots \parens[\big]{ \Bracks{S'_n}_{\mscrX'}^{v'} }
-      \reloset {\T{ind.}} = \\ &=
-      \Bracks{f}_{\mscrX'}^{v'} \parens[\big]{ \Bracks{S_1}_\mscrX^v } \ldots \parens[\big]{ \Bracks{S_n}_\mscrX^v }
-      \reloset {\eqref{eq:alg:hol_denotation/abs}} = \\ &=
-      I'(f) \parens[\big]{ \Bracks{S_1}_\mscrX^v } \ldots \parens[\big]{ \Bracks{S_n}_\mscrX^v }
-      \reloset {\ref{alg:fol_signature_to_hol_signature/interpretation}} = \\ &=
-      I(f) \parens[\big]{ \Bracks{S_1}_\mscrX^v, \ldots, \Bracks{S_n}_\mscrX^v }
-      = \\ &=
-      \Bracks{T}_\mscrX^v.
-    \end{balign*}
-  \end{itemize}
-
-  \SubProofOf{thm:fol_to_hol_translation/formula} We can use induction on the formula \( \varphi \), similarly to \cref{thm:fol_to_hol_translation/term}, to show that \( \Bracks{\varphi'}_{\mscrX'}^{v'} = \Bracks{\varphi}_\mscrX^v \).
-\end{proof}
-
-\paragraph{Higher-order logic to first-order logic}
-
-\begin{algorithm}\label{alg:higher_order_to_first_order_logic}
-\end{algorithm}
-
-\begin{algorithm}\label{alg:many_sorted_to_one_sorted_theory}
-\end{algorithm}

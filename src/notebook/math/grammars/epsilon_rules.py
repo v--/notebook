@@ -66,7 +66,7 @@ def iter_rules_without_nullables(nullable: Collection[NonTerminal], dest: Sequen
 def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     nullable = identify_nullable_non_terminals(grammar)
     new_start = new_non_terminal(
-        grammar.start.value,
+        grammar.start,
         grammar.schema.get_non_terminals(),
     )
 

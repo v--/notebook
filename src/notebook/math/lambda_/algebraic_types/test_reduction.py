@@ -6,6 +6,7 @@ import pytest
 from ....support.pytest import pytest_parametrize_kwargs
 from ..arrow_types import derive_type
 from ..parsing import parse_type, parse_typed_term, parse_variable
+from ..type_context import TypeContext
 from ..type_derivation import TypeDerivationError
 from .reduction import reduce_derivation
 
@@ -60,10 +61,10 @@ if TYPE_CHECKING:
 def test_reduce_derivation_success(m: str, n: str, context: Mapping[str, str]) -> None:
     tree = derive_type(
         parse_typed_term(m),
-        {
+        TypeContext({
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        },
+        }),
     )
 
     reduct = parse_typed_term(n)
@@ -90,10 +91,10 @@ def test_reduce_derivation_success(m: str, n: str, context: Mapping[str, str]) -
 def test_reduce_derivation_failure(m: str, n: str, context: Mapping[str, str]) -> None:
     tree = derive_type(
         parse_typed_term(m),
-        {
+        TypeContext({
             parse_variable(var): parse_type(type_)
             for var, type_ in context.items()
-        },
+        }),
     )
 
     reduct = parse_typed_term(n)
