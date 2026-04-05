@@ -259,3 +259,38 @@
     \GetCodeRef{alg:hol_abstraction_elimination}
   \end{CodeRefDisplay}
 \end{comments}
+
+\paragraph{Simulating second-order logic}
+
+\begin{remark}\label{rem:simulating_second_order_logic}
+  Using \hyperref[def:fol_formula_schema]{formula schemas}, we can translate certain \hyperref[def:hol_expression/formula]{formulas} of \hyperref[def:bounded_hol]{second-order logic} to conventional \hyperref[def:fol_formula]{first-order formulas} without the convoluted constructions resulting from \fullref{alg:hol_abstraction_elimination}.
+
+  More concretely, we need a higher-order formula in which one bounded variable is a second-order predicate (i.e. has type \( \syn\iota \synimplies \syn\omicron \)) and all other variables are individuals.
+
+  This pattern occurs often, for example in \fullref{sec:natural_numbers} or \fullref{sec:zermelo_fraenkel_set_theory}. For a simpler example, consider the following universally-quantified \enquote{\hyperref[rem:identity_of_indiscernibles]{identity of indiscernibles}} rule:
+  \begin{equation*}
+    \underbrace{\qforall {\synx^{\syn\iota}} \qforall {\syny^{\syn\iota}} \parens[\big]{ \parens[\big]{ \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \synp(\synx) \syniff \synp(\syny) } \synimplies (\synx \syneq \syny) }}_{\varphi_{\logic{HOL}}}.
+  \end{equation*}
+
+  To obtain a first-order formula, we can use a formula placeholder instead of \( \synp \):
+  \begin{equation*}
+    \underbrace{\qforall \synx \qforall \syny \parens[\big]{ \parens[\big]{ \syn\psi[\syna \synsubst \synx] \syniff \syn\psi[\syna \synsubst \syny] } \synimplies (\synx \syneq \syny) }}_{\varphi_{\logic{FOL}}}.
+  \end{equation*}
+
+  The obvious difference is that \( \syn\psi \) can be an arbitrary first-order formula, whose list of free variables may or may not include \( \syna \).
+
+  The more subtle (but more important) differences are semantic. We have no direct way to interpret variable placeholders, so we must interpret concrete instances. Let \( \Gamma_{\logic{FOL}} \) be the set of all instances of \( \varphi_{\logic{FOL}} \) over some finite signature.
+
+  Clearly \( \Gamma_{\logic{FOL}} \) is countably infinite. In order to satisfy the entirety of \( \Gamma_{\logic{FOL}} \), a \hyperref[def:fol_structure]{first-order structure} \( \mscrX_{\logic{FOL}} \) must thus satisfy countably many first-order conditions.
+
+  On the other hand, in order for a \hyperref[def:hol_structure]{higher-order structure} \( \mscrX_{\logic{HOL}} \) to satisfy the second-order formula \( \varphi_{\logic{HOL}} \), it must satisfy a first-order condition for every member of the universe of type \( {\syn\iota \synimplies \syn\omicron} \) in \( \mscrX_{\logic{HOL}} \). Even in a nonstandard model, this universe can be uncountable.
+
+  Satisfying more conditions is more difficult, so even though \( \varphi_{\logic{HOL}} \) has more \hi{general} models than \( \Gamma_{\logic{FOL}} \), it has fewer \hi{standard} models than \( \Gamma_{\logic{FOL}} \).
+
+  We say that the model \( \mscrX_{\logic{FOL}} \) of \( \Gamma_{\logic{FOL}} \) is \term[en=standard model (\cite[280]{Farmer2008STTVirtues})]{standard} if the translation of \( \mscrX_{\logic{FOL}} \), obtained via \fullref{alg:hol_to_fol}, is a model of the original formula \( \varphi_{\logic{HOL}} \). This condition requires \( \mscrX_{\logic{FOL}} \) to satisfy all relevant first-order conditions, even those outside \( \Gamma_{\logic{FOL}} \) that cannot be described formally by language first-order logic.
+
+  We cannot distinguish between standard and nonstandard models of a \hyperref[def:hol_theory]{first-order theory} from within the theory itself, but they are easily distinguished in the metatheory. This leads to Skolem's paradox, discussed in \cref{ex:skolems_paradox}, as well as nonstandard natural numbers, which we discuss in \cref{rem:standard_models_of_arithmetic}.
+\end{remark}
+\begin{comments}
+  \item Note that a first-order structure cannot by itself be standard; the concept only applies to models of theories with specific axiom schemas.
+\end{comments}
