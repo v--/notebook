@@ -532,55 +532,131 @@
   The equivalence between the different conditions can be shown as in \fullref{thm:classical_propositional_semantic_compactness}.
 \end{proof}
 
-\begin{theorem}[Downward L\"owenheim-Skolem theorem]\label{thm:downward_lowenheim_skolem}\mcite[thm. 3.2.3]{VanDalen2004LogicAndStructure}
-  Consider a \hyperref[def:fol_theory]{first-order theory} \( T \) over a \hyperref[def:fol_signature]{signature} \( \Sigma \) with \( \kappa \) symbols.
+\begin{theorem}[Tarski-Vaugh criterion]\label{thm:tarski_vaugh_criterion}\mcite[thm. 2.3.33]{Hinman2005Logic}
+  Consider the \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \Sigma \).
 
-  If \( T \) has a \hyperref[def:fol_semantics/model]{model} of \hi{infinite} \hyperref[thm:cardinality_existence]{cardinality} \( \mu > \kappa \), then it has a model of cardinality \( \lambda \) whenever
+  The subset \( A \) \hyperref[def:fol_substructure/induces]{induces} an \hyperref[def:elementary_embedding]{elementary substructure} of \( \mscrX \) if and only if, for every formula \( \varphi \) over \( \Sigma \) and every variable assignment \( v \) into \( A \), there exists a value \( a_\varphi \) in \( A \) such that
   \begin{equation*}
-    \max\set{ \kappa, \aleph_0 } \leq \lambda < \mu.
+    \Bracks{\qexists x \varphi}_\mscrX^v = \Bracks{\varphi}_\mscrX^{v_{x \mapsto a_\varphi}}.
   \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item We take the name of the theorem from \cite[lemma 1.15.22]{Kunen2013SetTheory}, and the proof is based on \cite[thm. 2.3.33]{Hinman2005Logic}.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \mscrA = (A, I\restr_A) \) is an elementary substructure of \( \mscrX \). Fix a formula \( \varphi \) over \( \Sigma \) and a variable assignment \( v \) into \( A \).
+  \begin{itemize}
+    \item If \( \Bracks{\qexists x \varphi}_\mscrX^v = \semtop \), then \( \Bracks{\qexists x \varphi}_\mscrA^v = \semtop \) by elementary equivalence, so there exists a value \( a \) in \( A \) such that \( \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} = \semtop \).
+
+    \item Otherwise, \( \Bracks{\qexists x \varphi}_\mscrX^v = \sembot \), so for every value \( a \) in \( A \) we have \( \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} = \sembot \).
+  \end{itemize}
+
+  \NecessitySubProof Suppose that, for every formula \( \varphi \) over \( \Sigma \) and every variable assignment \( v \) into \( A \), we have
+  \begin{equation*}
+    \Bracks{\qexists x \varphi}_\mscrX^v = \Bracks{\varphi}_\mscrX^{v_{x \mapsto a_\varphi}}.
+  \end{equation*}
+
+  Clearly \( A \) is closed under function application because, if \( f \) is an \( n \)-ary function and \( a_1, \ldots, a_n \) are in \( A \), then there must exist a value \( b \) in \( A \) such that
+  \begin{equation*}
+    \Bracks{\qexists \syny f(\synx_1, \ldots, \synx_n) \syneq \syny}(a_1, \ldots, a_n) = \Bracks{f(\synx_1, \ldots, \synx_n) \syneq \syny}(a_1, \ldots, a_n, b).
+  \end{equation*}
+
+  Thus, \( \mscrA = (A, I\restr_A) \) is a substructure of \( \mscrX \). We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \Bracks{\varphi}_\mscrX^v = \Bracks{\varphi}_\mscrA^v \) for every assignment \( v \) into \( A \).
+  \begin{itemize}
+    \item There is nothing to prove for atomic formulas.
+    \item For negations and propositional connective formulas, the induction is straightforward.
+    \item Suppose that \( \varphi = \qexists x \psi \), where the inductive hypothesis holds for \( \psi \).
+
+    Fix an assignment \( v \) into \( A \).
+    \begin{itemize}
+      \item If \( \Bracks{\qexists x \psi}_\mscrX^v = \semtop \), by assumption there exists an element \( a_\psi \) in \( A \) such that
+      \begin{equation*}
+        \underbrace{\Bracks{\qexists x \psi}_\mscrX^v}_{\semtop} = \Bracks{\psi}_\mscrX^{v_{x \mapsto a_\psi}}.
+      \end{equation*}
+
+      By the inductive hypothesis, we have \( \Bracks{\psi}_\mscrA^{v_{x \mapsto a_\psi}} = \semtop \), so
+      \begin{equation*}
+        \Bracks{\qexists x \psi}_\mscrX^v = \bigvee \set[\big]{ \Bracks{\psi}_\mscrA^{v_{x \mapsto a}} \given a \in A } = \semtop.
+      \end{equation*}
+
+      \item Otherwise, \( \Bracks{\qexists x \psi}_\mscrX^v = \sembot \), so \( \Bracks{\psi}_\mscrX^{v_{x \mapsto a_\psi}} = \sembot \) for every \( a \) in \( X \), and in particular every \( a \) in \( A \).
+
+      By the inductive hypothesis, we have \( \Bracks{\psi}_\mscrA^{v_{x \mapsto a_\psi}} = \sembot \), so \( \Bracks{\qexists x \psi}_\mscrX^v = \sembot \).
+    \end{itemize}
+
+    \item Finally, suppose that \( \varphi = \qforall x \psi \), where the inductive hypothesis holds for \( \psi \).
+
+    Fix an assignment \( v \) into \( A \). \Cref{thm:fol_quantifier_duality} implies that
+    \begin{equation*}
+      \Bracks{\qforall x \psi}_\mscrX^v = \oline {\Bracks{\qexists x \synneg \psi}_\mscrX^v},
+    \end{equation*}
+    which by assumption equals
+    \begin{equation*}
+      \oline{\Bracks{\synneg \psi}_\mscrX^{v_{x \mapsto a_{\synneg \psi}}}}
+      =
+      \Bracks{\psi}_\mscrX^{v_{x \mapsto a_{\synneg \psi}}}
+    \end{equation*}
+    for some \( a_{\synneg \psi} \) in \( A \).
+
+    We can continue by using the inductive hypothesis on \( \psi \), like we did above.
+  \end{itemize}
+\end{proof}
+
+\begin{theorem}[Downward L\"owenheim-Skolem theorem]\label{thm:downward_lowenheim_skolem}\mcite[thm. 2.3.34]{Hinman2005Logic}
+  Fix infinite cardinals \( \kappa < \mu \) and a \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) with at most \( \kappa \) symbols.
+
+  Every \hyperref[def:fol_structure]{structure} over \( \Sigma \) of cardinality \( \mu \) has an \hyperref[def:elementary_embedding]{elementary substructure} of cardinality \( \kappa \).
+
+  More generally, for every structure \( \mscrX = (X, I) \) over \( \Sigma \) of cardinality \( \mu \) and every subset \( A \) of \( X \) of cardinality \hi{at most} \( \kappa \), there exists an elementary substructure of \( \mscrX \) of cardinality \hi{exactly} \( \kappa \) containing \( A \).
 \end{theorem}
 \begin{comments}
   \item This theorem is closely related to \fullref{thm:upward_lowenheim_skolem}.
 \end{comments}
 \begin{proof}
-  Let \( \Sigma^+ \) be the extension of \( \Sigma \) by a family of constants \( \seq{ c_\alpha }_{\alpha < \lambda} \). Let \( \Gamma \) be a set of axioms for \( T \) and let \( \Gamma^+ \) be an extension of \( \Gamma \) with a new axiom \( c_\alpha \neq c_\beta \) for every pair \( \alpha \neq \beta \).
+  We will use Skolem functions, similar to the ones in \fullref{alg:fol_skolemization}.
 
-  \SubProof{Proof that \( \Gamma^+ \) is satisfiable} Let \( \mscrX \) be an infinite model of \( T \) of cardinality \( \mu \). Fix a family \( \seq{ a_\alpha }_{\alpha < \lambda} \) of distinct elements of \( \mscrX \). Consider the expansion \( \mscrX^+ \) of \( \mscrX \) to \( \Sigma^+ \) in which \( c_\alpha \) is interpreted as \( a_\alpha \).
+  First, since we can add arbitrary elements of \( X \) to \( A \), we can assume without loss of generality that the cardinality of \( A \) is \hi{exactly} \( \kappa \).
 
-  Clearly \( \mscrX \) is a model of \( \Gamma \), and, since \( \Gamma \) does not contain any of the new symbols in \( \Sigma^+ \), the expansion \( \mscrX^+ \) is also a model of \( \Gamma \).
-
-  Furthermore, by construction \( \mscrX^+ \) also satisfies the axiom \( c_\alpha \neq c_\beta \) whenever \( \alpha \neq \beta \). Therefore, \( \mscrX^+ \) is a model of the extension \( \Gamma^+ \).
-
-  \SubProof{Proof that \( \Gamma \) has a model of cardinality \( \lambda \)} Since \( \Gamma^+ \) is satisfiable, \cref{thm:classical_propositional_satisfiable_implies_consistent} implies that it is syntactically consistent.
-
-  Then \fullref{thm:fol_model_existence_theorem} implies that the \( \Gamma^+ \) has a \hyperref[def:fol_term_model]{term model} \( \mscrT \) of cardinality at most \( \lambda \), the number of new constants in \( \Sigma^+ \). Because of the axioms included in \( \Gamma^+ \), there must be at least \( \lambda \) different elements in \( \mscrT \). By antisymmetry, it follows that the cardinality of \( \mscrT \) is exactly \( \lambda \).
-
-  The reduct of \( \mscrT \) to \( \Sigma \) is then the desired model of \( \Gamma \).
-\end{proof}
-
-\begin{theorem}[Upward L\"owenheim-Skolem theorem]\label{thm:upward_lowenheim_skolem}\mcite[thm. 3.2.4]{VanDalen2004LogicAndStructure}
-  As in \fullref{thm:downward_lowenheim_skolem}, consider a \hyperref[def:fol_theory]{first-order theory} \( T \) over a \hyperref[def:fol_signature]{signature} \( \Sigma \) with \( \kappa \) symbols.
-
-  If \( T \) has a \hyperref[def:fol_semantics/model]{model} of \hi{infinite} \hyperref[thm:cardinality_existence]{cardinality} \( \mu > \kappa \), then it has a model of cardinality \( \lambda \) whenever \( \lambda > \mu \).
-\end{theorem}
-\begin{proof}
-  As in our proof of \fullref{thm:downward_lowenheim_skolem}, let \( \Sigma^+ \) be the extension of \( \Sigma \) by a family of constants \( \seq{ c_\alpha }_{\alpha < \lambda} \). Let \( \Gamma \) be a set of axioms for \( T \) and let \( \Gamma^+ \) be an extension of \( \Gamma \) with a new axiom \( c_\alpha \neq c_\beta \) for every pair \( \alpha \neq \beta \).
-
-  \SubProof{Proof that \( \Gamma^+ \) is satisfiable} Let \( \mscrX \) be a model of \( T \) of cardinality \( \mu \).
-
-  Fix a finite subset \( \Delta \) of \( \Gamma^+ \). Let \( c_{k_1}, \dots, c_{k_m} \) be the new constants that occur in \( \Delta \), and define
+  For every existential formula \( \qexists x \varphi \) with \( n \) free variables, pick a function \( h_{x,\varphi}: X^n \to X \) such that
   \begin{equation*}
-    \Gamma_0 \coloneqq \Gamma \cup \set{ c_{k_i} \neq c_{k_j} \given i, j = 1, \ldots, m }.
+    \Bracks{\qexists x \varphi}_\mscrX(a_1, \ldots, a_n) = \Bracks{\varphi}_\mscrX(a_1, \ldots, a_n, h_{x,\varphi}(a_1, \ldots, a_n)).
   \end{equation*}
 
-  Let \( \Sigma_0 \) be the signature extending \( \Sigma \) only with these constants. Let \( \mscrX \) be a model of \( T \) of cardinality \( \mu \). Fix distinct elements \( a_1, \ldots, a_m \) of \( \mscrX \), and let \( \mscrX_0 \) be the expansion of \( \mscrX \) to \( \Sigma_0 \) in which we assign \( a_i \) to \( c_{k_i} \).
+  In case \( \Bracks{\qexists x \varphi}_\mscrX(a_1, \ldots, a_n) = \sembot \), we can choose \( h_{x,\varphi}(a_1, \ldots, a_n) \) to be arbitrary.
 
-  Then \( \mscrX_0 \) satisfies the new axioms in \( \Gamma_0 \) in addition to those in \( \Gamma \) satisfied by \( \mscrX \).
+  Let \( Y \) be the closure of \( A \) under application of signature functions and of \( h_{x,\varphi} \) for every \( x \) and \( \varphi \).
 
-  Generalizing on \( \Delta \), we conclude that \( \Gamma^+ \) is \hyperref[def:finitely_satisfiable_set_of_sentences]{finitely satisfiable}. Satisfiability of \( \Gamma^+ \) itself follows from \fullref{thm:fol_semantic_compactness/satisfiable}.
+  Then \( \mscrY \coloneqq (Y, I\restr_Y) \) is by construction a substructure of \( \mscrX \). Its cardinality is at least \( \kappa \) because it is a superset of \( A \). Furthermore, since \( \Sigma \) has at most \( \kappa \) symbols, \cref{thm:def:formal_language/infinite_alphabet_cardinality} implies that there are at most \( \kappa \) formulas over \( \Sigma \), and hence the cardinality of \( Y \) must be exactly \( \kappa \).
 
-  \SubProof{Proof that \( \Gamma \) has a model of cardinality \( \lambda \)} Because of the number of new constants in \( \Sigma^+ \), the cardinality of any model of \( \Gamma^+ \) is at least \( \lambda \).
+  It remains to show that \( \mscrY \) is an elementary substructure of \( \mscrX \), i.e. that the inclusion \hyperref[def:fol_function_respect]{respects} all formulas. This follows from \fullref{thm:tarski_vaugh_criterion} because \( Y \) is closed under the application of the specifically constructed Skolem functions.
+\end{proof}
 
-  We can use \fullref{thm:downward_lowenheim_skolem} to construct a model of cardinality exactly \( \lambda \).
+\begin{theorem}[Upward L\"owenheim-Skolem theorem]\label{thm:upward_lowenheim_skolem}\mcite[thm. 2.4.22]{Hinman2005Logic}
+  The following dual of \fullref{thm:downward_lowenheim_skolem} holds: whenever \( \mu > \kappa \geq \aleph_0 \) and \( \Sigma \) has at most \( \kappa \) symbols, every structure over \( \Sigma \) of cardinality \( \kappa \) has an \hyperref[def:elementary_embedding]{elementary extension} of cardinality \( \mu \).
+\end{theorem}
+\begin{proof}
+  Fix a structure \( \mscrX = (X, I) \) of cardinality \( \kappa \) over \( \Sigma \), and denote \hyperref[def:fol_theory/model]{its theory} by \( T \).
+
+  First, let \( \Sigma' \) be the extension of \( \Sigma \) with a new constant \( d_a \) for every element \( a \) of \( X \), and let \( \mscrX' = (X, I') \) be an expansion of \( \mscrX \) to \( \Sigma \) in which \( d_a \) is interpreted as \( a \). Let \( T' \) be the theory of \( \mscrX' \). By \cref{thm:def:fol_theory/model_theory_consistent_complete}, both \( T \) and \( T' \) are consistent and complete, so \( T' \) must be a \hyperref[def:fol_theory/conservative]{conservative extension} of \( T \).
+
+  Let \( \Sigma^\dprime \) be a further extension of \( \Sigma' \) with a new constant \( c_\alpha \) for every \( \alpha < \mu \), and let \( \Gamma^\dprime \) be an extension of \( T' \) with a new axiom \( \synneg (c_\alpha \syneq c_\beta) \) for every pair \( \alpha \neq \beta \).
+
+  \SubProof{Proof that \( \Gamma^\dprime \) is satisfiable} Fix a finite subset \( \Delta \) of \( \Gamma^\dprime \). Let \( c_{k_1}, \dots, c_{k_m} \) be the new constants that occur in \( \Delta \), and define
+  \begin{equation*}
+    \Gamma_0 \coloneqq T' \cup \set{ \synneg (c_{k_i} \syneq c_{k_j}) \given i, j = 1, \ldots, m }.
+  \end{equation*}
+
+  Let \( \Sigma_0 \) be the signature extending \( \Sigma' \) with only these constants. Fix distinct elements \( a_1, \ldots, a_m \) of \( X \), and let \( \mscrX_0 \) be the expansion of \( \mscrX' \) to \( \Sigma_0 \) in which we assign \( a_i \) to \( c_{k_i} \).
+
+  Then \( \mscrX_0 \) satisfies the new axioms in \( \Gamma_0 \) in addition to those in \( T' \).
+
+  Generalizing on \( \Delta \), we conclude that \( \Gamma^\dprime \) is \hyperref[def:finitely_satisfiable_set_of_sentences]{finitely satisfiable}. Satisfiability of \( \Gamma^\dprime \) itself follows from \fullref{thm:fol_semantic_compactness/satisfiable}.
+
+  \SubProof{Proof that \( \mscrX \) has an elementary extension of cardinality \( \mu \)} Let \( \mscrY = (Y, J) \) be a model of \( \Gamma^\dprime \). Because of the number of new constants in \( \Sigma^\dprime \), the cardinality of \( \mscrY \) is at least \( \mu \).
+
+  Let \( \mscrY' = (Y, I') \) be the reduct of \( \mscrY \) to \( \Sigma' \). Consider the function \( h: X' \to Y \) which sends \( a \) to \( \Bracks{d_a}_{\mscrY'} \). It is an elementary embedding (over \( \Sigma' \)) because the behavior of \( h \) on \( X' \) (and on \( X \)) is determined by the equalities in \( T' \) involving the constant \( d_a \).
+
+  Define \( \mscrZ \) as the superstructure of \( \mscrX' \) obtained from \( \mscrY \) by replacing \( h(a) \) with \( a \) in the image \( h[X'] \). Thus constructed, \( \mscrZ \) is an elementary extension of \( \mscrX' \).
+
+  It remains to take the reduct of \( \mscrZ \) to \( \Sigma \) and use \fullref{thm:downward_lowenheim_skolem} to obtain an elementary extension \( \mscrZ' \) of \( \mscrX' \) of cardinality \( \mu \). Since the theory \( T' \) of \( \mscrX' \) is conservative over \( T \), it follows that \( \mscrZ' \) is an elementary extension of \( \mscrX \).
 \end{proof}
