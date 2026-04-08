@@ -1,17 +1,5 @@
 \ExplSyntaxOn
 
-% Based on https://tex.stackexchange.com/a/564222
-\cs_new_protected:Nn \nb_define_alphabet:Nnnn
-  {% #1 = command, #2 = prefix, #3 = start, #4 = end
-    \int_step_inline:nnn { `#3 } { `#4 }
-      {
-        \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
-          {{
-            \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
-          }}
-      }
-  }
-
 \bool_if:nTF
   { \sys_if_engine_xetex_p: || \sys_if_engine_luatex_p: }
   {
@@ -21,66 +9,71 @@
     \RequirePackage{microtype}
   }
   {
-    \RequirePackage[TS1,OT2,T2A,T1]{fontenc}
+    \RequirePackage[LGR,TS1,OT2,T2A,T1]{fontenc}
     \RequirePackage[not1,notextcomp,lcgreekalpha]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
     \RenewDocumentCommand \sfdefault {} {lmss}
     \RenewDocumentCommand \ttdefault {} {lmtt}
     \RequirePackage{microtype}
 
     % Based on https://tex.stackexchange.com/a/460325
-    \cs_new_protected:Nn \__recode_aux:nnn { \DeclareTextSymbolDefault #2 {#3} }
-    \cs_new_protected:Nn \__recode:Nn
-      {% #2 is \u8:<bytes> which expands to \IeC{<LICR>}
-        \exp_last_unbraced:No \__recode_aux:nnn #1 { #2 }
+    \cs_new_protected:Nn \__nb_recode_aux:nnn { \DeclareTextSymbolDefault #2 {#3} }
+    \cs_new_protected:Nn \__nb_recode:Nn
+      {
+        \exp_last_unbraced:No \__nb_recode_aux:nnn #1 { #2 }
       }
-    \cs_generate_variant:Nn \__recode:Nn { cn }
+
+    \cs_generate_variant:Nn \__nb_recode:Nn { cn }
     \tl_map_inline:nn
       {
         {А} {Б} {В} {Г} {Д} {Е} {Ё} {Ж} {З} {И} {і} {Й} {К} {Л} {М} {Н} {О} {П} {Р} {С} {Т} {У} {Ў} {Ф} {Х} {Ц} {Ч} {Ш} {Щ} {Ъ} {Ы} {Ь} {Э} {Ю} {Я}
         {а} {б} {в} {г} {д} {е} {ё} {ж} {з} {и} {І} {й} {к} {л} {м} {н} {о} {п} {р} {с} {т} {у} {ў} {ф} {х} {ц} {ч} {ш} {щ} {ъ} {ы} {ь} {э} {ю} {я}
       }
       {
-        \__recode:cn { u8: \tl_to_str:n { #1 } } { OT2 }
+        \__nb_recode:cn { u8: \tl_to_str:n {#1} } {OT2}
       }
 
-    \let\Bbbk\relax
+    % We imitate some macros from unicode-math
+    % \let\Bbbk\relax
+    \tl_map_inline:nn
+      {
+        {A} {B} {C} {D} {E} {F} {G} {H} {I} {J} {K} {L} {M} {N} {O} {P} {Q} {R} {S} {T} {U} {V} {W} {X} {Y} {Z}
+        {a} {b} {c} {d} {e} {f} {g} {h} {i} {j} {k} {l} {m} {n} {o} {p} {q} {r} {s} {t} {u} {v} {w} {x} {y} {z}
+      }
+      {
+        \exp_args:Nc \DeclareMathSymbol {mscr #1} \mathalpha {symbols} {`#1}
+        \exp_args:Nc \DeclareMathSymbol {mfrak #1} \mathalpha {symbols2} {`#1}
+        \exp_args:Nc \DeclareMathSymbol {Bbb #1} \mathalpha {symbols3} {`#1}
+      }
 
-    % Imitate some macros from unicode-math
-    \nb_define_alphabet:Nnnn \mathbb   {Bbb}   {A} {Z}
-    \nb_define_alphabet:Nnnn \mathbb   {Bbb}   {a} {z}
-    \nb_define_alphabet:Nnnn \mathcal  {mscr}  {A} {Z}
-    \nb_define_alphabet:Nnnn \mathcal  {mscr}  {a} {z}
-    \nb_define_alphabet:Nnnn \mathfrak {mfrak} {A} {Z}
-    \nb_define_alphabet:Nnnn \mathfrak {mfrak} {a} {z}
+    % The `operators` symbol font makes the letters upright
+    \DeclareMathSymbol \Alpha    \mathalpha {operators} {`A}
+    \DeclareMathSymbol \Beta     \mathalpha {operators} {`B}
+    \DeclareMathSymbol \Epsilon  \mathalpha {operators} {`E}
+    \DeclareMathSymbol \Zeta     \mathalpha {operators} {`Z}
+    \DeclareMathSymbol \Eta      \mathalpha {operators} {`H}
+    \DeclareMathSymbol \Iota     \mathalpha {operators} {`I}
+    \DeclareMathSymbol \Kappa    \mathalpha {operators} {`K}
+    \DeclareMathSymbol \Mu       \mathalpha {operators} {`M}
+    \DeclareMathSymbol \Omicron  \mathalpha {operators} {`O}
+    \DeclareMathSymbol \omicron  \mathalpha {operators} {`o}
+    \DeclareMathSymbol \Rho      \mathalpha {operators} {`P}
+    \DeclareMathSymbol \Tau      \mathalpha {operators} {`T}
+    \DeclareMathSymbol \Chi      \mathalpha {operators} {`X}
 
-    \NewDocumentCommand \Alpha    {} {{\mathrm A}}
-    \NewDocumentCommand \Beta     {} {{\mathrm B}}
-    \NewDocumentCommand \Epsilon  {} {{\mathrm E}}
-    \NewDocumentCommand \Zeta     {} {{\mathrm Z}}
-    \NewDocumentCommand \Eta      {} {{\mathrm H}}
-    \NewDocumentCommand \Iota     {} {{\mathrm I}}
-    \NewDocumentCommand \Kappa    {} {{\mathrm K}}
-    \NewDocumentCommand \Mu       {} {{\mathrm M}}
-    \NewDocumentCommand \Omicron  {} {{\mathrm O}}
-    \NewDocumentCommand \omicron  {} {{o}}
-    \NewDocumentCommand \Rho      {} {{\mathrm P}}
-    \NewDocumentCommand \Tau      {} {{\mathrm T}}
-    \NewDocumentCommand \Chi      {} {{\mathrm X}}
-
-    \NewDocumentCommand \Bbbzero  {} {{\mathbb 0}}
-    \NewDocumentCommand \Bbbone   {} {{\mathbb 1}}
-    \NewDocumentCommand \Bbbtwo   {} {{\mathbb 2}}
-    \NewDocumentCommand \Bbbthree {} {{\mathbb 3}}
-    \NewDocumentCommand \Bbbfour  {} {{\mathbb 4}}
-    \NewDocumentCommand \Bbbfive  {} {{\mathbb 5}}
-    \NewDocumentCommand \Bbbsix   {} {{\mathbb 6}}
-    \NewDocumentCommand \Bbbseven {} {{\mathbb 7}}
-    \NewDocumentCommand \Bbbeight {} {{\mathbb 8}}
-    \NewDocumentCommand \Bbbnine  {} {{\mathbb 9}}
+    % symbols3 corresponds to mathbb
+    \DeclareMathSymbol \Bbbzero  \mathalpha {symbols3} {`0}
+    \DeclareMathSymbol \Bbbone   \mathalpha {symbols3} {`1}
+    \DeclareMathSymbol \Bbbtwo   \mathalpha {symbols3} {`2}
+    \DeclareMathSymbol \Bbbthree \mathalpha {symbols3} {`3}
+    \DeclareMathSymbol \Bbbfour  \mathalpha {symbols3} {`4}
+    \DeclareMathSymbol \Bbbfive  \mathalpha {symbols3} {`5}
+    \DeclareMathSymbol \Bbbsix   \mathalpha {symbols3} {`6}
+    \DeclareMathSymbol \Bbbseven \mathalpha {symbols3} {`7}
+    \DeclareMathSymbol \Bbbeight \mathalpha {symbols3} {`8}
+    \DeclareMathSymbol \Bbbnine  \mathalpha {symbols3} {`9}
 
     % We don't define the rest of the Green alphabet because we won't use it (and because it's tedious to do)
-    \NewDocumentCommand \muplambda {} {{\mathrm \lambda}}
-
+    \DeclareMathSymbol \muplambda \mathalpha {operators} {"15}
 
     % stix2 doesn't behave well with text symbols, so I use math symbols instead
     \cs_if_exist:cT {setlist}
@@ -89,6 +82,23 @@
         \setlist[itemize,3]{label=\( \ast \)}
       }
 
-    \NewDocumentCommand \mathhyphen {} {\text{-}}
+    % We reuse the minus sign
+    \DeclareMathSymbol \mathhyphen \mathrel {operators} {"2A}
+
+    % Greek letters
+    \cs_new_protected:Nn \__nb_text_greek_sym:NN
+      {
+        \RenewDocumentCommand #1 {} {\( \mathrm{#2} \)}
+      }
+
+    \cs_generate_variant:Nn \__nb_text_greek_sym:NN {cc}
+    \tl_map_inline:nn
+      {
+        {Alpha} {Beta} {Gamma} {Delta} {Epsilon} {Zeta} {Eta} {Theta} {Iota} {Kappa} {Lambda} {Mu} {Nu} {Xi} {Omicron} {Pi} {Rho} {Sigma} {Tau} {Upsilon} {Phi} {Chi} {Psi} {Omega}
+{alpha} {gamma} {delta} {epsilon} {zeta} {eta} {theta} {iota} {kappa} {lambda} {nu} {xi} {omicron} {pi} {rho} {sigma} {tau} {upsilon} {phi} {chi} {psi} {omega} {varepsilon} {vartheta} {varpi} {varrho} {varsigma} {varphi}
+      }
+      {
+        \__nb_text_greek_sym:cc {text #1} {#1}
+      }
   }
 \ExplSyntaxOff
