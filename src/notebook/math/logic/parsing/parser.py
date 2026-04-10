@@ -7,21 +7,16 @@ from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
 from ....support.substitution import ImproperSubstitutionSymbol
 from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
 from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
-from ..deduction import (
-    Marker,
-    NaturalDeductionEntry,
-    NaturalDeductionRule,
-)
+from ..deduction import Marker, NaturalDeductionEntry, NaturalDeductionRule
 from ..formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
     EqualityFormula,
     EqualityFormulaSchema,
+    ExtendedFormulaPlaceholder,
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
-    FormulaSchemaWithEigenvariable,
-    FormulaSchemaWithSubstitution,
     FormulaWithSubstitution,
     NegationFormula,
     NegationFormulaSchema,
@@ -69,17 +64,59 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         super().__init__(source, tokens)
         self.signature = signature
 
-    def _parse_undetermined_placeholder(self) -> UndeterminedPlaceholder:
+    @overload
+    def _parse_placeholder(self, *, only_term: Literal[True]) -> TermPlaceholder: ...
+    @overload
+    def _parse_placeholder(self, *, only_plain_formula: Literal[True]) -> FormulaPlaceholder: ...
+    @overload
+    def _parse_placeholder(self, *, only_extended_formula: Literal[True]) -> ExtendedFormulaPlaceholder: ...
+    @overload
+    def _parse_placeholder(self, *, only_term: bool = False, only_plain_formula: bool = False, only_extended_formula: bool = False) -> UndeterminedPlaceholder | TermPlaceholder | FormulaPlaceholder | ExtendedFormulaPlaceholder: ...
+    def _parse_placeholder(self, *, only_term: bool = False, only_plain_formula: bool = False, only_extended_formula: bool = False) -> UndeterminedPlaceholder | TermPlaceholder | FormulaPlaceholder | ExtendedFormulaPlaceholder:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
+        context = LogicParserContext(self)
         identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
-        return UndeterminedPlaceholder(identifier)
+        head = self.peek()
+
+        if not head or head.kind != 'LEFT_BRACKET':
+            if only_term:
+                return TermPlaceholder(identifier)
+
+            if only_plain_formula:
+                return FormulaPlaceholder(identifier)
+
+            if only_extended_formula:
+                raise context.annotate_context_error('No substitution schema')
+
+            return UndeterminedPlaceholder(identifier)
+
+        if only_term:
+            raise context.annotate_context_error('Unexpected substitution schema for term placeholder')
+
+        if only_plain_formula:
+            raise context.annotate_context_error('Unexpected substitution schema for plain formula placeholder')
+
+        self.advance()
+        sub = self.parse_term_substitution_spec(parse_schema=True)
+        head = self.peek()
+
+        if not head or head.kind != 'RIGHT_BRACKET':
+            context.close_at_previous_token()
+            raise context.annotate_context_error('Unclosed brackets for substitution specification')
+
+        self.advance()
+        return ExtendedFormulaPlaceholder(FormulaPlaceholder(identifier), sub)
 
     def parse_term_placeholder(self) -> TermPlaceholder:
-        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
-        return TermPlaceholder(identifier)
+        return self._parse_placeholder(only_term=True)
 
     def parse_formula_placeholder(self) -> FormulaPlaceholder:
-        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
-        return FormulaPlaceholder(identifier)
+        return self._parse_placeholder(only_plain_formula=True)
+
+    def parse_extended_formula_placeholder(self) -> ExtendedFormulaPlaceholder:
+        return self._parse_placeholder(only_extended_formula=True)
 
     def parse_context_placeholder(self) -> LogicalContextPlaceholder:
         identifier = self.parse_greek_identifier('CAPITAL_GREEK_IDENTIFIER')
@@ -409,7 +446,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 if not parse_schema:
                     raise self.annotate_token_error('Placeholders are only allowed in schemas')
 
-                return self._parse_undetermined_placeholder()
+                return self._parse_placeholder()
 
             case 'LEFT_PARENTHESIS':
                 self.advance()
@@ -531,52 +568,30 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         assert isinstance(dest, Term)
         return TermSubstitutionSpec(src, dest)
 
-    @overload
-    def parse_formula_with_substitution(self, *, parse_schema: Literal[False]) -> FormulaWithSubstitution: ...
-    @overload
-    def parse_formula_with_substitution(self, *, parse_schema: Literal[True]) -> FormulaSchemaWithSubstitution: ...
-    @overload
-    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaWithSubstitution: ...
-    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaWithSubstitution:
+    def parse_formula_with_substitution(self) -> FormulaWithSubstitution:
         if not self.peek():
             raise self.annotate_unexpected_end_of_input()
 
         context = LogicParserContext(self)
-        formula = self.parse_formula(parse_schema=parse_schema)
+        formula = self.parse_formula(parse_schema=False)
+        head = self.peek()
 
-        if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
-            self.advance()
-            sub = self.parse_term_substitution_spec(parse_schema=parse_schema)
+        if not head or head.kind != 'LEFT_BRACKET':
+            raise context.annotate_context_error('No substitution schema')
 
-            if (head := self.peek()) and head.kind == 'RIGHT_BRACKET':
-                self.advance()
+        self.advance()
+        sub = self.parse_term_substitution_spec(parse_schema=False)
+        head = self.peek()
 
-                if parse_schema:
-                    assert isinstance(formula, FormulaSchema)
-                    assert isinstance(sub, TermSchemaSubstitutionSpec)
-
-                    if isinstance(sub, EigenSchemaSubstitutionSpec):
-                        return FormulaSchemaWithEigenvariable(formula, sub)
-
-                    return FormulaSchemaWithSubstitution(formula, sub)
-
-                assert isinstance(formula, Formula)
-                assert isinstance(sub, TermSubstitutionSpec)
-
-                return FormulaWithSubstitution(formula, sub)
-
+        if not head or head.kind != 'RIGHT_BRACKET':
             context.close_at_previous_token()
             raise context.annotate_context_error('Unclosed brackets for substitution specification')
 
-        if parse_schema:
-            assert isinstance(formula, FormulaSchema)
-            return FormulaSchemaWithSubstitution(formula)
-
-        assert isinstance(formula, Formula)
-        return FormulaWithSubstitution(formula)
+        self.advance()
+        return FormulaWithSubstitution(formula, sub)
 
     def _parse_natural_deduction_entry(self) -> NaturalDeductionEntry:
-        attached = list[FormulaSchemaWithSubstitution]()
+        attached = list[FormulaSchema]()
         entry_context = LogicParserContext(self)
 
         while (head := self.peek()) and head.kind == 'LEFT_BRACKET':
@@ -585,7 +600,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             if head and head.kind == 'RIGHT_BRACKET':
                 raise entry_context.annotate_context_error('Empty attached schemas are disallowed')
 
-            att = self.parse_formula_with_substitution(parse_schema=True)
+            att = self.parse_formula(parse_schema=True)
             attached.append(att)
             head = self.peek()
 
@@ -595,7 +610,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 entry_context.close_at_previous_token()
                 raise entry_context.annotate_context_error('Unclosed brackets for attached schemas')
 
-        main = self.parse_formula_with_substitution(parse_schema=True)
+        main = self.parse_formula(parse_schema=True)
         return NaturalDeductionEntry(main, attached)
 
     def _iter_natural_deduction_premises(self, rule_context: LogicParserContext) -> Iterable[NaturalDeductionEntry]:
@@ -773,14 +788,7 @@ def parse_formula_with_substitution(source: str, signature: FormalLogicSignature
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
-        return parser.parse_formula_with_substitution(parse_schema=False)
-
-
-def parse_formula_schema_with_substitution(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaSchemaWithSubstitution:
-    tokens = tokenize_formal_logic_string(signature, source)
-
-    with FormalLogicParser(signature, source, tokens) as parser:
-        return parser.parse_formula_with_substitution(parse_schema=True)
+        return parser.parse_formula_with_substitution()
 
 
 def parse_formula_placeholder(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaPlaceholder:
@@ -788,6 +796,13 @@ def parse_formula_placeholder(source: str, signature: FormalLogicSignature = EMP
 
     with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_formula_placeholder()
+
+
+def parse_formula_extended_placeholder(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> ExtendedFormulaPlaceholder:
+    tokens = tokenize_formal_logic_string(signature, source)
+
+    with FormalLogicParser(signature, source, tokens) as parser:
+        return parser.parse_extended_formula_placeholder()
 
 
 def parse_marker(source: str) -> Marker:

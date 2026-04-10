@@ -271,7 +271,7 @@ def test_forall_introduction() -> None:
     )
 
 
-# rem:fol_empty_universe/natural_deduction
+@collector.ref('rem:fol_empty_universe/natural_deduction')
 def test_forall_elimination(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
@@ -472,7 +472,6 @@ def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature:
         )
 
 
-# test_forall_introduction_eigenvariable_failure_free_in_implicit_premise
 def test_forall_introduction_eigenvariable_failure_free_in_implicit_premise(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable x cannot be free in the derivation of (p¹(x) → q¹(y))')):
         apply(
@@ -547,7 +546,7 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     )
 
 
-# thm:natural_deduction_pulling_existential_quantifier
+@collector.ref('thm:natural_deduction_pulling_existential_quantifier')
 def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('(p⁰ → ∃x.p¹(x))', dummy_signature)
     v = parse_formula('p⁰', dummy_signature)

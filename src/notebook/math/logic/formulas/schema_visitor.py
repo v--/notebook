@@ -3,6 +3,7 @@ from .schemas import (
     AtomicFormulaSchema,
     ConnectiveFormulaSchema,
     EqualityFormulaSchema,
+    ExtendedFormulaPlaceholder,
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormulaSchema,
@@ -31,6 +32,9 @@ class FormulaSchemaVisitor[T]:
 
             case FormulaPlaceholder():
                 return self.visit_formula_placeholder(schema)
+
+            case ExtendedFormulaPlaceholder():
+                return self.visit_extended_formula_placeholder(schema)
 
             case NegationFormulaSchema():
                 return self.visit_negation(schema)
@@ -76,6 +80,9 @@ class FormulaSchemaVisitor[T]:
         return self.visit_atomic(schema)
 
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> T:
+        return self.generic_visit(schema)
+
+    def visit_extended_formula_placeholder(self, schema: ExtendedFormulaPlaceholder) -> T:
         return self.generic_visit(schema)
 
     def visit_negation(self, schema: NegationFormulaSchema) -> T:

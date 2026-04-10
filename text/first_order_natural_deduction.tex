@@ -404,12 +404,12 @@
 \begin{definition}\label{def:fol_formula_schema}\mimprovised
   We will define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_formula]{first-order formulas} based on \hyperref[def:fol_term_schema]{term schemas} instead of \hyperref[def:fol_term]{terms}. We avoid writing the obvious rules in detail, but there are new important novelties:
   \begin{longbnf*}
-    \bnfprod{eigenvariable schema}    {\bnfpn{variable placeholder} \bnfsp \bnftsq{\( \ast \)}} \\
-    \bnfprod{formula placeholder}     {\bnfpn{Small Greek identifier}} \\
-    \bnfprod{formula schema}          {\bnfpn{formula placeholder} \bnfor \cdots} \\
-    \bnfprod{substitution target}    {\bnfpn{term schema} \bnfor \bnfpn{eigenvariable schema}} \\
-    \bnfprod{extended formula schema} {\bnfpn{formula schema} \bnfor} \\
-    \bnfmore                          {\bnfpn{formula schema} \bnfsp \bnfpn{substitution}}
+    \bnfprod{eigenvariable schema}         {\bnfpn{variable placeholder} \bnfsp \bnftsq{\( \ast \)}} \\
+    \bnfprod{formula placeholder}          {\bnfpn{Small Greek identifier}} \\
+    \bnfprod{substitution target}          {\bnfpn{term schema} \bnfor \bnfpn{eigenvariable schema}} \\
+    \bnfprod{extended formula placeholder} {\bnfpn{formula placeholder} \bnfsp \bnfpn{substitution}} \\
+    \bnfprod{formula schema}               {\bnfpn{formula placeholder} \bnfor \cdots} \\
+    \bnfprod{extended formula schema}      {\bnfpn{extended formula placeholder} \bnfor \bnfpn{formula schema} \bnfor \cdots}
   \end{longbnf*}
 
   \begin{itemize}
@@ -418,9 +418,16 @@
   \end{itemize}
 \end{definition}
 \begin{comments}
+  \item Extended schemas possibly have substitution specifications after formula placeholders.
+
   \item Eigenvariables and extended schemas are needed to formalize the established natural deduction rules in \cref{def:fol_natural_deduction}.
+
+  \item It is possible to place a substitution schema on formula placeholders subformulas, like in the axiom schema \eqref{eq:def:peano_arithmetic/theory/PA3}. For natural deduction, we will only need standalone placeholders with substitutions.
+
   \item Small Greek identifiers are used for both term and formula placeholders, but in practice they do not cause confusion.
+
   \item First-order formula schemas directly extend their \hyperref[def:propositional_formula_schema]{propositional counterparts}.
+
   \item Formulas schemas are implemented in \cite{notebook:code}, in the module
   \begin{CodeRefDisplay}
     \ManualCodeRef{logic.formulas}
@@ -546,7 +553,7 @@
 
     We also describe some of them below:
     \begin{thmenum}[series=def:fol_natural_deduction_proof_tree/application]
-      \thmitem{def:fol_natural_deduction_proof_tree/application/main} If the rule premise \( \Phi_k \) has a substitution schema with an eigenvariable, then \( \Phi_k = \Lambda[\xi \synsubst \eta^*] \) for some formula schema \( \Lambda \) and variable placeholders \( \xi \) and \( \eta \). For convenience, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
+      \thmitem{def:fol_natural_deduction_proof_tree/application/main} If the rule premise \( \Phi_k \) is an extended placeholder with an eigenvariable specification, then \( \Phi_k = \Lambda[\xi \synsubst \eta^*] \) for some formula placeholder \( \Lambda \) and variable placeholders \( \xi \) and \( \eta \). For convenience, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
 
       We impose the following restrictions:
       \begin{thmenum}
@@ -559,7 +566,7 @@
         \thmitem{def:fol_natural_deduction_proof_tree/application/main/assumptions} Additionally, \( y \) must not be open in \( P_k \).
       \end{thmenum}
 
-      \thmitem{def:fol_natural_deduction_proof_tree/application/attached} If the premise \( \Phi_k \) has a dischargeable schema \( \Theta_{k,i} \) attached, and if \( \Theta_{k,i} \) has a substitution schema with an eigenvariable, then, as above, \( \Theta_{k,i} = \Lambda[\xi \synsubst \eta^*] \). Again, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
+      \thmitem{def:fol_natural_deduction_proof_tree/application/attached} If the premise \( \Phi_k \) has a dischargeable schema \( \Theta_{k,i} \) attached, and if \( \Theta_{k,i} \) is a placeholder with an eigenvariable specification, then, as above, \( \Theta_{k,i} = \Lambda[\xi \synsubst \eta^*] \). Again, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
 
       It is possible that there is no dischargeable assumption. If \( [\varphi[x \mapsto y]]^u \) is an open assumption in \( P_k \) and \( \varphi[x \mapsto y] = \Theta_{k,i}[\BbbI] \), we impose the following restrictions:
       \begin{thmenum}

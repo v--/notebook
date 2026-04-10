@@ -192,7 +192,7 @@ class GrammarParser(Parser[GrammarToken]):
                 if head.kind == 'LINE_BREAK':
                     return
 
-            if head is None:
+            if not head:
                 return
 
             if head.kind != 'PIPE':

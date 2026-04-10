@@ -7,6 +7,7 @@ from ..formulas import (
     ConnectiveFormulaSchema,
     EqualityFormula,
     EqualityFormulaSchema,
+    ExtendedFormulaPlaceholder,
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
@@ -19,6 +20,7 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
+from ..substitution import substitute_in_formula
 from .term_application import TermInstantiationApplicationVisitor
 
 
@@ -52,6 +54,15 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
             raise SchemaInstantiationError(f'No specification of how to instantiate the formula placeholder {schema}')
 
         return self.instantiation.formula_mapping[schema]
+
+    @override
+    def visit_extended_formula_placeholder(self, schema: ExtendedFormulaPlaceholder) -> Formula:
+        return substitute_in_formula(
+            self.visit(schema.placeholder),
+            {
+                self.term_visitor.visit_variable_placeholder(schema.sub.src): self.term_visitor.visit(schema.sub.dest),
+            },
+        )
 
     @override
     def visit_negation(self, schema: NegationFormulaSchema) -> NegationFormula:

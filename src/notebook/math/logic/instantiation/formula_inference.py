@@ -7,10 +7,12 @@ from ..formulas import (
     ConnectiveFormulaSchema,
     EqualityFormula,
     EqualityFormulaSchema,
+    ExtendedFormulaPlaceholder,
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
     FormulaSchemaVisitor,
+    FormulaWithSubstitution,
     NegationFormula,
     NegationFormulaSchema,
     PredicateApplication,
@@ -50,7 +52,11 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[AtomicLogicSchemaInstantiat
 
     @override
     def visit_predicate(self, schema: PredicateApplicationSchema) -> AtomicLogicSchemaInstantiation:
-        if not isinstance(self.formula, PredicateApplication) or schema.symbol != self.formula.symbol or len(schema.arguments) != len(self.formula.arguments):
+        if (
+            not isinstance(self.formula, PredicateApplication) or
+            schema.symbol != self.formula.symbol or
+            len(schema.arguments) != len(self.formula.arguments)
+        ):
             raise SchemaInferenceError(f'Cannot match predicate formula schema {schema} to {self.formula}')
 
         instantiation = AtomicLogicSchemaInstantiation()
@@ -88,11 +94,22 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[AtomicLogicSchemaInstantiat
         return var | body
 
 
-def infer_instantiation_from_formula(schema: FormulaSchema, formula: Formula) -> AtomicLogicSchemaInstantiation:
+def infer_instantiation_from_formula(schema: FormulaSchema, formula: Formula | FormulaWithSubstitution) -> AtomicLogicSchemaInstantiation:
+    if isinstance(schema, ExtendedFormulaPlaceholder):
+        if not isinstance(formula, FormulaWithSubstitution):
+            raise SchemaInferenceError(f'Schema {schema} requires a substitution spec')
+
+        return AtomicLogicSchemaInstantiation(formula_mapping={schema.placeholder: formula.formula}) | \
+            infer_instantiation_from_term(schema.sub.src, formula.sub.src) | \
+            infer_instantiation_from_term(schema.sub.dest, formula.sub.dest)
+
+    if isinstance(formula, FormulaWithSubstitution):
+        raise SchemaInferenceError(f'Expected a substitution spec in the schema {schema}')
+
     return InferInstantiationVisitor(formula).visit(schema)
 
 
-def is_formula_schema_instance(schema: FormulaSchema, formula: Formula) -> bool:
+def is_formula_schema_instance(schema: FormulaSchema, formula: Formula | FormulaWithSubstitution) -> bool:
     try:
         infer_instantiation_from_formula(schema, formula)
     except SchemaInferenceError:

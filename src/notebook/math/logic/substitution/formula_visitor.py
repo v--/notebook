@@ -50,8 +50,8 @@ def substitute_in_formula(formula: Formula, variable_mapping: Mapping[Variable, 
     return apply_substitution_to_formula(formula, AtomicLogicSubstitution(variable_mapping=variable_mapping))
 
 
-def evaluate_substitution(spec: FormulaWithSubstitution) -> Formula:
-    if spec.sub is None:
-        return spec.formula
+def evaluate_substitution(spec: Formula | FormulaWithSubstitution) -> Formula:
+    if isinstance(spec, FormulaWithSubstitution):
+        return apply_substitution_to_formula(spec.formula, infer_substitution(spec))
 
-    return apply_substitution_to_formula(spec.formula, infer_substitution(spec))
+    return spec

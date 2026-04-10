@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING
 
 from ....parsing.identifiers import LatinIdentifier, new_latin_identifier
 from ....support.unicode import to_superscript
-from ..formulas import Formula, FormulaWithSubstitution
 from ..substitution import evaluate_substitution
 
 
 if TYPE_CHECKING:
     from collections.abc import Collection
+
+    from ..formulas import Formula, FormulaWithSubstitution
 
 
 @dataclass(frozen=True)
@@ -36,13 +37,6 @@ class MarkedFormula:
 class MarkedFormulaWithSubstitution:
     payload: FormulaWithSubstitution
     marker: Marker
-
-    @classmethod
-    def wrap(cls, value: MarkedFormula | MarkedFormulaWithSubstitution) -> MarkedFormulaWithSubstitution:
-        if isinstance(value, MarkedFormulaWithSubstitution):
-            return value
-
-        return cls(FormulaWithSubstitution.wrap(value.formula), value.marker)
 
     def __str__(self) -> str:
         return f'[{self.payload}]{to_superscript(str(self.marker))}'

@@ -10,12 +10,12 @@ from .formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from .schema_sub import FormulaSchemaWithEigenvariable, FormulaSchemaWithSubstitution
 from .schema_visitor import FormulaSchemaVisitor
 from .schemas import (
     AtomicFormulaSchema,
     ConnectiveFormulaSchema,
     EqualityFormulaSchema,
+    ExtendedFormulaPlaceholder,
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormulaSchema,

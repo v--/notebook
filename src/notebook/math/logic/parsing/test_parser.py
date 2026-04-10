@@ -11,7 +11,6 @@ from ..terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, 
 from .parser import (
     parse_formula,
     parse_formula_schema,
-    parse_formula_schema_with_substitution,
     parse_natural_deduction_rule,
     parse_sequent_schema,
     parse_term,
@@ -527,6 +526,7 @@ def test_reparsing_formulas(formula: str, dummy_signature: FormalLogicSignature)
 @pytest_parametrize_lists(
     schema=[
         'φ',
+        'φ[x ↦ y]',
         '(φ → ψ)',
         '(φ ∧ ψ)',
         '∀x.(φ ∧ ψ)',
@@ -618,7 +618,19 @@ def test_parsing_substitution_schema_with_star_on_term_placeholder() -> None:
 
 def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula_schema_with_substitution('φ[x ↦ y')
+        parse_formula_schema('φ[x ↦ y')
+
+    assert str(excinfo.value) == 'Unclosed brackets for substitution specification'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ φ[x ↦ y
+          │ ^^^^^^^
+        ''',
+    )
+
+
+def test_parsing_formula_schema_with_no_closing_bracket() -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_formula_schema('φ[x ↦ y')
 
     assert str(excinfo.value) == 'Unclosed brackets for substitution specification'
     assert excinfo.value.__notes__[0] == dedent('''\

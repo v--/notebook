@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from ..alphabet import BinaryConnective, Quantifier, UnaryPrefix
-from ..terms import SyntacticApplication, TermSchema, VariablePlaceholder
+from ..terms import SyntacticApplication, TermSchema, TermSchemaSubstitutionSpec, VariablePlaceholder
 from .formulas import PropConstant
 
 
@@ -19,7 +19,19 @@ class FormulaPlaceholder:
         return str(self.identifier)
 
     def __repr__(self) -> str:
-        return f"parse_formula_schema('{self}')"
+        return f"parse_formula_placeholder('{self}')"
+
+
+@dataclass(frozen=True)
+class ExtendedFormulaPlaceholder:
+    placeholder: FormulaPlaceholder
+    sub: TermSchemaSubstitutionSpec
+
+    def __str__(self) -> str:
+        return f'{self.placeholder}[{self.sub}]'
+
+    def __repr__(self) -> str:
+        return f"parse_extended_formula_placeholder('{self}')"
 
 
 @dataclass(frozen=True)
@@ -79,4 +91,4 @@ class QuantifierFormulaSchema:
 
 
 AtomicFormulaSchema = PropConstant | EqualityFormulaSchema | PredicateApplicationSchema
-FormulaSchema = AtomicFormulaSchema | FormulaPlaceholder | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
+FormulaSchema = AtomicFormulaSchema | FormulaPlaceholder | ExtendedFormulaPlaceholder | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
