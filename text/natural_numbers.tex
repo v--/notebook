@@ -1,148 +1,187 @@
 \section{Natural numbers}\label{sec:natural_numbers}
 
+\begin{remark}\label{con:arithmetic}
+  In a broad sense, the study of numbers is called \term[ru=арифметика (\cite[48]{БашмаковаЮшкевич1951ПроисхождениеСистемСчисления}), en=arithmetic (\cite[3]{Stillwell2010MathHistory})]{arithmetic} because of the Greek word \enquote{αριθμος} (\enquote{number}).
+
+  \begin{itemize}
+    \thmitem{con:arithmetic/elementary} Arithmetic originates as the study of the so-called \term[ru=арифметические операции (\cite[101]{Проскуряков1951ТеоретическиеОсновыАрифметики}), en=arithmetic operator (\cite[131]{Knuth1997ArtVol1})]{arithmetic operations} --- addition, subtraction, multiplication and division --- and is mostly concerned with integers.
+
+    A historical overview of this \enquote{elementary} arithmetic can be found in \cite{Karpinski1925HistoryOfArithmetic}. A notable book of historical interest on the topic is \bycite{Fibonacci2002LiberAbaci}.
+
+    We present systematized results in \fullref{sec:positional_number_systems} and \fullref{sec:digit_based_operations}. Some modern considerations stemming from computer science are presented in \fullref{sec:fixed_width_arithmetic}.
+
+    \thmitem{con:arithmetic/algebraic} Ever since antiquity, the study of integers goes way beyond the arithmetic operations. \hyperref[def:prime_number]{Prime numbers} and \hyperref[def:polynomial_equation]{Diophantine equations} have notably led to some of the most abstract mathematics in existence.
+
+    The abstract study of numbers is colloquially called \term[ru=теория чисел (\cite[7]{Бухштаб1966ТеорияЧисел}), en=theory of numbers (\cite[1]{Apostol1976AnalyticNumberTheory})]{number theory}, although some influential books like \bycite{Gauss1801DisquisitionesArithmeticae} and \bycite{Serre1973Arithmetic} call it \enquote{arithmetic}.
+
+    \thmitem{con:arithmetic/logical} The development of mathematical logic in the 19th century is tied to the formalization of arithmetic. We will present the theory \logic{PA} --- Peano arithmetic --- in \cref{def:peano_arithmetic}. The relation of this theory to the work of Peano and others is briefly discussed in \cref{rem:peano_arithmetic}.
+  \end{itemize}
+\end{remark}
+
 \paragraph{Peano arithmetic}
 
-\begin{definition}\label{def:peano_arithmetic}\mcite[sec. 4.1]{Hinman2005Logic}
-  \term{Peano arithmetic} (commonly abbreviated as \logic{PA}) is a \hyperref[def:fol_theory]{theory} in \hyperref[sec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:natural_numbers]{natural numbers} and their operations. It can also be formulated in \hyperref[def:higher_order_logic]{second-order logic} or entirely within \hyperref[ch:set_theory]{set theory} (especially considering that we are working inside an ambient \hyperref[rem:standard_model_of_set_theory]{standard} \hyperref[rem:transitive_model_of_set_theory]{transitive} model of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}), however in this monograph we try to state, if possible, the first-order logic formulation of a theory.
+\begin{definition}\label{def:peano_arithmetic}\mcite[def. 2.7.7; 150]{VanDalen2004LogicAndStructure}
+  \term[ru=арифметика Пеано (\cite[167]{Герасимов2014Вычислимость}), en=Peano arithmetic (\cite[def. 4.1.1]{Hinman2005Logic})]{Peano arithmetic}, abbreviated as \logic{PA}, is a \hyperref[def:fol_theory]{theory} of \hyperref[sec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:natural_numbers]{natural numbers} and \hyperref[con:arithmetic/elementary]{arithmetic operations} on them.
 
-  Peano's original axioms from \cite[1]{Peano1889ArithmeticesPrincipia} used sets as fundamental notions. We prefer using first-order logic, as it is done by Peter Hinman in \incite[sec. 4.1]{Hinman2005Logic}. This allows us to use isolate concepts related to natural numbers that do not depend on sets. We do work with a model of Peano arithmetic --- see \cref{def:natural_numbers} --- and we distinguish statements about that model and statements about the logical theory presented here.
+  We will use the formalisms from \fullref{ch:mathematical_logic}. Peano formulated his theory in his own \hyperref[con:logical_system]{logical system}. \hyperref[def:second_order_logic]{Monadic second-order logic} allows a more faithful adaptation, which we will denote by \( \logic{PA}_2 \). We discuss variations of these theories in \cref{rem:peano_arithmetic}.
 
-  The \hyperref[def:first_order_language]{language} of the theory consists of
-  \begin{thmenum}[series=def:peano_arithmetic]
-    \thmitem{def:peano_arithmetic/zero} A constant \( 0 \) for representing \term{zero}. We can alternatively require a constant for \( 1 \), but this would lead to worse metamathematical properties as discussed in \cref{rem:peano_arithmetic_zero}.
+  \begin{thmenum}
+    \thmitem{def:peano_arithmetic/signature} Consider the \hyperref[def:fol_signature]{signature} \( \Sigma_{\logic{PA}} \) containing the following symbols:
+    \begin{thmenum}
+      \thmitem{def:peano_arithmetic/signature/zero} A constant \( \syn0 \) for representing zero.
 
-    \thmitem{def:peano_arithmetic/succ} A unary \hyperref[def:fol_signature/functions]{functional symbol} \( s \), called the \term{successor operation}.
+      \thmitem{def:peano_arithmetic/signature/succ} A unary \hyperref[def:fol_signature/functions]{functional symbol} \( \synS \), called the \term[en=successor (\cite[87]{VanDalen2004LogicAndStructure})]{successor operation}. We will find \hyperref[def:fol_signature/notation]{condensed notation} most convenient.
 
-    The successor function is only a technicality used for establishing basic properties and for defining addition and multiplication, both in this subsection and in \cref{def:omega_operations}.
+      \thmitem{def:peano_arithmetic/signature/plus} An \hyperref[def:fol_signature/notation]{infix} binary functional symbol \( \synplus \) for denoting addition.
 
-    We will only use the abstract successor operation prior to proving the familiar properties of addition and multiplication, although we will later use the \hyperref[def:ordinal_successor]{ordinal successor operation} for building a model of \logic{PA} --- see \cref{thm:omega_is_model_of_pa}.
+      \thmitem{def:peano_arithmetic/signature/times} Another infix binary functional symbol \( \synmult \) for denoting multiplication.
+    \end{thmenum}
 
-    \thmitem{def:peano_arithmetic/plus} An \hyperref[def:fol_signature/notation]{infix} binary functional symbol \( + \) for denoting \term{addition}.
+    \thmitem{def:peano_arithmetic/theory} Over \( \Sigma_{\logic{PA}} \), consider the theory \( \logic{PA} \) with the following axioms:
+    \begin{thmenum}[series=def:peano_arithmetic/theory]
+      \thmitem{def:peano_arithmetic/theory/PA1} Zero is not the successor of any natural number:
+      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA1}\tag{\logic{PA1}}
+        \synneg \qexists \synx (\synS \synx \syneq \syn0).
+      \end{equation}
 
-    See \cref{thm:natural_number_addition_properties} for the algebraic properties of natural number addition.
+      This ensures \hyperref[def:well_founded_relation]{well-foundedness} of the natural numbers.
 
-    \thmitem{def:peano_arithmetic/mult} Another infix binary functional symbol \( \cdot \) for denoting \term{multiplication}. Outside the \hyperref[con:metalanguage]{object language} we usually use juxtaposition instead.
+      \thmitem{def:peano_arithmetic/theory/PA2} The successor function is \hyperref[thm:function_invertibility_categorical/nonempty_left_invertible]{injective}:
+      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA2}\tag{\logic{PA2}}
+        \qforall \synx \qforall \syny (\synS \synx \syneq \synS \syny \synimplies \synx \syneq \syny).
+      \end{equation}
 
-    See \cref{thm:natural_number_multiplication_properties} for the algebraic properties of natural number multiplication.
-
-    In the unambiguous language defined in \cref{ex:natural_number_arithmetic_grammar/schema}, right-hand side of axiom \eqref{eq:def:peano_arithmetic/PA7} should instead be parenthesized as \( ((\syny \cdot \synx) + \synx) \). However, we want to avoid excessive parentheses in formulas as per our convention \cref{rem:propositional_formula_notation_conventions}. Hence, we prefer relying on the convention that, as with all \hyperref[def:semiring]{semirings}, multiplication has higher priority than addition. Furthermore, we often use juxtaposition for denoting multiplication.
-  \end{thmenum}
-
-  We impose the following base \hyperref[def:fol_theory]{axioms}:
-  \begin{thmenum}[resume=def:peano_arithmetic]
-    \thmitem[def:peano_arithmetic/PA1]{PA1} The successor function is \hyperref[thm:function_invertibility_categorical/nonempty_left_invertible]{injective}. This can be stated as follows:
-    \begin{equation}\label{eq:def:peano_arithmetic/PA1}\tag{\logic{PA1}}
-      s(\synx) \syneq s(\syny) \synimplies \synx \syneq \syny.
-    \end{equation}
-
-    We use here the convention for implicit universal quantification described in \cref{rem:mathematical_logic_conventions/quantification}.
-
-    \thmitem[def:peano_arithmetic/PA2]{PA2} Zero is not the successor of any natural number. Symbolically,
-    \begin{equation}\label{eq:def:peano_arithmetic/PA2}\tag{\logic{PA2}}
-      \synneg \qexists \synx (s(\synx) \syneq 0).
-    \end{equation}
-
-    \thmitem[def:peano_arithmetic/PA3]{PA3} The \term{axiom schema of induction} roughly states that for a property to hold for all natural numbers it is sufficient for the following two conditions to be met:
-    \begin{itemize}
-      \item The property holds for \( 0 \).
-      \item We can prove that is holds for any number by assuming that it holds for its predecessor.
-    \end{itemize}
-
-    See our proof of \cref{thm:nonzero_natural_numbers_have_predecessors} for a detailed discussion.
-
-    To describe this formally, we state that, for any variables \( \synx \) and \( \syny \) and any formula \( \varphi \) not containing \underline{\( \syny \)} as a \hyperref[def:fol_variable_freeness]{free variable}, the following is an axiom:
-    \begin{equation}\label{eq:def:peano_arithmetic/PA3}\tag{\logic{PA3}}
-      \parens[\big]
-        {
-          \underbrace{\varphi[\synx \mapsto 0]}_{\T{base case}}
-          \synwedge
-          \qforall \syny \parens[\big]
-            {
-              \overbrace
-                {
-                  \underbrace{ \varphi[\synx \mapsto \syny] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
-                  \synimplies
-                  \underbrace{ \varphi[\synx \mapsto s(\syny)] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
-                }^{\T{inductive step}}
-            }
-        }
-      \synimplies
-      \underbrace{ \qforall \syny \varphi[\synx \mapsto \syny] }_{\T{conclusion}}.
-    \end{equation}
-
-    It is important to highlight that \( \varphi \) may have any set of free variables, as long as \( \syny \) is not among them. As explained in \cref{rem:mathematical_logic_conventions/quantification}, we avoid excessive universal quantification. Of course, the axiom is only interesting if \( \synx \in \op*{Free}(\varphi) \). If \( \synz_1, \ldots, \synz_n \) are all the other free variables of \( \varphi \), then the \hyperref[def:fol_quantifier_closure]{universal closure} of the corresponding axiom is
-    \small
-    \begin{equation}\label{eq:def:peano_arithmetic/PA3_quantified}\tag{\logic{PA3'}}
-      \qforall {\synz_1} \cdots \qforall {\synz_n}
-      \parens[\Bigg]
-      {
+      \thmitem{def:peano_arithmetic/theory/PA3} The \term[ru=аксиомы индукции (\cite[168]{Герасимов2014Вычислимость}), en=induction schema (\cite[def. 2.7.7]{VanDalen2004LogicAndStructure})]{axiom schema of induction} provides a powerful proof method:
+      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3}\tag{\logic{PA3}}
         \parens[\big]
           {
-            \underbrace{\varphi[\synx \mapsto 0]}_{\T{base case}}
+            \underbrace{\syn\varphi[\synx \synsubst \syn0]}_{\T{base case}}
             \synwedge
             \qforall \syny \parens[\big]
               {
                 \overbrace
                   {
-                    \underbrace{ \varphi[\synx \mapsto \syny] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                    \underbrace{ \syn\varphi[\synx \synsubst \syny] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
                     \synimplies
-                    \underbrace{ \varphi[\synx \mapsto s(\syny)] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                    \underbrace{ \syn\varphi[\synx \synsubst \synS \syny] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
                   }^{\T{inductive step}}
               }
           }
         \synimplies
-        \underbrace{ \qforall \syny \varphi[\synx \mapsto \syny] }_{\T{conclusion}}
-      }.
-    \end{equation}
-    \normalsize
+        \underbrace{ \qforall \syny \syn\varphi[\synx \synsubst \syny] }_{\T{conclusion}}.
+      \end{equation}
 
-    Thus, the axiom holds for any assignment for the variables \( \synz_1, \ldots, \synz_n \). We call these variables \term{parameters}. Parameters in axiom schemas are further discussed in \cref{def:set_builder_notation} in relation to comprehension in set theory.
+      The instance of \( \varphi \) may have free variables, so we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete \hyperref[con:schemas_and_instances]{instance}.
 
-    See \cref{con:induction} for a more detailed discussion of induction in general and \fullref{thm:omega_recursion} for the corresponding recursion principle.
-  \end{thmenum}
+      Note that \eqref{eq:def:peano_arithmetic/theory/PA3} is a formula schema in the sense of \cref{def:fol_formula_schema}; it is an adaptation of the following second-order axiom:
+      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3/SOL}\tag{\( \logic{PA3}_\logic{2} \)}
+        \qforall {\synp^{\syn\iota \synimplies \syn\omicron}}
+        \parens[\big]
+          {
+            \parens[\big]
+              {
+                \synp \syn0
+                \synwedge
+                \qforall {\syny^{\syn\iota}} \parens
+                  {
+                    \synp \syny
+                    \synimplies
+                    \synp \synS \syny
+                  }
+              }
+            \synimplies
+            \qforall {\syny^{\syn\iota}} \synp \syny
+          }.
+      \end{equation}
 
-  The theory we obtain without the binary operations and with only the axioms \eqref{eq:def:peano_arithmetic/PA1}-\eqref{eq:def:peano_arithmetic/PA3} is itself sometimes used in derivative forms, for example as \enquote{Peano systems} in \cite[70]{Enderton1977SetTheory}. The operations are defined inductively, however, and there is no way for us to formalize them within a first-order object theory without adding them to the language and theory itself.
+      We discuss the emulation of second-order logic via schemas in \cref{rem:simulating_second_order_logic}.
 
-  \begin{thmenum}[resume=def:peano_arithmetic]
-    \thmitem[def:peano_arithmetic/PA4+5]{PA4+5} The next two axioms inductively define how addition is supposed to work:
-    \begin{align}
-      \synx + 0       &\syneq \synx           \label{eq:def:peano_arithmetic/PA4}\tag{\logic{PA4}} \\
-      \synx + s(\syny) &\syneq s(\synx + \syny) \label{eq:def:peano_arithmetic/PA5}\tag{\logic{PA5}}
-    \end{align}
+      This induction principle has a corresponding recursion principle --- see \fullref{thm:omega_recursion}. We discuss induction more generally in \cref{con:induction}.
+    \end{thmenum}
 
-    \thmitem[def:peano_arithmetic/PA6+7]{PA6+7} The final two axioms are for multiplication:
-    \begin{align}
-      \synx \cdot 0       &\syneq 0                    \label{eq:def:peano_arithmetic/PA6}\tag{\logic{PA6}} \\
-      \synx \cdot s(\syny) &\syneq \synx \cdot \syny + \synx \label{eq:def:peano_arithmetic/PA7}\tag{\logic{PA7}}
-    \end{align}
+    For the second-order theory \( \logic{PA}_{\logic{2}} \), only \eqref{eq:def:peano_arithmetic/theory/PA1}, \eqref{eq:def:peano_arithmetic/theory/PA2} and \eqref{eq:def:peano_arithmetic/theory/PA3/sol} are sufficient. Addition and multiplication are \hyperref[def:recursive_function]{primitive recursive functions}, so they can be defined with respect to this more basic theory.
+
+    On the other hand, the first-order theory \( \logic{PA} \) requires addition and multiplication to be a part of the base theory:
+    \begin{thmenum}[resume=def:peano_arithmetic/theory]
+      \thmitem{def:peano_arithmetic/theory/plus} The next two axioms (or rather, their universal closures) inductively define the desired behavior of addition:
+      \begin{align}
+        \synx \synplus \syn0       &\syneq \synx,                       \label{eq:def:peano_arithmetic/theory/PA4}\tag{\logic{PA4}} \\
+        \synx \synplus \synS \syny &\syneq \synS(\synx \synplus \syny). \label{eq:def:peano_arithmetic/theory/PA5}\tag{\logic{PA5}}
+      \end{align}
+
+      \thmitem{def:peano_arithmetic/theory/times} The (universal closures of) final two axioms are for multiplication:
+      \begin{align}
+        \synx \synmult \syn0       &\syneq \syn0,                           \label{eq:def:peano_arithmetic/theory/PA6}\tag{\logic{PA6}} \\
+        \synx \synmult \synS \syny &\syneq (\synx \synmult \syny) + \synx. \label{eq:def:peano_arithmetic/theory/PA7}\tag{\logic{PA7}}
+      \end{align}
+    \end{thmenum}
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Addition and multiplication are definable in second-order Peano arithmetic, but not in its first-order counterpart. This makes the axioms \eqref{eq:def:peano_arithmetic/theory/PA4}-\eqref{eq:def:peano_arithmetic/theory/PA7} redundant.
 
-\begin{remark}\label{rem:peano_arithmetic_zero}
-  It is common to consider the first natural numbers to be \( 0 \). This is done by Peter Hinman in \incite[sec. 4.1]{Hinman2005Logic} and by \incite[71]{Enderton1977SetTheory}. Peano himself, however, considered \( 1 \) to be the first natural number - see \cite[1]{Peano1889ArithmeticesPrincipia}.
-
-  Whether \( 0 \) is considered to be a natural number is a matter of convention. The operations defined via \eqref{eq:def:peano_arithmetic/PA4}-\eqref{eq:def:peano_arithmetic/PA7} can be modified to work if \( 1 \) was instead the first natural number.
-
-  We make choose for \( \BbbN \) to start with \( 0 \), however we try not to refer to the set \( \BbbN \) of natural numbers and instead rely on the concepts \enquote{nonnegative} and \enquote{positive} integers formally defined in \cref{def:integer_ordering}.
-\end{remark}
+  \item These axioms are stated in \cite{notebook:code}, in the module
+  \begin{CodeRefDisplay}
+    \ManualCodeRef{logic.theories.arithmetic.axioms}
+  \end{CodeRefDisplay}
+\end{comments}
 
 \begin{definition}\label{def:natural_numbers}
   We define the set of \term[bg=естествени числа (\cite[371]{ГеновМиховскиМоллов1991Алгебра}), ru=натуральные числа (\cite[def. 11.1]{Проскуряков1951ТеоретическиеОсновыАрифметики})]{natural numbers} \( \BbbN \) as the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) with the \hyperref[def:fol_structure/interpretation]{interpretation} described in \cref{thm:omega_is_model_of_pa}.
 
-  We do not depend on any particular properties of \( \omega \), but we use it because our construction of it is careful and purposely does not use natural numbers to avoid circularity. We are working in an ambient \hyperref[rem:standard_model_of_set_theory]{standard} \hyperref[rem:transitive_model_of_set_theory]{transitive} model of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}} and hence we will conflate \( \BbbN \) with \( \omega \) as sets.
-
-  We use the usual decimal notation
+  Of course, for convenience, we use the usual decimal notation
   \begin{align*}
-    0 &\coloneqq \varnothing \\
-    1 &\coloneqq \op{sc}(\varnothing) = \set{ \varnothing } \\
-    2 &\coloneqq \op{sc}(\op{sc}(\varnothing)) = \set{ \varnothing, \set{ \varnothing } } \\
+    0 &\coloneqq \varnothing, \\
+    1 &\coloneqq \op{sc}(\varnothing) = \set{ \varnothing }, \\
+    2 &\coloneqq \op{sc}(\op{sc}(\varnothing)) = \set{ \varnothing, \set{ \varnothing } }, \\
       &\vdots
   \end{align*}
-  for numbers, formalized in \cref{def:positional_number_system/decimal}, and continue to use the notation functional symbols from \cref{def:peano_arithmetic}, however we now use them to denote the corresponding interpretations in the structure \( \BbbN \).
 \end{definition}
 \begin{comments}
+  \item We do not rely on any particular properties of \( \omega \), however this particular construction is carefully performed so that it avoids circularity. Perhaps more importantly, it is a \hyperref[rem:standard_models_of_arithmetic]{standard model} of \hyperref[def:peano_arithmetic]{\logic{PA}} (although there are others --- see \cref{thm:peano_arithmetic_models}).
+
+  In accordance with \cref{rem:mathematical_logic_conventions/models_as_sets}, Unless we are working with explicit sentences and their models, we will generally reason about them in the ambient metatheory and treat them as sets (\hyperref[def:axiom_of_universes]{\logic{ZFC+U}}).
+
   \item See \cref{ex:natural_number_arithmetic_grammar/schema} for a simple \hyperref[def:formal_grammar/schema]{grammar schema} that produces numeric symbols in their decimal notation.
 \end{comments}
+
+\begin{remark}\label{rem:peano_arithmetic}
+  We have presented a \hyperref[def:fol_theory]{first-order theory} \( \logic{PA} \) and a \hyperref[def:hol_theory]{second-order theory} \( \logic{PA}_{\logic{2}} \) for \hyperref[def:natural_numbers]{natural number} \hyperref[con:arithmetic]{arithmetic} in \cref{def:peano_arithmetic}. We discuss here how they are related to the work of Giuseppe Peano.
+
+  \begin{thmenum}
+    \thmitem{rem:peano_arithmetic/sets} \incite*[1]{Peano1889ArithmeticesPrincipia} not only presents a formal theory of arithmetic, but, more importantly, he formulates an early variant of \hyperref[def:higher_order_logic]{higher-order logic}, with sets rather than types. In his later work, \cite[27]{Peano1908FormulatioMathematico}, Peano presents a different logical system and a different theory, but, modulo the choice of formalisms, it again amounts to the basic three axioms.
+
+    Peano's axioms are most faithfully represented by modern set theory. For example, \incite[70]{Enderton1977SetTheory} and \incite[53]{Mendelson2008NumberSystems} both discuss \term{Peano systems} --- triples \( (N, e, S) \) such that
+    \begin{itemize}
+      \item \( S \) is an \hi{injective} endofunction on \( N \) (injectivity subsumes \eqref{eq:def:peano_arithmetic/theory/PA1}).
+
+      \item \( e \) is an element of \( N \) that is not in the range of \( S \) (the latter condition subsumes \eqref{eq:def:peano_arithmetic/theory/PA2}).
+
+      \item If \( A \) contains \( e \) and is closed under \( S \), then \( A \) is a subset of \( N \) (restatement of \eqref{eq:def:peano_arithmetic/theory/PA3/SOL}).
+    \end{itemize}
+
+    He does not consider addition and multiplication to be \hyperref[con:primitive_notion]{primitive notions} --- this later turns out to only be a necessity in the first-order theory.
+
+    \thmitem{rem:peano_arithmetic/zero} In his earlier theory in \cite[1]{Peano1889ArithmeticesPrincipia}, Peano considers \( 1 \) --- not \( 0 \) --- to be the first natural number. His later theory in \cite[27]{Peano1908FormulatioMathematico} is adjusted to that \( 0 \) is the first natural number.
+
+    This dichotomy is also present in other author's work --- when defining Peano systems, Enderton starts with \( 0 \), while Mendelson starts with \( 1 \).
+
+    We find it convenient for \( 0 \) to be a natural number because this allows \( \BbbN \) to become a \hyperref[def:monoid]{monoid} and hence a \hyperref[def:semiring]{semiring}.
+
+    On the other hand, we find it more convenient to start counting from \( 1 \).
+
+    In the presence of ambiguity, we will distinguish between \enquote{nonnegative integers} and \enquote{positive integers} --- these are defined formally in \cref{def:integer_ordering}.
+
+    \thmitem{rem:peano_arithmetic/fol_variants} Modern formulations of first-order Peano arithmetic mostly agree with each other, up to a precise choice of formalisms:
+    \begin{itemize}
+      \item Our list of axioms coincides with \bycite[def. 2.7.7]{VanDalen2004LogicAndStructure} and \bycite[\S 5.2.5]{Mimram2020ProgramEqualsProof}.
+
+      \item \incite[105]{КолмогоровДрагалин2006Логика} and \incite[167]{Герасимов2014Вычислимость} extend our list with axioms for equality. We will not need them because we handle equality as a primordial logical primitive.
+
+      \item \incite*[def. 4.1.1(ii)]{Hinman2005Logic} extends our signature with the strict inequality \( \synless \) and adds corresponding axioms. We instead present \( \synleq \) and related predicates via \hyperref[def:fol_definitional_extension]{definitional extensions} in \cref{def:natural_numbers_ordering}.
+    \end{itemize}
+  \end{thmenum}
+\end{remark}
 
 \begin{remark}\label{rem:standard_models_of_arithmetic}
   At this point, we have two kinds of natural numbers:
@@ -152,7 +191,7 @@
     \item We have the set of natural numbers \( \BbbN \) defined in \cref{def:natural_numbers}. These are the numbers which we have defined formally, whose properties we study and the numbers which we use in the entire monograph. The properties of \( \BbbN \) help us develop a better mental model, which in turn changes our perception of the natural numbers within the metatheory.
   \end{itemize}
 
-  We want the two sets of natural numbers to coincide. This is important when talking about, for example, \hyperref[def:sequence]{sequences}. If a number in \( \BbbN \) is not a natural number within the metatheory, we say that it is \term{nonstandard}. The existence of nonstandard models is guaranteed by \fullref{thm:upward_lowenheim_skolem_theorem_theorem}. There cannot be numbers in the metatheory that are not in \( \BbbN \) because a model of \logic{PA} cannot have a finite domain and the natural numbers are the smallest metalogical infinite set.
+  We want the two sets of natural numbers to coincide. This is important when talking about, for example, \hyperref[def:sequence]{sequences}. If a number in \( \BbbN \) is not a natural number within the metatheory, we say that it is \term{nonstandard}. The existence of nonstandard models is guaranteed by \fullref{thm:upward_lowenheim_skolem_theorem}. There cannot be numbers in the metatheory that are not in \( \BbbN \) because a model of \logic{PA} cannot have a finite domain and the natural numbers are the smallest metalogical infinite set.
 
   A model of \logic{PA} which contains precisely the numbers in the metatheory is called a \term{standard model}. For the purpose of this monograph, it is sufficient to accept the convention that \( \BbbN \) is a standard model of \logic{PA}.
 \end{remark}

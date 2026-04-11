@@ -4,6 +4,7 @@ from .axioms import (
     PEANO_INJECTIVITY,
     PEANO_MULTIPLICATION_AXIOMS,
     PEANO_NO_ZERO_PREDECESSOR,
+    get_induction_axiom,
 )
 from .modular import ModularArithmeticStructure
 from .signature import ARITHMETIC_SIGNATURE
