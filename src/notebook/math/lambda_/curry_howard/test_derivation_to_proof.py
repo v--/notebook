@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING
 from ....support.pytest import pytest_parametrize_kwargs
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import proof_tree as ptree
+from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -78,9 +80,11 @@ class TestTypeDerivationToProofTree:
             dtree.assume(
                 parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
-            implicit_types={
-                parse_type_placeholder('τ'): parse_type('τ'),
-            },
+            instantiation=AtomicLambdaSchemaInstantiation(
+                type_mapping={
+                    parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE),
+                },
+            ),
         )
 
         assert str(derivation) == dedent('''\
@@ -96,9 +100,11 @@ class TestTypeDerivationToProofTree:
                 parse_formula('⊥', ch_logic_dummy_signature),
                 parse_marker('x'),
             ),
-            implicit={
-                parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
-            },
+            instantiation=AtomicLogicSchemaInstantiation(
+                formula_mapping={
+                    parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+                },
+            ),
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -235,9 +241,11 @@ class TestTypeDerivationToProofTree:
                     dtree.assume(
                         parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
                     ),
-                    implicit_types={
-                        parse_type_placeholder('τ'): parse_type('τ'),
-                    },
+                    instantiation=AtomicLambdaSchemaInstantiation(
+                        type_mapping={
+                            parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE),
+                        },
+                    ),
                 ),
             ),
         )
@@ -282,9 +290,11 @@ class TestTypeDerivationToProofTree:
                         parse_formula('⊥', ch_logic_dummy_signature),
                         parse_marker('b'),
                     ),
-                    implicit={
-                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
-                    },
+                    instantiation=AtomicLogicSchemaInstantiation(
+                        formula_mapping={
+                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+                        },
+                    ),
                 ),
             ),
         )
@@ -307,9 +317,11 @@ class TestTypeDerivationToProofTree:
                     dtree.assume(
                         parse_variable_assertion('a: σ'),
                     ),
-                    implicit_types={
-                        parse_type_placeholder('τ'): parse_type('τ'),
-                    },
+                    instantiation=AtomicLambdaSchemaInstantiation(
+                        type_mapping={
+                            parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE),
+                        },
+                    ),
                 ),
                 attachments=[parse_variable_assertion('a: σ')],
             ),
@@ -322,15 +334,19 @@ class TestTypeDerivationToProofTree:
                             parse_variable_assertion('x: (τ × (σ + ρ))'),
                         ),
                     ),
-                    implicit_types={
-                        parse_type_placeholder('σ'): parse_type('σ'),
-                    },
+                    instantiation=AtomicLambdaSchemaInstantiation(
+                        type_mapping={
+                            parse_type_placeholder('σ'): parse_type('σ', SIMPLE_ALGEBRAIC_SIGNATURE),
+                        },
+                    ),
                 ),
                 attachments=[parse_variable_assertion('b: ρ')],
             ),
-            implicit_variables={
-                parse_variable_placeholder('y'): parse_variable('b'),
-            },
+            instantiation=AtomicLambdaSchemaInstantiation(
+                variable_mapping={
+                    parse_variable_placeholder('y'): parse_variable('b'),
+                },
+            ),
         )
 
         assert str(derivation) == dedent('''\
@@ -366,9 +382,11 @@ class TestTypeDerivationToProofTree:
                         parse_formula('σ', ch_logic_dummy_signature),
                         marker=parse_marker('a'),
                     ),
-                    implicit={
-                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
-                    },
+                    instantiation=AtomicLogicSchemaInstantiation(
+                        formula_mapping={
+                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature),
+                        },
+                    ),
                 ),
             ),
             ptree.premise_config(
@@ -387,9 +405,11 @@ class TestTypeDerivationToProofTree:
                             marker=parse_marker('x'),
                         ),
                     ),
-                    implicit={
-                        parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature),
-                    },
+                    instantiation=AtomicLogicSchemaInstantiation(
+                        formula_mapping={
+                            parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature),
+                        },
+                    ),
                 ),
             ),
         )

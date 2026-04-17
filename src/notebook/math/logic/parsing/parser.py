@@ -637,10 +637,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         premises = list(self._iter_natural_deduction_premises(rule_context))
         self.advance()
 
-        if self.peek() is None:
-            raise self.annotate_unexpected_end_of_input()
+        if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
+            raise rule_context.annotate_token_error('The conclusion of a rule cannot have attached formulas')
 
-        return NaturalDeductionRule(name, premises, self._parse_natural_deduction_entry())
+        return NaturalDeductionRule(name, premises, self.parse_formula(parse_schema=True))
 
     @overload
     def _parse_context_args(self, *, parse_schema: Literal[False]) -> Iterable[Formula]: ...

@@ -12,6 +12,7 @@ from ....logic.formulas import (
     QuantifierFormula,
 )
 from ....logic.formulas import Formula as FolFormula
+from ....logic.signature import FunctionSymbol, PredicateSymbol, SignatureSymbol
 from ....logic.terms import FunctionApplication
 from ....logic.terms import Term as FolTerm
 from ....logic.terms import Variable as FolVariable
@@ -66,6 +67,23 @@ def logical_constant_to_quantifier(const: Constant) -> Quantifier:
             raise UnreachableException
 
 
+def to_fol_application(fol_sym: SignatureSymbol, *args: FolTerm | FolFormula) -> FolTerm | FolFormula:
+    if not all(isinstance(arg, FolTerm) for arg in args):
+        raise HolTranslationError('The arguments of a function application must be first-order terms')
+
+    args_ = cast('Sequence[FolTerm]', list(args))
+
+    match fol_sym:
+        case FunctionSymbol():
+            return FunctionApplication(fol_sym, args_)
+
+        case PredicateSymbol():
+            return PredicateApplication(fol_sym, args_)
+
+        case _:
+            raise HolTranslationError(f'Unrecognized symbol {fol_sym}')
+
+
 def construct_application(  # noqa: C901
     signature: FolTranslatedSignature,
     context: TypeContext,
@@ -83,24 +101,12 @@ def construct_application(  # noqa: C901
             )
 
         case LambdaVariable():
-            if not all(isinstance(arg, FolTerm) for arg in args):
-                raise HolTranslationError('The arguments of a function application must be first-order terms')
-
-            type_ = context[term]
-
-            return FunctionApplication(
-                signature.type_appliers[type_, len(args)],
-                cast('Sequence[FolTerm]', [translate_hol_expression(signature, context, term), *args]),
-            )
+            sym = signature.type_appliers[context[term], len(args)]
+            return to_fol_application(sym, translate_hol_expression(signature, context, term), *args)
 
         case Constant() if isinstance(term.value, NonLogicalConstantSymbol):
-            if not all(isinstance(arg, FolTerm) for arg in args):
-                raise HolTranslationError('The arguments of a predicate application must be first-order terms')
-
-            return FunctionApplication(
-                signature.nl_constant_map[term.value, len(args)],
-                cast('Sequence[FolTerm]', list(args)),
-            )
+            sym = signature.nl_constant_map[term.value, len(args)]
+            return to_fol_application(sym, *args)
 
         case common.verum:
             if len(args) > 0:

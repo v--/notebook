@@ -496,7 +496,7 @@
 \begin{definition}\label{def:fol_natural_deduction_proof_tree}
   We will extend to \hyperref[def:first_order_logic]{first-order logic} the \hyperref[def:proof_tree]{proof trees} that we defined for propositional logic defined in \cref{def:propositional_natural_deduction_proof_tree}. Fix a \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}.
 
-  In addition to the conclusion, rule name, open assumptions and implicit open premises, we will also need several sets of variables:
+  In addition to the conclusion, rule name and open and discharged assumptions, we will also need several sets of variables:
   \begin{thmenum}[series=def:fol_natural_deduction_proof_tree]
     \thmitem{def:fol_natural_deduction_proof_tree/eigenvariables} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof}); proper variable (\cite[38]{TroelstraSchwichtenberg2000BasicProofTheory})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
 
@@ -505,8 +505,6 @@
     \thmitem{def:fol_natural_deduction_proof_tree/open_variables} Dually, we will also need a set of \term{open free variables} of the proof tree. Similarly to the open assumptions, they will be cumulative for the entire tree and not just local to the root.
 
     Actually, we will need a more elaborate construction --- a function \( F(D, E) \) depending on a set \( D \) of discharged markers and a set \( E \) of discharged eigenvariables. We call \( F(\varnothing, \varnothing) \) \enquote{the} set of open free variables of the tree.
-
-    \thmitem{def:fol_natural_deduction_proof_tree/implicit_variables} Similarly to implicit open premises, we may also have \term{implicit free variables}.
   \end{thmenum}
 
   Just as with assumption discharging, binding variables is also delicate to handle:
@@ -521,8 +519,6 @@
           \op*{Free}(\varphi) \setminus E, &\T{otherwise.}
         \end{cases}
       \end{equation*}
-
-      \thmitem{def:fol_natural_deduction_proof_tree/assumption/implicit_variables} There are no implicit variables.
     \end{thmenum}
 
     \thmitem{def:fol_natural_deduction_proof_tree/application} A rule application tree operates similarly to its propositional counterpart, but binding open variables has some important caveats.
@@ -540,7 +536,7 @@
 
         \hypo{ \cdots }
         \hypo{ \Phi_n }
-        \infer[left label={\( [\Omega_1] \cdots [\Omega_m] \)}]5[\logic{R}]{ \Psi }
+        \infer5[\logic{R}]{ \Psi }
       \end{prooftree}
     \end{equation*}
 
@@ -588,16 +584,14 @@
 
       We denote the set of all eigenvariables of \( P_d \) by \( E_d \).
 
-      \thmitem{def:fol_natural_deduction_proof_tree/application/open_variables} We will now utilize the set \( I_d \) of implicit open premises and the set \( D_d \) of discharged assumption markers.
+      \thmitem{def:fol_natural_deduction_proof_tree/application/open_variables} We will now utilize the set \( D_d \) of discharged assumption markers.
 
       Denote by \( F_k(D, E) \) the open variable function of the premise subtree \( P_k \). For \( P_d \) itself, we define the corresponding function as follows:
       \begin{equation*}
-        F_d(D, E) \coloneqq \bigcup_{k=1}^n F_k(D \cup D_d, E \cup E_d) \cup \parens{ \bigcup_{\varphi \in I_d} \op*{Free}(\varphi) \setminus (E \cup E_d) }.
+        F_d(D, E) \coloneqq \bigcup_{k=1}^n F_k(D \cup D_d, E \cup E_d).
       \end{equation*}
 
-      Thus, have taken the union of all open variables of the subtrees and all free variables of the implicit premises, excluding those discharged at the current application.
-
-      \thmitem{def:fol_natural_deduction_proof_tree/application/implicit_variables} If the conclusion schema features a substitution, i.e. if \( \Psi = \Lambda[\xi \mapsto \Tau] \), let the set of implicit free variables be the set of variables of the term \( \Tau[\BbbI] \). Otherwise, let \( C_d \) be the empty set.
+      Thus, have taken the union of all open variables of the subtrees, excluding those discharged at the current application.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
@@ -849,28 +843,6 @@
 
     This derivation is sound only if there is something to quantify over. We discuss this in \cref{rem:fol_empty_universe/natural_deduction}.
 
-    \thmitem{ex:def:fol_natural_deduction/implicit_premise} Without implicit premises, the free variables of the following proof trees would differ:
-    \begin{paracol}{2}
-      \begin{leftcolumn}
-        \begin{equation*}
-          \begin{prooftree}
-            \hypo{ [p(x) \synvee p(y)]^u }
-          \end{prooftree}
-        \end{equation*}
-      \end{leftcolumn}
-
-      \begin{rightcolumn}
-        \begin{equation*}
-          \begin{prooftree}
-            \hypo{ [p(x)]^u }
-            \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ p(x) \synvee p(y) }
-          \end{prooftree}
-        \end{equation*}
-      \end{rightcolumn}
-    \end{paracol}
-
-    In the first case, the free variables would be \( x \) and \( y \), while in the second \( y \) would be ignored.
-
     \thmitem{ex:def:fol_natural_deduction/exists_elimination} Consider the following proof tree:
     \begin{equation*}
       \begin{prooftree}
@@ -924,6 +896,37 @@
     \end{equation*}
 
     The introduction rule for \( \synforall \) is applicable because at that point \( x \) is no longer free in any open assumption --- even though it was initially free in \( [p(x)]^w \), this assumption was discharged.
+
+    \thmitem{ex:def:fol_natural_deduction/implicit_premises} \hyperref[ex:def:propositional_natural_deduction/implicit]{Implicit premises} allows introducing \enquote{implicit} free variables that do not come from any open assumption.
+
+    For example, consider the proof tree
+    \begin{equation*}
+      \begin{prooftree}
+        \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
+        \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \syntop \synvee p(x) }
+      \end{prooftree}
+    \end{equation*}
+
+    Here \( p(x) \) is an implicit premise, in which \( x \) is a free variable. Hence, \( x \) is free in the conclusion, but it is not open in the proof tree. In particular, it satisfies the eigenvariable condition \cref{def:fol_natural_deduction_proof_tree/application/main/assumptions}:
+    \begin{equation*}
+      \begin{prooftree}
+        \infer0[\ref{inf:def:propositional_natural_deduction/top/intro}]{ \syntop }
+        \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \syntop \synvee p(x) }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (\syntop \synvee p(x)) }
+      \end{prooftree}
+    \end{equation*}
+
+    Free variables from implicit premises are explicitly forbidden for \ref{inf:def:propositional_natural_deduction/or/intro_left}, \ref{inf:def:propositional_natural_deduction/or/intro_right} and \ref{inf:def:propositional_natural_deduction/imp/intro} (when no premise is discharged) in a passing remark in \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}. Other sources like \cite{VanDalen2004LogicAndStructure} and \cite[fig. 2.1]{Mimram2020ProgramEqualsProof} do not mention implicit premises at all.
+
+    \thmitem{ex:def:fol_natural_deduction/implicit_variables} Another source of implicit free variables is elimination of universal quantifiers:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ [\qforall x p(x)]^u }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ p(f(y, z)) }
+      \end{prooftree}
+    \end{equation*}
+
+    Here \( y \) and \( z \) are also free in the conclusion, but are again not open.
   \end{thmenum}
 \end{example}
 \begin{comments}
@@ -979,7 +982,7 @@
 
   There are some ad-hoc ways to prevent the above rule applications:
   \begin{thmenum}
-    \thmitem{rem:fol_empty_universe/restricted_implicit} We may require all \hyperref[def:fol_natural_deduction_proof_tree/implicit_variables]{implicit free variables} to belong to the existing \hyperref[def:fol_natural_deduction_proof_tree/open_variables]{open free variables}. This would affect the rule \ref{inf:def:fol_natural_deduction/forall/elim}. It would be possible to derive \( \varphi[x \mapsto \tau] \) from \( \qforall x \varphi \), but only if the free variables of \( \tau \) are open in the proof tree.
+    \thmitem{rem:fol_empty_universe/restricted_implicit} We may collect all variables that are implicit in the sense of \cref{ex:def:fol_natural_deduction/implicit_premises} and \cref{ex:def:fol_natural_deduction/implicit_varibles} and require them to belong to the existing \hyperref[def:fol_natural_deduction_proof_tree/open_variables]{open free variables}. This would affect the rule \ref{inf:def:fol_natural_deduction/forall/elim}. It would be possible to derive \( \varphi[x \mapsto \tau] \) from \( \qforall x \varphi \), but only if the free variables of \( \tau \) are open in the proof tree.
 
     In our example, the proof tree has no variables open, thus \( \tau \) must use constants rather than variables. But if the signature has an individual constant, its domain cannot be empty. If, on the other hand, the domain is empty, the rule becomes inapplicable.
 

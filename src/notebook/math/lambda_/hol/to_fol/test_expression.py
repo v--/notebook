@@ -4,6 +4,8 @@ from ....logic.parsing import parse_term as parse_fol_term
 from ...parsing import parse_type, parse_typed_term
 from .. import common
 from ..expression import HolExpression
+from ..theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from ..theories.arithmetic import PEANO_INDUCTION_AXIOM as HOL_INDUCTION_AXIOM
 from ..theories.digraphs import DIRECTED_GRAPH_SIGNATURE
 from .expression import hol_expression_to_fol
 from .signature import hol_signature_to_fol
@@ -46,3 +48,14 @@ def test_hol_expression_to_fol_digraph(hol_term: str, hol_type: str, fol_expr: s
     )
 
     assert translated == expected
+
+
+def test_induction_axiom_translation() -> None:
+    actual = hol_expression_to_fol(HOL_ARITHMETIC_SIGNATURE, HOL_INDUCTION_AXIOM)
+    signature = hol_signature_to_fol(HOL_ARITHMETIC_SIGNATURE, HOL_INDUCTION_AXIOM)
+    expected = parse_formula(
+        '∀p.(?(ι → ο)(p) → (∀n.(?ι(n) → !(ι → ο)¹(p, n)) → (∀n.(?ι(n) → (!(ι → ο)¹(p, S⁺¹(n)) → !(ι → ο)¹(p, n))) ∧ !(ι → ο)¹(p, 0⁰))))',
+        signature,
+    )
+
+    assert actual == expected

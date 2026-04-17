@@ -553,7 +553,6 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
         'φ ⊩ ψ',
         'φ₁, φ₂ ⊩ ψ',
         '[θ] φ ⊩ ψ',
-        '[θ] [φ] θ ⊩ [χ] ω',
     ],
 )
 def test_rebuilding_rules(rule: str) -> None:
@@ -568,6 +567,18 @@ def test_parsing_empty_attached_schema() -> None:
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [] φ ⊩ ψ
           │ ^^
+        ''',
+    )
+
+
+def test_parsing_conclusion_with_attachment() -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_natural_deduction_rule('name', '[θ] [φ] θ ⊩ [χ] ω')
+
+    assert str(excinfo.value) == 'The conclusion of a rule cannot have attached formulas'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ [θ] [φ] θ ⊩ [χ] ω
+          │             ^
         ''',
     )
 

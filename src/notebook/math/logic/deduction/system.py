@@ -2,11 +2,11 @@ from ....support.inference import InferenceRule, InferenceRuleEntry, InferenceRu
 from ..formulas import FormulaSchema
 
 
-class NaturalDeductionEntry(InferenceRuleEntry[FormulaSchema, FormulaSchema]):
+class NaturalDeductionEntry(InferenceRuleEntry[FormulaSchema]):
     pass
 
 
-class NaturalDeductionRule(InferenceRule[NaturalDeductionEntry]):
+class NaturalDeductionRule(InferenceRule[FormulaSchema, NaturalDeductionEntry]):
     pass
 
 

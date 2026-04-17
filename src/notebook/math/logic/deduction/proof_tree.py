@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, override
 
 from ....support.coderefs import collector
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
-from ....support.schemas import SchemaInstantiationError
 from ..formulas import ExtendedFormulaPlaceholder, Formula, FormulaPlaceholder, FormulaWithSubstitution
 from ..instantiation import (
     AtomicLogicSchemaInstantiation,
@@ -13,13 +12,13 @@ from ..instantiation import (
 )
 from ..substitution import evaluate_substitution
 from ..terms import EigenSchemaSubstitutionSpec, Variable
-from ..variables import get_formula_free_variables, get_term_variables
+from ..variables import get_formula_free_variables
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
 
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping, Sequence
+    from collections.abc import Collection, Iterable, Sequence
 
     from .system import NaturalDeductionRule
 
@@ -42,9 +41,6 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             str(self.conclusion),
             marker=str(self.marker),
         )
-
-    def get_local_implicit_open_premises(self) -> Collection[Formula]:
-        return set()
 
     def get_local_eigenvariables(self) -> Collection[Variable]:
         return set()
@@ -109,7 +105,6 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
     instantiation: AtomicLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: Formula
-    implicit_variables: Collection[Variable]
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[MarkedFormula]:
         for premise in self.premises:
@@ -118,19 +113,6 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
 
                 if discharged_at_current_step == is_discharged_at_current_step:
                     yield assumption
-
-    def _iter_implicit_premises(self) -> Iterable[Formula]:
-        for schema in self.rule.conclusion.attachments:
-            formula = instantiate_formula_schema(schema, self.instantiation)
-
-            for assumption in self._filter_assumptions(discharged_at_current_step=True):
-                if assumption.formula == formula:
-                    break
-            else:
-                yield formula
-
-    def get_local_implicit_open_premises(self) -> Collection[Formula]:
-        return set(self._iter_implicit_premises())
 
     @override
     def get_cumulative_assumptions(self) -> Collection[MarkedFormula]:
@@ -179,11 +161,6 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         for premise_tree in self.premises:
             yield from premise_tree.tree.get_open_variables(eigen_, discharged_)
 
-        for premise in self.get_local_implicit_open_premises():
-            for var in get_formula_free_variables(premise):
-                if var not in eigen:
-                    yield var
-
     def get_open_variables(
         self,
         eigen: Collection[Variable] = set(),
@@ -195,29 +172,25 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         return self.build_renderer().render()
 
 
-def _infer_application_instantiation(  # noqa: C901
+def _infer_application_instantiation(
     rule: NaturalDeductionRule,
     application_premises: Sequence[RuleApplicationPremiseConfig],
     instantiation: AtomicLogicSchemaInstantiation | None = None,
-    implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
     conclusion_config: FormulaWithSubstitution | None = None,
 ) -> AtomicLogicSchemaInstantiation:
-    if instantiation is None:
-        instantiation = AtomicLogicSchemaInstantiation(formula_mapping=implicit)
-    elif implicit:
-        raise RuleApplicationError('Cannot provide both an instantiation and implicit assumptions')
+    result = instantiation or AtomicLogicSchemaInstantiation()
 
     # Infer instantiation
     for rule_premise, application_premise in zip(rule.premises, application_premises, strict=True):
         for attachment_schema, attachment in zip(rule_premise.attachments, application_premise.attachments, strict=True):
             if attachment:
-                instantiation |= infer_instantiation_from_formula(
+                result |= infer_instantiation_from_formula(
                     attachment_schema,
                     attachment.payload if isinstance(attachment, MarkedFormulaWithSubstitution) else attachment.formula,
                 )
 
         if application_premise.main:
-            instantiation |= infer_instantiation_from_formula(
+            result |= infer_instantiation_from_formula(
                 rule_premise.main,
                 application_premise.main,
             )
@@ -226,15 +199,9 @@ def _infer_application_instantiation(  # noqa: C901
         if conclusion_config is None:
             raise RuleApplicationError(f'The rule {rule.name} requires a conclusion with an explicit substitution')
 
-        instantiation |= infer_instantiation_from_formula(rule.conclusion, conclusion_config)
+        result |= infer_instantiation_from_formula(rule.conclusion, conclusion_config)
 
-    for attachment_schema in rule.conclusion.attachments:
-        try:
-            instantiate_formula_schema(attachment_schema, instantiation)
-        except SchemaInstantiationError as err:
-            raise RuleApplicationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
-
-    return instantiation
+    return result
 
 
 @collector.ref('def:fol_natural_deduction_proof_tree')
@@ -242,7 +209,6 @@ def apply(  # noqa: C901
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,
-    implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
     conclusion_config: FormulaWithSubstitution | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
@@ -256,7 +222,7 @@ def apply(  # noqa: C901
     ]
 
     instantiation = _infer_application_instantiation(
-        rule, application_premises, instantiation, implicit, conclusion_config,
+        rule, application_premises, instantiation, conclusion_config,
     )
 
     marker_map = dict[Marker, Formula]()
@@ -329,7 +295,6 @@ def apply(  # noqa: C901
         instantiation,
         [premise.eval() for premise in application_premises],
         conclusion,
-        get_term_variables(conclusion_config.sub.dest) if conclusion_config else set(),
     )
 
 

@@ -130,7 +130,6 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
                 instantiation,
                 premises=[],
                 conclusion=conclusion,
-                implicit_variables=set(),
             )
 
     mp_config = derivation.get_mp_config()
@@ -161,7 +160,6 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         instantiation,
         premises=[conditional_premise, antecedent_premise],
         conclusion=conclusion,
-        implicit_variables=set(),
     )
 
 

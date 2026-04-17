@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True)
-class InferenceRuleEntry[MainT, AttachmentT]:
+class InferenceRuleEntry[MainT, AttachmentT = MainT]:
     main: MainT
     attachments: Sequence[AttachmentT] = field(default_factory=list)
 
@@ -21,10 +21,10 @@ class InferenceRuleEntry[MainT, AttachmentT]:
 
 
 @dataclass(frozen=True)
-class InferenceRule[EntryT]:
+class InferenceRule[ConclusionT, PremiseT = ConclusionT]:
     name: str
-    premises: Sequence[EntryT]
-    conclusion: EntryT
+    premises: Sequence[PremiseT]
+    conclusion: ConclusionT
 
     def without_name(self) -> str:
         if len(self.premises) > 0:

@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, override
 
 from ....support.coderefs import collector
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
-from ....support.schemas import SchemaInstantiationError
 from ..assertions import TypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     AtomicLambdaSchemaInstantiation,
@@ -107,20 +106,16 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
 
 
 @collector.ref('def:type_derivation_tree')
-def apply(  # noqa: C901
+def apply(
     rule: TypingRule,
     *args: TypeDerivationTree | RuleApplicationPremise,
     instantiation: AtomicLambdaSchemaInstantiation | None = None,
-    implicit_variables: Mapping[VariablePlaceholder, Variable] | None = None,
-    implicit_types: Mapping[TypePlaceholder, SimpleType] | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
     if instantiation is None:
-        instantiation = AtomicLambdaSchemaInstantiation(variable_mapping=implicit_variables, type_mapping=implicit_types)
-    elif implicit_variables or implicit_types:
-        raise TypeDerivationError('Cannot provide both an instantiation and implicit variables or types')
+        instantiation = AtomicLambdaSchemaInstantiation()
 
     application_premises = [
         premise_config(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
@@ -139,12 +134,6 @@ def apply(  # noqa: C901
                 instantiation |= infer_instantiation_from_assertion(attachment_schema, attached)
 
         instantiation |= infer_instantiation_from_assertion(rule_premise.main, application_premise.tree.conclusion)
-
-    for attachment_schema in rule.conclusion.attachments:
-        try:
-            instantiate_assertion_schema(attachment_schema, instantiation)
-        except SchemaInstantiationError as err:
-            raise TypeDerivationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
 
     return RuleApplicationTree(
         rule,

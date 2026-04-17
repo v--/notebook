@@ -57,7 +57,7 @@ class AtomicLogicSchemaInstantiation:
             raise SchemaInferenceError(f'Cannot instantiate term placeholder {schema} to both {a} and {b}')
 
         for schema, (a, b) in iter_mapping_discrepancy(self.formula_mapping, other.formula_mapping):
-            raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
+            raise SchemaInferenceError(f'Cannot instantiate formula placeholder {schema} to both {a} and {b}')
 
         for schema, (a, b) in iter_mapping_discrepancy(self.context_mapping, other.context_mapping):
             raise SchemaInferenceError(f'Cannot instantiate logical context placeholder {schema} to both {a} and {b}')

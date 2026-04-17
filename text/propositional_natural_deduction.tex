@@ -186,11 +186,14 @@
     \bnfprod{entry}           {\bnfpn{attachments} \bnfsp \bnfpn{formula schema}}
   \end{bnf*}
 
-  We will use these attached schemas are used for different purposes --- namely, discharging explicit assumptions and indicating implicit premises. This is formalized in \cref{def:propositional_natural_deduction_proof_tree/application}. Some rules like \ref{inf:def:identity_type/j/elim} require more than one attachment. We refer to the numeric index of an attachment as its \term{position}.
+  Some rules like \ref{inf:def:identity_type/j/elim} require more than one attachment. We refer to the numeric index of an attachment as its \term{position}. We will not need formulas attached to the conclusion, so we replace the conclusion grammar rule from \cref{def:inference_rule} with
+  \begin{bnf*}
+    \bnfprod{conclusion} {\bnfpn{formula schema}}
+  \end{bnf*}
 
-  For the rule
+  For the natural deduction rule
   \begin{equation*}
-    (\logic{R}) \enspace \Phi_1, \ldots, [\Theta_{k,1}] \ldots [\Theta_{k,m}] \thickspace \Phi_k, \ldots, \Phi_n \synVdash [\Omega_1] \ldots [\Omega_m] \thickspace \Psi
+    (\logic{R}) \enspace \Phi_1, \ldots, [\Theta_{k,1}] \ldots [\Theta_{k,m}] \thickspace \Phi_k, \ldots, \Phi_n \synVdash \thickspace \Psi
   \end{equation*}
   we use the more convenient notation
   \begin{equation*}
@@ -205,7 +208,7 @@
 
       \hypo{ \cdots }
       \hypo{ \Phi_n }
-      \infer[left label={\( [\Omega_1] \cdots [\Omega_m] \)}]5[\logic{R}]{ \Psi }
+      \infer5[\logic{R}]{ \Psi }
     \end{prooftree}
   \end{equation*}
 \end{definition}
@@ -220,8 +223,6 @@
   The notation is based on Gentzen's original \cite[186]{Gentzen1935LogischeSchließen}, with a dashed line added for clarity.
 
   \item The placeholder variables like \( \Psi \) represent schemas. For example, \( \Psi \) can be the propositional formula schema \( \syn\varphi \synimplies \syn\psi \), which are purely syntactic objects, and to reason about formulas instead we must use \fullref{alg:propositional_schema_instantiation}.
-
-  \item The only schemas we have completely formalized are propositional formula schemas in \cref{def:propositional_formula_schema} and typed \( \muplambda \)-term schemas in \cref{def:simple_type_schema} and \cref{def:lambda_term_schema}.
 \end{comments}
 
 \begin{definition}\label{def:propositional_natural_deduction_system}\mimprovised
@@ -244,12 +245,6 @@
     \thmitem{def:propositional_natural_deduction_proof_tree/discharged_assumptions} Dually, we have marked formulas that are \term[en=discharged (\cite[9]{GirardEtAl1989ProofsAndTypes})]{discharged} or \term[en=closed (\cite[23]{TroelstraSchwichtenberg2000BasicProofTheory})]{closed}. It will be sufficient for us to only consider their markers.
 
     Unlike open assumptions, discharged ones are local to the root.
-
-    \thmitem{def:propositional_natural_deduction_proof_tree/implicit_premises} We will also associate with every tree a set of (unmarked) formulas, which we will call \term{implicit open premises}.
-
-    Just like ordinary premises, these will be local to the root. Even though we can collect all implicit premises across the proof tree, the notion starts to lose its meaning because an implicit premise in one subtree may be an explicit premise in another.
-
-    We will primarily use implicit premises for handling \hyperref[def:fol_natural_deduction_proof_tree/eigenvariables]{eigenvariables} when extending proof trees to \hyperref[def:first_order_logic]{first-order logic} in \cref{def:fol_natural_deduction_proof_tree}.
   \end{thmenum}
 
   These additional components are maintained in proof trees as follows:
@@ -260,7 +255,6 @@
       \thmitem{def:propositional_natural_deduction_proof_tree/assumption/rule_name} The rule name is the empty string.
       \thmitem{def:propositional_natural_deduction_proof_tree/assumption/open_assumptions} There is only one open assumption --- \( \varphi \) marked with \( u \).
       \thmitem{def:propositional_natural_deduction_proof_tree/assumption/discharged_assumptions} There are no discharged assumptions.
-      \thmitem{def:propositional_natural_deduction_proof_tree/assumption/implicit_premises} There are no implicit open premises.
     \end{thmenum}
 
     We will denote this a tree as follows:
@@ -281,7 +275,7 @@
 
         \hypo{ \cdots }
         \hypo{ \Phi_n }
-        \infer[left label={\( [\Omega_1] \cdots [\Omega_m] \)}]5[\logic{R}]{ \Psi }
+        \infer5[\logic{R}]{ \Psi }
       \end{prooftree}
     \end{equation*}
 
@@ -308,11 +302,6 @@
       \thmitem{def:propositional_natural_deduction_proof_tree/application/discharged_assumptions} The set of discharged markers is simply
       \begin{equation*}
         D_d \coloneqq \set{ u \given d(D_{k_i}) = [\varphi]^u }.
-      \end{equation*}
-
-      \thmitem{def:propositional_natural_deduction_proof_tree/application/implicit_premises} For the implicit open premises, we collect the attached schemas \( \Omega_1, \ldots, \Omega_n \) of the conclusion, instantiate them, and remove those that are discharged by \( d \):
-      \begin{equation*}
-        I_d \coloneqq \set{ \Omega_j[\BbbI] \given j = 1, \ldots, m \T{and} \Omega_j[\BbbI] \neq \varphi \T{for every discharged} [\varphi]^u }.
       \end{equation*}
     \end{thmenum}
 
@@ -355,9 +344,6 @@
 \end{definition}
 \begin{comments}
   \item The general definition and the treatment of discharging are based on \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}.
-
-  \item Although discharging is a fundamental part of natural deduction, implicit open premises are not. In fact, they are only discussed
-   in three special cases (those from \cref{def:propositional_natural_deduction}) in a passing remark in \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory} when the authors explain in detail how to handle \hyperref[def:fol_natural_deduction_proof_tree/eigenvariables]{eigenvariables}. Other authors like \cite{VanDalen2004LogicAndStructure} are less precise.
 
   \item Some important examples are listed in \cref{ex:def:propositional_natural_deduction}.
 
@@ -418,7 +404,7 @@
 
     Note that \( \Phi \) here is a metalogical variable that refers to a \hyperref[def:propositional_formula_schema]{formula schema}.
 
-    \thmitem{def:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule, called \term{modus ponens}:
+    \thmitem{def:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule based on \fullref{thm:propositional_semantic_mp}:
     \begin{equation*}\taglabel[\ensuremath{ \logic{MP} }]{inf:def:axiomatic_derivation_as_natural_deduction/mp}
       \begin{prooftree}
         \hypo{ \syn\varphi \synimplies \syn\psi }
@@ -431,7 +417,6 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item According to \cite[75]{Rosen2019DiscreteMathematics}, \enquote{modus ponens} is Latin for \enquote{mode that affirms}.
   \item If we are willing to break our convention of rules having unique names, we may use a generic name such as \( \logic{Ax} \) for each schema.
 \end{comments}
 
@@ -799,6 +784,10 @@
   \item This reasoning has also affected our definition of biconditional elimination rules in \cref{def:propositional_natural_deduction/iff}.
 \end{comments}
 
+\begin{remark}\label{rem:natural_deduction_implicit_premises}
+
+\end{remark}
+
 \begin{example}\label{ex:def:propositional_natural_deduction}
   We list examples of \hyperref[def:propositional_natural_deduction_proof_tree]{proof trees} for the \hyperref[def:propositional_natural_deduction_system]{natural deduction systems} from \cref{def:propositional_natural_deduction}:
   \begin{thmenum}
@@ -845,7 +834,42 @@
       \synneg\varphi \vdash \synneg\synneg\varphi \synimplies \varphi.
     \end{equation*}
 
-    \thmitem{ex:def:propositional_natural_deduction/imp_intro} Consider the proof tree
+    \thmitem{ex:def:propositional_natural_deduction/implicit} Propositional natural deduction allows introducing \enquote{implicit} assumptions in addition to the explicit open assumptions.
+
+    In the following three examples, \( \varphi \) is such an implicit assumption, while \( \synbot \) and \( \psi \) are explicit open assumptions:
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ [\synbot]^u }
+            \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ [\psi]^u }
+            \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \varphi \synvee \psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ [\psi]^u }
+            \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synvee \psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+
+    \thmitem{ex:def:propositional_natural_deduction/imp_intro} Consider again the proof tree
     \begin{equation*}
       \begin{prooftree}
         \hypo{ [\psi]^u }

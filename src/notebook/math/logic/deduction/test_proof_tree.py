@@ -6,6 +6,7 @@ import pytest
 
 from ....support.coderefs import collector
 from ..classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from ..instantiation import AtomicLogicSchemaInstantiation
 from ..parsing import (
     parse_formula,
     parse_formula_placeholder,
@@ -47,13 +48,14 @@ def test_single_implication_intro() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
         prop_assume('q', 'u'),
-        implicit={
-            parse_formula_placeholder('φ'): parse_prop_formula('p'),
-        },
+        instantiation=AtomicLogicSchemaInstantiation(
+            formula_mapping={
+                parse_formula_placeholder('φ'): parse_prop_formula('p'),
+            },
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('q', 'u')}
-    assert tree.get_local_implicit_open_premises() == {parse_prop_formula('p')}
     assert str(tree) == dedent('''\
           [q]ᵘ
          _______ →₊
@@ -70,17 +72,16 @@ def test_double_implication_intro() -> None:
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
                 prop_assume('p', 'u'),
-                implicit={
-                    parse_formula_placeholder('φ'): parse_prop_formula('q'),
-                },
+                instantiation=AtomicLogicSchemaInstantiation(
+                    formula_mapping={
+                        parse_formula_placeholder('φ'): parse_prop_formula('q'),
+                    },
+                ),
             ),
         ),
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert tree.get_local_implicit_open_premises() == set()
-    assert tree.premises[0].tree.get_local_implicit_open_premises() == {parse_prop_formula('q')}
-
     assert str(tree) == dedent('''\
               [p]ᵘ
              _______ →₊
@@ -95,13 +96,14 @@ def test_efq() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
         prop_assume('⊥', 'u'),
-        implicit={
-            parse_formula_placeholder('φ'): parse_prop_formula('p'),
-        },
+        instantiation=AtomicLogicSchemaInstantiation(
+            formula_mapping={
+                parse_formula_placeholder('φ'): parse_prop_formula('p'),
+            },
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('⊥', 'u')}
-    assert tree.get_local_implicit_open_premises() == set()
     assert str(tree) == dedent('''\
         [⊥]ᵘ
         ____ EFQ
@@ -114,13 +116,14 @@ def test_or_intro() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
         prop_assume('p', 'u'),
-        implicit={
-            parse_formula_placeholder('ψ'): parse_prop_formula('q'),
-        },
+        instantiation=AtomicLogicSchemaInstantiation(
+            formula_mapping={
+                parse_formula_placeholder('ψ'): parse_prop_formula('q'),
+            },
+        ),
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
-    assert tree.get_local_implicit_open_premises() == {parse_prop_formula('q')}
     assert str(tree) == dedent('''\
          [p]ᵘ
         _______ ∨₊ₗ
@@ -280,7 +283,6 @@ def test_forall_elimination(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert tree.implicit_variables == {parse_variable('y')}
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -304,7 +306,6 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -329,7 +330,6 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
     )
 
     assert tree.get_open_variables() == set()
-    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -354,7 +354,6 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -380,7 +379,6 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     )
 
     assert tree.get_open_variables() == set()
-    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -458,6 +456,36 @@ def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
     )
 
 
+@collector.ref('ex:def:fol_natural_deduction/implicit_premises')
+def test_forall_introduction_with_implicit_premise(dummy_signature: FormalLogicSignature) -> None:
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
+        premise_config(
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
+                apply(CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤₊']),
+                instantiation=AtomicLogicSchemaInstantiation(
+                    formula_mapping={
+                        parse_formula_placeholder('ψ'): parse_formula('p¹(x)', dummy_signature),
+                    },
+                ),
+            ),
+            main=parse_formula_with_substitution('(⊤ ∨ p¹(x))[x ↦ x]', dummy_signature),
+        ),
+    )
+
+    assert tree.get_open_variables() == set()
+    assert str(tree) == dedent('''\
+              _ ⊤₊
+              ⊤
+         ___________ ∨₊ₗ
+         (⊤ ∨ p¹(x))
+        ______________ ∀₊
+        ∀x.(⊤ ∨ p¹(x))
+        ''',
+    )
+
+
 def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable y of the unsubstituted premise conclusion p²(x, y) cannot be free in it')):
         apply(
@@ -468,26 +496,6 @@ def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature:
                     parse_marker('u'),
                 ),
                 main=parse_formula_with_substitution('p²(x, y)[x ↦ y]', dummy_signature),
-            ),
-        )
-
-
-def test_forall_introduction_eigenvariable_failure_free_in_implicit_premise(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable x cannot be free in the derivation of (p¹(x) → q¹(y))')):
-        apply(
-            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-            premise_config(
-                tree=apply(
-                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-                    assume(
-                        parse_formula('q¹(y)', dummy_signature),
-                        parse_marker('u'),
-                    ),
-                    implicit={
-                        parse_formula_placeholder('φ'): parse_formula('p¹(x)', dummy_signature),
-                    },
-                ),
-                main=parse_formula_with_substitution('(p¹(x) → q¹(y))[x ↦ x]', dummy_signature),
             ),
         )
 
@@ -575,9 +583,11 @@ def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
                         assume(w, parse_marker('w')),
-                        implicit={
-                            parse_formula_placeholder('φ'): parse_formula('p⁰', dummy_signature),
-                        },
+                        instantiation=AtomicLogicSchemaInstantiation(
+                            formula_mapping={
+                                parse_formula_placeholder('φ'): parse_formula('p⁰', dummy_signature),
+                            },
+                        ),
                     ),
                 ),
             ),
@@ -607,9 +617,11 @@ def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -
                                         assume(t, parse_marker('t')),
                                         main_subtree,
                                     ),
-                                    implicit={
-                                        parse_formula_placeholder('φ'): w,
-                                    },
+                                    instantiation=AtomicLogicSchemaInstantiation(
+                                        formula_mapping={
+                                            parse_formula_placeholder('φ'): w,
+                                        },
+                                    ),
                                 ),
                             ),
                         ),
