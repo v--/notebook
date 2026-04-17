@@ -42,7 +42,7 @@ def collect(output_path: pathlib.Path) -> None:
 
         for doc_ref, fun in collector.mapping.items():
             module_name = fun.__module__.removeprefix('notebook.math.')
-            code_ref = f'{module_name}.{fun.__qualname__}'
+            code_ref = f'{module_name}.{fun.__qualname__}'.replace('.', '.\\penalty0 ')  # Allow a line break after the dot
             file.write(f'\\prop_gput:Nnn \\g_nb_coderef_prop {{{doc_ref}}} {{{code_ref}}} \n')
 
         file.write('\\ExplSyntaxOff\n')
