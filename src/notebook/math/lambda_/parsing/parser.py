@@ -1,4 +1,4 @@
-# ruff: noqa: C901, S101
+# ruff: noqa: C901
 from typing import TYPE_CHECKING, Literal, overload
 
 from ....parsing import IdentifierParserMixin, Parser, ParserError
@@ -94,12 +94,16 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
             self.advance()
 
             if parse_schema:
-                assert isinstance(left, SimpleTypeSchema)
-                assert isinstance(right, SimpleTypeSchema)
+                if TYPE_CHECKING:
+                    assert isinstance(left, SimpleTypeSchema)
+                    assert isinstance(right, SimpleTypeSchema)
+
                 return SimpleConnectiveTypeSchema(connective, left, right)
 
-            assert isinstance(left, SimpleType)
-            assert isinstance(right, SimpleType)
+            if TYPE_CHECKING:
+                assert isinstance(left, SimpleType)
+                assert isinstance(right, SimpleType)
+
             return SimpleConnectiveType(connective, left, right)
 
         raise context.annotate_context_error('Binary types must have a connective after the first subtype')
@@ -212,23 +216,30 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         self.advance()
 
         if parse_schema:
-            assert isinstance(var, VariablePlaceholder)
-            assert isinstance(sub, TypedTermSchema)
-            assert isinstance(var_type, SimpleTypeSchema)
+            if TYPE_CHECKING:
+                assert isinstance(var, VariablePlaceholder)
+                assert isinstance(sub, TypedTermSchema)
+                assert isinstance(var_type, SimpleTypeSchema)
+
             return TypedAbstractionSchema(var, var_type, sub)
 
-        assert isinstance(var, Variable)
+        if TYPE_CHECKING:
+            assert isinstance(var, Variable)
 
-        if var_type:
-            assert isinstance(var_type, SimpleType)
+            if var_type:
+                assert isinstance(var_type, SimpleType)
 
         if typed:
-            assert isinstance(sub, TypedTerm)
-            assert isinstance(var_type, SimpleType)
+            if TYPE_CHECKING:
+                assert isinstance(sub, TypedTerm)
+                assert isinstance(var_type, SimpleType)
+
             return TypedAbstraction(var, var_type, sub)
 
-        assert isinstance(sub, UntypedTerm)
-        assert var_type is None
+        if TYPE_CHECKING:
+            assert isinstance(sub, UntypedTerm)
+            assert var_type is None
+
         return UntypedAbstraction(var, sub)
 
     @overload
@@ -262,17 +273,23 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         self.advance()
 
         if parse_schema:
-            assert isinstance(left, TypedTermSchema)
-            assert isinstance(right, TypedTermSchema)
+            if TYPE_CHECKING:
+                assert isinstance(left, TypedTermSchema)
+                assert isinstance(right, TypedTermSchema)
+
             return TypedApplicationSchema(left, right)
 
         if typed:
-            assert isinstance(left, TypedTerm)
-            assert isinstance(right, TypedTerm)
+            if TYPE_CHECKING:
+                assert isinstance(left, TypedTerm)
+                assert isinstance(right, TypedTerm)
+
             return TypedApplication(left, right)
 
-        assert isinstance(left, UntypedTerm)
-        assert isinstance(right, UntypedTerm)
+        if TYPE_CHECKING:
+            assert isinstance(left, UntypedTerm)
+            assert isinstance(right, UntypedTerm)
+
         return UntypedApplication(left, right)
 
     @overload
@@ -365,22 +382,32 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         type_ = self.parse_type(parse_schema=parse_schema)
 
         if parse_schema:
-            assert isinstance(type_, SimpleTypeSchema)
+            if TYPE_CHECKING:
+                assert isinstance(type_, SimpleTypeSchema)
 
             if variable_assertion:
-                assert isinstance(var, VariablePlaceholder)
+                if TYPE_CHECKING:
+                    assert isinstance(var, VariablePlaceholder)
+
                 return VariableTypeAssertionSchema(var, type_)
 
-            assert isinstance(term, TypedTermSchema)
+            if TYPE_CHECKING:
+                assert isinstance(term, TypedTermSchema)
+
             return TypeAssertionSchema(term, type_)
 
-        assert isinstance(type_, SimpleType)
+        if TYPE_CHECKING:
+            assert isinstance(type_, SimpleType)
 
         if variable_assertion:
-            assert isinstance(var, Variable)
+            if TYPE_CHECKING:
+                assert isinstance(var, Variable)
+
             return VariableTypeAssertion(var, type_)
 
-        assert isinstance(term, TypedTerm)
+        if TYPE_CHECKING:
+            assert isinstance(term, TypedTerm)
+
         return TypeAssertion(term, type_)
 
     def _parse_typing_rule_entry(self) -> TypingRuleEntry:

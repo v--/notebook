@@ -1,7 +1,6 @@
-# ruff: noqa: C901, S101
-from collections.abc import Iterable, Sequence
+# ruff: noqa: C901
 from dataclasses import dataclass
-from typing import Literal, cast, overload
+from typing import TYPE_CHECKING, Literal, cast, overload
 
 from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
 from ....support.substitution import ImproperSubstitutionSymbol
@@ -50,6 +49,10 @@ from ..terms import (
 from .parser_context import LogicParserContext
 from .tokenizer import tokenize_formal_logic_string
 from .tokens import LogicToken, LogicTokenKind
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 @dataclass
@@ -228,9 +231,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             raise context.annotate_context_error(f'Expected {symbol.arity} arguments for the {symbol.get_kind_string()} {symbol}, but got {len(arguments)}')
 
         if parse_schema:
-            return cast(Sequence[TermSchema], arguments)
+            return cast('Sequence[TermSchema]', arguments)
 
-        return cast(Sequence[Term], arguments)
+        return cast('Sequence[Term]', arguments)
 
     def _parse_constant_formula(self) -> PropConstant:
         head = self.peek_unsafe()
@@ -276,10 +279,14 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             raise context.annotate_context_error('Expected dot after variable')
 
         if parse_schema:
-            assert isinstance(var, VariablePlaceholder)
+            if TYPE_CHECKING:
+                assert isinstance(var, VariablePlaceholder)
+
             return QuantifierFormulaSchema(q, var, self.parse_formula(parse_schema=True))
 
-        assert isinstance(var, Variable)
+        if TYPE_CHECKING:
+            assert isinstance(var, Variable)
+
         return QuantifierFormula(q, var, self.parse_formula(parse_schema=False))
 
     @overload
@@ -324,12 +331,16 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 self.advance()
 
                 if parse_schema:
-                    assert isinstance(left, FormulaSchema)
-                    assert isinstance(right, FormulaSchema)
+                    if TYPE_CHECKING:
+                        assert isinstance(left, FormulaSchema)
+                        assert isinstance(right, FormulaSchema)
+
                     return ConnectiveFormulaSchema(connective, left, right)
 
-                assert isinstance(left, Formula)
-                assert isinstance(right, Formula)
+                if TYPE_CHECKING:
+                    assert isinstance(left, Formula)
+                    assert isinstance(right, Formula)
+
                 return ConnectiveFormula(connective, left, right)
 
             case 'EQUALITY':
@@ -353,12 +364,16 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 self.advance()
 
                 if parse_schema:
-                    assert isinstance(left, TermSchema)
-                    assert isinstance(right, TermSchema)
+                    if TYPE_CHECKING:
+                        assert isinstance(left, TermSchema)
+                        assert isinstance(right, TermSchema)
+
                     return EqualityFormulaSchema(left, right)
 
-                assert isinstance(left, Term)
-                assert isinstance(right, Term)
+                if TYPE_CHECKING:
+                    assert isinstance(left, Term)
+                    assert isinstance(right, Term)
+
                 return EqualityFormula(left, right)
 
             case 'SIGNATURE_SYMBOL':
@@ -387,8 +402,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 self.advance()
 
                 if parse_schema:
-                    assert isinstance(left, TermSchema)
-                    assert isinstance(right, TermSchema)
+                    if TYPE_CHECKING:
+                        assert isinstance(left, TermSchema)
+                        assert isinstance(right, TermSchema)
 
                     match symbol:
                         case PredicateSymbol():
@@ -397,8 +413,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                         case FunctionSymbol():
                             return FunctionApplicationSchema(symbol, [left, right])
 
-                assert isinstance(left, Term)
-                assert isinstance(right, Term)
+                if TYPE_CHECKING:
+                    assert isinstance(left, Term)
+                    assert isinstance(right, Term)
 
                 match symbol:
                     case PredicateSymbol():
@@ -549,23 +566,28 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             if not parse_schema:
                 raise context.annotate_token_error('Can only place an eigenvariable marker on a schema')
 
-            assert isinstance(src, VariablePlaceholder)
-
             if not isinstance(dest, VariablePlaceholder):
                 raise context.annotate_token_error('Cannot place an eigenvariable marker on a more general term')
 
             self.advance()
-            assert isinstance(src, VariablePlaceholder)
-            assert isinstance(dest, TermSchema)
+
+            if TYPE_CHECKING:
+                assert isinstance(src, VariablePlaceholder)
+                assert isinstance(dest, TermSchema)
+
             return EigenSchemaSubstitutionSpec(src, dest)
 
         if parse_schema:
-            assert isinstance(src, VariablePlaceholder)
-            assert isinstance(dest, TermSchema)
+            if TYPE_CHECKING:
+                assert isinstance(src, VariablePlaceholder)
+                assert isinstance(dest, TermSchema)
+
             return TermSchemaSubstitutionSpec(src, dest)
 
-        assert isinstance(src, Variable)
-        assert isinstance(dest, Term)
+        if TYPE_CHECKING:
+            assert isinstance(src, Variable)
+            assert isinstance(dest, Term)
+
         return TermSubstitutionSpec(src, dest)
 
     def parse_formula_with_substitution(self) -> FormulaWithSubstitution:
@@ -697,13 +719,13 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         if parse_schema:
             return SequentSchema(
-                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], left)),
-                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], right)),
+                LogicalContextSchema(cast('Sequence[FormulaSchema | LogicalContextPlaceholder]', left)),
+                LogicalContextSchema(cast('Sequence[FormulaSchema | LogicalContextPlaceholder]', right)),
             )
 
         return Sequent(
-            LogicalContext(cast(Sequence[Formula], left)),
-            LogicalContext(cast(Sequence[Formula], right)),
+            LogicalContext(cast('Sequence[Formula]', left)),
+            LogicalContext(cast('Sequence[Formula]', right)),
         )
 
 

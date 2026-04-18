@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import TYPE_CHECKING, override
 
 from ....support.coderefs import collector
 from ...exceptions import NotebookMathException
@@ -97,7 +97,9 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
             if not isinstance(subtree_left, RuleApplicationTree) or subtree_left.rule != ARROW_ONLY_TYPE_SYSTEM['→₊']:
                 raise TypeDerivationError(f'Expected the tree deriving {subtree_left.conclusion} to be an application tree of →₊')
 
-            assert subtree_left.premises[0].attachments[0]  # noqa: S101
+            if TYPE_CHECKING:
+                assert subtree_left.premises[0].attachments[0]
+
             subtree_left_body = subtree_left.premises[0].tree
             subtree_left_var = subtree_left.premises[0].attachments[0].term
             reduct_tree = substitute_in_tree(subtree_left_body, {subtree_left_var: subtree_right})

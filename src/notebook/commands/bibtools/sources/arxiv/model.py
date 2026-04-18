@@ -30,7 +30,7 @@ class ArxivLink:
 
 @dataclass
 class ArxivCategory:
-    term: str =        field(metadata=dict(type='Attribute', required=True))
+    term: str =          field(metadata=dict(type='Attribute', required=True))
     scheme: str | None = field(metadata=dict(type='Attribute'), default=None)
     label: str | None =  field(metadata=dict(type='Attribute'), default=None)
 

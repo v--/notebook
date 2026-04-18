@@ -43,7 +43,7 @@ def iter_type_values[T](type_: SimpleType, structure: HolStructure[T]) -> Iterab
 
     if isinstance(type_, SimpleConnectiveType):
         if type_.conn != BinaryTypeConnective.ARROW:
-                raise HolInterpretationError('Only arrow types are allowed')
+            raise HolInterpretationError('Only arrow types are allowed')
 
         domain = list(iter_type_values(type_.left, structure))
         codomain = list(iter_type_values(type_.right, structure))

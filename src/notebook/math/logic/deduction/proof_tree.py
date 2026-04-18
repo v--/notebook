@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, override
 
 from ....support.coderefs import collector
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
-from ..formulas import ExtendedFormulaPlaceholder, Formula, FormulaPlaceholder, FormulaWithSubstitution
+from ..formulas import ExtendedFormulaPlaceholder, Formula, FormulaWithSubstitution
 from ..instantiation import (
     AtomicLogicSchemaInstantiation,
     infer_instantiation_from_formula,
@@ -195,7 +195,7 @@ def _infer_application_instantiation(
                 application_premise.main,
             )
 
-    if isinstance(rule.conclusion, FormulaPlaceholder) and rule.conclusion.sub:
+    if isinstance(rule.conclusion, ExtendedFormulaPlaceholder) and rule.conclusion.sub:
         if conclusion_config is None:
             raise RuleApplicationError(f'The rule {rule.name} requires a conclusion with an explicit substitution')
 
@@ -230,7 +230,7 @@ def apply(  # noqa: C901
     if conclusion_config:
         conclusion = evaluate_substitution(conclusion_config)
     else:
-        conclusion = instantiate_formula_schema(rule.conclusion.main, instantiation)
+        conclusion = instantiate_formula_schema(rule.conclusion, instantiation)
 
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
         for assumption in application_premise.tree.get_cumulative_assumptions():

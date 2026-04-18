@@ -12,7 +12,6 @@ from ..parsing import (
     parse_formula_placeholder,
     parse_formula_with_substitution,
     parse_marker,
-    parse_variable,
 )
 from ..propositional import parse_prop_formula
 from .exceptions import RuleApplicationError

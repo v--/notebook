@@ -1,4 +1,3 @@
-from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, cast
 
 from ...support.coderefs import collector
@@ -8,6 +7,8 @@ from .symbols import Terminal
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
+
     from .grammar import Grammar, GrammarSchema
     from .symbols import NonTerminal
 
@@ -49,7 +50,7 @@ def iter_derivations(grammar: Grammar, max_derivation_length: int) -> Iterable[S
 
         for derivation in derivable:
             if all(isinstance(sym, Terminal) for sym in derivation):
-                yield cast(Sequence[Terminal], derivation)
+                yield cast('Sequence[Terminal]', derivation)
 
 
 @collector.ref('alg:context_sensitive_string_membership')

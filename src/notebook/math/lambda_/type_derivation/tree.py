@@ -13,11 +13,10 @@ from .exceptions import TypeDerivationError
 
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping, Sequence
+    from collections.abc import Collection, Iterable, Sequence
 
-    from ..terms import Variable, VariablePlaceholder
+    from ..terms import Variable
     from ..type_system import TypingRule
-    from ..types import SimpleType, TypePlaceholder
 
 
 @dataclass(frozen=True)

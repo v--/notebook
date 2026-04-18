@@ -25,7 +25,9 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
 
     for rule in grammar.iter_starting_rules():
         if is_rule_renaming(rule):
-            assert isinstance(rule.dest[0], NonTerminal)  # noqa: S101
+            if TYPE_CHECKING:
+                assert isinstance(rule.dest[0], NonTerminal)
+
             yield from iter_renamed_targets(grammar.schema.instantiate(rule.dest[0]), traversed | {grammar.start})
         else:
             yield rule.dest

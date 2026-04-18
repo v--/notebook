@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ...support.coderefs import collector
+from .exceptions import IncompatibleSyntaxTreeError
 from .grammar import GrammarRule
 from .symbols import NonTerminal, Terminal
 
@@ -82,7 +83,9 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
 
         tree = new_subtree if tree is None else _insert_subtree_leftmost(tree, new_subtree)
 
-    assert tree is not None  # noqa: S101
+    if TYPE_CHECKING:
+        assert tree is not None
+
     return tree
 
 
@@ -98,7 +101,9 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
     last_step: DerivationStep | None = None
 
     for subtree in _iter_leftmost_parse_subtrees(tree):
-        assert isinstance(subtree.payload, NonTerminal)  # noqa: S101
+        if TYPE_CHECKING:
+            assert isinstance(subtree.payload, NonTerminal)
+
         rule = GrammarRule(
             [subtree.payload],
             [sstree.payload for sstree in subtree.subtrees],
@@ -120,5 +125,7 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
 
 @collector.ref('alg:derivation_to_parse_tree')
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
-    assert isinstance(tree.payload, NonTerminal)  # noqa: S101
+    if not isinstance(tree.payload, NonTerminal):
+        raise IncompatibleSyntaxTreeError('Expected the root tree to be labeled by a nonterminal')
+
     return Derivation(tree.payload, list(_iter_leftmost_derivation_steps(tree)))

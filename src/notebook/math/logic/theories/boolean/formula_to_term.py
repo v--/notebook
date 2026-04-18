@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, cast, override
 
 from .....support.coderefs import collector
-from ...alphabet import LatticeConnective
 from ...parsing import parse_variable
 from ...propositional import (
     PropConnectiveFormula,
@@ -20,6 +19,7 @@ from .signature import (
 
 
 if TYPE_CHECKING:
+    from ...alphabet import LatticeConnective
     from ...formulas import PropConstant
 
 
@@ -45,7 +45,7 @@ class FormulaToTermVisitor(PropFormulaVisitor[Term]):
             raise UnrecognizedSymbolError(f'Expected a Boolean algebra connective, but got {formula.conn}')
 
         return FunctionApplication(
-            FORMULA_CONNECTIVE_TO_TERM_CONNECTIVE[cast(LatticeConnective, formula.conn)],
+            FORMULA_CONNECTIVE_TO_TERM_CONNECTIVE[cast('LatticeConnective', formula.conn)],
             [self.visit(formula.left), self.visit(formula.right)],
         )
 

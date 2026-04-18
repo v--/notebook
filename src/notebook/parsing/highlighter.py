@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, NamedTuple
 
+from .exceptions import BaseParsingError
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -44,7 +46,8 @@ class ErrorHighlighter:
         if offset_shown_end is None:
             offset_shown_end = offset_hi_end
 
-        assert offset_shown_start <= offset_hi_start <= offset_hi_end <= offset_shown_end < len(source)  # noqa: S101
+        if not offset_shown_start <= offset_hi_start <= offset_hi_end <= offset_shown_end < len(source):
+            raise BaseParsingError('Invalid highlighter configuration')
 
         lineno = 1
         column = 1

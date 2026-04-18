@@ -22,7 +22,10 @@ class GrammarRule:
             raise IncompatibleRuleError('Only context-free rules have a source symbol')
 
         value = self.src[0]
-        assert isinstance(value, NonTerminal)  # noqa: S101
+
+        if TYPE_CHECKING:
+            assert isinstance(value, NonTerminal)
+
         return value
 
     @string_accumulator()

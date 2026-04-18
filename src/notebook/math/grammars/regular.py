@@ -50,7 +50,6 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
 
     for rule in g3.schema.rules:
         if is_epsilon_rule(rule):
-            assert rule.src == [g3.start]  # noqa: S101
             g4_rules.append(rule)
             continue
 

@@ -13,6 +13,10 @@ class IncompatibleRuleError(GrammarError):
     pass
 
 
+class IncompatibleSyntaxTreeError(GrammarError):
+    pass
+
+
 class UnknownSymbolError(GrammarError):
     pass
 

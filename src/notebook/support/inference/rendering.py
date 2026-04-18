@@ -1,9 +1,9 @@
-# ruff: noqa: S101
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, override
 
 from ..iteration import string_accumulator
 from ..unicode import to_superscript
+from .exceptions import InferenceRuleError
 
 
 if TYPE_CHECKING:
@@ -65,7 +65,8 @@ class AssumptionRenderer(InferenceTreeRenderer):
 
     @override
     def render_line(self, i: int) -> str:
-        assert i == 0
+        if i > 0:
+            raise InferenceRuleError(f'Expected the line number to be 0, but got {i}')
 
         if self.marker is None:
             return str(self.conclusion)
@@ -158,7 +159,9 @@ class RuleApplicationRenderer(InferenceTreeRenderer):
 
     def iter_sublines(self, i: int) -> Iterable[str]:
         total_height = self.get_total_height()
-        assert 0 <= i < total_height
+
+        if not 0 <= i < total_height:
+            raise InferenceRuleError(f'Expected a line number between 0 and {total_height}, but got {i}')
 
         for subtree in self.subtrees:
             subtree_height = subtree.get_total_height()
@@ -173,7 +176,9 @@ class RuleApplicationRenderer(InferenceTreeRenderer):
     @string_accumulator()
     def render_line(self, i: int) -> Iterable[str]:
         total_height = self.get_total_height()
-        assert 0 <= i < total_height
+
+        if not 0 <= i < total_height:
+            raise InferenceRuleError(f'Expected a line number between 0 and {total_height}, but got {i}')
 
         if i == total_height - 1:
             yield ' ' * (self.get_prefix_width() + (self.get_base_width() - len(self.conclusion)) // 2)

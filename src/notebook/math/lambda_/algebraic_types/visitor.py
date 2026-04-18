@@ -1,4 +1,4 @@
-# ruff: noqa: S101, ARG002
+# ruff: noqa: ARG002
 
 from typing import TYPE_CHECKING
 
@@ -18,7 +18,10 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊']:
             discharge = tree.premises[0].attachments[0]
-            assert discharge is not None
+
+            if TYPE_CHECKING:
+                assert discharge is not None
+
             return self.visit_arrow_intro(
                 tree=tree,
                 subtree=tree.premises[0].tree,
@@ -26,11 +29,11 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₋']:
-                return self.visit_arrow_elim(
-                    tree=tree,
-                    subtree_left=tree.premises[0].tree,
-                    subtree_right=tree.premises[1].tree,
-                )
+            return self.visit_arrow_elim(
+                tree=tree,
+                subtree_left=tree.premises[0].tree,
+                subtree_right=tree.premises[1].tree,
+            )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋']:
             return self.visit_empty_elim(
@@ -75,10 +78,11 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋']:
             left_discharge = tree.premises[1].attachments[0]
-            assert left_discharge is not None
-
             right_discharge = tree.premises[2].attachments[0]
-            assert right_discharge is not None
+
+            if TYPE_CHECKING:
+                assert left_discharge is not None
+                assert right_discharge is not None
 
             return self.visit_sum_elim(
                 tree=tree,
