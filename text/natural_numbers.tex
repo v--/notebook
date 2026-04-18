@@ -1,6 +1,6 @@
 \section{Natural numbers}\label{sec:natural_numbers}
 
-\begin{remark}\label{con:arithmetic}
+\begin{concept}\label{con:arithmetic}
   In a broad sense, the study of numbers is called \term[ru=арифметика (\cite[48]{БашмаковаЮшкевич1951ПроисхождениеСистемСчисления}), en=arithmetic (\cite[3]{Stillwell2010MathHistory})]{arithmetic} because of the Greek word \enquote{αριθμος} (\enquote{number}).
 
   \begin{itemize}
@@ -8,25 +8,27 @@
 
     A historical overview of this \enquote{elementary} arithmetic can be found in \cite{Karpinski1925HistoryOfArithmetic}. A notable book of historical interest on the topic is \bycite{Fibonacci2002LiberAbaci}.
 
-    We present systematized results in \fullref{sec:positional_number_systems} and \fullref{sec:digit_based_operations}. Some modern considerations stemming from computer science are presented in \fullref{sec:fixed_width_arithmetic}.
+    We will present systematized results in \fullref{sec:positional_number_systems} and \fullref{sec:digit_based_operations}. Some modern considerations stemming from computer science are presented in \fullref{sec:fixed_width_arithmetic}.
 
     \thmitem{con:arithmetic/algebraic} Ever since antiquity, the study of integers goes way beyond the arithmetic operations. \hyperref[def:prime_number]{Prime numbers} and \hyperref[def:polynomial_equation]{Diophantine equations} have notably led to some of the most abstract mathematics in existence.
 
     The abstract study of numbers is colloquially called \term[ru=теория чисел (\cite[7]{Бухштаб1966ТеорияЧисел}), en=theory of numbers (\cite[1]{Apostol1976AnalyticNumberTheory})]{number theory}, although some influential books like \bycite{Gauss1801DisquisitionesArithmeticae} and \bycite{Serre1973Arithmetic} call it \enquote{arithmetic}.
 
-    \thmitem{con:arithmetic/logical} The development of mathematical logic in the 19th century is tied to the formalization of arithmetic. We will present the theory \logic{PA} --- Peano arithmetic --- in \cref{def:peano_arithmetic}. The relation of this theory to the work of Peano and others is briefly discussed in \cref{rem:peano_arithmetic}.
+    \thmitem{con:arithmetic/logical} The development of mathematical logic in the 19th century is tied to the formalization of arithmetic. We will present the theory \logic{PA} --- Peano arithmetic --- in \cref{def:peano_arithmetic}.
+
+    We will use the formalisms from \fullref{ch:mathematical_logic}. The relation of this theory to the work of Peano and others is briefly discussed in \cref{rem:peano_arithmetic}.
   \end{itemize}
-\end{remark}
+\end{concept}
 
 \paragraph{Peano arithmetic}
 
 \begin{definition}\label{def:peano_arithmetic}\mcite[def. 2.7.7; 150]{VanDalen2004LogicAndStructure}
-  \term[ru=арифметика Пеано (\cite[167]{Герасимов2014Вычислимость}), en=Peano arithmetic (\cite[def. 4.1.1]{Hinman2005Logic})]{Peano arithmetic}, abbreviated as \logic{PA}, is a \hyperref[def:fol_theory]{theory} of \hyperref[sec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:natural_numbers]{natural numbers} and \hyperref[con:arithmetic/elementary]{arithmetic operations} on them.
+  \term[ru=арифметика Пеано (\cite[167]{Герасимов2014Вычислимость}), en=Peano arithmetic (\cite[def. 4.1.1(ii)]{Hinman2005Logic})]{Peano arithmetic}, abbreviated as \logic{PA}, is a \hyperref[def:fol_theory]{theory} of \hyperref[sec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:natural_numbers]{natural numbers} and \hyperref[con:arithmetic/elementary]{arithmetic operations} on them.
 
-  We will use the formalisms from \fullref{ch:mathematical_logic}. Peano formulated his theory in his own \hyperref[con:logical_system]{logical system}. \hyperref[def:second_order_logic]{Monadic second-order logic} allows a more faithful adaptation, which we will denote by \( \logic{PA}_2 \). We discuss variations of these theories in \cref{rem:peano_arithmetic}.
+  We will present two theories in addition to \logic{PA} --- the theory \( \logic{PA}_2 \) of \hyperref[def:second_order_logic]{monadic second-order logic}, which replaces the induction schema \eqref{eq:def:peano_arithmetic/theory/PA3} with \eqref{eq:def:peano_arithmetic/theory/PA3/sol}, and \term[en=Robinson arithmetic (\cite[def. 4.1.1(i)]{Hinman2005Logic})]{Robinson arithmetic} \logic{Q}, which omits the induction schema altogether. We discuss the relation of these theories to Peano's work in \cref{rem:peano_arithmetic}.
 
   \begin{thmenum}
-    \thmitem{def:peano_arithmetic/signature} Consider the \hyperref[def:fol_signature]{signature} \( \Sigma_{\logic{PA}} \) containing the following symbols:
+    \thmitem{def:peano_arithmetic/signature} Consider the \hyperref[def:fol_signature]{first-order signature} \( \Sigma_{\logic{PA}} \) containing the following symbols:
     \begin{thmenum}
       \thmitem{def:peano_arithmetic/signature/zero} A constant \( \syn0 \) for representing zero.
 
@@ -37,8 +39,10 @@
       \thmitem{def:peano_arithmetic/signature/times} Another infix binary functional symbol \( \synmult \) for denoting multiplication.
     \end{thmenum}
 
+    For \( \logic{PA}_{\logic{2}} \), we can translate this signature using \fullref{alg:fol_to_hol/signature}. Technically, to avoid collisions with the syntax for \hyperref[def:lambda_term_schema]{\( \muplambda \)-term placeholders}, we need to replace the symbol \( \synS \) with another symbol like \( \synS^+ \).
+
     \thmitem{def:peano_arithmetic/theory} Over \( \Sigma_{\logic{PA}} \), consider the theory \( \logic{PA} \) with the following axioms:
-    \begin{thmenum}[series=def:peano_arithmetic/theory]
+    \begin{thmenum}
       \thmitem{def:peano_arithmetic/theory/PA1} Zero is not the successor of any natural number:
       \begin{equation}\label{eq:def:peano_arithmetic/theory/PA1}\tag{\logic{PA1}}
         \synneg \qexists \synx (\synS \synx \syneq \syn0).
@@ -48,7 +52,7 @@
 
       \thmitem{def:peano_arithmetic/theory/PA2} The successor function is \hyperref[thm:function_invertibility_categorical/nonempty_left_invertible]{injective}:
       \begin{equation}\label{eq:def:peano_arithmetic/theory/PA2}\tag{\logic{PA2}}
-        \qforall \synx \qforall \syny (\synS \synx \syneq \synS \syny \synimplies \synx \syneq \syny).
+        \qforall \synx \qforall \synn (\synS \synx \syneq \synS \synn \synimplies \synx \syneq \synn).
       \end{equation}
 
       \thmitem{def:peano_arithmetic/theory/PA3} The \term[ru=аксиомы индукции (\cite[168]{Герасимов2014Вычислимость}), en=induction schema (\cite[def. 2.7.7]{VanDalen2004LogicAndStructure})]{axiom schema of induction} provides a powerful proof method:
@@ -57,24 +61,24 @@
           {
             \underbrace{\syn\varphi[\synx \synsubst \syn0]}_{\T{base case}}
             \synwedge
-            \qforall \syny \parens[\big]
+            \qforall \synn \parens[\big]
               {
                 \overbrace
                   {
-                    \underbrace{ \syn\varphi[\synx \synsubst \syny] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                    \underbrace{ \syn\varphi[\synx \synsubst \synn] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
                     \synimplies
-                    \underbrace{ \syn\varphi[\synx \synsubst \synS \syny] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                    \underbrace{ \syn\varphi[\synx \synsubst \synS \synn] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
                   }^{\T{inductive step}}
               }
           }
         \synimplies
-        \underbrace{ \qforall \syny \syn\varphi[\synx \synsubst \syny] }_{\T{conclusion}}.
+        \underbrace{ \qforall \synn \syn\varphi[\synx \synsubst \synn] }_{\T{conclusion}}.
       \end{equation}
 
       The instance of \( \varphi \) may have free variables, so we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete \hyperref[con:schemas_and_instances]{instance}.
 
       Note that \eqref{eq:def:peano_arithmetic/theory/PA3} is a formula schema in the sense of \cref{def:fol_formula_schema}; it is an adaptation of the following second-order axiom:
-      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3/SOL}\tag{\( \logic{PA3}_\logic{2} \)}
+      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3/sol}\tag{\( \logic{PA3}_\logic{2} \)}
         \qforall {\synp^{\syn\iota \synimplies \syn\omicron}}
         \parens[\big]
           {
@@ -82,87 +86,64 @@
               {
                 \synp \syn0
                 \synwedge
-                \qforall {\syny^{\syn\iota}} \parens
+                \qforall {\synn^{\syn\iota}} \parens
                   {
-                    \synp \syny
+                    \synp \synn
                     \synimplies
-                    \synp \synS \syny
+                    \synp \synS^+ \synn
                   }
               }
             \synimplies
-            \qforall {\syny^{\syn\iota}} \synp \syny
+            \qforall {\synn^{\syn\iota}} \synp \synn
           }.
       \end{equation}
 
-      We discuss the emulation of second-order logic via schemas in \cref{rem:simulating_second_order_logic}.
+      We discuss the emulation of second-order logic via schemas in \cref{rem:simulating_second_order_logic}. A metatheoretic restatement of these axioms is given in \fullref{thm:induction_on_natural_numbers}. We discuss induction more generally in \cref{con:induction}.
 
-      This induction principle has a corresponding recursion principle --- see \fullref{thm:omega_recursion}. We discuss induction more generally in \cref{con:induction}.
-    \end{thmenum}
-
-    For the second-order theory \( \logic{PA}_{\logic{2}} \), only \eqref{eq:def:peano_arithmetic/theory/PA1}, \eqref{eq:def:peano_arithmetic/theory/PA2} and \eqref{eq:def:peano_arithmetic/theory/PA3/sol} are sufficient. Addition and multiplication are \hyperref[def:recursive_function]{primitive recursive functions}, so they can be defined with respect to this more basic theory.
-
-    On the other hand, the first-order theory \( \logic{PA} \) requires addition and multiplication to be a part of the base theory:
-    \begin{thmenum}[resume=def:peano_arithmetic/theory]
       \thmitem{def:peano_arithmetic/theory/plus} The next two axioms (or rather, their universal closures) inductively define the desired behavior of addition:
       \begin{align}
         \synx \synplus \syn0       &\syneq \synx,                       \label{eq:def:peano_arithmetic/theory/PA4}\tag{\logic{PA4}} \\
-        \synx \synplus \synS \syny &\syneq \synS(\synx \synplus \syny). \label{eq:def:peano_arithmetic/theory/PA5}\tag{\logic{PA5}}
+        \synx \synplus \synS \synn &\syneq \synS(\synx \synplus \synn). \label{eq:def:peano_arithmetic/theory/PA5}\tag{\logic{PA5}}
       \end{align}
 
       \thmitem{def:peano_arithmetic/theory/times} The (universal closures of) final two axioms are for multiplication:
       \begin{align}
         \synx \synmult \syn0       &\syneq \syn0,                           \label{eq:def:peano_arithmetic/theory/PA6}\tag{\logic{PA6}} \\
-        \synx \synmult \synS \syny &\syneq (\synx \synmult \syny) + \synx. \label{eq:def:peano_arithmetic/theory/PA7}\tag{\logic{PA7}}
+        \synx \synmult \synS \synn &\syneq (\synx \synmult \synn) + \synx. \label{eq:def:peano_arithmetic/theory/PA7}\tag{\logic{PA7}}
       \end{align}
     \end{thmenum}
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Addition and multiplication are definable in second-order Peano arithmetic, but not in its first-order counterpart. This makes the axioms \eqref{eq:def:peano_arithmetic/theory/PA4}-\eqref{eq:def:peano_arithmetic/theory/PA7} redundant.
+  \item The phrase \enquote{model of Peano arithmetic} may refer to either \hyperref[def:fol_structure]{first-order logic structures} that satisfy \logic{PA} or to \hyperref[def:hol_structure]{higher-order logic structures} that satisfy \( \logic{PA}_{\logic{2}} \). On a technical level the difference is significant, however, when dealing with standard models in the sense of \cref{def:peano_arithmetic_standard_model}, the two concepts are equivalent.
 
-  \item These axioms are stated in \cite{notebook:code}, in the module
+  \item These axioms are formalized in \cite{notebook:code}, in the modules
   \begin{CodeRefDisplay}
-    \ManualCodeRef{logic.theories.arithmetic.axioms}
+    \ManualCodeRef{logic.theories.arithmetic.axioms} \\
+    \ManualCodeRef{lambda_.hol.theories.arithmetic.axioms}
   \end{CodeRefDisplay}
 \end{comments}
 
-\begin{definition}\label{def:natural_numbers}
-  We define the set of \term[bg=естествени числа (\cite[371]{ГеновМиховскиМоллов1991Алгебра}), ru=натуральные числа (\cite[def. 11.1]{Проскуряков1951ТеоретическиеОсновыАрифметики})]{natural numbers} \( \BbbN \) as the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) with the \hyperref[def:fol_structure/interpretation]{interpretation} described in \cref{thm:omega_is_model_of_pa}.
-
-  Of course, for convenience, we use the usual decimal notation
-  \begin{align*}
-    0 &\coloneqq \varnothing, \\
-    1 &\coloneqq \op{sc}(\varnothing) = \set{ \varnothing }, \\
-    2 &\coloneqq \op{sc}(\op{sc}(\varnothing)) = \set{ \varnothing, \set{ \varnothing } }, \\
-      &\vdots
-  \end{align*}
-\end{definition}
-\begin{comments}
-  \item We do not rely on any particular properties of \( \omega \), however this particular construction is carefully performed so that it avoids circularity. Perhaps more importantly, it is a \hyperref[rem:standard_models_of_arithmetic]{standard model} of \hyperref[def:peano_arithmetic]{\logic{PA}} (although there are others --- see \cref{thm:peano_arithmetic_models}).
-
-  In accordance with \cref{rem:mathematical_logic_conventions/models_as_sets}, Unless we are working with explicit sentences and their models, we will generally reason about them in the ambient metatheory and treat them as sets (\hyperref[def:axiom_of_universes]{\logic{ZFC+U}}).
-
-  \item See \cref{ex:natural_number_arithmetic_grammar/schema} for a simple \hyperref[def:formal_grammar/schema]{grammar schema} that produces numeric symbols in their decimal notation.
-\end{comments}
-
 \begin{remark}\label{rem:peano_arithmetic}
-  We have presented a \hyperref[def:fol_theory]{first-order theory} \( \logic{PA} \) and a \hyperref[def:hol_theory]{second-order theory} \( \logic{PA}_{\logic{2}} \) for \hyperref[def:natural_numbers]{natural number} \hyperref[con:arithmetic]{arithmetic} in \cref{def:peano_arithmetic}. We discuss here how they are related to the work of Giuseppe Peano.
+  We have presented several \hyperref[def:logical_theory]{logical theories} for \hyperref[def:natural_numbers]{natural number} \hyperref[con:arithmetic]{arithmetic} in \cref{def:peano_arithmetic}. We discuss here how they are related to the work of Giuseppe Peano.
 
   \begin{thmenum}
-    \thmitem{rem:peano_arithmetic/sets} \incite*[1]{Peano1889ArithmeticesPrincipia} not only presents a formal theory of arithmetic, but, more importantly, he formulates an early variant of \hyperref[def:higher_order_logic]{higher-order logic}, with sets rather than types. In his later work, \cite[27]{Peano1908FormulatioMathematico}, Peano presents a different logical system and a different theory, but, modulo the choice of formalisms, it again amounts to the basic three axioms.
+    \thmitem{rem:peano_arithmetic/sets} \incite*[1]{Peano1889ArithmeticesPrincipia} not only presents a formal theory of arithmetic, but, more importantly, he formulates an early variant of \hyperref[con:predicate_logic]{predicate logic} based on \hyperref[def:set_theory_signature]{set theory}.
 
-    Peano's axioms are most faithfully represented by modern set theory. For example, \incite[70]{Enderton1977SetTheory} and \incite[53]{Mendelson2008NumberSystems} both discuss \term{Peano systems} --- triples \( (N, e, S) \) such that
+    Peano's axioms are most faithfully represented by what \incite[70]{Enderton1977SetTheory} and \incite[53]{Mendelson2008NumberSystems} call \enquote{Peano systems} --- triples \( (N, e, S) \) such that
     \begin{itemize}
       \item \( S \) is an \hi{injective} endofunction on \( N \) (injectivity subsumes \eqref{eq:def:peano_arithmetic/theory/PA1}).
 
       \item \( e \) is an element of \( N \) that is not in the range of \( S \) (the latter condition subsumes \eqref{eq:def:peano_arithmetic/theory/PA2}).
 
-      \item If \( A \) contains \( e \) and is closed under \( S \), then \( A \) is a subset of \( N \) (restatement of \eqref{eq:def:peano_arithmetic/theory/PA3/SOL}).
+      \item If \( A \) contains \( e \) and is closed under \( S \), then \( A \) is a subset of \( N \) (restatement of \eqref{eq:def:peano_arithmetic/theory/PA3/sol}).
     \end{itemize}
 
-    He does not consider addition and multiplication to be \hyperref[con:primitive_notion]{primitive notions} --- this later turns out to only be a necessity in the first-order theory.
+    Peano systems resemble Dedekind's earlier construction from \cite[def. 73]{Dedekind2007NatureAndMeaningOfNumbers}. Peano himself refines his logical system (and theory) in \cite[27]{Peano1908FormulatioMathematico}.
 
-    \thmitem{rem:peano_arithmetic/zero} In his earlier theory in \cite[1]{Peano1889ArithmeticesPrincipia}, Peano considers \( 1 \) --- not \( 0 \) --- to be the first natural number. His later theory in \cite[27]{Peano1908FormulatioMathematico} is adjusted to that \( 0 \) is the first natural number.
+    Neither of the aforementioned authors consider addition and multiplication to be \hyperref[con:primitive_notion]{primitive notions} --- this later turns out to be a necessity in the first-order theory.
+
+    \thmitem{rem:peano_arithmetic/zero} Both \incite[1]{Peano1889ArithmeticesPrincipia} and \incite[def. 73]{Dedekind2007NatureAndMeaningOfNumbers} consider \( 1 \) --- not \( 0 \) --- to be the first natural number. Peano's more refined theory in \cite[27]{Peano1908FormulatioMathematico} is adjusted to that \( 0 \) is the first natural number.
 
     This dichotomy is also present in other author's work --- when defining Peano systems, Enderton starts with \( 0 \), while Mendelson starts with \( 1 \).
 
@@ -183,37 +164,310 @@
   \end{thmenum}
 \end{remark}
 
-\begin{remark}\label{rem:standard_models_of_arithmetic}
-  At this point, we have two kinds of natural numbers:
+\begin{theorem}[Induction on natural numbers]\label{thm:induction_on_natural_numbers}
+  The \hyperref[def:peano_arithmetic]{Peano arithmetic} induction axioms \eqref{eq:def:peano_arithmetic/theory/PA3} and \eqref{eq:def:peano_arithmetic/theory/PA3/sol} can be restated semantically.
+
+  Fix a \hyperref[def:fol_semantics/model]{model} \( \mscrN = (N, I) \) of Peano arithmetic. For clarity, denote \( I(\syn0) \) by \( 0 \) and \( I(\synS) \) by \( S \).
+
+  Fix also a \hyperref[def:boolean_function]{Boolean-valued function} \( p: N \to \set{ \semtop, \sembot } \). For models of the second-order theory \( \logic{PA}_{\logic{2}} \), \( p \) can be arbitrary, but for the first-order theory \logic{PA}, \( p \) must be the \hyperref[def:fol_parameterized_formula_denotation]{parametrized denotation} of a formula with one free variable.
+
+  In order for \( p(n) \) to hold for every \( n \) in \( N \), the following is sufficient:
+  \begin{thmenum}
+    \thmitem{thm:induction_on_natural_numbers/base} Base case: \( p(0) \) must hold.
+    \thmitem{thm:induction_on_natural_numbers/step} Inductive step: \( p(n) \) must entail \( p(S(n)) \).
+  \end{thmenum}
+\end{theorem}
+\begin{comments}
+  \item Compare this theorem to \fullref{thm:strong_induction_on_natural_numbers} and \fullref{thm:bounded_transfinite_induction}. See \cref{con:induction} for a general discussion of induction and recursion.
+\end{comments}
+\begin{proof}
+  \SubProof{Proof of first-order case} Fix a formula \( \varphi \) whose only free variable is \( \synx \). Suppose that \( \Bracks{\varphi}_\mscrN(0) = \semtop \) and \( \Bracks{\varphi}_\mscrN(n) \leq \Bracks{\varphi}_\mscrN(S(n)) \).
+
+  \Cref{thm:fol_formula_semantics_of_assignment_substitution} implies that
+  \begin{equation*}
+    \Bracks{\varphi[\synx \mapsto \syn0]}_\mscrX = \semtop.
+  \end{equation*}
+
+  Similarly, for any assignment \( v \) into \( \mscrX \),
+  \begin{equation*}
+    \Bracks{\varphi[\synx \mapsto \synn]}_\mscrX^v \leq \Bracks{\varphi[\synx \mapsto \synS \synn]}_\mscrX^v,
+  \end{equation*}
+  which due to \cref{thm:def:heyting_algebra/leq} is equivalent to
+  \begin{equation*}
+    \Bracks{\varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn]}_\mscrX^v = \semtop.
+  \end{equation*}
+
+  Then, by the definition \eqref{eq:alg:fol_formula_denotation/forall} of the denotation of universal formulas,
+  \begin{equation*}
+    \Bracks{\qforall \synn (\varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn])}_\mscrX = \semtop.
+  \end{equation*}
+
+  Both premises of \eqref{eq:def:peano_arithmetic/theory/PA3} hold, so \fullref{thm:propositional_semantic_mp} implies that its conclusion also does.
+
+  \SubProof{Proof of second-order case} We proceed similarly, but we replace \( \varphi \) with applications of the variable \( \synp^{\syn\iota \synimplies \syn\omicron} \), and we use assignments \( v \) for which \( v(\synp) = p \).
+\end{proof}
+
+\begin{definition}\label{def:peano_arithmetic_term_model}\mimprovised
+  \Fullref{thm:omega_is_model_of_pa} implies that the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) acts as a \hyperref[def:fol_semantics/model]{model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} that is standard in the sense of \cref{def:peano_arithmetic_standard_model}, i.e. a first-order structure that satisfies the second-order axioms.
+
+  We will build another first-order model \( \mscrN = (N, I) \) based on \( \omega \), with the advantage of the elements of \( N \) themselves being \hyperref[def:fol_term]{logical terms} that can be interpreted in any other structure. We will call it the \term{standard term model} of \logic{PA} since it resembles the term model construction from \cref{def:fol_term_model}, and it is standard in the sense of \cref{def:peano_arithmetic_standard_model}.
+
+  First, we use \fullref{thm:omega_recursion} to construct the \hyperref[def:sequence]{sequence}
+  \begin{equation*}
+    \tau_k \coloneqq \begin{cases}
+      \syn0,        &k = \varnothing, \\
+      \synS \tau_m, &k = \op{sc}(m).
+    \end{cases}
+  \end{equation*}
+
+  Let \( N \coloneqq \set{ \tau_k \given k \in \omega } \). As we will discuss in \cref{rem:def:peano_arithmetic_term_model}, thus defined, \( N \) faithfully represents the informal linguistic definition
+  \begin{equation*}
+    N \coloneqq \set{ \syn0, \synS \syn0, \synS \synS \syn0, \synS \synS \synS \syn0, \ldots }.
+  \end{equation*}
+
+  As a function, \( \tau: \omega \to N \) is \hyperref[def:function_invertibility/bijective]{bijective}. This allows us to identify elements of \( \omega \) and \( N \), and to unambiguously define an interpretation \( I \) for \( N \) based on \( \omega \).
+
+  \Fullref{alg:fol_to_hol} provides us with a \hyperref[def:hol_structure]{standard second-order structure} \( \mscrN_{\logic{2}} \) --- a \hyperref[def:hol_semantics/model]{model} of \( \logic{PA}_{\logic{2}} \).
+\end{definition}
+\begin{defproof}
+  We must show that, as a function, \( \tau \) is really bijective. It is clearly surjective, so we must show injectivity. We will use \fullref{thm:omega_induction} on \( i \) to show that \( \tau_i = \tau_j \) implies \( i = j \).
   \begin{itemize}
-    \item We have natural numbers within the metatheory. This is our mental model of the natural numbers, and it is used for distinguishing between \enquote{unary} functional symbols like \( s \) and \enquote{binary} functional symbols like \( + \). This is mostly used within logic itself.
+    \item If \( i = \varnothing \), then \( \tau_i = \syn0 = \tau_j \) is the unique string in \( N \) that starts with \( \syn0 \), and hence \( j = \varnothing \).
 
-    \item We have the set of natural numbers \( \BbbN \) defined in \cref{def:natural_numbers}. These are the numbers which we have defined formally, whose properties we study and the numbers which we use in the entire monograph. The properties of \( \BbbN \) help us develop a better mental model, which in turn changes our perception of the natural numbers within the metatheory.
+    \item Suppose that \( i = \op{sc}(k) \), where the inductive hypothesis holds for \( k \). By definition, \( \tau_i = \synS \tau_k = \tau_j \), so there must exist some \( m \) such that \( j = \op{sc}(m) \). In particular, \( \tau_j = \synS \tau_m \), where \( \tau_k = \tau_m \).
+
+    By the inductive hypothesis on \( k \), we conclude that \( k = m \), hence also \( i = j \).
   \end{itemize}
+\end{defproof}
 
-  We want the two sets of natural numbers to coincide. This is important when talking about, for example, \hyperref[def:sequence]{sequences}. If a number in \( \BbbN \) is not a natural number within the metatheory, we say that it is \term{nonstandard}. The existence of nonstandard models is guaranteed by \fullref{thm:upward_lowenheim_skolem_theorem}. There cannot be numbers in the metatheory that are not in \( \BbbN \) because a model of \logic{PA} cannot have a finite domain and the natural numbers are the smallest metalogical infinite set.
+\begin{remark}\label{rem:def:peano_arithmetic_term_model}
+  Consider the standard term model \( \mscrN = (N, I) \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} from \cref{def:peano_arithmetic_term_model}.
 
-  A model of \logic{PA} which contains precisely the numbers in the metatheory is called a \term{standard model}. For the purpose of this monograph, it is sufficient to accept the convention that \( \BbbN \) is a standard model of \logic{PA}.
+  We have defined \( N \) as the set \( \set{ \tau_k \given k \in \omega } \), where
+  \begin{equation*}
+    \tau_k \coloneqq \begin{cases}
+      \syn0,        &k = \varnothing, \\
+      \synS \tau_m, &k = \op{sc}(m),
+    \end{cases}
+  \end{equation*}
+  with the intention to formalize the informal linguistic definition
+  \begin{equation*}
+    N \coloneqq \set{ \syn0, \synS \syn0, \synS \synS \syn0, \synS \synS \synS \syn0, \ldots }.
+  \end{equation*}
+
+  The recursive definition depends on precise constructions from \fullref{sec:naive_set_theory} based on \hyperref[def:inductive_set]{inductive sets}. On the other hand, the informal definition is based on \fullref{sec:formal_languages}, which in turn depend on primordial \hyperref[def:metalogic]{metatheoretic} natural numbers. So, our task is to show that the concepts of natural numbers in the object theory and metatheory coincide.
+
+  For the sake of definiteness, suppose that the linguistic definition amounts to the set \( C \) of all \hyperref[def:fol_closed_term]{closed first-order term} over the signature consisting only of \( \syn0 \) and \( \synS \).
+
+  By definition, \( N \) is a subset of \( C \). We will use the metatheoretic \fullref{thm:induction_on_natural_numbers} on the \hyperref[def:formal_language/string_length]{string length} of the term \( \sigma \) from \( C \) to show that \( \tau \) belongs to \( N \).
+  \begin{itemize}
+    \item The shortest term is \( \syn0 \) of length \( 1 \), which equals \( \tau_\varnothing \).
+
+    \item Suppose that the inductive hypothesis holds for \( n \) and suppose that \( \sigma \) has length \( n + 1 \). Then \( \sigma = a \rho \) for some symbol \( a \), which can only be \( \synS \).
+
+    Then \( \rho \) is a well-formed term of length \( n \), so the inductive hypothesis implies that \( \rho = \tau_k \) for some \( k \in \omega \). It follows that \( \rho = \synS \tau_k = \tau_m \), where \( m = \op{sc}(k) \).
+  \end{itemize}
 \end{remark}
 
-\begin{proposition}\label{thm:peano_arithmetic_models}
-  The following may serve as models of \hyperref[def:peano_arithmetic]{Peano arithmetic}:
+\begin{example}\label{ex:peano_arithmetic_fol_induction}
+  We list examples where the first-order induction axiom schema \eqref{eq:def:peano_arithmetic/theory/PA3} fails to capture the predicate needed for \fullref{thm:induction_on_natural_numbers}:
+  \begin{thmenum}
+    \thmitem{ex:peano_arithmetic_fol_induction/embedding} In \cref{thm:peano_arithmetic_standard_segment}, when proving that the \hyperref[def:peano_arithmetic_term_model]{standard term model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} embeds into any first-order model of \logic{PA}, we use induction several times without encoding the inductive hypothesis as a first-order formula. In fact, no such formulas exist because these hypotheses use formalisms outside of the scope of the object theory.
+
+    \thmitem{ex:peano_arithmetic_fol_induction/categoricity} In \cref{thm:peano_arithmetic_categoricity}, when showing that the aforementioned embedding is surjective for any standard second-order model \( \mscrX \) of \( \logic{PA}_{\logic{2}} \), we utilize induction on \( \mscrX \), but again provide no first-order formula for similar reasons.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:peano_arithmetic_standard_segment}
+  Via \fullref{alg:fol_term_denotation}, the \hyperref[def:peano_arithmetic_term_model]{standard term model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} \hyperref[def:fol_embedding]{embeds} into any \hyperref[def:fol_semantics/model]{first-order model} of \logic{PA}.
+\end{proposition}
+\begin{comments}
+  \item In other words, every first-order model \( \mscrX \) has a submodel isomorphic to \( \mscrN \). \incite[164]{Hinman2005Logic} calls this submodel the \enquote{standard part} of \( \mscrX \).
+\end{comments}
+\begin{proof}
+  Let \( \mscrN = (N, I) \) be the term model. Fix any model \( \mscrY = (Y, J) \) of \logic{PA} and consider the map
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: N \to Y, \\
+      &\Phi(\tau) \coloneqq \Bracks{\tau}_\mscrY.
+    \end{aligned}
+  \end{equation*}
+
+  We must show that \( \Phi \) is an embedding, i.e. an injective homomorphism (it is automatically a strong homomorphism since the signature contains no predicate symbols).
+
+  \SubProofOf[def:function_invertibility/injective/equality]{injectivity} We will use \fullref{thm:induction_on_natural_numbers} on the term \( \tau_1 \) to show that \( \Phi(\tau_1) = \Phi(\tau_2) \) implies \( \tau_1 = \tau_2 \). This property can be formalized an abstract \hyperref[def:boolean_function]{Boolean-valued function} defined in the metalanguage, so we utilize the fact that the translation \( \mscrN_{\logic{2}} \) satisfies the second-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3/sol}.
+
   \begin{itemize}
-    \thmitem{thm:peano_arithmetic_models/omega} The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \).
-    \thmitem{thm:peano_arithmetic_models/monoid} Any \hyperref[def:set_finiteness]{infinite} \hyperref[def:cyclic_monoid]{cyclic monoid}.
-    \thmitem{thm:peano_arithmetic_models/initial} Any \hyperref[def:universal_objects/initial]{initial object} in the \hyperref[def:semiring/category]{category of semirings}.
+    \item If \( \tau_1 = \syn0 \), then necessarily \( \tau_2 = \syn0 \).
+
+    Indeed, if \( \tau_2 = \synS(\sigma_2) \) for some element \( \sigma_1 \) of \( N \), then
+    \begin{equation*}
+      \Bracks{\syn0}_\mscrY = \Phi(\tau_1) = \Phi(\tau_2) = \Bracks{\synS \sigma_2}_\mscrY.
+    \end{equation*}
+
+    \Cref{thm:fol_equality_characterization} implies that \( \mscrY \) satisfies \( \syn0 \syneq \synS \sigma_2 \), which contradicts the assumption that \( \mscrY \) satisfies \eqref{eq:def:peano_arithmetic/theory/PA1}.
+
+    \item Otherwise, \( \tau_1 = \synS(\sigma_1) \), where the inductive hypothesis holds for \( \sigma_1 \).
+
+    If \( \tau_2 = \syn0 \), we can similarly derive a contradiction, so \( \tau_2 = \synS(\sigma_2) \) for some \( \sigma_2 \). Then
+    \begin{equation*}
+      \Bracks{\synS \sigma_1}_\mscrY = \Phi(\tau_1) = \Phi(\tau_2) = \Bracks{\synS \sigma_2}_\mscrY.
+    \end{equation*}
+
+    From \cref{thm:fol_equality_characterization} it follows that \( \mscrY \) satisfies the formula \( \synS \sigma_1 \syneq \synS \sigma_2 \). Since \( \mscrY \) also satisfies \eqref{eq:def:peano_arithmetic/theory/PA2}, via \fullref{thm:propositional_semantic_mp} we conclude that \( \mscrY \) satisfies \( \sigma_1 \syneq \sigma_2 \). Then \cref{thm:fol_equality_characterization} implies that \( \Bracks{\sigma_1}_\mscrY = \Bracks{\sigma_2}_\mscrY \).
+
+    The inductive hypothesis on \( \sigma_1 \) implies that \( \sigma_1 = \sigma_2 \). Therefore,
+    \begin{equation*}
+      \synS \sigma_1 = \tau_1 = \tau_2 = \synS \sigma_2.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProof{Proof that \( \Phi \) is a homomorphism} We must show that \( \Phi \) respects the functions from \( \Sigma_{\logic{PA}} \).
+
+  \SubProof*{Proof that \( \Phi \) respects \( \syn0 \)} By definition, \( I(\syn0) = \syn0 \), so
+  \begin{equation*}
+    \Phi(I(\syn0)) = \Phi(\syn0) = \Bracks{\syn0}_\mscrY = J(\syn0).
+  \end{equation*}
+
+  \SubProof*{Proof that \( \Phi \) respects \( \synS \)} Similarly,
+  \begin{equation*}
+    \Phi(I(\synS)(\tau)) = \Phi(\synS \tau) = \Bracks{\synS \tau}_\mscrY = J(\synS)(\Bracks{\tau}_\mscrY) = J(\synS)(\Phi(\tau)).
+  \end{equation*}
+
+  \SubProof*{Proof that \( \Phi \) respects \( \synplus \)} We must use \fullref{thm:induction_on_natural_numbers} on \( \sigma \) to show
+  \begin{equation*}
+    \Phi(I(\synplus)(\tau, \sigma)) = J(\synplus)(\Phi(\tau), \Phi(\sigma)).
+  \end{equation*}
+
+  \begin{itemize}
+    \item Suppose that \( \sigma = \syn0 \). \Cref{thm:fol_formula_semantics_of_compatible_substitutions} implies that, for any variable assignment \( v \) into \( N \),
+    \begin{equation*}
+      \Bracks{\tau \synplus \syn0 \syneq \tau}_\mscrN^v
+      =
+      \Bracks{\underbrace{\synx \synplus \syn0 \syneq \synx}_{\eqref{eq:def:peano_arithmetic/theory/PA4}}}_\mscrN^{v_{\synx \mapsto \tau}}
+      =
+      \semtop.
+    \end{equation*}
+
+    Then \cref{thm:fol_equality_characterization} implies that
+    \begin{equation*}
+      I(\synplus)(\tau, \sigma) = \Bracks{\tau \synplus \syn0}_\mscrN = \Bracks{\tau}_\mscrN = \tau.
+    \end{equation*}
+
+    Similarly, we conclude that
+    \begin{equation*}
+      J(\synplus)(\Phi(\tau), \Phi(\sigma)) = \Bracks{\tau \synplus \syn0}_\mscrY = \Bracks{\tau}_\mscrY = \Phi(\tau).
+    \end{equation*}
+
+    Therefore,
+    \begin{equation*}
+      \Phi(I(\synplus)(\tau, \sigma)) = J(\synplus)(\Phi(\tau), \Phi(\sigma)).
+    \end{equation*}
+
+    \item Similarly, if \( \sigma = \synS \rho \), where the inductive hypothesis holds for \( \rho \), we have
+    \begin{equation*}
+      I(\synplus)(\tau, \sigma) = \Bracks{\tau \synplus \synS \rho}_\mscrN = \Bracks{\synS (\tau \synplus \rho)}_\mscrN = I(\synS)\parens[\big]{ I(\synplus)(\tau, \rho) }
+    \end{equation*}
+    and
+    \begin{equation*}
+      J(\synplus)(\Phi(\tau), \Phi(\sigma)) = \cdots = J(\synS)\parens[\big]{ J(\synplus)\parens[\big]{ \Phi(\tau), \Phi(\rho) } }.
+    \end{equation*}
+
+    By the inductive hypothesis on \( \rho \), \( \Phi(I(\synplus)(\tau, \rho)) = J(\synplus)(\Phi(\tau), \Phi(\rho)) \), therefore
+    \begin{balign*}
+      \Phi(I(\synplus)(\tau, \sigma))
+      &=
+      \Phi\parens[\big]{ I(\synS)\parens[\big]{ I(\synplus)(\tau, \rho) } }
+      = \\ &=
+      J(\synS)\parens[\big]{ \Phi\parens[\big]{ I(\synplus)(\tau, \rho) } }
+      = \\ &=
+      J(\synS)\parens[\big]{ J(\synplus)(\Phi(\tau), \Phi(\rho)) }
+      = \\ &=
+      J(\synplus)(\Phi(\tau), \Phi(\sigma)),
+    \end{balign*}
+    as desired.
+  \end{itemize}
+
+  \SubProof*{Proof that \( \Phi \) respects \( \synmult \)} Similar.
+\end{proof}
+
+\begin{definition}\label{def:peano_arithmetic_standard_model}\mimprovised
+  We say that a \hyperref[def:fol_semantics/model]{first-order model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} is \term{standard} if the evaluation embedding from \cref{thm:peano_arithmetic_standard_segment} of the \hyperref[def:peano_arithmetic_term_model]{standard term model} is an \hyperref[def:fol_isomorphism]{isomorphism}.
+
+  Nonstandard models have \enquote{excessive} elements compared to the standard models listed in \cref{thm:peano_arithmetic_standard_models}. We call these excessive elements \term[en=non-standard elements (\cite[def. 2.5.10]{Hinman2005Logic})]{nonstandard natural numbers}.
+\end{definition}
+\begin{comments}
+  \item Due to \cref{thm:peano_arithmetic_categoricity}, this definition aligns with \cref{rem:simulating_second_order_logic}, where a model of first-order \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} is considered standard if its translation via \fullref{alg:fol_to_hol} is a \hyperref[def:hol_semantics/model]{model} of the second-order theory \( \logic{PA}_{\logic{2}} \).
+
+  \item This definition is loosely based on the discussion of \hyperref[def:hol_theory/categorical]{second-order categoricity} in \cite[\S 5]{Farmer2008STTVirtues}.
+
+  From the perspective of first-order logic, nonstandard models of arithmetic are discussed in \cite[\S 2.5]{Hinman2005Logic}, \cite[\S 3.2]{VanDalen2004LogicAndStructure} and \cite[\S 3.3.2]{Герасимов2014Вычислимость}.
+
+  \item The importance of standard models is highlighted in \cref{ex:peano_arithmetic_fol_induction}; see \cref{ex:nonstandard_natural_numbers} for examples of nonstandard models.
+\end{comments}
+
+\begin{proposition}\label{thm:peano_arithmetic_categoricity}
+  \hyperref[def:peano_arithmetic]{Second-order Peano arithmetic} is \hyperref[def:hol_theory/categorical]{categorical} with respect to \hyperref[def:hol_semantics/standard]{standard semantics}: every model of \( \logic{PA}_{\logic{2}} \) is \hyperref[def:hol_isomorphism]{isomorphic} to the (second-order) \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN_{\logic{2}} \).
+\end{proposition}
+\begin{proof}
+  Fix a second-order model \( \mscrY = (Y, J) \) of \( \logic{PA}_{\logic{2}} \), where \( Y = \seq{ Y_\tau }_{\tau \in \op*{\BbbQ_{\Sigma_{\logic{PA}}}}} \) is a \hyperref[def:hol_frame]{standard frame}.
+
+  We will show that the map
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: N \to Y_{\syn\iota}, \\
+      &\Phi(\tau) \coloneqq \Bracks{\tau}_\mscrY
+    \end{aligned}
+  \end{equation*}
+  is an isomorphism. By an adaptation of the arguments in \cref{thm:peano_arithmetic_standard_segment}, we can conclude that \( \Phi \) is an embedding. We only need to show that it is surjective.
+
+  We use \fullref{thm:induction_on_natural_numbers} on the element \( n \) of \( Y_{\syn\iota} \) to prove the existence of a term \( \tau \) of \( N \) such that \( \Phi(\tau) = n \). As in the proof of \cref{thm:peano_arithmetic_standard_segment}, we use induction on an abstract Boolean-valued function defined in the metatheory, so it is important for \( \mscrY \) to satisfy the second-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3/sol}.
+
+  \begin{itemize}
+    \item For the base case \( n = J(\syn0) \), naturally \( \tau \coloneqq \syn0 \).
+    \item Suppose that \( n = J(\synS)(m) \), where the inductive hypothesis holds for \( m \).
+
+    Then there exists some term \( \sigma \) from \( N \) such that \( \Phi(\sigma) = m \). It remains to define \( \tau \coloneqq \synS \sigma \).
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:peano_arithmetic_standard_models}
+  The following are \hyperref[def:peano_arithmetic_standard_model]{standard models} of \hyperref[def:peano_arithmetic]{Peano arithmetic}:
+  \begin{itemize}
+    \thmitem{thm:peano_arithmetic_standard_models/omega} The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \).
+
+    \thmitem{thm:peano_arithmetic_standard_models/terms} The \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN \).
+
+    \thmitem{thm:peano_arithmetic_standard_models/initial} Any \hyperref[def:universal_objects/initial]{initial object} in the \hyperref[def:semiring/category]{category of semirings}.
   \end{itemize}
 \end{proposition}
 \begin{comments}
-  \item This proposition merely highlights different possibilities, most of which depend on an already existing notion of natural numbers. We use \( \omega \) to avoid circularity.
+  \item This proposition merely highlights different possibilities, which may or may not depend on an already established notion of natural numbers.
 \end{comments}
 \begin{proof}
-  \SubProofOf{thm:peano_arithmetic_models/omega} \Cref{thm:omega_is_model_of_pa} states that \( \omega \) is a model of \( \logic{PA} \).
+  \SubProofOf{thm:peano_arithmetic_standard_models/omega} \Cref{thm:omega_is_model_of_pa} states that \( \omega \) is a model of second-order Peano arithmetic.
 
-  \SubProofOf{thm:peano_arithmetic_models/monoid} \Cref{thm:cyclic_monoid_classification/infinite_monoid} implies that any infinite cyclic monoid is isomorphic to the \hyperref[def:formal_language/kleene_star]{Kleene star} \( \set{ a }^* \) over one symbol. There is a unique string corresponding to every natural number, thus we can use the different strings as numbers.
+  \SubProofOf{thm:peano_arithmetic_standard_models/terms} The standard term models is defined to match both the universe and the interpretation of \( \omega \), so naturally it is also a model.
 
-  \SubProofOf{thm:peano_arithmetic_models/initial} \Cref{thm:category_of_semirings_properties/initial} implies that any model of \( \logic{PA} \) is an initial object in the category of unital semirings, and \cref{thm:def:universal_objects/initial} implies that any other initial object is isomorphic to it.
+  \SubProofOf{thm:peano_arithmetic_standard_models/initial} \Cref{thm:category_of_semirings_properties/initial} implies that any standard model of \( \logic{PA} \) is an initial object in the category of unital semirings, and \cref{thm:def:universal_objects/initial} implies that any other initial object is isomorphic to it.
 \end{proof}
+
+\begin{definition}\label{def:natural_numbers}
+  We define the set of \term[bg=естествени числа (\cite[371]{ГеновМиховскиМоллов1991Алгебра}), ru=натуральные числа (\cite[def. 11.1]{Проскуряков1951ТеоретическиеОсновыАрифметики})]{natural numbers} \( \BbbN \) as a fixed \hyperref[def:peano_arithmetic_standard_model]{standard model} of \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+
+  The choice of model does not matter most of the time, and we can choose any from \cref{thm:peano_arithmetic_standard_models}. Yet, the \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN \) is more useful when dealing with formal arithmetic, while the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) is more useful across \fullref{ch:set_theory}.
+
+  For convenience, we use the usual \hyperref[def:positional_number_system/decimal]{decimal notation}
+  \begin{align*}
+    &0 \coloneqq \syn0,                        &&1 \coloneqq \synS \syn0, \\
+    &2 \coloneqq \synS \synS \syn0             &&3 \coloneqq \synS \synS \synS \syn0, \\
+    &4 \coloneqq \synS \synS \synS \synS \syn0 &&5 \coloneqq \synS \synS \synS \synS \synS \syn0, \\
+    &\vdots                                    &&\vdots
+  \end{align*}
+\end{definition}
+\begin{comments}
+  \item In accordance with \cref{rem:mathematical_logic_conventions/models_as_sets}, unless we are working with explicit logical formulas, we will generally reason about \( \BbbN \) in the ambient metatheory and treat it, its members and its operations as sets in \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}.
+\end{comments}
 
 \paragraph{Algebraic structure of \( \BbbN \)}
 
