@@ -135,6 +135,27 @@
   \item This formalism somewhat resembles \enquote{prooftrees} from \bycite{TroelstraSchwichtenberg2000BasicProofTheory}, but, given a suitable definition of schemas and instantiations, it becomes completely rigorous and explicitly encodes which inference rules have been used.
 \end{comments}
 
+\begin{remark}\label{rem:inference_rule_multiple_application}
+  In cases where, in a \hyperref[def:proof_tree]{proof tree}, we must apply the same one-premise rule multiple times (with different instantiations), for brevity we may place a star after the rule name.
+
+  Thus,
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \infer1[\logic{R}]{ \psi }
+      \infer1[\logic{R}]{ \theta }
+      \infer1[\logic{R}]{ \chi }
+    \end{prooftree}
+  \end{equation*}
+  becomes
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \infer1[\logic{R}*]{ \chi }
+    \end{prooftree}
+  \end{equation*}
+\end{remark}
+
 \begin{remark}\label{rem:inference_rule_formalization}
   Using the fact that, in \cref{def:inference_rule}, we have formalized inference rules as strings, we are able to encode some concrete rules. Our end goal is to completely formalize the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for \hyperref[def:propositional_formula]{propositional formulas} and \hyperref[def:simple_type]{simple types} in \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}. We will also formalize natural deduction rules for \hyperref[def:fol_formula]{first-order formulas} in \fullref{sec:first_order_natural_deduction}.
 
@@ -1053,70 +1074,77 @@
     \thmitem{thm:propositional_admissible_rules/self_conditional} The conditional of a formula with itself is tautologous:
     \begin{equation*}\taglabel[\ensuremath{ \rightarrow_R }]{inf:thm:propositional_admissible_rules/self_conditional}
       \begin{prooftree}
-        \infer0[\ref{inf:thm:propositional_admissible_rules/self_conditional}]{ \varphi \synimplies \varphi }
+        \infer0[\ref{inf:thm:propositional_admissible_rules/self_conditional}]{ \syn\varphi \synimplies \syn\varphi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/self_biconditional} The biconditional of a formula with itself is tautologous:
     \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_R }]{inf:thm:propositional_admissible_rules/self_biconditional}
       \begin{prooftree}
-        \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ \varphi \syniff \varphi }
+        \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ \syn\varphi \syniff \syn\varphi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/biconditional_as_conjunction} The biconditional is a conjunction of conditionals:
     \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_\wedge }]{inf:thm:propositional_admissible_rules/biconditional_as_conjunction}
       \begin{prooftree}
-        \hypo{ \varphi \syniff \psi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/biconditional_as_conjunction}]{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }
+        \hypo{ \syn\varphi \syniff \syn\psi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/biconditional_as_conjunction}]{ (\syn\varphi \synimplies \syn\psi) \synwedge (\syn\psi \synimplies \syn\varphi) }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/conjunction_of_conditionals} Conversely, a conjunction of compatible conditionals is a biconditional:
     \begin{equation*}\taglabel[\ensuremath{ \wedge_\leftrightarrow }]{inf:thm:propositional_admissible_rules/conjunction_of_conditionals}
       \begin{prooftree}
-        \hypo{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/conjunction_of_conditionals}]{ \varphi \syniff \psi }
+        \hypo{ (\syn\varphi \synimplies \syn\psi) \synwedge (\syn\psi \synimplies \syn\varphi) }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/conjunction_of_conditionals}]{ \syn\varphi \syniff \syn\psi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/contraposition} From a conditional we can derive its contraposition:
     \begin{equation*}\taglabel[\ensuremath{ \rightarrow_{\neg+} }]{inf:thm:propositional_admissible_rules/contraposition}
       \begin{prooftree}
-        \hypo{ \varphi \synimplies \psi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition}]{ \synneg \psi \synimplies \synneg \varphi }
+        \hypo{ \syn\varphi \synimplies \syn\psi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition}]{ \synneg \syn\psi \synimplies \synneg \syn\varphi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/contraposition_double_negation} From a contraposition we can derive a variation of the original:
     \begin{equation*}\taglabel[\ensuremath{ \rightarrow_{\neg\neg} }]{inf:thm:propositional_admissible_rules/contraposition_double_negation}
       \begin{prooftree}
-        \hypo{ \synneg \psi \synimplies \synneg \varphi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition_double_negation}]{ \varphi \synimplies \synneg \synneg \psi }
+        \hypo{ \synneg \syn\psi \synimplies \synneg \syn\varphi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition_double_negation}]{ \syn\varphi \synimplies \synneg \synneg \syn\psi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/contraposition_elim} When additionally assuming \ref{inf:def:propositional_natural_deduction/bot/raa}, we can simplify \ref{inf:thm:propositional_admissible_rules/contraposition_double_negation} to
     \begin{equation*}\taglabel[\ensuremath{ \rightarrow_{\neg-} }]{inf:thm:propositional_admissible_rules/contraposition_elim}
       \begin{prooftree}
-        \hypo{ \synneg \psi \synimplies \synneg \varphi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition_elim}]{ \varphi \synimplies \psi }
+        \hypo{ \synneg \syn\psi \synimplies \synneg \syn\varphi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/contraposition_elim}]{ \syn\varphi \synimplies \syn\psi }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/conditional_as_conjunction} A conditional formula is the negation of a conjunction:
     \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\wedge }]{inf:thm:propositional_admissible_rules/conditional_as_conjunction}
       \begin{prooftree}
-        \hypo{ \varphi \synimplies \psi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/conditional_as_conjunction}]{ \neg(\varphi \synwedge \synneg \psi) }
+        \hypo{ \syn\varphi \synimplies \syn\psi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/conditional_as_conjunction}]{ \neg(\syn\varphi \synwedge \synneg \syn\psi) }
       \end{prooftree}
     \end{equation*}
 
     \thmitem{thm:propositional_admissible_rules/disjunction_as_conditional} When additionally assuming \ref{inf:def:propositional_natural_deduction/bot/efq}, a disjunction with the first subformula negated is a conditional:
     \begin{equation*}\taglabel[\ensuremath{ \vee_\rightarrow }]{inf:thm:propositional_admissible_rules/disjunction_as_conditional}
       \begin{prooftree}
-        \hypo{ \synneg \varphi \synvee \psi }
-        \infer1[\ref{inf:thm:propositional_admissible_rules/disjunction_as_conditional}]{ \varphi \synimplies \psi }
+        \hypo{ \synneg \syn\varphi \synvee \syn\psi }
+        \infer1[\ref{inf:thm:propositional_admissible_rules/disjunction_as_conditional}]{ \syn\varphi \synimplies \syn\psi }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{thm:propositional_admissible_rules/lem} When additionally assuming \ref{inf:def:propositional_natural_deduction/bot/raa}, we can prove \eqref{eq:thm:classical_tautologies/lem}:
+    \begin{equation*}\taglabel[\logic{LEM}]{inf:thm:propositional_admissible_rules/lem}
+      \begin{prooftree}
+        \infer0[\ref{inf:thm:propositional_admissible_rules/lem}]{ \syn\varphi \synvee \synneg \syn\varphi }
       \end{prooftree}
     \end{equation*}
   \end{thmenum}
@@ -1254,6 +1282,24 @@
       \infer[left label={\( v, t \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \psi }
 
       \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_admissible_rules/lem}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synneg (\varphi \synvee \synneg \varphi)]^u }
+      \hypo{ [\synneg (\varphi \synvee \synneg \varphi)]^u }
+
+      \hypo{ [\synneg \varphi]^v }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \varphi \synvee \synneg \varphi }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \varphi }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \varphi \synvee \synneg \varphi }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \varphi \synvee \synneg \varphi }
     \end{prooftree}
   \end{equation*}
 \end{proof}

@@ -1,5 +1,6 @@
 from textwrap import dedent
 
+from .....support.coderefs import collector
 from ...classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...deduction.proof_tree import apply, premise_config
 from ...formulas import ConnectiveFormula, QuantifierFormula
@@ -23,6 +24,7 @@ def test_induction_instance() -> None:
     assert axiom == expected
 
 
+@collector.ref('ex:peano_arithmetic_predecessor_existence')
 def test_predecessor_existence_proof() -> None:
     target = parse_formula('∀x.((x = 0) ∨ ∃y.(x = Sy))', ARITHMETIC_SIGNATURE)
     assert isinstance(target, QuantifierFormula)

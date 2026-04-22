@@ -1,501 +1,17 @@
 \section{Natural numbers}\label{sec:natural_numbers}
 
-\begin{concept}\label{con:arithmetic}
-  In a broad sense, the study of numbers is called \term[ru=арифметика (\cite[48]{БашмаковаЮшкевич1951ПроисхождениеСистемСчисления}), en=arithmetic (\cite[3]{Stillwell2010MathHistory})]{arithmetic} because of the Greek word \enquote{αριθμος} (\enquote{number}).
-
-  \begin{itemize}
-    \thmitem{con:arithmetic/elementary} Arithmetic originates as the study of the so-called \term[ru=арифметические операции (\cite[101]{Проскуряков1951ТеоретическиеОсновыАрифметики}), en=arithmetic operator (\cite[131]{Knuth1997ArtVol1})]{arithmetic operations} --- addition, subtraction, multiplication and division --- and is mostly concerned with integers.
-
-    A historical overview of this \enquote{elementary} arithmetic can be found in \cite{Karpinski1925HistoryOfArithmetic}. A notable book of historical interest on the topic is \bycite{Fibonacci2002LiberAbaci}.
-
-    We will present systematized results in \fullref{sec:positional_number_systems} and \fullref{sec:digit_based_operations}. Some modern considerations stemming from computer science are presented in \fullref{sec:fixed_width_arithmetic}.
-
-    \thmitem{con:arithmetic/algebraic} Ever since antiquity, the study of integers goes way beyond the arithmetic operations. \hyperref[def:prime_number]{Prime numbers} and \hyperref[def:polynomial_equation]{Diophantine equations} have notably led to some of the most abstract mathematics in existence.
-
-    The abstract study of numbers is colloquially called \term[ru=теория чисел (\cite[7]{Бухштаб1966ТеорияЧисел}), en=theory of numbers (\cite[1]{Apostol1976AnalyticNumberTheory})]{number theory}, although some influential books like \bycite{Gauss1801DisquisitionesArithmeticae} and \bycite{Serre1973Arithmetic} call it \enquote{arithmetic}.
-
-    \thmitem{con:arithmetic/logical} The development of mathematical logic in the 19th century is tied to the formalization of arithmetic. We will present the theory \logic{PA} --- Peano arithmetic --- in \cref{def:peano_arithmetic}.
-
-    We will use the formalisms from \fullref{ch:mathematical_logic}. The relation of this theory to the work of Peano and others is briefly discussed in \cref{rem:peano_arithmetic}.
-  \end{itemize}
-\end{concept}
-
-\paragraph{Peano arithmetic}
-
-\begin{definition}\label{def:peano_arithmetic}\mcite[def. 2.7.7; 150]{VanDalen2004LogicAndStructure}
-  \term[ru=арифметика Пеано (\cite[167]{Герасимов2014Вычислимость}), en=Peano arithmetic (\cite[def. 4.1.1(ii)]{Hinman2005Logic})]{Peano arithmetic}, abbreviated as \logic{PA}, is a \hyperref[def:fol_theory]{theory} of \hyperref[sec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:natural_numbers]{natural numbers} and \hyperref[con:arithmetic/elementary]{arithmetic operations} on them.
-
-  We will present two theories in addition to \logic{PA} --- the theory \( \logic{PA}_2 \) of \hyperref[def:second_order_logic]{monadic second-order logic}, which replaces the induction schema \eqref{eq:def:peano_arithmetic/theory/PA3} with \eqref{eq:def:peano_arithmetic/theory/PA3/sol}, and \term[en=Robinson arithmetic (\cite[def. 4.1.1(i)]{Hinman2005Logic})]{Robinson arithmetic} \logic{Q}, which omits the induction schema altogether. We discuss the relation of these theories to Peano's work in \cref{rem:peano_arithmetic}.
-
-  \begin{thmenum}
-    \thmitem{def:peano_arithmetic/signature} Consider the \hyperref[def:fol_signature]{first-order signature} \( \Sigma_{\logic{PA}} \) containing the following symbols:
-    \begin{thmenum}
-      \thmitem{def:peano_arithmetic/signature/zero} A constant \( \syn0 \) for representing zero.
-
-      \thmitem{def:peano_arithmetic/signature/succ} A unary \hyperref[def:fol_signature/functions]{functional symbol} \( \synS \), called the \term[en=successor (\cite[87]{VanDalen2004LogicAndStructure})]{successor operation}. We will find \hyperref[def:fol_signature/notation]{condensed notation} most convenient.
-
-      \thmitem{def:peano_arithmetic/signature/plus} An \hyperref[def:fol_signature/notation]{infix} binary functional symbol \( \synplus \) for denoting addition.
-
-      \thmitem{def:peano_arithmetic/signature/times} Another infix binary functional symbol \( \synmult \) for denoting multiplication.
-    \end{thmenum}
-
-    For \( \logic{PA}_{\logic{2}} \), we can translate this signature using \fullref{alg:fol_to_hol/signature}. Technically, to avoid collisions with the syntax for \hyperref[def:lambda_term_schema]{\( \muplambda \)-term placeholders}, we need to replace the symbol \( \synS \) with another symbol like \( \synS^+ \).
-
-    \thmitem{def:peano_arithmetic/theory} Over \( \Sigma_{\logic{PA}} \), consider the theory \( \logic{PA} \) with the following axioms:
-    \begin{thmenum}
-      \thmitem{def:peano_arithmetic/theory/PA1} Zero is not the successor of any natural number:
-      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA1}\tag{\logic{PA1}}
-        \synneg \qexists \synx (\synS \synx \syneq \syn0).
-      \end{equation}
-
-      This ensures \hyperref[def:well_founded_relation]{well-foundedness} of the natural numbers.
-
-      \thmitem{def:peano_arithmetic/theory/PA2} The successor function is \hyperref[thm:function_invertibility_categorical/nonempty_left_invertible]{injective}:
-      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA2}\tag{\logic{PA2}}
-        \qforall \synx \qforall \synn (\synS \synx \syneq \synS \synn \synimplies \synx \syneq \synn).
-      \end{equation}
-
-      \thmitem{def:peano_arithmetic/theory/PA3} The \term[ru=аксиомы индукции (\cite[168]{Герасимов2014Вычислимость}), en=induction schema (\cite[def. 2.7.7]{VanDalen2004LogicAndStructure})]{axiom schema of induction} provides a powerful proof method:
-      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3}\tag{\logic{PA3}}
-        \parens[\big]
-          {
-            \underbrace{\syn\varphi[\synx \synsubst \syn0]}_{\T{base case}}
-            \synwedge
-            \qforall \synn \parens[\big]
-              {
-                \overbrace
-                  {
-                    \underbrace{ \syn\varphi[\synx \synsubst \synn] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
-                    \synimplies
-                    \underbrace{ \syn\varphi[\synx \synsubst \synS \synn] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
-                  }^{\T{inductive step}}
-              }
-          }
-        \synimplies
-        \underbrace{ \qforall \synn \syn\varphi[\synx \synsubst \synn] }_{\T{conclusion}}.
-      \end{equation}
-
-      The instance of \( \varphi \) may have free variables, so we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete \hyperref[con:schemas_and_instances]{instance}.
-
-      Note that \eqref{eq:def:peano_arithmetic/theory/PA3} is a formula schema in the sense of \cref{def:fol_formula_schema}; it is an adaptation of the following second-order axiom:
-      \begin{equation}\label{eq:def:peano_arithmetic/theory/PA3/sol}\tag{\( \logic{PA3}_\logic{2} \)}
-        \qforall {\synp^{\syn\iota \synimplies \syn\omicron}}
-        \parens[\big]
-          {
-            \parens[\big]
-              {
-                \synp \syn0
-                \synwedge
-                \qforall {\synn^{\syn\iota}} \parens
-                  {
-                    \synp \synn
-                    \synimplies
-                    \synp \synS^+ \synn
-                  }
-              }
-            \synimplies
-            \qforall {\synn^{\syn\iota}} \synp \synn
-          }.
-      \end{equation}
-
-      We discuss the emulation of second-order logic via schemas in \cref{rem:simulating_second_order_logic}. A metatheoretic restatement of these axioms is given in \fullref{thm:induction_on_natural_numbers}. We discuss induction more generally in \cref{con:induction}.
-
-      \thmitem{def:peano_arithmetic/theory/plus} The next two axioms (or rather, their universal closures) inductively define the desired behavior of addition:
-      \begin{align}
-        \synx \synplus \syn0       &\syneq \synx,                       \label{eq:def:peano_arithmetic/theory/PA4}\tag{\logic{PA4}} \\
-        \synx \synplus \synS \synn &\syneq \synS(\synx \synplus \synn). \label{eq:def:peano_arithmetic/theory/PA5}\tag{\logic{PA5}}
-      \end{align}
-
-      \thmitem{def:peano_arithmetic/theory/times} The (universal closures of) final two axioms are for multiplication:
-      \begin{align}
-        \synx \synmult \syn0       &\syneq \syn0,                           \label{eq:def:peano_arithmetic/theory/PA6}\tag{\logic{PA6}} \\
-        \synx \synmult \synS \synn &\syneq (\synx \synmult \synn) + \synx. \label{eq:def:peano_arithmetic/theory/PA7}\tag{\logic{PA7}}
-      \end{align}
-    \end{thmenum}
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item The phrase \enquote{model of Peano arithmetic} may refer to either \hyperref[def:fol_structure]{first-order logic structures} that satisfy \logic{PA} or to \hyperref[def:hol_structure]{higher-order logic structures} that satisfy \( \logic{PA}_{\logic{2}} \). On a technical level the difference is significant, however, when dealing with standard models in the sense of \cref{def:peano_arithmetic_standard_model}, the two concepts are equivalent.
-
-  Nonstandard models, on the other hand, can be rather weird --- see \cref{ex:peano_arithmetic_nonstandard_models}.
-
-  \item These axioms are formalized in \cite{notebook:code}, in the modules
-  \begin{CodeRefDisplay}
-    \ManualCodeRef{logic.theories.arithmetic.axioms} \\
-    \ManualCodeRef{lambda_.hol.theories.arithmetic.axioms}
-  \end{CodeRefDisplay}
-\end{comments}
-
-\begin{remark}\label{rem:peano_arithmetic}
-  We have presented several \hyperref[def:logical_theory]{logical theories} for \hyperref[def:natural_numbers]{natural number} \hyperref[con:arithmetic]{arithmetic} in \cref{def:peano_arithmetic}. We discuss here how they are related to the work of Giuseppe Peano.
-
-  \begin{thmenum}
-    \thmitem{rem:peano_arithmetic/sets} \incite*[1]{Peano1889ArithmeticesPrincipia} not only presents a formal theory of arithmetic, but, more importantly, he formulates an early variant of \hyperref[con:predicate_logic]{predicate logic} based on \hyperref[def:set_theory_signature]{set theory}.
-
-    Peano's axioms are most faithfully represented by what \incite[70]{Enderton1977SetTheory} and \incite[53]{Mendelson2008NumberSystems} call \enquote{Peano systems} --- triples \( (N, e, S) \) such that
-    \begin{itemize}
-      \item \( S \) is an \hi{injective} endofunction on \( N \) (injectivity subsumes \eqref{eq:def:peano_arithmetic/theory/PA1}).
-
-      \item \( e \) is an element of \( N \) that is not in the range of \( S \) (the latter condition subsumes \eqref{eq:def:peano_arithmetic/theory/PA2}).
-
-      \item If \( A \) contains \( e \) and is closed under \( S \), then \( A \) is a subset of \( N \) (restatement of \eqref{eq:def:peano_arithmetic/theory/PA3/sol}).
-    \end{itemize}
-
-    Peano systems resemble Dedekind's earlier construction from \cite[def. 73]{Dedekind2007NatureAndMeaningOfNumbers}. Peano himself refines his logical system (and theory) in \cite[27]{Peano1908FormulatioMathematico}.
-
-    Neither of the aforementioned authors consider addition and multiplication to be \hyperref[con:primitive_notion]{primitive notions} --- this later turns out to be a necessity in the first-order theory.
-
-    \thmitem{rem:peano_arithmetic/zero} Both \incite[1]{Peano1889ArithmeticesPrincipia} and \incite[def. 73]{Dedekind2007NatureAndMeaningOfNumbers} consider \( 1 \) --- not \( 0 \) --- to be the first natural number. Peano's more refined theory in \cite[27]{Peano1908FormulatioMathematico} is adjusted to that \( 0 \) is the first natural number.
-
-    This dichotomy is also present in other author's work --- when defining Peano systems, Enderton starts with \( 0 \), while Mendelson starts with \( 1 \).
-
-    We find it convenient for \( 0 \) to be a natural number because this allows \( \BbbN \) to become a \hyperref[def:monoid]{monoid} and hence a \hyperref[def:semiring]{semiring}.
-
-    On the other hand, we find it more convenient to start counting from \( 1 \).
-
-    In the presence of ambiguity, we will distinguish between \enquote{nonnegative integers} and \enquote{positive integers} --- these are defined formally in \cref{def:integer_ordering}.
-
-    \thmitem{rem:peano_arithmetic/fol_variants} Modern formulations of first-order Peano arithmetic mostly agree with each other, up to a precise choice of formalisms:
-    \begin{itemize}
-      \item Our list of axioms coincides with \bycite[def. 2.7.7]{VanDalen2004LogicAndStructure} and \bycite[\S 5.2.5]{Mimram2020ProgramEqualsProof}.
-
-      \item \incite[105]{КолмогоровДрагалин2006Логика} and \incite[167]{Герасимов2014Вычислимость} extend our list with axioms for equality. We will not need them because we handle equality as a primordial logical primitive.
-
-      \item \incite*[def. 4.1.1(ii)]{Hinman2005Logic} extends our signature with the strict inequality \( \synless \) and adds corresponding axioms. We instead present \( \synleq \) and related predicates via \hyperref[def:fol_definitional_extension]{definitional extensions} in \cref{def:natural_numbers_ordering}.
-    \end{itemize}
-  \end{thmenum}
-\end{remark}
-
-\begin{theorem}[Induction on natural numbers]\label{thm:induction_on_natural_numbers}
-  The \hyperref[def:peano_arithmetic]{Peano arithmetic} induction axioms \eqref{eq:def:peano_arithmetic/theory/PA3} and \eqref{eq:def:peano_arithmetic/theory/PA3/sol} can be restated semantically.
-
-  Fix a \hyperref[def:fol_semantics/model]{model} \( \mscrN = (N, I) \) of Peano arithmetic. For clarity, denote \( I(\syn0) \) by \( 0 \) and \( I(\synS) \) by \( S \).
-
-  Fix also a \hyperref[def:boolean_function]{Boolean-valued function} \( p: N \to \set{ \semtop, \sembot } \). For models of the second-order theory \( \logic{PA}_{\logic{2}} \), \( p \) can be arbitrary, but for the first-order theory \logic{PA}, \( p \) must be the \hyperref[def:fol_parameterized_formula_denotation]{parametrized denotation} of a formula with one free variable.
-
-  In order for \( p(n) \) to hold for every \( n \) in \( N \), the following is sufficient:
-  \begin{thmenum}
-    \thmitem{thm:induction_on_natural_numbers/base} Base case: \( p(0) \) must hold.
-    \thmitem{thm:induction_on_natural_numbers/step} Inductive step: \( p(n) \) must entail \( p(S(n)) \).
-  \end{thmenum}
-\end{theorem}
-\begin{comments}
-  \item Compare this theorem to \fullref{thm:strong_induction_on_natural_numbers} and \fullref{thm:bounded_transfinite_induction}. See \cref{con:induction} for a general discussion of induction and recursion.
-\end{comments}
-\begin{proof}
-  \SubProof{Proof of first-order case} Fix a formula \( \varphi \) whose only free variable is \( \synx \). Suppose that \( \Bracks{\varphi}_\mscrN(0) = \semtop \) and \( \Bracks{\varphi}_\mscrN(n) \leq \Bracks{\varphi}_\mscrN(S(n)) \).
-
-  \Cref{thm:fol_formula_semantics_of_assignment_substitution} implies that
-  \begin{equation*}
-    \Bracks{\varphi[\synx \mapsto \syn0]}_\mscrX = \semtop.
-  \end{equation*}
-
-  Similarly, for any assignment \( v \) into \( \mscrX \),
-  \begin{equation*}
-    \Bracks{\varphi[\synx \mapsto \synn]}_\mscrX^v \leq \Bracks{\varphi[\synx \mapsto \synS \synn]}_\mscrX^v,
-  \end{equation*}
-  which due to \cref{thm:def:heyting_algebra/leq} is equivalent to
-  \begin{equation*}
-    \Bracks{\varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn]}_\mscrX^v = \semtop.
-  \end{equation*}
-
-  Then, by the definition \eqref{eq:alg:fol_formula_denotation/forall} of the denotation of universal formulas,
-  \begin{equation*}
-    \Bracks{\qforall \synn (\varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn])}_\mscrX = \semtop.
-  \end{equation*}
-
-  Both premises of \eqref{eq:def:peano_arithmetic/theory/PA3} hold, so \fullref{thm:propositional_semantic_mp} implies that its conclusion also does.
-
-  \SubProof{Proof of second-order case} We proceed similarly, but we replace \( \varphi \) with applications of the variable \( \synp^{\syn\iota \synimplies \syn\omicron} \), and we use assignments \( v \) for which \( v(\synp) = p \).
-\end{proof}
-
-\begin{definition}\label{def:peano_arithmetic_term_model}\mimprovised
-  \Fullref{thm:omega_is_model_of_pa} implies that the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) acts as a \hyperref[def:fol_semantics/model]{model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} that is standard in the sense of \cref{def:peano_arithmetic_standard_model}, i.e. a first-order structure that satisfies the second-order axioms.
-
-  We will build another first-order model \( \mscrN = (N, I) \) based on \( \omega \), with the advantage of the elements of \( N \) themselves being \hyperref[def:fol_term]{logical terms} that can be interpreted in any other structure. We will call it the \term{standard term model} of \logic{PA} since it resembles the term model construction from \cref{def:fol_term_model}, and it is standard in the sense of \cref{def:peano_arithmetic_standard_model}.
-
-  First, we use \fullref{thm:omega_recursion} to construct the \hyperref[def:sequence]{sequence}
-  \begin{equation*}
-    \tau_k \coloneqq \begin{cases}
-      \syn0,        &k = \varnothing, \\
-      \synS \tau_m, &k = \op{sc}(m).
-    \end{cases}
-  \end{equation*}
-
-  Let \( N \coloneqq \set{ \tau_k \given k \in \omega } \). As we will discuss in \cref{rem:def:peano_arithmetic_term_model}, thus defined, \( N \) faithfully represents the informal linguistic definition
-  \begin{equation*}
-    N \coloneqq \set{ \syn0, \synS \syn0, \synS \synS \syn0, \synS \synS \synS \syn0, \ldots }.
-  \end{equation*}
-
-  As a function, \( \tau: \omega \to N \) is \hyperref[def:function_invertibility/bijective]{bijective}. This allows us to identify elements of \( \omega \) and \( N \), and to unambiguously define an interpretation \( I \) for \( N \) based on \( \omega \).
-
-  \Fullref{alg:fol_to_hol} provides us with a \hyperref[def:hol_structure]{standard second-order structure} \( \mscrN_{\logic{2}} \) --- a \hyperref[def:hol_semantics/model]{model} of \( \logic{PA}_{\logic{2}} \).
-\end{definition}
-\begin{defproof}
-  We must show that, as a function, \( \tau \) is really bijective. It is clearly surjective, so we must show injectivity. We will use \fullref{thm:omega_induction} on \( i \) to show that \( \tau_i = \tau_j \) implies \( i = j \).
-  \begin{itemize}
-    \item If \( i = \varnothing \), then \( \tau_i = \syn0 = \tau_j \) is the unique string in \( N \) that starts with \( \syn0 \), and hence \( j = \varnothing \).
-
-    \item Suppose that \( i = \op{sc}(k) \), where the inductive hypothesis holds for \( k \). By definition, \( \tau_i = \synS \tau_k = \tau_j \), so there must exist some \( m \) such that \( j = \op{sc}(m) \). In particular, \( \tau_j = \synS \tau_m \), where \( \tau_k = \tau_m \).
-
-    By the inductive hypothesis on \( k \), we conclude that \( k = m \), hence also \( i = j \).
-  \end{itemize}
-\end{defproof}
-
-\begin{remark}\label{rem:def:peano_arithmetic_term_model}
-  Consider the standard term model \( \mscrN = (N, I) \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} from \cref{def:peano_arithmetic_term_model}.
-
-  We have defined \( N \) as the set \( \set{ \tau_k \given k \in \omega } \), where
-  \begin{equation*}
-    \tau_k \coloneqq \begin{cases}
-      \syn0,        &k = \varnothing, \\
-      \synS \tau_m, &k = \op{sc}(m),
-    \end{cases}
-  \end{equation*}
-  with the intention to formalize the informal linguistic definition
-  \begin{equation*}
-    N \coloneqq \set{ \syn0, \synS \syn0, \synS \synS \syn0, \synS \synS \synS \syn0, \ldots }.
-  \end{equation*}
-
-  The recursive definition depends on precise constructions from \fullref{sec:naive_set_theory} based on \hyperref[def:inductive_set]{inductive sets}. On the other hand, the informal definition is based on \fullref{sec:formal_languages}, which in turn depend on primordial \hyperref[con:metalogic]{metatheoretic} natural numbers. So, our task is to show that the concepts of natural numbers in the object theory and metatheory coincide.
-
-  For the sake of definiteness, suppose that the linguistic definition amounts to the set \( C \) of all \hyperref[def:fol_closed_term]{closed first-order term} over the signature consisting only of \( \syn0 \) and \( \synS \).
-
-  By definition, \( N \) is a subset of \( C \). We will use the metatheoretic \fullref{thm:induction_on_natural_numbers} on the \hyperref[def:formal_language/string_length]{string length} of the term \( \sigma \) from \( C \) to show that \( \tau \) belongs to \( N \).
-  \begin{itemize}
-    \item The shortest term is \( \syn0 \) of length \( 1 \), which equals \( \tau_\varnothing \).
-
-    \item Suppose that the inductive hypothesis holds for \( n \) and suppose that \( \sigma \) has length \( n + 1 \). Then \( \sigma = a \rho \) for some symbol \( a \), which can only be \( \synS \).
-
-    Then \( \rho \) is a well-formed term of length \( n \), so the inductive hypothesis implies that \( \rho = \tau_k \) for some \( k \in \omega \). It follows that \( \rho = \synS \tau_k = \tau_m \), where \( m = \op{sc}(k) \).
-  \end{itemize}
-\end{remark}
-
-\begin{proposition}\label{thm:peano_arithmetic_standard_segment}
-  Via \fullref{alg:fol_term_denotation}, the \hyperref[def:peano_arithmetic_term_model]{standard term model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} \hyperref[def:fol_embedding]{embeds} into any \hyperref[def:fol_semantics/model]{first-order model} of \logic{PA}.
-\end{proposition}
-\begin{comments}
-  \item In other words, every first-order model \( \mscrX \) has a submodel isomorphic to \( \mscrN \). \incite[164]{Hinman2005Logic} calls this submodel the \enquote{standard part} of \( \mscrX \).
-\end{comments}
-\begin{proof}
-  Let \( \mscrN = (N, I) \) be the term model. Fix any model \( \mscrY = (Y, J) \) of \logic{PA} and consider the map
-  \begin{equation*}
-    \begin{aligned}
-      &\Phi: N \to Y, \\
-      &\Phi(\tau) \coloneqq \Bracks{\tau}_\mscrY.
-    \end{aligned}
-  \end{equation*}
-
-  We must show that \( \Phi \) is an embedding, i.e. an injective homomorphism (it is automatically a strong homomorphism since the signature contains no predicate symbols).
-
-  \SubProofOf[def:function_invertibility/injective/equality]{injectivity} We will use \fullref{thm:induction_on_natural_numbers} on the term \( \tau_1 \) to show that \( \Phi(\tau_1) = \Phi(\tau_2) \) implies \( \tau_1 = \tau_2 \). This property can be formalized an abstract \hyperref[def:boolean_function]{Boolean-valued function} defined in the metalanguage, so we utilize the fact that the translation \( \mscrN_{\logic{2}} \) satisfies the second-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3/sol}.
-
-  \begin{itemize}
-    \item If \( \tau_1 = \syn0 \), then necessarily \( \tau_2 = \syn0 \).
-
-    Indeed, if \( \tau_2 = \synS(\sigma_2) \) for some element \( \sigma_1 \) of \( N \), then
-    \begin{equation*}
-      \Bracks{\syn0}_\mscrY = \Phi(\tau_1) = \Phi(\tau_2) = \Bracks{\synS \sigma_2}_\mscrY.
-    \end{equation*}
-
-    \Cref{thm:fol_equality_characterization} implies that \( \mscrY \) satisfies \( \syn0 \syneq \synS \sigma_2 \), which contradicts the assumption that \( \mscrY \) satisfies \eqref{eq:def:peano_arithmetic/theory/PA1}.
-
-    \item Otherwise, \( \tau_1 = \synS(\sigma_1) \), where the inductive hypothesis holds for \( \sigma_1 \).
-
-    If \( \tau_2 = \syn0 \), we can similarly derive a contradiction, so \( \tau_2 = \synS(\sigma_2) \) for some \( \sigma_2 \). Then
-    \begin{equation*}
-      \Bracks{\synS \sigma_1}_\mscrY = \Phi(\tau_1) = \Phi(\tau_2) = \Bracks{\synS \sigma_2}_\mscrY.
-    \end{equation*}
-
-    From \cref{thm:fol_equality_characterization} it follows that \( \mscrY \) satisfies the formula \( \synS \sigma_1 \syneq \synS \sigma_2 \). Since \( \mscrY \) also satisfies \eqref{eq:def:peano_arithmetic/theory/PA2}, via \fullref{thm:propositional_semantic_mp} we conclude that \( \mscrY \) satisfies \( \sigma_1 \syneq \sigma_2 \). Then \cref{thm:fol_equality_characterization} implies that \( \Bracks{\sigma_1}_\mscrY = \Bracks{\sigma_2}_\mscrY \).
-
-    The inductive hypothesis on \( \sigma_1 \) implies that \( \sigma_1 = \sigma_2 \). Therefore,
-    \begin{equation*}
-      \synS \sigma_1 = \tau_1 = \tau_2 = \synS \sigma_2.
-    \end{equation*}
-  \end{itemize}
-
-  \SubProof{Proof that \( \Phi \) is a homomorphism} We must show that \( \Phi \) respects the functions from \( \Sigma_{\logic{PA}} \).
-
-  \SubProof*{Proof that \( \Phi \) respects \( \syn0 \)} By definition, \( I(\syn0) = \syn0 \), so
-  \begin{equation*}
-    \Phi(I(\syn0)) = \Phi(\syn0) = \Bracks{\syn0}_\mscrY = J(\syn0).
-  \end{equation*}
-
-  \SubProof*{Proof that \( \Phi \) respects \( \synS \)} Similarly,
-  \begin{equation*}
-    \Phi(I(\synS)(\tau)) = \Phi(\synS \tau) = \Bracks{\synS \tau}_\mscrY = J(\synS)(\Bracks{\tau}_\mscrY) = J(\synS)(\Phi(\tau)).
-  \end{equation*}
-
-  \SubProof*{Proof that \( \Phi \) respects \( \synplus \)} We must use \fullref{thm:induction_on_natural_numbers} on \( \sigma \) to show
-  \begin{equation*}
-    \Phi(I(\synplus)(\tau, \sigma)) = J(\synplus)(\Phi(\tau), \Phi(\sigma)).
-  \end{equation*}
-
-  \begin{itemize}
-    \item Suppose that \( \sigma = \syn0 \). \Cref{thm:fol_formula_semantics_of_compatible_substitutions} implies that, for any variable assignment \( v \) into \( N \),
-    \begin{equation*}
-      \Bracks{\tau \synplus \syn0 \syneq \tau}_\mscrN^v
-      =
-      \Bracks{\underbrace{\synx \synplus \syn0 \syneq \synx}_{\eqref{eq:def:peano_arithmetic/theory/PA4}}}_\mscrN^{v_{\synx \mapsto \tau}}
-      =
-      \semtop.
-    \end{equation*}
-
-    Then \cref{thm:fol_equality_characterization} implies that
-    \begin{equation*}
-      I(\synplus)(\tau, \sigma) = \Bracks{\tau \synplus \syn0}_\mscrN = \Bracks{\tau}_\mscrN = \tau.
-    \end{equation*}
-
-    Similarly, we conclude that
-    \begin{equation*}
-      J(\synplus)(\Phi(\tau), \Phi(\sigma)) = \Bracks{\tau \synplus \syn0}_\mscrY = \Bracks{\tau}_\mscrY = \Phi(\tau).
-    \end{equation*}
-
-    Therefore,
-    \begin{equation*}
-      \Phi(I(\synplus)(\tau, \sigma)) = J(\synplus)(\Phi(\tau), \Phi(\sigma)).
-    \end{equation*}
-
-    \item Similarly, if \( \sigma = \synS \rho \), where the inductive hypothesis holds for \( \rho \), we have
-    \begin{equation*}
-      I(\synplus)(\tau, \sigma) = \Bracks{\tau \synplus \synS \rho}_\mscrN = \Bracks{\synS (\tau \synplus \rho)}_\mscrN = I(\synS)\parens[\big]{ I(\synplus)(\tau, \rho) }
-    \end{equation*}
-    and
-    \begin{equation*}
-      J(\synplus)(\Phi(\tau), \Phi(\sigma)) = \cdots = J(\synS)\parens[\big]{ J(\synplus)\parens[\big]{ \Phi(\tau), \Phi(\rho) } }.
-    \end{equation*}
-
-    By the inductive hypothesis on \( \rho \), \( \Phi(I(\synplus)(\tau, \rho)) = J(\synplus)(\Phi(\tau), \Phi(\rho)) \), therefore
-    \begin{balign*}
-      \Phi(I(\synplus)(\tau, \sigma))
-      &=
-      \Phi\parens[\big]{ I(\synS)\parens[\big]{ I(\synplus)(\tau, \rho) } }
-      = \\ &=
-      J(\synS)\parens[\big]{ \Phi\parens[\big]{ I(\synplus)(\tau, \rho) } }
-      = \\ &=
-      J(\synS)\parens[\big]{ J(\synplus)(\Phi(\tau), \Phi(\rho)) }
-      = \\ &=
-      J(\synplus)(\Phi(\tau), \Phi(\sigma)),
-    \end{balign*}
-    as desired.
-  \end{itemize}
-
-  \SubProof*{Proof that \( \Phi \) respects \( \synmult \)} Similar.
-\end{proof}
-
-\begin{definition}\label{def:peano_arithmetic_standard_model}\mimprovised
-  We say that a \hyperref[def:fol_semantics/model]{first-order model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} is \term{standard} if the evaluation embedding from \cref{thm:peano_arithmetic_standard_segment} of the \hyperref[def:peano_arithmetic_term_model]{standard term model} is an \hyperref[def:fol_isomorphism]{isomorphism}.
-
-  Nonstandard models have \enquote{excessive} elements compared to the standard models listed in \cref{thm:peano_arithmetic_standard_models}. We call these excessive elements \term[en=non-standard elements (\cite[def. 2.5.10]{Hinman2005Logic})]{nonstandard natural numbers}.
-\end{definition}
-\begin{comments}
-  \item Due to \cref{thm:peano_arithmetic_categoricity}, this definition aligns with \cref{rem:simulating_second_order_logic}, where a model of first-order \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} is considered standard if its translation via \fullref{alg:fol_to_hol} is a \hyperref[def:hol_semantics/model]{model} of the second-order theory \( \logic{PA}_{\logic{2}} \).
-
-  \item This definition is loosely based on the discussion of \hyperref[def:hol_theory/categorical]{second-order categoricity} in \cite[\S 5]{Farmer2008STTVirtues}.
-
-  From the perspective of first-order logic, nonstandard models of arithmetic are discussed in \cite[\S 2.5]{Hinman2005Logic}, \cite[\S 3.2]{VanDalen2004LogicAndStructure} and \cite[\S 3.3.2]{Герасимов2014Вычислимость}.
-
-  \item The importance of standard models is highlighted in \cref{ex:peano_arithmetic_fol_induction}; see \cref{ex:peano_arithmetic_nonstandard_models} for examples of nonstandard models.
-\end{comments}
-
-\begin{proposition}\label{thm:peano_arithmetic_categoricity}
-  \hyperref[def:peano_arithmetic]{Second-order Peano arithmetic} is \hyperref[def:hol_theory/categorical]{categorical} with respect to \hyperref[def:hol_semantics/standard]{standard semantics}: every model of \( \logic{PA}_{\logic{2}} \) is \hyperref[def:hol_isomorphism]{isomorphic} to the (second-order) \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN_{\logic{2}} \).
-\end{proposition}
-\begin{proof}
-  Fix a second-order model \( \mscrY = (Y, J) \) of \( \logic{PA}_{\logic{2}} \), where \( Y = \seq{ Y_\tau }_{\tau \in \op*{\BbbQ_{\Sigma_{\logic{PA}}}}} \) is a \hyperref[def:hol_frame]{standard frame}.
-
-  We will show that the map
-  \begin{equation*}
-    \begin{aligned}
-      &\Phi: N \to Y_{\syn\iota}, \\
-      &\Phi(\tau) \coloneqq \Bracks{\tau}_\mscrY
-    \end{aligned}
-  \end{equation*}
-  is an isomorphism. By an adaptation of the arguments in \cref{thm:peano_arithmetic_standard_segment}, we can conclude that \( \Phi \) is an embedding. We only need to show that it is surjective.
-
-  We use \fullref{thm:induction_on_natural_numbers} on the element \( n \) of \( Y_{\syn\iota} \) to prove the existence of a term \( \tau \) of \( N \) such that \( \Phi(\tau) = n \). As in the proof of \cref{thm:peano_arithmetic_standard_segment}, we use induction on an abstract Boolean-valued function defined in the metatheory, so it is important for \( \mscrY \) to satisfy the second-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3/sol}.
-
-  \begin{itemize}
-    \item For the base case \( n = J(\syn0) \), naturally \( \tau \coloneqq \syn0 \).
-    \item Suppose that \( n = J(\synS)(m) \), where the inductive hypothesis holds for \( m \).
-
-    Then there exists some term \( \sigma \) from \( N \) such that \( \Phi(\sigma) = m \). It remains to define \( \tau \coloneqq \synS \sigma \).
-  \end{itemize}
-\end{proof}
-
-\begin{example}\label{ex:peano_arithmetic_fol_induction}
-  We list examples where the first-order induction axiom schema \eqref{eq:def:peano_arithmetic/theory/PA3} fails to capture the predicate needed for \fullref{thm:induction_on_natural_numbers}:
-  \begin{thmenum}
-    \thmitem{ex:peano_arithmetic_fol_induction/embedding} In \cref{thm:peano_arithmetic_standard_segment}, when proving that the \hyperref[def:peano_arithmetic_term_model]{standard term model} of \hyperref[def:peano_arithmetic]{Peano arithmetic} \logic{PA} embeds into any first-order model of \logic{PA}, we use induction several times without encoding the inductive hypothesis as a first-order formula. In fact, no such formulas exist because these hypotheses use formalisms outside of the scope of the object theory.
-
-    \thmitem{ex:peano_arithmetic_fol_induction/categoricity} In \cref{thm:peano_arithmetic_categoricity}, when showing that the aforementioned embedding is surjective for any standard second-order model \( \mscrX \) of \( \logic{PA}_{\logic{2}} \), we utilize induction on \( \mscrX \), but again provide no first-order formula for similar reasons.
-  \end{thmenum}
-\end{example}
-
-\begin{proposition}\label{thm:peano_arithmetic_standard_models}
-  The following are \hyperref[def:peano_arithmetic_standard_model]{standard models} of \hyperref[def:peano_arithmetic]{Peano arithmetic}:
-  \begin{itemize}
-    \thmitem{thm:peano_arithmetic_standard_models/omega} The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \).
-
-    \thmitem{thm:peano_arithmetic_standard_models/terms} The \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN \).
-
-    \thmitem{thm:peano_arithmetic_standard_models/initial} Any \hyperref[def:universal_objects/initial]{initial object} in the \hyperref[def:semiring/category]{category of semirings}.
-  \end{itemize}
-\end{proposition}
-\begin{comments}
-  \item This proposition merely highlights different possibilities, which may or may not depend on an already established notion of natural numbers.
-\end{comments}
-\begin{proof}
-  \SubProofOf{thm:peano_arithmetic_standard_models/omega} \Cref{thm:omega_is_model_of_pa} states that \( \omega \) is a model of second-order Peano arithmetic.
-
-  \SubProofOf{thm:peano_arithmetic_standard_models/terms} The standard term models is defined to match both the universe and the interpretation of \( \omega \), so naturally it is also a model.
-
-  \SubProofOf{thm:peano_arithmetic_standard_models/initial} \Cref{thm:category_of_semirings_properties/initial} implies that any standard model of \( \logic{PA} \) is an initial object in the category of unital semirings, and \cref{thm:def:universal_objects/initial} implies that any other initial object is isomorphic to it.
-\end{proof}
-
-\begin{example}\label{ex:peano_arithmetic_nonstandard_models}
-  We list examples of \hyperref[def:peano_arithmetic_standard_model]{nonstandard models} of \hyperref[def:peano_arithmetic]{Peano arithmetic}:
-  \begin{thmenum}
-    \thmitem{ex:peano_arithmetic_nonstandard_models/lowenheim_skolem} We have shown in \cref{thm:peano_arithmetic_standard_models} that there are standard models.
-
-    Standard models are necessarily countable in the metatheory; indeed, the \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN \) consists of strings over a finite alphabet.
-
-    Using \fullref{thm:upward_lowenheim_skolem_theorem}, we can construct an \hyperref[def:elementary_embedding]{elementary extension} \( \mscrM \) of \( \mscrN \) of any desired cardinality, say \hyperref[def:aleph_hierarchy]{\( \aleph_1 \)}.
-
-    Then \( \mscrM \) contains uncountably many nonstandard natural numbers not present in \( N \). Yet, \( \mscrN \) and \( \mscrM \) satisfy the same first-order sentences.
-
-    \thmitem{ex:peano_arithmetic_nonstandard_models/compactness} A simpler example of a nonstandard model of \logic{PA} can be constructed by using \fullref{thm:fol_semantic_compactness} directly.
-
-    Let \( \Sigma^+ \) be the extension of \( \Sigma_{\logic{PA}} \) by a single individual constant, \( \sync \). Let \( T \) be the extension of \( \logic{PA}^+ \) with the following axioms:
-    \begin{align*}
-      \synneg (\sync &\syneq \syn0), \\
-      \synneg (\sync &\syneq \synS \syn0), \\
-      \synneg (\sync &\syneq \synS \synS \syn0), \\
-                     &\vdots
-    \end{align*}
-
-    Any finite subset of \( \logic{PA}^+ \) contains only finitely many such axioms, so the standard term model \( \mscrN \) contains at least one closed term not subject to them. Therefore, \( \logic{PA}^+ \) is \hyperref[def:finitely_satisfiable_set_of_sentences]{finitely satisfiable}.
-
-    \Fullref{thm:fol_semantic_compactness} implies that \( \logic{PA}^+ \) is \hyperref[def:fol_semantics/satisfaction]{satisfiable}. Then there exists a \( \mscrM \) of \( \logic{PA}^+ \), which is incidentally also a model of \( \logic{PA} \).
-
-    \Cref{thm:peano_arithmetic_standard_segment} implies that \( \mscrN \) embeds into \( \mscrM \). Because of the new axioms imposed on \( \mscrM \), we can show by \fullref{thm:induction_on_natural_numbers} on \( \mscrN \) that the denotation of \( \sync \) in \( \mscrM \) differs from the denotation of any term in \( \mscrN \).
-
-    Therefore, \( \mscrM \) contains a nonstandard natural number.
-  \end{thmenum}
-\end{example}
-
 \begin{definition}\label{def:natural_numbers}
   We define the set of \term[bg=естествени числа (\cite[371]{ГеновМиховскиМоллов1991Алгебра}), ru=натуральные числа (\cite[def. 11.1]{Проскуряков1951ТеоретическиеОсновыАрифметики})]{natural numbers} \( \BbbN \) as a fixed \hyperref[def:peano_arithmetic_standard_model]{standard model} of \hyperref[def:peano_arithmetic]{Peano arithmetic}.
 
   The choice of model does not matter most of the time, and we can choose any from \cref{thm:peano_arithmetic_standard_models}. Yet, the \hyperref[def:peano_arithmetic_term_model]{standard term model} \( \mscrN \) is more useful when dealing with formal arithmetic, while the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \) is more useful across \fullref{ch:set_theory}.
 
-  For convenience, we use the usual \hyperref[def:positional_number_system/decimal]{decimal notation}
+  For convenience, we use the familiar \hyperref[def:positional_number_system/decimal]{decimal notation}
   \begin{align*}
-    &0 \coloneqq \syn0,                        &&1 \coloneqq \synS \syn0, \\
-    &2 \coloneqq \synS \synS \syn0             &&3 \coloneqq \synS \synS \synS \syn0, \\
-    &4 \coloneqq \synS \synS \synS \synS \syn0 &&5 \coloneqq \synS \synS \synS \synS \synS \syn0, \\
-    &\vdots                                    &&\vdots
+    0 &\coloneqq \syn0,                   \\
+    1 &\coloneqq \synS \syn0,             \\
+    2 &\coloneqq \synS \synS \syn0,       \\
+    3 &\coloneqq \synS \synS \synS \syn0, \\
+      &\vdots                             \\
   \end{align*}
 \end{definition}
 \begin{comments}
@@ -504,377 +20,420 @@
 
 \paragraph{Algebraic structure of \( \BbbN \)}
 
-\begin{proposition}\label{thm:nonzero_natural_numbers_have_predecessors}
-  Every nonzero natural number has a unique predecessor. More precisely, zero has no predecessor and for any nonzero number \( n \) there exists a unique number \( m \) such that \( n = s(m) \). We will denote this predecessor by \( p(n) \).
-\end{proposition}
-\begin{proof}
-  This proof is exemplar because it clearly demonstrates both the distinction between inductive and deductive reasoning and the role of the main three axioms.
-
-  \begin{itemize}
-    \item The axiom \eqref{eq:def:peano_arithmetic/theory/PA1} states that the function \( s \) is injective. By the equivalences in \cref{def:function_invertibility/injective}, its \hyperref[def:set_valued_map/inverse]{inverse set-valued map} is actually a \hyperref[def:set_valued_map/partial]{single-valued partial function}. Denote this inverse by \( p \).
-
-    \item The axiom \eqref{eq:def:peano_arithmetic/theory/PA2} states that the function \( s \) is not surjective. By the equivalences in \cref{def:function_invertibility/surjective}, the inverse \( p \) is not a \hyperref[def:set_valued_map/partial]{total function}.
-  \end{itemize}
-
-  What we have shown up until this point in the proof is deductive --- we have restated the first two axioms of \logic{PA} and used some equivalent conditions that allowed us to deduce properties of the inverse function \( p \) of \( s \). We did all of this by following the precise rules of \hyperref[con:classical_logic]{classical logic} described formally in \fullref{sec:propositional_natural_deduction}. This reasoning emulates \hyperref[inf:def:axiomatic_derivation_as_natural_deduction/mp]{modus ponens}.
-
-  Now we will show that every nonzero natural number has a predecessor, that is, that the function \( p \) is not defined only at \( 0 \). To highlight the logical structure of this proof, we will use \hyperref[def:first_order_natural_deduction_system]{first-order natural deduction} rather than work with the model \( \BbbN \) of \logic{PA}.
-
-  Denote by \( \theta \) the formula
-  \begin{equation*}
-    \synx \syneq 0 \synvee \qexists \synz (\synx \syneq s(\synz)).
-  \end{equation*}
-
-  Clearly \( \synx \) is the only free variable in \( \theta \). We want to derive the formula \( \qforall \syny \theta[\synx \mapsto \syny] \) from the axioms of \logic{PA}.
-
-  In this part of the proof we will use inductive reasoning. This will highlight that \eqref{eq:def:peano_arithmetic/theory/PA3} is not an axiom schema about specifying properties, but rather about introducing a proof technique that does not hold for general \hyperref[def:fol_theory]{logical theories}. We will not attempt to prove \( \qforall \syny \theta[\synx \mapsto \syny] \) directly. Instead, we will prove a more complicated formula that is easier to prove and then by one of the many induction principles, it will follow that our desired result holds.
-
-  We can deduce the following theorem without premises:
-  \begin{equation*}
-    \begin{prooftree}
-      \infer0[\eqref{eq:def:first_order_natural_deduction_system/equality/intro}]{ (\synx \syneq 0)[\synx \mapsto 0] }
-      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \theta[\synx \mapsto 0] }
-
-      \infer0[\eqref{eq:def:first_order_natural_deduction_system/equality/intro}]{ (\synx \syneq s(\synz))[\synz \mapsto \syny, \synx \mapsto s(\syny)] }
-      \infer1[\eqref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \parens[\big]{ \qexists \synz (\synx \syneq s(\synz) }[\synx \mapsto s(\syny)] }
-      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \theta[\synx \mapsto s(\syny)] }
-      \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \theta[\synx \mapsto \syny] \synimplies \theta[\synx \mapsto s(\syny)] }
-      \infer1[\eqref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \syny (\theta[\synx \mapsto \syny] \synimplies \theta[\synx \mapsto s(\syny)]) }
-
-      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ \theta[\synx \mapsto 0] \synwedge \qforall \syny \parens[\big] { \theta[\synx \mapsto \syny] \synimplies \theta[\synx \mapsto s(\syny)] } }
-    \end{prooftree}
-  \end{equation*}
-
-  This is precisely the antecedent of the instance of \eqref{eq:def:peano_arithmetic/theory/PA3} with \( \varphi = \theta \). By \cref{thm:syntactic_deduction_theorem} we have
-  \begin{equation*}
-    \eqref{eq:def:peano_arithmetic/theory/PA3} \vdash \qforall \syny \theta[\synx \mapsto \syny].
-  \end{equation*}
-
-  When interpreted in \( \BbbN \), this formula \( \qforall \syny \theta[\synx \mapsto \syny] \) simply states that every natural number is either zero or has a predecessor. The statement does not concern itself with uniqueness nor with whether \( 0 \) has a predecessor.
-
-  But we have already shown uniqueness --- the predecessor function \( p \) is a partial single-valued function. And we have shown that \( p \) is not defined at zero. The last part of the proof shows \( p \) is defined for all nonzero values.
-
-  We may choose to define \( p \) at zero by giving it a sentinel value. This is precisely the technique we use in \cref{thm:function_invertibility_categorical/nonempty_left_invertible} to show that \( s \) has a left inverse if it is injective.
-
-  We can use only \eqref{eq:def:peano_arithmetic/theory/PA1} to show that \( s \) is injective and then pick \( p \) to be any of its left inverses. We also want \( p \) to be as close as possible to a right inverse, however. The latter, as we have seen, is more tricky.
-\end{proof}
-
 \begin{proposition}\label{thm:natural_number_addition_properties}
-  The \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) with \hyperref[def:peano_arithmetic/plus]{addition} form a \hyperref[def:binary_operation/cancellative]{cancellative} \hyperref[def:binary_operation/commutative]{commutative} \hyperref[def:zerosumfree]{zerosumfree} \hyperref[def:monoid]{monoid} with \( 0 \) as the neutral element.
+  The \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) with addition, as characterized by \hyperref[def:peano_arithmetic]{Peano arithmetic}, form a \hyperref[def:binary_operation/cancellative]{cancellative} \hyperref[def:binary_operation/commutative]{commutative} \hyperref[def:zerosumfree]{zerosumfree} \hyperref[def:monoid]{monoid} with \( 0 \) as the neutral element.
 \end{proposition}
 \begin{comments}
-  \item This generalizes to \cref{thm:cardinal_addition_algebraic_properties} and \cref{thm:cardinal_addition_algebraic_properties}.
+  \item We generalize this to \hyperref[def:ordinal]{ordinal numbers} in \cref{thm:ordinal_addition_algebraic_properties} and to \hyperref[def:cardinal]{cardinal numbers} in \cref{thm:cardinal_addition_algebraic_properties}.
 \end{comments}
 \begin{proof}
-  \SubProofOf[def:binary_operation/commutative]{commutativity} Consider the sum \( n + m \). We use induction on \( m \) to prove its commutativity.
+  \SubProofOf[def:binary_operation/associative]{associativity} Fix natural numbers \( n \), \( m \) and \( k \). We will prove associativity by induction on \( k \), simultaneously for all \( n \) and \( m \).
   \begin{itemize}
-    \item If \( m = 0 \), nested induction by \( n \) yields:
+    \item If \( k = 0 \), we have
+    \begin{equation*}
+      (n + m) + 0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+      n + m
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+      n + (m + 0).
+    \end{equation*}
+
+    \item If the inductive hypothesis holds for \( k \), then
+    \begin{balign*}
+      (n + m) + S(k)
+      &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} =
+      S((n + m) + k)
+      \reloset {\T{ind.}} = \\ &=
+      S(n + (m + k))
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} = \\ &=
+      n + S(m + k)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} = \\ &=
+      n + m + S(k).
+    \end{balign*}
+  \end{itemize}
+
+  \SubProofOf[def:binary_operation/commutative]{commutativity} We prove \( n + m = m + n \) using induction on \( m \), simultaneously for all \( n \). We will need an additional base case for \( m = 1 \).
+
+  \begin{itemize}
+    \item If \( m = 0 \), we use nested induction on \( n \) with a fixed \( m \).
     \begin{itemize}
       \item If \( n = m = 0 \), clearly \( n + m = 0 + 0 = m + n \).
-      \item If the inductive hypothesis holds for its predecessor \( p(n) \),
+      \item If the inductive hypothesis holds for \( n \), then
       \begin{balign*}
-        n + m
-        &=
-        n + 0
-        = \\ &=
-        s(p(n)) + 0
+        S(n) + 0
+        &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+        S(n)
         \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} = \\ &=
-        s(p(n))
-        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} = \\ &=
-        s(p(n) + 0)
-        = \\ &=
-        s(p(n) + m)
+        S(n + 0)
         \reloset {\T{ind.}} = \\ &=
-        s(m + p(n))
+        S(0 + n)
         \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} = \\ &=
-        m + s(p(n))
-        =
-        m + n.
+        0 + S(n).
       \end{balign*}
     \end{itemize}
 
-    \item If \( m \neq 0 \) and if the inductive hypothesis holds for \( p(m) \), \eqref{eq:def:peano_arithmetic/theory/PA1} yields that \( n + m = m + n \) if and only if \( n + p(m) = p(m) + n \). But the last equality is satisfied because of the inductive hypothesis, hence commutativity of \( n \) and \( m \) follows.
+    \item If \( m = 1 \), we use nested induction on \( n \) with a fixed \( m \).
+    \begin{itemize}
+      \item If \( n = 0 \), then
+      \begin{equation*}
+        0 + 1
+        \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} =
+        S(0)
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+        S(0) + 0.
+      \end{equation*}
+
+      \item If the inductive hypothesis holds for \( n \), then
+      \begin{balign*}
+        S(n) + 1
+        &\reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} =
+        (n + 1) + 1
+        \reloset {\T{ind.}} = \\ &=
+        (1 + n) + 1
+        \reloset {\eqref{eq:def:binary_operation/associative}} = \\ &=
+        1 + (n + 1)
+        \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} = \\ &=
+        1 + S(n).
+      \end{balign*}
+    \end{itemize}
+
+    \item If the inductive hypothesis holds for \( m \), we again use nested induction on \( n \) with a fixed \( m \).
+    \begin{itemize}
+      \item If \( n = 0 \), then
+      \begin{equation*}
+        0 + S(m)
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} =
+        S(0 + m)
+        \reloset {\T{ind.}} =
+        S(m + 0)
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+        S(m)
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+        S(m) + 0.
+      \end{equation*}
+
+      \item Finally, if the inductive hypothesis holds for \( n \), then
+      \begin{balign*}
+        S(n) + S(m)
+        &\reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} =
+        (n + 1) + (m + 1)
+        \reloset {\T{ind.}} = \\ &=
+        m + (n + 1) + 1
+        = \\ &=
+        m + (1 + n) + 1
+        \reloset {\eqref{eq:def:binary_operation/associative}} = \\ &=
+        (m + 1) + (n + 1)
+        \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} = \\ &=
+        S(m) + S(n).
+      \end{balign*}
+    \end{itemize}
   \end{itemize}
-
-  \SubProofOf[def:binary_operation/associative]{associativity} Fix natural numbers \( n \), \( m \), \( k \). We will prove associativity by induction on \( k \). If \( k = 0 \), we have
-  \begin{equation*}
-    (n + m) + 0
-    \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
-    n + m
-    \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
-    n + (m + 0).
-  \end{equation*}
-
-  If \( k \neq 0 \), the proof follows directly from \eqref{eq:def:peano_arithmetic/theory/PA1} as in our proof of commutativity.
 
   \SubProofOf[def:monoid]{neutral element} We have \( n + 0 = n \) by \eqref{eq:def:peano_arithmetic/theory/PA4} and \( 0 + n = n \) by commutativity.
 
-  \SubProofOf[def:binary_operation/cancellative]{cancellation} Let \( n + k = m + k \). We will prove that \( n = m \) by induction. This is obvious for \( k = 0 \). For \( k \neq 0 \) we have
-  \begin{equation*}
-    n + s(p(k))
-    =
-    n + k
-    =
-    m + k
-    =
-    m + s(p(k)),
-  \end{equation*}
-  which by \eqref{eq:def:peano_arithmetic/theory/PA5} is equivalent to \( s(n + p(k))) = s(m + p(k))) \).
+  \SubProofOf[def:binary_operation/cancellative]{cancellation} Let \( n + k = m + k \). We will prove that \( n = m \) by induction on \( k \), simultaneously for all \( n \) and \( m \).
+  \begin{itemize}
+    \item For \( k = 0 \), this follows from \eqref{eq:def:peano_arithmetic/theory/PA4}.
+    \item If the inductive hypothesis holds for \( k \), then
+    \begin{equation*}
+      n + S(k)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} =
+      S(n + k)
+      \reloset {\T{ind.}} =
+      S(m + k)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} =
+      m + S(k)
+    \end{equation*}
+  \end{itemize}
 
-  By \eqref{eq:def:peano_arithmetic/theory/PA1}, we have \( n + p(k) = m + p(k) \). The inductive hypothesis implies that \( n = m \).
+  \SubProof{Proof that \( \BbbN \) is \hyperref[def:zerosumfree]{zerosumfree}} We must show that \( n + m = 0 \) implies \( n = m = 0 \). We will use induction on \( m \), simultaneously for all \( n \).
 
-  \SubProof[def:zerosumfree]{Proof that \( \BbbN \) is zerosumfree} We will use induction on \( m \) in \( n + m = 0 \).
   \begin{itemize}
     \item If \( m = 0 \), then \( n + m = n \) by \eqref{eq:def:peano_arithmetic/theory/PA4}, and hence \( n = 0 \).
 
-    \item If \( m > 0 \), then \( n + m = s(n + p(m)) \) by \eqref{eq:def:peano_arithmetic/theory/PA5}, and by \eqref{eq:def:peano_arithmetic/theory/PA2}, \( n + m \neq 0 \).
+    \item If the inductive hypothesis holds for \( m \), then \( n + S(m) = S(n + m) \) by \eqref{eq:def:peano_arithmetic/theory/PA5}, and \( 0 = S(n + m) \) contradicts \eqref{eq:def:peano_arithmetic/theory/PA1}.
   \end{itemize}
-
-  Therefore, \( n + m = 0 \) if and only if \( n = m = 0 \).
 \end{proof}
 
-\begin{remark}\label{rem:natural_number_multiplication}
-  \hyperref[con:additive_semigroup/multiplication]{Multiplication in commutative monoids} (i.e. monoid exponentiation) is defined in \cref{def:monoid/exponentiation} for a natural number and a monoid member. It just to happens that, by \cref{thm:natural_number_addition_properties}, the natural numbers are themselves a monoid. We cannot rely on \cref{thm:semigroup_exponentiation_properties}, however, if we want to avoid circular definitions and proofs.
+\begin{lemma}\label{thm:natural_number_multiplication_and_monoid_exponentiation}
+  \hyperref[def:natural_numbers]{Natural number} multiplication, as characterized by \hyperref[def:peano_arithmetic]{Peano arithmetic}, coincides with \hyperref[con:additive_semigroup/multiplication]{multiplication in commutative monoids}, as defined in \cref{def:monoid/exponentiation} for a natural number and a monoid member.
+\end{lemma}
+\begin{proof}
+  Denote Peano multiplication by \( \cdot \) and monoid multiplication by \( \times \).
 
-  Having multiplication as part of the signature of \hyperref[def:peano_arithmetic]{Peano arithmetic} allows us to avoid this circularity.
-\end{remark}
+  We will show that \( n \cdot m = n \times m \) by induction on \( m \), simultaneously for all \( n \).
+  \begin{itemize}
+    \item For the base case \( m = 0 \), \eqref{eq:def:peano_arithmetic/theory/PA6} implies that \( n \cdot 0 = 0 \), while \( n \times 0 \) is by definition the neutral element \( 0 \).
+
+    \item If the inductive hypothesis holds for \( m \), then \eqref{eq:def:peano_arithmetic/theory/PA7} implies that
+    \begin{equation*}
+      n \cdot S(m) = n \cdot m + n,
+    \end{equation*}
+    which is precisely the definition of \( n \times (m + 1) \). \Cref{thm:peano_arithmetic_successor_and_addition} implies that \( S(m) = m + 1 \), which concludes the proof.
+  \end{itemize}
+\end{proof}
 
 \begin{proposition}\label{thm:natural_number_multiplication_properties}
-  The \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) with \hyperref[def:peano_arithmetic/mult]{multiplication} form a \hyperref[def:binary_operation/commutative]{commutative} \hyperref[def:monoid]{monoid} with \( 1 \) as the neutral element.
+  The \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) with multiplication, as characterized by \hyperref[def:peano_arithmetic]{Peano arithmetic}, form a \hyperref[def:binary_operation/commutative]{commutative} \hyperref[def:monoid]{monoid} with \( 1 \) as the neutral element.
 
   When combined with addition, the natural numbers become an \hyperref[def:entire_semiring]{entire} \hyperref[def:semiring/commutative]{commutative semiring}.
 \end{proposition}
 \begin{comments}
-  \item This generalizes to \cref{thm:ordinal_multiplication_algebraic_properties} and \cref{thm:cardinal_multiplication_algebraic_properties}.
+  \item We generalize this to \hyperref[def:ordinal]{ordinal numbers} in \cref{thm:ordinal_multiplication_algebraic_properties} and to \hyperref[def:cardinal]{cardinal numbers} in \cref{thm:cardinal_multiplication_algebraic_properties}.
 \end{comments}
 \begin{proof}
   \SubProof{Proof that \( 1 \) is a \hyperref[def:monoid]{neutral element}} Multiplication by \( 1 \) on the right preserves any natural number:
   \begin{equation*}
      n \cdot 1
-     \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+     \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
      n \cdot 0 + n
-     \reloset{\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+     \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
      0 + n
-     =
+     \reloset {\ref{thm:natural_number_addition_properties}} =
      n.
   \end{equation*}
 
-  Multiplication from the left is handled by induction. Indeed, the case \( n = 0 \) is trivial and for nonzero \( n \) we have
-  \begin{equation*}
-     1 \cdot n
-     \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
-     1 \cdot p(n) + 1
-     \reloset{\eqref{eq:def:peano_arithmetic/theory/PA6}} =
-     p(n) + 1
-     =
-     n.
-  \end{equation*}
+  Multiplication from the left is handled by induction on \( n \).
+  \begin{itemize}
+    \item If \( n = 0 \), then
+    \begin{equation*}
+       0 \cdot 1
+       \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+       0.
+    \end{equation*}
 
-  \SubProofOf[def:semiring/left_distributivity]{distributivity} We will prove that \( (n + m)k = n \cdot k + n \cdot k \) with induction on \( k \).
+    \item If the inductive hypothesis holds for \( n \), then
+    \begin{equation*}
+       1 \cdot S(n)
+       \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+       1 \cdot n + 1
+       \reloset {\T{ind.}} =
+       n + 1
+       \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} =
+       S(n).
+    \end{equation*}
+  \end{itemize}
 
-  If \( k = 0 \),
-  \begin{equation*}
-    (n + m) \cdot 0
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA6}} =
-    0
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA4}} =
-    0 + 0
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA6}} =
-    n \cdot 0 + m \cdot 0.
-  \end{equation*}
+  \SubProofOf[def:semiring/left_distributivity]{distributivity} We will prove that \( (n + m) \cdot k = n \cdot k + n \cdot k \) by induction on \( k \), simultaneously for all \( n \) and \( m \).
 
-  For all nonzero \( k \), if the inductive hypothesis holds for \( p(k) \), then
-  \begin{balign*}
-    (n + m) \cdot k
-    &\reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
-    (n + m) + (n + m) \cdot p(k)
-    \reloset {\T{ind.}} = \\ &=
-    (n + m) + n \cdot p(k) + n \cdot p(k)
-    = \\ &=
-    (n + n \cdot p(k)) + (m + m \cdot p(k))
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} = \\ &=
-    n \cdot k + m \cdot k.
-  \end{balign*}
+  \begin{itemize}
+    \item If \( k = 0 \),
+    \begin{equation*}
+      (n + m) \cdot 0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+      0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+      0 + 0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+      n \cdot 0 + m \cdot 0.
+    \end{equation*}
 
-  \SubProofOf[def:binary_operation/associative]{associativity} With distributivity proven, associativity of multiplication follows by induction. Indeed,
-  \begin{equation*}
-    (n \cdot m) \cdot k = n \cdot (m \cdot k)
-  \end{equation*}
-  is trivially satisfied for \( k = 0 \) and for all nonzero \( k \), whenever the inductive hypothesis holds for all \( n, m \in \BbbN \), it follows that
-  \begin{balign*}
-    (n \cdot m) \cdot k
-    &\reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
-    n \cdot m + (n \cdot m) \cdot p(k)
-    \reloset {\T{ind.}} = \\ &=
-    n \cdot m + n \cdot (m \cdot p(k))
-    \reloset{\eqref{eq:def:semiring/left_distributivity}} = \\ &=
-    n \cdot (m + m \cdot p(k))
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} = \\ &=
-    n \cdot (m \cdot k).
-  \end{balign*}
+    \item If the inductive hypothesis holds for \( k \), then
+    \begin{balign*}
+      (n + m) \cdot S(k)
+      &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+      (n + m) + (n + m) \cdot k
+      \reloset {\T{ind.}} = \\ &=
+      (n + m) + n \cdot k + n \cdot k
+      \reloset {\ref{thm:natural_number_addition_properties}} = \\ &=
+      (n + n \cdot k) + (m + m \cdot k)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} = \\ &=
+      n \cdot k + m \cdot k.
+    \end{balign*}
+  \end{itemize}
 
-  \SubProofOf[def:binary_operation/commutative]{commutativity} By induction on \( m \) we prove
-  \begin{equation*}
-    n \cdot m = m \cdot n.
-  \end{equation*}
+  \SubProofOf[def:binary_operation/associative]{associativity} With distributivity proven, we will show \( (n \cdot m) \cdot k = n \cdot (m \cdot k) \) by induction on \( k \), simultaneously for all \( n \) and \( m \).
+  \begin{itemize}
+    \item If \( k = 0 \), then
+    \begin{equation*}
+      (n \cdot m) \cdot 0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+      0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+      n \cdot 0
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+      n \cdot (m \cdot 0)
+    \end{equation*}
 
-  The base case is trivial for nonzero \( m \).
+    \item If the inductive hypothesis holds for \( k \), then
+    \begin{balign*}
+      (n \cdot m) \cdot S(k)
+      &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+      n \cdot m + (n \cdot m) \cdot k
+      \reloset {\T{ind.}} = \\ &=
+      n \cdot m + n \cdot (m \cdot k)
+      \reloset {\eqref{eq:def:semiring/left_distributivity}} = \\ &=
+      n \cdot (m + m \cdot k)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} = \\ &=
+      n \cdot (m \cdot S(k)).
+    \end{balign*}
+  \end{itemize}
 
-  If \( n \cdot p(m) = p(m) \cdot n \) for all \( n \in \BbbN \), then
-  \begin{equation*}
-    n \cdot m
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
-    n + n \cdot p(m)
-    \reloset {\T{ind.}} =
-    n + p(m) \cdot n
-    \reloset{\eqref{def:semiring/left_distributivity}} =
-    (1 + p(m)) \cdot n
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA5}} =
-    m \cdot n.
-  \end{equation*}
+  \SubProofOf[def:binary_operation/commutative]{commutativity} We will show \( n \cdot m = m \cdot n \) by induction on \( m \), simultaneously for all \( n \).
+  \begin{itemize}
+    \item If \( m = 0 \), we use nested induction on \( n \) for a fixed \( m \).
+    \begin{itemize}
+      \item If \( n = 0 \), trivially
+      \begin{equation*}
+        n \cdot m
+        =
+        0 \cdot 0
+        =
+        m \cdot n.
+      \end{equation*}
+
+      \item If the inductive hypothesis holds for \( n \), then
+      \begin{equation*}
+        S(n) \cdot 0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+        0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
+        0 + 0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} =
+        0 \cdot n + 0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+        0 \cdot S(n).
+      \end{equation*}
+    \end{itemize}
+
+    \item If the inductive hypothesis holds for \( m \), we again use nested induction on \( n \) with a fixed \( m \).
+    \begin{itemize}
+      \item If \( n = 0 \), then
+      \begin{balign*}
+        0 \cdot S(m)
+        &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+        0 \cdot m + 0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} = \\ &=
+        0 \cdot m
+        \reloset {\T{ind.}} = \\ &=
+        m \cdot 0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} = \\ &=
+        0
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA6}} = \\ &=
+        S(m) \cdot 0.
+      \end{balign*}
+
+      \item Finally, if the inductive hypothesis holds for \( n \), then
+      \begin{balign*}
+        S(n) \cdot S(m)
+        &\reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+        S(n) \cdot m + S(n)
+        \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} = \\ &=
+        (n + 1) \cdot m + S(n)
+        \reloset {\eqref{eq:def:semiring/left_distributivity}} = \\ &=
+        n \cdot m + 1 \cdot m + S(n)
+        \reloset {\eqref{eq:def:monoid/theory/neutral}} = \\ &=
+        n \cdot m + m + S(n)
+        \reloset {\T{ind.}} = \\ &=
+        m \cdot n + m + S(n)
+        \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} = \\ &=
+        m \cdot S(n) + S(n)
+        \reloset {\eqref{eq:def:monoid/theory/neutral}} = \\ &=
+        m \cdot S(n) + 1 \cdot S(n)
+        \reloset {\eqref{eq:def:semiring/left_distributivity}} = \\ &=
+        (m + 1) \cdot S(n)
+        \reloset {\eqref{eq:thm:peano_arithmetic_successor_and_addition}} = \\ &=
+        S(m) \cdot S(n).
+      \end{balign*}
+    \end{itemize}
+  \end{itemize}
+
+  \SubProofOf[def:semiring/absorption]{absorption} From \eqref{eq:def:peano_arithmetic/theory/PA6} it follows that \( n0 = 0 \) for every \( n \), and from commutativity of multiplication it also follows that \( 0n = 0 \).
 
   \SubProof{Proof of no zero divisors} We will now show that \( \BbbN \) has no zero divisors.
 
-  If \( m = 0 \), then \( n \cdot m = 0 \) by \eqref{eq:def:peano_arithmetic/theory/PA6}. If \( n = 0 \), then by induction on \( m \) we can easily show that \( n \cdot m = n \cdot p(m) + n = 0 + 0 = 0 \).
-
-  Conversely, let \( n \cdot m = 0 \). By induction on \( m \), either \( m = 0 \) or we have \( n \cdot m = n \cdot p(m) + n \), in which case both \( n \cdot p(m) \) and \( n \) are zero because \( \BbbN \) is zerosumfree. Thus, if we assume that \( m \neq 0 \), then we can conclude that \( n = 0 \).
+  Namely, we will show that \( n \cdot m = 0 \) implies \( n = m = 0 \) by induction on \( m \), simultaneously for all \( n \).
+  \begin{itemize}
+    \item If \( m = 0 \), \eqref{eq:def:peano_arithmetic/theory/PA6} implies that \( n = 0 \).
+    \item If the inductive hypothesis holds for \( m \), then
+    \begin{equation*}
+      n \cdot S(m)
+      \reloset {\eqref{eq:def:peano_arithmetic/theory/PA7}} =
+      S(n \cdot m),
+    \end{equation*}
+    which cannot be zero due to \eqref{eq:def:peano_arithmetic/theory/PA1}.
+  \end{itemize}
 \end{proof}
-
-\begin{remark}\label{rem:natural_number_successor_via_addition}
-  In \cite[1]{Peano1889ArithmeticesPrincipia}, Peano defined an \enquote{\( n \mapsto n + 1 \)} operation rather than a successor operation. It has since become common practice to instead define a \enquote{successor} operation, define addition and then show that the two are compatible:
-  \begin{equation*}
-    n + 1
-    \reloset {\eqref{eq:def:peano_arithmetic/theory/PA5}} =
-    s(n + 0)
-    \reloset {\eqref{eq:def:peano_arithmetic/theory/PA4}} =
-    s(n).
-  \end{equation*}
-
-  The predecessor operation then corresponds to integer subtraction by \( 1 \). We avoid subtraction in this subsection --- we are only interested in the fact that every nonzero natural number \( n \) has a predecessor \( m \) such that \( n = m + 1 \).
-
-  It is dangerous to conflate \( n + 1 \) and \( s(n) \) until we have proved the familiar properties of addition. We have already done so in \cref{thm:natural_number_addition_properties}, however, and will further avoid mentioning directly the operations \( s(n) \) and \( p(n) \).
-
-  See \cref{rem:ordinal_successor_via_addition} for the more general case of ordinal addition.
-\end{remark}
 
 \paragraph{Order structure of \( \BbbN \)}
 
-\begin{definition}\label{def:natural_numbers_ordering}
-  We can define the familiar order \( \leq \) on the natural numbers via addition as the \hyperref[con:formula_defined_predicate]{formula-defined predicate}
-  \begin{equation}\label{eq:def:natural_numbers_ordering/predicate}
-    \alpha \leq \beta \coloneqq \qexists \synx \parens[\big]{ \alpha + \synx \syneq \beta }.
-  \end{equation}
-
-  We use the infix notation for convenience, however we do not assume that \( \leq \) is part of the language of \logic{PA} (as explained in \cref{rem:fol_formula_conventions/necessary_signature}).
-
-  The following relation
-  \begin{equation}\label{eq:def:natural_numbers_ordering/strict_predicate}
-    \alpha < \beta \coloneqq \qexists {\synx \neq 0} \parens[\big]{ \alpha + \synx \syneq \beta }.
-  \end{equation}
-  is then connected to \( \leq \) via \eqref{eq:def:preordered_set/compatibility_strict}.
-\end{definition}
-\begin{comments}
-  \item For the specific model of \logic{PA} based on the smallest inductive set \( \omega \), the latter relation \( < \) is equivalent to \( \in \) as discussed in \cref{rem:ordinal_definition}.
-  \item We will show in \cref{thm:natural_numbers_are_well_ordered} that \( \BbbN \) is \hyperref[def:totally_ordered_set]{total ordered} (even \hyperref[def:well_ordered_set]{well-ordered}) with \( \leq \) as the nonstrict order and \( < \) as the strict order.
-\end{comments}
-\begin{defproof}
-  We will show that \( n < m \) if and only if \( n \leq m \) and \( n \neq m \).
-
-  \SufficiencySubProof Suppose that \( n < m \). Then there exists some nonzero \( a \) such that \( n + a = m \). In particular, we have \( n \leq m \). If we suppose that \( n = m \), then \( n + a = m \) and since addition is cancellative, it would follow that \( a = 0 \), contradicting the assumption that \( a \) is nonzero.
-
-  Therefore, \( n \leq m \) and \( n \neq m \).
-
-  \NecessitySubProof Suppose that \( n \leq m \) and \( n \neq m \). Then there exists some \( a \) such that \( n + a = m \) If we suppose that \( a = 0 \), then we would obtain that \( n = m \), which would contradict our choice of \( n \) and \( m \).
-
-  Therefore, \( n < m \).
-\end{defproof}
-
 \begin{proposition}\label{thm:natural_numbers_are_well_ordered}
-  The natural numbers are \hyperref[def:well_ordered_set]{well-ordered} by the relation \( < \) defined by \eqref{eq:def:natural_numbers_ordering/strict_predicate}.
+  The \hyperref[def:natural_numbers]{natural numbers} are \hyperref[def:well_ordered_set]{well-ordered} by the relation \( \leq \) defined by \cref{def:peano_arithmetic_ordering}.
 
   Furthermore, \( \BbbN \) is an \hyperref[def:ordered_semiring]{ordered semiring}, that is, the nonstrict order \( \leq \) is compatible with addition and multiplication.
 \end{proposition}
 \begin{proof}
-  As discussed in \cref{def:well_ordered_set}, in order to show that \( < \) well-orders \( \BbbN \), we only need to show that \( < \) is \hyperref[def:binary_relation/transitive]{transitive}, satisfies \hyperref[def:binary_relation/trichotomy]{trichotomy} and does not allow an strictly descending sequence.
+  \SubProofOf[def:binary_relation/reflexive]{reflexivity} We have \( n \leq n \) since \( n + 0 = n \).
 
-  \SubProofOf[def:binary_relation/transitive]{transitivity} Let \( n < m \) and \( m < k \). Then there exist nonzero numbers \( a \) such that \( n + a = m \) and \( b \) such that \( m + b = k \). Thus, \( n + a + b = k \), which demonstrates that \( n \leq k \). Furthermore, because \( \BbbN \) is zerosumfree, it also follows that \( a + b \neq 0 \).
+  \SubProofOf[def:binary_relation/transitive]{transitivity} If \( n \leq m \) and \( m \leq k \), then there exist numbers \( a \) and \( b \) such that \( m = n + a \) and \( k = m + b \).
 
-  Therefore, \( n < k \).
+  Then \( k = n + (a + b) \), hence \( n \leq k \).
 
-  \SubProofOf[def:binary_relation/trichotomy]{trichotomy} Let \( n \) and \( m \) be natural numbers.
-
-  We have already shown in \cref{def:natural_numbers_ordering} that due to \eqref{eq:def:preordered_set/compatibility_strict} the equality \( n = m \) holds if and only if neither \( n < m \) nor \( n > m \).
-
-  Aiming at a contradiction, suppose that both \( n < m \) and \( n > m \) hold. There must exist nonzero numbers \( a \) and \( b \) such that \( n + a = m \) and \( n = m + b \). Then
-  \begin{equation*}
-    n = m + b = (n + a) + b.
-  \end{equation*}
-
-  Since addition is cancellative, we have \( a + b = 0 \). Therefore, \( n = m \), which as we have shown is incompatible with neither \( n < m \) nor \( n > m \).
-
-  Therefore, at most one of the three conditions \( n = m \), \( n < m \) or \( n > m \) holds.
-
-  We will use induction on \( m \) to show that at least one of the conditions hold. If \( m = 0 \), then either \( n = 0 \) and \( m = n \) or \( n \neq 0 \) and \( m < n \). Now suppose that the inductive hypothesis holds for \( m \). We will show that it also holds for \( m + 1 \).
+  \SubProofOf[def:binary_relation/connected]{connectedness} We will show that \( n \leq m \) or \( m \leq n \) using induction on \( m \), simultaneously on all \( n \).
   \begin{itemize}
-    \item If \( n = m \), then clearly \( n < m + 1 \).
-    \item If \( n < m \), then since \( m < m + 1 \) by transitivity of \( < \), we have \( n < m + 1 \).
-    \item If \( n > m \), then there exists some nonzero \( a \) such that \( n = m + a \). If \( a = 1 \), then \( n = m + 1 \). If \( a \) is neither \( 0 \) nor \( 1 \), then \( n > m + 1 \).
+    \item If \( m = 0 \), then \( m \leq n \) because \( 0 + n = n \).
+    \item If the inductive hypothesis holds for \( m \), we have two cases
+    \begin{itemize}
+      \item If \( n \leq m \), then \( m = n + a \) for some \( a \) and hence \( S(m) = n + S(a) \); i.e. \( n \leq S(m) \).
+      \item If \( m \leq n \), then \( n = m + b \) for some \( b \), and we have two cases to consider, based on whether \( b \) has a predecessor (see \cref{ex:peano_arithmetic_predecessor_existence}).
+      \begin{itemize}
+        \item If \( b = 0 \), then \( m = n \), hence \( S(m) = n + 1 \) and \( n \leq S(m) \).
+        \item If \( b = S(c) \) for some \( c \), then \( n = m + S(c) = S(m + c) = S(m) + c \), hence \( S(m) \leq n \).
+      \end{itemize}
+    \end{itemize}
   \end{itemize}
 
-  \SubProofOf[def:well_founded_relation]{well-foundedness} We will show by induction on \( n \) that an strictly descending sequence ending at \( n \) cannot exist.
+  \SubProofOf[def:chain_condition]{descending chain condition} We will use induction on \( n \) to show that every descending chain ending with \( n \) stabilizes.
 
-  If \( n = 0 \), by \eqref{eq:def:peano_arithmetic/theory/PA2} \( n \) has no predecessor and thus there cannot exist a natural number \( m \) such that \( m < n \).
+  \begin{itemize}
+    \item For the base case \( n = 0 \), consider the chain
+    \begin{equation*}
+      \cdots \leq m_2 \leq m_1 \leq 0.
+    \end{equation*}
 
-  Now assume that the inductive hypothesis holds for \( n \) and suppose that there exists an strictly descending sequence ending in \( n + 1 \):
-  \begin{equation}\label{eq:thm:natural_numbers_are_well_ordered/descending_chain}
-    \cdots < k < m < n + 1.
-  \end{equation}
+    By transitivity, \( m_i \leq 0 \) for every index \( i \). \Cref{thm:peano_arithmetic_order_compatibility} implies that \( m_i = 0 \) or \( m_i < 0 \). But the latter option contradicts \cref{thm:peano_arithmetic_less_than_zero}.
 
-  If \( m = n \), it follows that
-  \begin{equation*}
-    \cdots < k < n
-  \end{equation*}
-  is an strictly descending sequence ending in \( n \).
+    It follows that \( m_i = 0 \) for every index \( i \).
 
-  If \( m < n \), then
-  \begin{equation*}
-    \cdots < k < m < n
-  \end{equation*}
-  is again an strictly descending sequence ending in \( n \).
+    \item Suppose that the inductive hypothesis holds for \( n \), and consider the chain
+    \begin{equation*}
+      \cdots \leq m_2 \leq m_1 \leq S(n).
+    \end{equation*}
 
-  By the inductive hypothesis, a descending sequence ending at \( n \) cannot exist, therefore neither does \eqref{eq:thm:natural_numbers_are_well_ordered/descending_chain}.
+    By transitivity, \( m_i \leq S(n) \) for every index \( i \). Then either \( m_i = S(n) \) for every \( i \), in which case the chain is constant, or \( m_i \leq n \), in which case we can use the inductive hypothesis.
+  \end{itemize}
 
-  \SubProofOf[def:ordered_semigroup]{compatibility with addition} We will show that the nonstrict order is compatible with addition in \( \BbbN \). Let \( n \leq m \) and let \( k \) be an arbitrary natural number. Since \( n \leq m \), there exists a number \( a \) such that \( n + a = m \). Then
+  \SubProofOf[def:ordered_semigroup]{compatibility with addition} We must show that \( n + k \leq m + k \) if \( n \leq m \).
+
+  This turns out to be quite simple: we have \( m = n + a \) for some number \( a \), so
   \begin{equation*}
     m + k = (n + a) + k = (n + k) + a.
   \end{equation*}
 
-  Therefore,
-  \begin{equation*}
-    n + k \leq m + k.
-  \end{equation*}
+  \SubProofOf[def:ordered_semiring]{compatibility with multiplication} We must show that \( n \geq 0 \) and \( m \geq 0 \) together imply \( n \cdot m \geq 0 \).
 
-  \SubProofOf[def:ordered_semiring]{compatibility with multiplication} If \( n \geq 0 \) and \( m \geq 0 \), then \( n \cdot m \geq 0 \) for the simple reason that all natural numbers are greater than or equal to zero.
+  This holds vacuously because, as shown in \cref{thm:peano_arithmetic_less_than_zero}, all natural numbers are nonnegative.
 \end{proof}
 
 \begin{proposition}\label{thm:natural_number_multiplicative_invertibility}
   The only \hyperref[def:divisibility/invertible]{invertible} \hyperref[def:natural_numbers]{natural number} is \( 1 \).
 \end{proposition}
 \begin{proof}
-  Fix natural numbers \( n \) and \( m \) such that \( 1 = nm \). We will show that \( n = m = 1 \).
+  Suppose that \( nm = 1 \).
+  \begin{itemize}
+    \item If either \( m = 0 \) or \( n = 0 \), then \( nm = 0 \) due to absorption of \( 0 \), contradicting the assumption \( nm = 1 \).
+    \item Otherwise \cref{ex:peano_arithmetic_predecessor_existence} implies that \( m \) has a predecessor, say \( k \), so
+    \begin{equation*}
+      1 = nm = n S(k) = nk + n.
+    \end{equation*}
 
-  If either \( n \) or \( m \) is zero, since, by \cref{thm:natural_number_multiplication_properties}, the natural numbers are an entire semiring, their product \( nm \) is also zero; so they cannot be zero.
+    \begin{itemize}
+      \item If \( k = 0 \), then \( n = 1 \). In this case \( m = S(0) = 1 \).
+      \item Otherwise, \( 1 = nm > n \geq 1 \), which is again a contradiction.
+    \end{itemize}
+  \end{itemize}
 
-  Otherwise, suppose that \( n > 1 \). By definition of the order on natural numbers, there exists a number \( k \neq 0 \) such that \( n = 1 + k \).
-
-  Then
-  \begin{equation*}
-    1 = nm = (1 + k)m = m + km.
-  \end{equation*}
-
-  Furthermore, \( k \neq 0 \), hence \( km \neq 0 \). Then \( 1 > m \), which contradicts out assumption that \( m \neq 0 \).
-
-  The obtained contradiction shows that \( n = m = 1 \).
+  Only in the case \( n = m = 1 \) we have not reached a contradiction.
 \end{proof}
 
 \begin{proposition}\label{thm:natural_numbers_archimedean}
@@ -889,17 +448,38 @@
   \begin{itemize}
     \item If \( n = 0 \), trivially \( n = 0 < m \) (with \( k = 1 \)).
 
-    \item Suppose that the inductive hypothesis holds for \( n \) and consider \( n + 1 \). There exists some nonzero \( k \) such that \( n < km \).
+    \item Suppose that the inductive hypothesis holds for \( n \) and consider \( S(n) \). There exists some nonzero \( k \) such that \( n < km \).
 
-    Note that \( 1 \leq m \). We have shown in \cref{thm:natural_number_addition_properties} that addition is cancellative, hence \cref{thm:def:ordered_semigroup/cancellative} implies that \( n + 1 < km + m \). By distributivity, we have \( (k + 1)m = km + m \), thus, as desired,
+    Then there exists some number \( a \) such that \( km = n + 1 = S(n) \). Clearly
     \begin{equation*}
-      n + 1 < (k + 1)m.
+      (k + 1)m = km + k = S(n) + k,
     \end{equation*}
+    so \( S(n) < (k + 1) m \).
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}\label{thm:bounded_set_of_natural_numbers_finite}
+  There are only finitely many \hyperref[def:natural_numbers]{natural numbers} strictly less than a given natural number.
+\end{lemma}
+\begin{proof}
+  We will use induction on \( n \) to show the initial segment \( \BbbN_{<n} \) is finite.
+  \begin{itemize}
+    \item It follows from \cref{thm:peano_arithmetic_admissible_rules/less_than_zero} that the set \( \BbbN_{<0} \) is empty.
+    \item Suppose that the inductive hypothesis holds for \( n \).
+
+    \Cref{thm:peano_arithmetic_admissible_rules/less_successor_to_leq} implies that \( m < S(n) \) if either \( m < n \), in which case \( m \) belongs to \( \BbbN_{<n} \), or otherwise \( m = n \).
+
+    Therefore,
+    \begin{equation*}
+      \BbbN_{<S(n)} = \BbbN_{<S(n)} \cup \set{ n }
+    \end{equation*}
+
+    Since \( \BbbN_{<n} \) is finite, so is \( \BbbN_{<S(n)} \).
   \end{itemize}
 \end{proof}
 
 \begin{proposition}\label{thm:natural_numbers_confinal_equivalence}
-  For a set of natural numbers, the following are equivalent:
+  For a set of \hyperref[def:natural_numbers]{natural numbers}, the following are equivalent:
   \begin{thmenum}
     \thmitem{thm:natural_numbers_confinal_equivalence/cofinal} It is \hyperref[def:cofinal_set]{cofinal}.
     \thmitem{thm:natural_numbers_confinal_equivalence/unbounded} It is \hyperref[def:extremal_points/bounds]{unbounded from above}.
@@ -907,152 +487,11 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Let \( A \) be a set of nonnegative integers.
+  Let \( A \) be a set of natural numbers.
 
-  \ImplicationSubProof{thm:natural_numbers_confinal_equivalence/cofinal}{thm:natural_numbers_confinal_equivalence/unbounded} \Cref{thm:def:totally_ordered_set/cofinal_iff_unbounded} implies that, if a set of integers is cofinal, then it is unbounded from above.
+  \EquivalenceSubProof{thm:natural_numbers_confinal_equivalence/cofinal}{thm:natural_numbers_confinal_equivalence/unbounded} \Cref{thm:def:totally_ordered_set/cofinal_iff_unbounded} implies that \( A \) is cofinal if and only if it is unbounded from above.
 
-  \ImplicationSubProof{thm:natural_numbers_confinal_equivalence/unbounded}{thm:natural_numbers_confinal_equivalence/infinite} If a set \( A \) of nonnegative integers is unbounded from above, we can recursively build a strictly increasing sequence of elements of \( A \). This sequence has infinitely many elements, hence so does \( A \).
+  \ImplicationSubProof{thm:natural_numbers_confinal_equivalence/unbounded}{thm:natural_numbers_confinal_equivalence/infinite} If \( A \)is unbounded from above, we can recursively build a strictly increasing sequence from its elements. This sequence has infinitely many elements, hence so does \( A \).
 
-  \ImplicationSubProof{thm:natural_numbers_confinal_equivalence/infinite}{thm:natural_numbers_confinal_equivalence/cofinal} If \( A \) is infinite, then, for any integer \( n \), \( A \) contains only finitely many elements smaller than \( n \). But \( A \) is infinite, hence it must contain at least one element greater than or equal to \( n \).
+  \ImplicationSubProof{thm:natural_numbers_confinal_equivalence/infinite}{thm:natural_numbers_confinal_equivalence/unbounded} If \( A \) is infinite, by (the contraposition of) \cref{thm:bounded_set_of_natural_numbers_finite}, it must be unbounded from above.
 \end{proof}
-
-\begin{proposition}\label{thm:natural_number_divisibility_lattice}
-  The semiring \hyperref[def:natural_numbers]{\( \BbbN \)} of natural numbers is a \hyperref[def:extremal_points/bounds]{bounded lattice} with respect to \hyperref[def:divisibility]{semiring divisibility}. Explicitly:
-  \begin{thmenum}
-    \thmitem{thm:natural_number_divisibility_lattice/join} The \hyperref[def:lattice/join]{join} of \( n \) and \( m \) is their unique \hyperref[def:lcm]{least common multiple}, denoted by \( \lcm(n, m) \).
-
-    \thmitem{thm:natural_number_divisibility_lattice/bottom} The \hyperref[def:extremal_points/top_and_bottom]{bottom element} is \( 1 \) since \( 1 \) divides every natural number.
-
-    \thmitem{thm:natural_number_divisibility_lattice/meet} Dually, the \hyperref[def:lattice/meet]{meet} of \( n \) and \( m \) is their unique \hyperref[def:gcd]{greatest common divisor}, denoted by \( \gcd(n, m) \) and constructed via \fullref{alg:euclidean_algorithm}.
-
-    \thmitem{thm:natural_number_divisibility_lattice/top} The \hyperref[def:extremal_points/top_and_bottom]{top element} is \( 0 \) since every natural number divides \( 0 \).
-  \end{thmenum}
-
-  Furthermore, divisibility is compatible with the standard ordering in the sense that, if \( m \) is nonzero, then \( n \mid m \) implies \( n \leq m \).
-
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[page=1]{output/thm__natural_number_divisibility_order}
-    \caption{A spatial \hyperref[def:hasse_diagram]{Hasse diagram} for a fragment of the \hyperref[thm:natural_number_divisibility_lattice]{natural number divisibility lattice}}
-    \label{fig:thm:natural_number_divisibility_lattice/divisibility}
-  \end{figure}
-
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[page=2]{output/thm__natural_number_divisibility_order}
-    \caption{A comparison of the \hyperref[thm:natural_number_divisibility_lattice]{divisibility lattice} of \( \BbbN \) and the \hyperref[thm:semiring_of_ideals/lattice]{lattice of ideals} of \( \BbbZ \).}
-    \label{fig:thm:natural_number_divisibility_lattice/ideals}
-  \end{figure}
-\end{proposition}
-\begin{proof}
-  By \cref{thm:semiring_divisibility_order}, divisibility is a preorder.
-
-  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry} If \( n \mid m \) and \( m \mid n \), there exist numbers \( a \) and \( b \) such that \( n = ay \) and \( m = bx \). Then \( n = abx \), and we can cancel \( n \) to obtain that \( ab = 1 \). But, by \cref{thm:natural_number_multiplicative_invertibility}, \( 1 \) is the only invertible element in \( \BbbN \), hence \( a = b = 1 \), and thus \( n = m \).
-
-  \SubProofOf[def:lattice]{lattice structure} By \fullref{alg:euclidean_algorithm}, every pair of integers has a positive greatest common divisor, and also a least common multiple.
-
-  By \cref{thm:def:semiring_ideal/division}, the lattice of principal ideals in \( \BbbN \) must be dual to it. Indeed, by \eqref{eq:def:bezout_domain/identity}, we have that
-  \begin{equation*}
-    \braket{n} + \braket{m} = \braket{ \gcd(n, m) },
-  \end{equation*}
-  and by \cref{thm:def:semiring_ideal/division}, \( \braket{n} \cap \braket{m} \) contains the common multiples of \( n \) and \( m \), hence
-  \begin{equation*}
-    \braket{n} \cap \braket{m} = \braket{ \lcm(n, m) }.
-  \end{equation*}
-
-  \SubProof{Proof that the orders are compatible} If \( n \mid m \), then there exists a positive natural number \( a \) such that \( an = m \). We have
-  \begin{equation*}
-    an
-    \reloset{\eqref{eq:def:peano_arithmetic/theory/PA7}} =
-    (a - 1)n + n
-    =
-    m.
-  \end{equation*}
-
-  Thus, by \eqref{eq:def:natural_numbers_ordering/predicate}, \( n \leq m \).
-\end{proof}
-
-\paragraph{Arithmetic}
-
-\begin{proposition}\label{thm:sums_of_powers}
-  We list some identities of sums of powers:
-  \begin{thmenum}
-    \thmitem{thm:sums_of_powers/first}
-    \begin{equation}\label{eq:thm:sums_of_powers/first}
-      \sum_{k=1}^n k = \frac {n (n+1)} 2
-    \end{equation}
-
-    These are precisely the triangular numbers, which we define in \cref{def:triangular_number}; we also discuss there how triangular numbers relate to \hyperref[def:triangular_point_configuration]{triangular point configurations}.
-
-    \thmitem{thm:sums_of_powers/second}
-    \begin{equation}\label{eq:thm:sums_of_powers/second}
-      \sum_{k=1}^n k^2 = \frac {n (n+1) (2n + 1)} 6
-    \end{equation}
-
-    \thmitem{thm:sums_of_powers/third}
-    \begin{equation}\label{eq:thm:sums_of_powers/third}
-      \sum_{k=1}^n k^3 = \frac {n^2 (n+1)^2} 4
-    \end{equation}
-
-    This is precisely the square of \eqref{eq:thm:sums_of_powers/first}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:sums_of_powers/first} The base case \( n = 1 \) for \eqref{eq:thm:sums_of_powers/first} is obvious. Suppose that \eqref{eq:thm:sums_of_powers/first} holds. Then
-  \begin{equation*}
-    \sum_{k=1}^{n+1} k
-    =
-    \sum_{k=1}^n k + (n+1)
-    \reloset {\T{ind.}} =
-    \frac {n (n+1)} 2 + (n+1)
-    =
-    \frac {(n + 2) (n+1)} 2,
-  \end{equation*}
-  which finishes the induction.
-
-  \SubProofOf{thm:sums_of_powers/second} The base case \( n = 1 \) for \eqref{eq:thm:sums_of_powers/second} is also obvious. For the inductive step, consider
-  \begin{equation*}
-    n(n+1)(2n+1) = n[(2n^2 + n) + (2n + 1)] = 2n^3 + 3n^2 + n
-  \end{equation*}
-  and similarly for \( n + 1 \) instead of \( n \):
-  \begin{equation*}
-    (n+1)(n+2)(2n+3)
-    =
-    [(2n^3 + 3n^2) + (4n^2 + 6n)] + [(2n^2 + 3n) + (4n + 6)]
-    =
-    2n^3 + 9n^2 + 13n + 6.
-  \end{equation*}
-
-  Subtracting the two\fnote{Even though we don't have subtraction for natural numbers, we have shown in \cref{thm:natural_number_addition_properties} that addition of natural numbers is cancellative, which justifies this step.}, we obtain
-  \begin{equation*}
-    (n+1)(n+2)(2n+3) - n(n+1)(2n+1) = 6n^2 + 12n + 6 = 6(n+1)^2.
-  \end{equation*}
-
-  Then the inductive step for \eqref{eq:thm:sums_of_powers/second} follows.
-
-  \SubProofOf{thm:sums_of_powers/third} Similarly,
-  \begin{balign*}
-    \sum_{k=1}^{n+1} k^3
-    &=
-    \sum_{k=1}^n k^3 + (n+1)^3
-    \reloset {\T{ind.}} = \\ &=
-    \frac {n^2 (n+1)^2} 4 + (n+1)^3
-    = \\ &=
-    \frac {(n+1)^2} 4 \parens[\big]{ n^2 + 4n + 4 }
-    \reloset {\ref{thm:real_quadratic_polynomial_roots}} = \\ &=
-    \frac {(n+1)^2} 4 (n + 2)^2,
-  \end{balign*}
-  as desired.
-\end{proof}
-
-\begin{example}\label{ex:sqrt_of_cubes}
-  The relationship between \eqref{eq:thm:sums_of_powers/first} and \eqref{eq:thm:sums_of_powers/third} can be used to prove the following pattern:
-  \begin{align*}
-    \sqrt{ 1^3 }                               &= 1, \\
-    \sqrt{ 1^3 + 2^3 }                         &= 1 + 2, \\
-    \sqrt{ 1^3 + 2^3 + 3^3 }                   &= 1 + 2 + 3, \\
-    \sqrt{ 1^3 + 2^3 + 3^3 + 4^3 }             &= 1 + 2 + 3 + 4, \\
-    \sqrt{ 1^3 + 2^3 + 3^3 + 4^3 + 5^3 }       &= 1 + 2 + 3 + 4 + 5, \\
-                                               &\vdots
-  \end{align*}
-\end{example}
