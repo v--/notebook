@@ -5,7 +5,7 @@ FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out
 PYTHON_SOURCE := $(wildcard src/*.py)
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy packages/*.sty text/*.tex aux/coderefs.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
 
-.PHONY: figures clean clean-text clean-figures touch-figures
+.PHONY: figures clean clean-text clean-figures touch-figures checkcites
 .DEFAULT_GOAL := output/notebook.pdf
 
 aux:
@@ -61,3 +61,6 @@ clean-figures:
 	rm --recursive --force aux output
 
 clean: clean-text clean-figures
+
+checkcites:
+	checkcites --backend biber --crossrefs --all aux/notebook.bcf
