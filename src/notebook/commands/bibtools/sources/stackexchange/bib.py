@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 SITE_ENTRY_PREFIX_MAP = {
     'Code Golf Stack Exchange': 'CGSE',
     'History of Science and Mathematics Stack Exchange': 'HSMSE',
-    'MathOverflow': 'MathOS',
+    'MathOverflow': 'MathOF',
     'Mathematics Stack Exchange': 'MathSE',
     'Software Engineering Stack Exchange': 'SESE',
     'StackOverflow': 'SE',

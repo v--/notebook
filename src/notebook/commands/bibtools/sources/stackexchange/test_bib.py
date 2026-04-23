@@ -49,7 +49,7 @@ def test_parse_mathof_answer_231571(identifier: str = 'https://mathoverflow.net/
     entry = stackexchange_entry_to_bib(res, identifier)
     assert entry == BibEntry(
         entry_type='online',
-        entry_name='MathOS:functions_of_several_variables_over_finite_fields',
+        entry_name='MathOF:functions_of_several_variables_over_finite_fields',
         title='Functions of several variables over finite fields',
         authors=[BibAuthor(full_name=VerbatimString("User ``user9072''"))],
         languages=['english'],
