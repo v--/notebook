@@ -98,7 +98,7 @@
           }.
       \end{equation}
 
-      The schema is stated as an \hyperref[def:inference_rule]{inference rule} in \cref{inf:thm:peano_arithmetic_admissible_rules/induction}. A metatheoretic restatement of is given in \fullref{thm:induction_on_natural_numbers}, while a variation of the principle is given in \fullref{thm:strong_induction_on_natural_numbers}.
+      The schema is stated as an \hyperref[def:inference_rule]{inference rule} in \cref{inf:thm:peano_arithmetic_induction_rule}. A metatheoretic restatement of is given in \fullref{thm:induction_on_natural_numbers}, while a variation of the principle is given in \fullref{thm:strong_induction_on_natural_numbers}.
 
       We discuss induction more generally in \cref{con:induction}.
 
@@ -187,7 +187,7 @@
   \end{thmenum}
 \end{theorem}
 \begin{comments}
-  \item A useful varition of this theorem is \fullref{thm:strong_induction_on_natural_numbers}. It can also be regarded as a special case of \fullref{thm:bounded_transfinite_induction}.
+  \item A useful variation of this theorem is \fullref{thm:strong_induction_on_natural_numbers}.
 
   See \cref{con:induction} for a general discussion of induction and recursion.
 \end{comments}
@@ -217,13 +217,47 @@
   \SubProof{Proof of second-order case} We proceed similarly, but without the schema instantiation mechanism. We replace \( \varphi \) with applications of the variable \( \synp^{\syn\iota \synimplies \syn\omicron} \), and we use assignments \( v \) for which \( v(\synp) = p \).
 \end{proof}
 
-\begin{example}\label{ex:peano_arithmetic_predecessor_existence}
-  We will also demonstrate induction in \hyperref[def:peano_arithmetic]{Peano arithmetic} using \hyperref[def:fol_natural_deduction_proof_tree]{natural deduction proof trees} by way of a simple proposition --- that every number is either zero or has a predecessor:
-  \begin{equation}\label{eq:ex:peano_arithmetic_predecessor_existence}
+\begin{proposition}\label{thm:peano_arithmetic_induction_rule}
+  The induction axiom \eqref{eq:def:peano_arithmetic/theory/PA3} can be restated as the following \hyperref[def:natural_deduction_rule]{natural deduction rule}:
+  \begin{equation*}\taglabel[\logic{PA3}]{inf:thm:peano_arithmetic_induction_rule}
+    \begin{prooftree}
+      \hypo{ \syn\varphi[\synx \synsubst \syn0] }
+      \hypo{ \qforall \synn (\syn\varphi[\synx \synsubst \synn] \synimplies \syn\varphi[\synx \synsubst \synS \synn]) }
+      \infer2[\ref{inf:thm:peano_arithmetic_induction_rule}]{ \qforall \synn \syn\varphi[\synx \synsubst \synn] }
+    \end{prooftree}
+  \end{equation*}
+
+  This rule is \hyperref[con:inference_rule_admissibility]{admissible} in \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:peano_arithmetic_induction_rule}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA3}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\varphi[x \mapsto \syn0]]^u }
+      \hypo{ [\qforall n (\varphi_n \synimplies \varphi_{\synS n})]^w }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ [\varphi[x \mapsto \syn0] \synwedge \qforall n (\varphi_n \synimplies \varphi_{\synS n})]^v }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qforall n \varphi_n }
+    \end{prooftree}
+  \end{equation*}
+
+  Note that, if \( \varphi \) has free variables, we apply \ref{inf:def:fol_natural_deduction/forall/elim} as many times as needed to the axiom instance.
+\end{proof}
+
+\begin{proposition}\label{thm:peano_arithmetic_predecessor_existence}
+  In \hyperref[def:peano_arithmetic]{Peano arithmetic}, every number except zero has a predecessor. More precisely, the following is provable:
+  \begin{equation}\label{eq:thm:peano_arithmetic_predecessor_existence}
     \qforall \synn ((\synn \syneq \syn0) \synvee (\qexists \synm \synn \syneq \synS \synm)).
   \end{equation}
-
-  An interesting feature of this proof is that it uses induction, but only as a way to traverse the natural numbers --- the inductive hypothesis is never used.
+\end{proposition}
+\begin{comments}
+  \item An interesting feature of this proof is that it uses induction, but only as a way to traverse the natural numbers --- the inductive hypothesis is never used.
+\end{comments}
+\begin{proof}
 
   Let
   \begin{equation*}
@@ -233,8 +267,6 @@
   Then
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA3}]^{a_1} }
-
       \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ \syn0 \syneq \syn0 }
       \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \varphi[\synx \mapsto \syn0] }
 
@@ -244,14 +276,10 @@
       \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn] }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synn \parens[\big]{ \varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn] } }
 
-      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ \varphi[\synx \mapsto \syn0] \synwedge \qforall \synn \parens[\big]{ \varphi[\synx \mapsto \synn] \synimplies \varphi[\synx \mapsto \synS \synn] } }
-
-      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qforall \synn \varphi[\synx \mapsto \synn] }
+      \infer2[\ref{inf:thm:peano_arithmetic_induction_rule}]{ \qforall \synn \varphi[\synx \mapsto \synn] }
     \end{prooftree}
   \end{equation*}
-
-  Later on, we will find it more convenient to use the inference rule \ref{inf:thm:peano_arithmetic_admissible_rules/induction} instead.
-\end{example}
+\end{proof}
 
 \begin{proposition}\label{thm:peano_arithmetic_successor_and_addition}
   In \hyperref[def:peano_arithmetic]{Peano arithmetic}, we can express the successor operation by adding \( 1 = S(0) \). More precisely, the following is provable:
@@ -645,84 +673,58 @@
   \item For the specific model of \logic{PA} based on the smallest inductive set \( \omega \), the latter relation \( \synless \) is interpreted as \( \in \); we discuss this in more detail in \cref{rem:ordinal_definition}.
 \end{comments}
 
-\begin{proposition}\label{thm:peano_arithmetic_admissible_rules}
+\begin{proposition}\label{thm:peano_arithmetic_order_rules}
   In \hyperref[def:peano_arithmetic]{Peano arithmetic} extended with \hyperref[def:peano_arithmetic_ordering]{order relations}, the following \hyperref[def:natural_deduction_rule]{natural deduction rules} are \hyperref[con:inference_rule_admissibility]{admissible}:
   \begin{thmenum}
-    \thmitem{thm:peano_arithmetic_admissible_rules/induction} The induction axiom \eqref{eq:def:peano_arithmetic/theory/PA3} can be restated as an inference rule
-    \begin{equation*}\taglabel[\logic{PA3}]{inf:thm:peano_arithmetic_admissible_rules/induction}
+    \thmitem{thm:peano_arithmetic_order_rules/refl} The nonstrict inequality is reflexive:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{\logic{R}} }]{inf:thm:peano_arithmetic_order_rules/refl}
       \begin{prooftree}
-        \hypo{ \syn\varphi[\synx \synsubst \syn0] }
-        \hypo{ \qforall \synn (\syn\varphi[\synx \synsubst \synn] \synimplies \syn\varphi[\synx \synsubst \synS \synn]) }
-        \infer2[\ref{inf:thm:peano_arithmetic_admissible_rules/induction}]{ \qforall \synn \syn\varphi[\synx \synsubst \synn] }
+        \infer0[\ref{inf:thm:peano_arithmetic_order_rules/refl}]{ \synn \synleq \synn }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:peano_arithmetic_admissible_rules/refl} The nonstrict inequality is reflexive:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{\logic{R}} }]{inf:thm:peano_arithmetic_admissible_rules/refl}
-      \begin{prooftree}
-        \infer0[\ref{inf:thm:peano_arithmetic_admissible_rules/refl}]{ \synn \synleq \synn }
-      \end{prooftree}
-    \end{equation*}
-
-    \thmitem{thm:peano_arithmetic_admissible_rules/less_than_zero} No number is less than zero:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{<0} }]{inf:thm:peano_arithmetic_admissible_rules/less_than_zero}
+    \thmitem{thm:peano_arithmetic_order_rules/less_than_zero} No number is less than zero:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{<0} }]{inf:thm:peano_arithmetic_order_rules/less_than_zero}
       \begin{prooftree}
         \hypo{ \synn \synless \syn0 }
-        \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_than_zero}]{ \synbot }
+        \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_than_zero}]{ \synbot }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:peano_arithmetic_admissible_rules/less_than_successor} Every number is smaller than its successor:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{n<Sn} }]{inf:thm:peano_arithmetic_admissible_rules/less_than_successor}
+    \thmitem{thm:peano_arithmetic_order_rules/less_than_successor} Every number is smaller than its successor:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{n<Sn} }]{inf:thm:peano_arithmetic_order_rules/less_than_successor}
       \begin{prooftree}
-        \infer0[\ref{inf:thm:peano_arithmetic_admissible_rules/less_than_successor}]{ \synn \synless \synS \synn }
+        \infer0[\ref{inf:thm:peano_arithmetic_order_rules/less_than_successor}]{ \synn \synless \synS \synn }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:peano_arithmetic_admissible_rules/nonstrict_successor} Successors of the upper bound are compatible with nonstrict inequalities:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{m<Sn} }]{inf:thm:peano_arithmetic_admissible_rules/nonstrict_successor}
+    \thmitem{thm:peano_arithmetic_order_rules/nonstrict_successor} Successors of the upper bound are compatible with nonstrict inequalities:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{m<Sn} }]{inf:thm:peano_arithmetic_order_rules/nonstrict_successor}
       \begin{prooftree}
         \hypo{ \synn \synleq \synm }
-        \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/nonstrict_successor}]{ \synn \synleq \synS \synm }
+        \infer1[\ref{inf:thm:peano_arithmetic_order_rules/nonstrict_successor}]{ \synn \synleq \synS \synm }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:peano_arithmetic_admissible_rules/less_successor_to_leq} Strict inequality with a successor can be expressed via strict inequality:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{< \to \leq} }]{inf:thm:peano_arithmetic_admissible_rules/less_successor_to_leq}
+    \thmitem{thm:peano_arithmetic_order_rules/less_successor_to_leq} Strict inequality with a successor can be expressed via strict inequality:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{< \to \leq} }]{inf:thm:peano_arithmetic_order_rules/less_successor_to_leq}
       \begin{prooftree}
         \hypo{ \synn \synless \synS \synm }
-        \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_successor_to_leq}]{ \synn \synleq \synm }
+        \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_successor_to_leq}]{ \synn \synleq \synm }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:peano_arithmetic_admissible_rules/leq_to_less} Nonstrict inequality can be expressed via strict inequality:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{\leq \to <} }]{inf:thm:peano_arithmetic_admissible_rules/leq_to_less}
+    \thmitem{thm:peano_arithmetic_order_rules/leq_to_less} Nonstrict inequality can be expressed via strict inequality:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{PA}_{\leq \to <} }]{inf:thm:peano_arithmetic_order_rules/leq_to_less}
       \begin{prooftree}
         \hypo{ \synn \synleq \synm }
-        \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/leq_to_less}]{ \synn \synless \synm \synvee \synn \syneq \synm }
+        \infer1[\ref{inf:thm:peano_arithmetic_order_rules/leq_to_less}]{ \synn \synless \synm \synvee \synn \syneq \synm }
       \end{prooftree}
     \end{equation*}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/induction}
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA3}]^{a_1} }
-      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
-
-      \hypo{ [\varphi[x \mapsto \syn0]]^u }
-      \hypo{ [\qforall n (\varphi_n \synimplies \varphi_{\synS n})]^w }
-
-      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ [\varphi[x \mapsto \syn0] \synwedge \qforall n (\varphi_n \synimplies \varphi_{\synS n})]^v }
-
-      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qforall n \varphi_n }
-    \end{prooftree}
-  \end{equation*}
-
-  Note that, if \( \varphi \) has free variables, we apply \ref{inf:def:fol_natural_deduction/forall/elim} as many times as needed to the axiom instance.
-
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/refl}
+  \SubProofOf{thm:peano_arithmetic_order_rules/refl}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\eqref{eq:def:peano_arithmetic_ordering/nonstrict}]^{a_2} }
@@ -736,7 +738,7 @@
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/less_than_zero}
+  \SubProofOf{thm:peano_arithmetic_order_rules/less_than_zero}
   \footnotesize
   \begin{equation*}
     \begin{prooftree}[separation=1.2em]
@@ -760,7 +762,7 @@
   \end{equation*}
   \normalsize
 
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/less_than_successor}
+  \SubProofOf{thm:peano_arithmetic_order_rules/less_than_successor}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\eqref{eq:def:peano_arithmetic_ordering/strict}]^{a_2} }
@@ -775,7 +777,7 @@
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/nonstrict_successor}
+  \SubProofOf{thm:peano_arithmetic_order_rules/nonstrict_successor}
   \footnotesize
   \begin{equation*}
     \begin{prooftree}[separation=1.2em]
@@ -804,7 +806,7 @@
   \end{equation*}
   \normalsize
 
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/less_successor_to_leq}
+  \SubProofOf{thm:peano_arithmetic_order_rules/less_successor_to_leq}
   \footnotesize
   \begin{equation*}
     \begin{prooftree}[separation=1.2em]
@@ -834,7 +836,7 @@
   \end{equation*}
   \normalsize
 
-  \SubProofOf{thm:peano_arithmetic_admissible_rules/leq_to_less}
+  \SubProofOf{thm:peano_arithmetic_order_rules/leq_to_less}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [m \synleq n]^u }
@@ -843,7 +845,7 @@
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
       \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ \qexists a (m \synplus a \syneq n) }
 
-      \hypo{ [\eqref{eq:ex:peano_arithmetic_predecessor_existence}]^{a_2} }
+      \hypo{ [\eqref{eq:thm:peano_arithmetic_predecessor_existence}]^{a_2} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synanon }
 
       \hypo{ \substack{ [m \synplus a \syneq n]^v \\ [a \syneq \syn0]^a } }
@@ -915,7 +917,7 @@
       \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi[\synx \mapsto \synm] \synimplies \varphi[\synx \mapsto \synS \synm] }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synm (\varphi[\synx \mapsto \synm] \synimplies \varphi[\synx \mapsto \synS \synm]) }
 
-      \infer2[\ref{inf:thm:peano_arithmetic_admissible_rules/induction}]{ \qforall \synm \syn\varphi[\synx \mapsto \synm] }
+      \infer2[\ref{inf:thm:peano_arithmetic_induction_rule}]{ \qforall \synm \syn\varphi[\synx \mapsto \synm] }
     \end{prooftree}
   \end{equation*}
   where the subtree \( L \) is
@@ -924,11 +926,11 @@
       \hypo{ [\synn \synless \syn0 \synvee \synn \syneq \syn0]^b }
 
       \hypo{ [\synn \synless \syn0]^c }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_than_zero}]{ \synbot }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_than_zero}]{ \synbot }
       \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \synn \synleq \syn0 }
 
       \hypo{ [\synn \syneq \syn0]^d }
-      \infer0[\ref{inf:thm:peano_arithmetic_admissible_rules/refl}]{ \synn \synleq \synn }
+      \infer0[\ref{inf:thm:peano_arithmetic_order_rules/refl}]{ \synn \synleq \synn }
       \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synn \synleq \syn0 }
 
       \infer[left label={\( c, d \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synn \synleq \syn0 }
@@ -941,11 +943,11 @@
       \hypo{ [\synn \synless \synS \synm \synvee \synn \syneq \synS \synm]^e }
 
       \hypo{ [\synn \synless \synS \synm]^f }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_successor_to_leq}]{ \synn \synleq \synm }
-      \infer1[\ref{thm:peano_arithmetic_admissible_rules/nonstrict_successor}]{ \synn \synleq \synS \synm }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_successor_to_leq}]{ \synn \synleq \synm }
+      \infer1[\ref{thm:peano_arithmetic_order_rules/nonstrict_successor}]{ \synn \synleq \synS \synm }
 
       \hypo{ [\synn \syneq \synS \synm]^g }
-      \infer0[\ref{inf:thm:peano_arithmetic_admissible_rules/refl}]{ \synn \synleq \synn }
+      \infer0[\ref{inf:thm:peano_arithmetic_order_rules/refl}]{ \synn \synleq \synn }
       \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synn \synleq \synS \synm }
 
       \infer[left label={\( f, g \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synn \synleq \synS \synm }
@@ -957,7 +959,7 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\synn \synleq \synm]^u }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/leq_to_less}]{ \synn \synless \synm \synvee \synn \syneq \synm }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/leq_to_less}]{ \synn \synless \synm \synvee \synn \syneq \synm }
 
       \hypo{ [\eqref{eq:thm:peano_arithmetic_order_compatibility/proof/aux}]^{a_1} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
@@ -970,6 +972,8 @@
     \end{prooftree}
   \end{equation*}
 \end{proof}
+
+\paragraph{Strong induction}
 
 \begin{theorem}[Strong induction on natural numbers]\label{thm:strong_induction_on_natural_numbers}
   In \hyperref[def:peano_arithmetic]{Peano arithmetic}, we can \hyperref[def:fol_natural_deduction_consequence]{formally derive} the following induction principle
@@ -986,8 +990,6 @@
     \synimplies
     \underbrace{ \qforall \synn \syn\varphi[\synx \synsubst \synn] }_{\T{conclusion}}.
   \end{equation}
-
-  We will use multiple instances of \eqref{eq:def:peano_arithmetic/theory/PA3} to derive one instance of \eqref{eq:thm:strong_induction_on_natural_numbers}; thus, they are equivalent only as schemas.
 
   The corresponding \hyperref[def:second_order_logic]{second-order axiom} is
   \begin{equation}\label{eq:thm:strong_induction_on_natural_numbers/sol}\tag{\ensuremath{ \logic{PA3}_2^{\logic{S}} }}
@@ -1011,12 +1013,16 @@
   \end{displayquote}
 \end{theorem}
 \begin{comments}
-  \item This theorem can be regarded as special case of \fullref{thm:epsilon_induction}. See \cref{con:induction} for a general discussion of induction and recursion.
+  \item Strong induction can be regarded as special case of \fullref{thm:bounded_transfinite_induction}. See \cref{con:induction} for a general discussion of induction and recursion.
+
+  \item \Cref{thm:omega_plus_one_model_of_robinson_arithmetic} shows that strong induction is by itself not sufficient to derive the usual induction principle, however \cref{thm:strong_induction_implies_induction} gives a sufficient condition.
+
+  \item We need multiple instances of \eqref{eq:def:peano_arithmetic/theory/PA3} to derive one instance of \eqref{eq:thm:strong_induction_on_natural_numbers}.
 
   \item This theorem is stated for \( \omega \) in \cite[87]{Enderton1977SetTheory}.
 \end{comments}
 \begin{proof}
-  \ImplicationSubProof{eq:def:peano_arithmetic/theory/PA3}{eq:thm:strong_induction_on_natural_numbers} Fix a formula \( \varphi \). Without loss of generality, suppose that \( \synx \) is the only free variable of \( \varphi \); otherwise we will have to apply \ref{inf:def:fol_natural_deduction/forall/intro} and \ref{inf:def:fol_natural_deduction/forall/elim} the appropriate number of times.
+  Fix a formula \( \varphi \). Without loss of generality, suppose that \( x \) is the only free variable of \( \varphi \); otherwise we will have to apply \ref{inf:def:fol_natural_deduction/forall/intro} and \ref{inf:def:fol_natural_deduction/forall/elim} the appropriate number of times.
 
   For brevity, we will use the (metalinguistic) abbreviations
   \begin{align*}
@@ -1029,21 +1035,21 @@
     \qforall n (\psi_n \synimplies \varphi_n) \synimplies \qforall n \psi_n
   \end{equation}
 
-  \SubProofOf*{eq:thm:strong_induction_on_natural_numbers/proof/aux}
+  \SubProofOf{eq:thm:strong_induction_on_natural_numbers/proof/aux}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [m \synless \syn0]^u }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_than_zero}]{ \synbot }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_than_zero}]{ \synbot }
       \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \varphi_m }
       \infer[left label={\( v \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ m \synless \syn0 \synimplies \varphi_m }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \psi_0 }
 
-      \hypo{ [\qforall n (\psi_n \synimplies \varphi_n)]^v \quad [\psi_n]^w }
+      \hypo{ \substack{ [\qforall n (\psi_n \synimplies \varphi_n)]^v \\ [\psi_n]^w } }
       \ellipsis {\( R \)} { \psi_{\synS n} }
       \infer[left label={\( w \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \psi_n \synimplies \psi_{\synS n} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall n (\psi_n \synimplies \psi_{\synS n}) }
 
-      \infer2[\ref{inf:thm:peano_arithmetic_admissible_rules/induction}]{ \qforall n \psi_n }
+      \infer2[\ref{inf:thm:peano_arithmetic_induction_rule}]{ \qforall n \psi_n }
       \infer[left label={\( v \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \qforall n (\psi_n \synimplies \varphi_n) \synimplies \qforall n \psi_n }
     \end{prooftree}
   \end{equation*}
@@ -1052,8 +1058,8 @@
   \begin{equation*}
     \begin{prooftree}[separation=1.5em]
       \hypo{ [m \synless \synS n]^b }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/less_successor_to_leq}]{ m \synleq n }
-      \infer1[\ref{inf:thm:peano_arithmetic_admissible_rules/leq_to_less}]{ m \synless n \synvee m \syneq n }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/less_successor_to_leq}]{ m \synleq n }
+      \infer1[\ref{inf:thm:peano_arithmetic_order_rules/leq_to_less}]{ m \synless n \synvee m \syneq n }
 
       \hypo{ [\psi_n]^w }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synanon }
@@ -1076,7 +1082,7 @@
   \end{equation*}
   \normalsize
 
-  \SubProofOf*{eq:thm:strong_induction_on_natural_numbers}
+  \SubProofOf{eq:thm:strong_induction_on_natural_numbers}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\eqref{eq:thm:strong_induction_on_natural_numbers/proof/aux}]^{a_1} }
@@ -1087,10 +1093,101 @@
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \psi_{\synS n} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ n \synless \synS n \synimplies \varphi_n }
 
-      \infer0[\ref{inf:thm:peano_arithmetic_admissible_rules/less_than_successor}]{ n \synless \synS n }
+      \infer0[\ref{inf:thm:peano_arithmetic_order_rules/less_than_successor}]{ n \synless \synS n }
       \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \varphi_n }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synn \varphi_n }
       \infer[left label={\( u \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \eqref{eq:thm:strong_induction_on_natural_numbers} }
     \end{prooftree}
   \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:omega_plus_one_model_of_robinson_arithmetic}\mimprovised
+  Consider the infinite \hyperref[def:ordinal]{ordinal} \( \omega + 1 \) and define
+  \begin{align*}
+    \alpha \oplus \beta &\coloneqq \begin{cases}
+      \alpha + \beta, &\alpha < \omega \T{and} \beta < \omega, \\
+      \omega,         &\T{otherwise.}
+    \end{cases} \\
+    \alpha \odot \beta &\coloneqq \begin{cases}
+      \alpha \cdot \beta, &\alpha < \omega \T{and} \beta < \omega, \\
+      \omega,         &\T{otherwise.}
+    \end{cases} \\
+    S(\alpha) &\coloneqq \alpha \oplus 1.
+  \end{align*}
+
+  With these operations, \( \omega + 1 \) is a \hyperref[def:fol_semantics/model]{model} of \hyperref[def:peano_arithmetic]{Robinson arithmetic} with the strong induction schema \eqref{eq:thm:strong_induction_on_natural_numbers}.
+\end{proposition}
+\begin{comments}
+  \item This is not a model of Peano arithmetic because \( \omega \) is a limit ordinal and thus cannot be reached from \( 0 \) by applying \( S \) iteratively.
+\end{comments}
+\begin{proof}
+  The Robinson arithmetic axioms are validated by \fullref{thm:omega_is_model_of_pa} for finite ordinals and are trivially satisfied for \( \omega \).
+
+  \Cref{thm:bounded_transfinite_induction} shows that strong induction holds in \( \omega + 1 \).
+\end{proof}
+
+\begin{proposition}\label{thm:strong_induction_implies_induction}
+  In \hyperref[def:peano_arithmetic]{Robinson arithmetic}, the strong induction schema \eqref{eq:thm:strong_induction_on_natural_numbers} together with the predecessor existence formula \eqref{eq:thm:peano_arithmetic_predecessor_existence} together allow deriving any instance of the usual induction principle \eqref{eq:def:peano_arithmetic/theory/PA3}.
+\end{proposition}
+\begin{proof}
+  As in \fullref{thm:strong_induction_on_natural_numbers}, fix a formula \( \varphi \), assumed to have only one free variable, \( x \). We will reuse the notational abbreviation \( \varphi_n \coloneqq \varphi[x \mapsto n] \).
+
+  Then our desired derivation is
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:thm:strong_induction_on_natural_numbers}]^{a_1} }
+
+      \hypo{ [\eqref{eq:thm:peano_arithmetic_predecessor_existence}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ n \syneq \syn0 \synvee \qexists a (n \syneq \synS a) }
+
+      \hypo{ \substack{ [\varphi_0 \synwedge \qforall n (\varphi_n \synimplies \varphi_{\synS n})]^u \\ [\qforall m (m \synless n \synimplies \varphi_m)]^v \\ [n \syneq \syn0]^b } }
+      \ellipsis {\( L \)} { \varphi_n }
+
+      \hypo{ \substack{ [\varphi_0 \synwedge \qforall n (\varphi_n \synimplies \varphi_{\synS n})]^u \\ [\qforall m (m \synless n \synimplies \varphi_m)]^v \\ [\qexists a (n \syneq \synS a)]^c } }
+      \ellipsis {\( R \)} { \varphi_n }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \varphi_n }
+      \infer[left label={\( v \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \qforall m (m \synless n \synimplies \varphi_m) \synimplies \varphi_n }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall n (\qforall m (m \synless n \synimplies \varphi_m) \synimplies \varphi_n) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qforall n \varphi_n }
+      \infer[left label={\( u \)}]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \eqref{eq:def:peano_arithmetic/theory/PA3} }
+    \end{prooftree}
+  \end{equation*}
+  where the subtree \( L \) is
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [n \syneq \syn0]^b }
+      \hypo{ [\varphi_0 \synwedge \qforall n (\varphi_n \synimplies \varphi_{\synS n})]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \varphi_{\syn0} }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \varphi_n }
+    \end{prooftree}
+  \end{equation*}
+  and \( R \) is
+  \footnotesize
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\qexists a (n \syneq \synS a)]^c }
+
+      \hypo{ [\synanon]^v }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ b \synless n \synimplies \varphi_b }
+
+      \hypo{ [n \syneq \synS b]^d }
+      \infer0[\ref{inf:thm:peano_arithmetic_order_rules/less_than_successor}]{ b \synless \synS b }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ b \synless n }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \varphi_b }
+
+      \hypo{ [\synanon]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_right}]{ \qforall n (\varphi_n \synimplies \varphi_{\synS n}) }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \varphi_b \synimplies \varphi_{\synS b} }
+
+      \hypo{ [n \syneq \synS b]^d }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \varphi_b \synimplies \varphi_n }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \varphi_n }
+      \infer[left label=\( d \)]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \varphi_n }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
 \end{proof}
