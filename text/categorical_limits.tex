@@ -78,7 +78,7 @@
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:factors_through}\mcite[133]{Knapp2016BasicAlgebra}
+\begin{definition}\label{def:factors_through}\mimprovised
   Consider a morphism \( f: A \to B \). We say that \( f \) \term{factors through} the object \( X \) if there exist morphisms \( g: A \to X \) and \( h: X \to B \) such that the following diagram commutes:
   \begin{equation}\label{eq:def:factors_through}
     \begin{aligned}
@@ -86,8 +86,11 @@
     \end{aligned}
   \end{equation}
 
-  If, given \( g \), \( h \) is unique or vice versa, we say that \( f \) \term{uniquely factors through} \( X \). In some cases, for example in \cref{def:zero_morphisms/morphism}, \( f \) there exists unique \( g \) and \( h \) and neither of them must be given beforehand.
+  If \( g \) and \( g \) are uniquely determined by \( f \) and \( X \), we say that \( f \) \term{uniquely factors through} \( X \).
 \end{definition}
+\begin{comments}
+  \item This concept is somehow \hyperref[con:assumed_knowledge]{assumed knowledge} and formal definitions are difficult to find.
+\end{comments}
 
 \begin{definition}\label{def:category_of_cones}
   Let \( D: \cat{I} \to \cat{C} \) be a \hyperref[def:categorical_diagram]{diagram}.
@@ -624,7 +627,9 @@
 \begin{remark}\label{rem:sum_and_coproduct}
 \end{remark}
 
-\begin{definition}\label{def:equalizers}\mcite[def. 5.1.11]{Leinster2014BasicCategoryTheory}
+\paragraph{Equalizers}
+
+\begin{definition}\label{def:equalizers}\mcite[def. 5.1.11, def. 5.2.7]{Leinster2014BasicCategoryTheory}
   Consider the index category
   \begin{equation}\label{eq:def:equalizers/index}
     \begin{aligned}
@@ -632,151 +637,137 @@
     \end{aligned}
   \end{equation}
 
-  A diagram indexed by \eqref{eq:def:equalizers/index} is sometimes called a \term{fork}. A \hyperref[def:category_of_cones/limit]{limit} of a fork is called an \term[ru=уравнитель \cite[36]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}]{equalizer} and a \hyperref[def:category_of_cones/colimit]{colimit} --- a \term[ru=коуравнитель \cite[37]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}]{coequalizer}.
+  A \hyperref[def:category_of_cones/limit]{limit} of a this diagram is called an \term[ru=уравнитель (\cite[\S 3.2.4]{КусраевКутателадзе2005БулевозначныйАнализ})]{equalizer} and a \hyperref[def:category_of_cones/colimit]{colimit} --- a \term[ru=коуравнитель (\cite[\S 3.2.4]{КусраевКутателадзе2005БулевозначныйАнализ})]{coequalizer}. Note the special condition from \cref{def:categorical_diagram} that does not require parallel morphisms to be equal in a commuting diagram.
 
-  Note that in \cref{def:categorical_diagram} we defined commutativity only when at least one path is nontrivial. That is, \eqref{eq:def:equalizers/index} cannot commute by definition since all of its paths have length either \( 0 \) or \( 1 \).
-
-  We will describe equalizers in more detail. Fix a fork in \( \cat{C} \) which we will denote by
-  \begin{equation}\label{eq:def:equalizers/raw_diagram}
+  To analyze these definitions in more detail, let us label the diagram as follows:
+  \begin{equation}\label{eq:def:equalizers/labeled_index}
     \begin{aligned}
       \includegraphics[page=2]{output/def__equalizers}
     \end{aligned}
   \end{equation}
 
-  \begin{minipage}[t]{0.47\textwidth}
-    A \hyperref[def:category_of_cones/cone]{cone} with vertex \( A \) over this diagram has a single morphism \( f: A \to X \) such that the following diagram commutes:
-    \begin{equation}\label{eq:def:equalizers/cone}
+  \begin{thmenum}
+    \thmitem{def:equalizers/equalizer} A \hyperref[def:category_of_cones/cone]{cone} with vertex \( X \) over this diagram has a pair of morphisms \( e: X \to A \) and \( e': X \to B \) such that the following diagram commutes:
+    \begin{equation}\label{eq:def:equalizers/equalizer/cone}
       \begin{aligned}
         \includegraphics[page=3]{output/def__equalizers}
       \end{aligned}
     \end{equation}
 
-    This is equivalent to requiring
-    \begin{equation*}
-      s \bincirc f = t \bincirc f.
-    \end{equation*}
+    This requires \( e' \), \( g \bincirc e \) and \( f \bincirc e \) to coincide. The morphism \( e' \) becomes redundant; hence, we will we regard the cone as a pair \( (X, e) \). This convention is used by \cite[20]{Johnstone1982StoneSpaces}, \cite[def. 5.1.11]{Leinster2014BasicCategoryTheory} and \cite[\S 3.2.4]{КусраевКутателадзе2005БулевозначныйАнализ}, among others.
 
-    An equalizer limit cone \( (L, \iota) \) satisfies the following \hyperref[rem:limit_universal_mapping_property]{universal mapping property}:
+    \Cref{thm:equalizer_invertibility} implies that the map \( e: X \to A \) is a \hyperref[def:morphism_invertibility/left_cancellative]{monomorphism}. This enables us to view a cone as a \hyperref[def:categorical_subobject]{subobject} with an associated inclusion map.
+
+    A limit cone \( (L, \iota) \) must satisfy the following \hyperref[rem:limit_universal_mapping_property]{universal mapping property}:
     \begin{displayquote}
-      For every cone \( (A, f) \), \( f \) \hyperref[def:factors_through]{uniquely factors through} \( L \). More precisely, there exists a unique morphism
-      \begin{equation*}
-         l_A: A \to L
-      \end{equation*}
-      such that the following diagram commutes:
+      For every cone \( (X, e) \) of \eqref{eq:def:equalizers/labeled_index}, \( e \) \hyperref[def:factors_through]{uniquely factors through} \( L \): there exists a unique morphism \( l_X: X \to L \) such that the following diagram commutes:
+      \begin{equation}\label{eq:def:equalizers/equalizer/property}
+        \begin{aligned}
+          \includegraphics[page=4]{output/def__equalizers}
+        \end{aligned}
+      \end{equation}
     \end{displayquote}
-    \begin{equation}\label{eq:def:equalizers/equalizer}
-      \begin{aligned}
-        \includegraphics[page=4]{output/def__equalizers}
-      \end{aligned}
-    \end{equation}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[t]{0.47\textwidth}
-    A \hyperref[def:category_of_cones/cocone]{cocone} with vertex \( A \) over this diagram has a single morphism \( f: Y \to A \) such that the following diagram commutes:
-    \begin{equation}\label{eq:def:equalizers/cocone}
+
+    \thmitem{def:equalizers/coequalizer} A \hyperref[def:category_of_cones/cocone]{cocone} with vertex \( Y \) over this diagram has a single morphism \( e: B \to Y \) such that the following diagram commutes:
+    \begin{equation}\label{eq:def:equalizers/coequalizer/cocone}
       \begin{aligned}
         \includegraphics[page=5]{output/def__equalizers}
       \end{aligned}
     \end{equation}
 
-    This is equivalent to requiring
-    \begin{equation*}
-      f \bincirc s = f \bincirc t.
-    \end{equation*}
+    \Cref{thm:equalizer_invertibility} implies that the map \( e: B \to Y \) is an \hyperref[def:morphism_invertibility/right_cancellative]{epimorphism}. This enables us to view a cocone as a \hyperref[def:categorical_quotient_object]{quotient object} with an associated projection map.
 
-    A coequalizer cocone \( (L, \pi) \) satisfies the following \hyperref[rem:limit_universal_mapping_property]{universal mapping property}:
+    A limit cocone \( (L, \pi) \) satisfies the following \hyperref[rem:limit_universal_mapping_property]{universal mapping property}:
     \begin{displayquote}
-      For every cocone \( (A, f) \), \( f \) \hyperref[def:factors_through]{uniquely factors through} \( L \). More precisely, there exists a unique morphism
-      \begin{equation*}
-        l_A: L \to A
-      \end{equation*}
-      such that the following diagram commutes:
+      For every cocone \( (Y, e) \) of \eqref{eq:def:equalizers/labeled_index}, \( e \) \hyperref[def:factors_through]{uniquely factors through} \( L \): there exists a unique morphism \( l_X: L \to X \) such that the following diagram commutes:
+      \begin{equation}\label{eq:def:equalizers/coequalizer/property}
+        \begin{aligned}
+          \includegraphics[page=6]{output/def__equalizers}
+        \end{aligned}
+      \end{equation}
     \end{displayquote}
-    \begin{equation}\label{eq:def:equalizers/coequalizer}
-      \begin{aligned}
-        \includegraphics[page=6]{output/def__equalizers}
-      \end{aligned}
-    \end{equation}
-  \end{minipage}
-
-  The requirement that \eqref{eq:def:equalizers/equalizer} commutes does not mean that \( p = q \). As discussed in \cref{def:categorical_diagram}, for commutative diagrams, we only consider a pair of paths if at least one of them is nontrivial. We made this requirement in order to allow parallel morphisms.
-
-  Note how we interchanged the notation for the projections and inclusions compared to \cref{def:discrete_category_limits} --- \( (L, \iota) \) is a \hi{limit} of a fork, while \( (L, \pi) \) is a \hi{colimit}. The reason for this is that equalizers are usually canonical inclusions, while coequalizers are projections.
+  \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Some authors like \incite[112]{Leinster2014BasicCategoryTheory} call \eqref{eq:def:equalizers/equalizer/cone} a \enquote{fork}, while others like \incite[149]{MacLane1998CategoryTheory} and \incite[81]{Riehl2016CategoryTheory} call \eqref{eq:def:equalizers/coequalizer/cocone} a \enquote{fork}.
+
+  \item In connection with \cref{thm:equalizer_invertibility}, we have interchanged the notation for the projections and inclusions compared to \cref{def:discrete_category_limits} --- \( (L, \iota) \) is a \hi{limit}, while \( (L, \pi) \) is a \hi{colimit}.
+\end{comments}
 
 \begin{proposition}\label{thm:equalizer_invertibility}
-  If \( (L, \iota) \) is an \hyperref[def:equalizers]{equalizer} in the category \( \cat{C} \), then \( \iota \) is a \hyperref[def:morphism_invertibility/left_cancellative]{monomorphism}.
+  If \( (L, \iota) \) is an \hyperref[def:equalizers]{equalizer cone} in the category \( \cat{C} \), then \( \iota \) is a \hyperref[def:morphism_invertibility/left_cancellative]{monomorphism}.
 
-  \hyperref[thm:categorical_principle_of_duality]{Dually}, if \( (L, \pi) \) is a \hyperref[def:equalizers]{coequalizer}, then \( \pi \) is an \hyperref[def:morphism_invertibility/right_cancellative]{epimorphism}.
+  \hyperref[thm:categorical_principle_of_duality]{Dually}, if \( (L, \pi) \) is a \hyperref[def:equalizers]{coequalizer cone}, then \( \pi \) is an \hyperref[def:morphism_invertibility/right_cancellative]{epimorphism}.
 \end{proposition}
 \begin{proof}
-  Fix an equalizer cone \( (L, \iota) \) of the fork \eqref{eq:def:equalizers/raw_diagram}. Fix any object \( A \) in \( \cat{C} \) and any two parallel morphisms \( a_1, a_2: A \to X \) such that
+  Fix an equalizer cone \( (L, \iota) \) of \eqref{eq:def:equalizers/labeled_index}. Fix any object \( X \) in \( \cat{C} \) and any two parallel morphisms \( h_1, h_2: X \to A \) such that
   \begin{equation*}
-    \iota \bincirc a_1 = \iota \bincirc a_2.
+    \iota \bincirc h_1 = \iota \bincirc h_2.
   \end{equation*}
 
-  Then
+  Since \( f \bincirc \iota = g \bincirc \iota \), we have
   \begin{equation*}
-    g \bincirc \iota \bincirc a_1 = h \bincirc \iota \bincirc a_2,
+    f \bincirc (\iota \bincirc h_1) = g \bincirc (\iota \bincirc h_1),
   \end{equation*}
-  and thus \( \iota \bincirc a_1 = \iota \bincirc a_2 \) is the morphism of a cone. Hence, both \( (A, \iota \bincirc a_1) \) and \( (A, \iota \bincirc a_2) \) are cones and thus \( a_1 \) and \( a_2 \) are the unique maps such that the following diagram commutes:
-  \begin{equation}\label{eq:thm:equalizer_invertibility/monomorphism}
+  and thus \( (X, \iota \bincirc h_1) \) is a cone. Similarly, \( (X, \iota \bincirc h_2) \) is a cone.
+
+  From the universal property, it follows that there exists a unique morphism \( l_X: X \to A \) such that the following diagram commutes:
+  \begin{equation*}
     \begin{aligned}
       \includegraphics[page=1]{output/thm__equalizer_invertibility}
     \end{aligned}
-  \end{equation}
+  \end{equation*}
 
-  Therefore, \( a_1 = a_2 \) and, since \( a_1 \) and \( a_2 \) were arbitrary, it follows that \( \iota \) is a monomorphism.
+  Therefore, \( h_1 = h_2 \) and, since \( h_1 \) and \( h_2 \) were arbitrary, it follows that \( \iota \) is a monomorphism.
 
-  Dually, if \( (L, \pi) \) is a coequalizer colimit cocone in \( \cat{C} \), then by \cref{thm:categorical_limit_duality}, \( (L, \pi^\oppos) \) is an equalizer in \( \cat{C}^\oppos \). Hence, \( \pi^\oppos \) is a monomorphism, and by \cref{thm:morphism_invertibility_duality}, \( \pi \) is an epimorphism.
+  Dually, if \( (L, \pi) \) is a colimit cocone, by \cref{thm:categorical_limit_duality}, \( (L, \pi^\oppos) \) is an equalizer in \( \cat{C}^\oppos \). Hence, \( \pi^\oppos \) is a monomorphism, and by \cref{thm:morphism_invertibility_duality}, \( \pi \) is an epimorphism.
 \end{proof}
 
 \begin{example}\label{ex:equalizers_in_set}
-  \hfill
+  We will analyze \hyperref[def:equalizers]{equalizers and coequalizers} in a \hyperref[def:category_of_small_sets]{category of small sets} \( \cat{Set} \).
+
   \begin{thmenum}
-    \thmitem{ex:equalizers_in_set/equalizer} For a pair of functions \( s, t: X \to Y \) in \( \cat{Set} \), define the set
+    \thmitem{ex:equalizers_in_set/equalizer} For a pair of functions \( f, g: A \to B \) in \( \cat{Set} \), define the set
     \begin{equation*}
-      E = \set{ x \in X \given s(x) = t(x) }.
+      L \coloneqq \set{ x \in A \given f(x) = g(x) }.
     \end{equation*}
 
-    With the inclusion map \( \iota: E \to X \), this is an \hyperref[def:equalizers]{equalizer} cone for \( s \) and \( t \).
+    With the inclusion map \( \iota: L \to A \), this is an \hyperref[def:equalizers]{equalizer} cone for \( f \) and \( g \).
 
-    We will now prove that it is a limit cone. The pair \( (E, \iota) \) is obviously a cone. For any other cone \( (A, f) \), we must find a map \( l_A: A \to E \) such that the following equalizer diagram commutes:
-    \begin{equation}\label{eq:ex:equalizers_in_set/equalizer}
-      \begin{aligned}
-        \includegraphics[page=1]{output/ex__equalizers_in_set}
-      \end{aligned}
-    \end{equation}
+    We will now prove that it is a limit cone. For any cone \( (X, e) \), we must find a map \( l_X: X \to L \) such that the universal property diagram \eqref{eq:def:equalizers/equalizer/property} commutes.
 
-    In order for \( (A, f) \) to be a cone, the image \( f[A] \) must be a subset of \( E \). In order for \eqref{eq:ex:equalizers_in_set/equalizer} to commute, it only makes sense to take \( l_A \) to be \( f \) with its codomain restricted to \( E \).
+    In order for \( (X, e) \) to be a cone, the set-theoretic image \( e[X] \) must be a subset of \( L \), i.e. we must define \( l_A \) as \( e \) with its codomain restricted to \( L \).
 
-    It follows that \( (E, \iota) \) is a limit cone.
+    It follows that \( (L, \iota) \) is a limit cone.
 
-    \thmitem{ex:equalizers_in_set/coequalizer} The coequalizer of \( s, t: X \to Y \) is more nuanced. Suppose that \( (L, \pi) \) is a colimit cocone and \( (A, f) \) is any cocone for the coequalizer diagram
-    \begin{equation}\label{eq:ex:equalizers_in_set/coequalizer}
-      \begin{aligned}
-        \includegraphics[page=2]{output/ex__equalizers_in_set}
-      \end{aligned}
-    \end{equation}
+    This example will be important for us when discussing kernels in certain categories of first-order models in \cref{thm:equational_theory_zero_morphisms}.
 
-    In order for \( (A, f) \) to be a cocone, for every \( x \in X \), we must have \( f(s(x)) = f(t(x)) \). Thus, \( A \) must be a partition of \( Y \) in a way such that \( s(x) \) and \( t(x) \) belong to the same coset if and only if \( f(s(x)) = f(t(x)) \). Outside the images of \( s \) and \( t \), \( f \) is free to take any value.
+    \thmitem{ex:equalizers_in_set/coequalizer} The coequalizer of \( f, g: A \to B \) is more nuanced.
 
-    Let \( {\sim} \) be the smallest equivalence relation on \( Y \) such that \( s(x) \sim t(x) \) for every \( x \in X \). Explicitly, this is the \hyperref[def:equivalence_closure]{equivalence closure} of the relation
-    \begin{equation*}
-      \set{ (s(x), t(x)) \given x \in X }.
-    \end{equation*}
+    Let \( {\cong} \) be the equivalence relation on \( B \) generated, in accordance with \cref{thm:generated_equivalence_relation}, by the relation \( {\sim} \) such that \( f(a) \sim g(a) \) for every \( a \) in \( A \).
 
-    Consider the partition \( Y / {\sim} \) with the projection map
-    \begin{equation*}
-      \begin{aligned}
-        &\pi: Y \to Y / {\sim} \\
-        &\pi(y) \coloneqq [y]
-      \end{aligned}
-    \end{equation*}
+    Let \( L \) be the partition \( B / {\cong} \) and let \( \pi: B \to L \) be the corresponding projection map. Then \( (L, \pi) \) is a cocone because, by definition, \( \pi(f(a)) = \pi(g(a)) \) for every \( a \) in \( A \).
 
-    This is a cocone. Furthermore, it is a colimit cocone because, for any other cocone \( (A, f) \), we can define \( l_A([y]) \coloneqq f(y) \) so that \eqref{eq:ex:equalizers_in_set/coequalizer} commutes.
+    Fix a cocone \( (Y, e) \). We will now construct a map \( l_Y: L \to Y \) such that the universal property diagram \eqref{eq:def:equalizers/coequalizer/property} commutes. In particular, we must have \( l_Y(\pi(b)) = e(b) \). We can use this as a definition as long as it is well-defined.
 
-    Coequalizers mostly make sense in the context of \hyperref[def:group/quotient]{quotient groups}, where partitions are especially well-behaved and admit a much simpler description. See \cref{def:group/quotient}.
+    We will use \fullref{thm:induction_on_recursively_defined_relations} on \( b \cong b' \) to show that \( e(b) = e(b') \).
+    \begin{itemize}
+      \item If \( b \cong b' \) due to \ref{inf:thm:generated_equivalence_relation/intro}, there exists some \( a \) such that \( b = f(a) \) and \( b' = g(a) \). Then \( e(f(a)) = e(g(a)) \) since \( (Y, e) \) is a cocone.
+
+      \item If \( b \cong b' \) due to \ref{inf:thm:generated_equivalence_relation/refl}, then \( b = b' \) and clearly \( e(b) = e(b') \).
+
+      \item If \( b \cong b' \) due to \ref{inf:thm:generated_equivalence_relation/symm}, then \( b' \cong b \), to which the inductive hypothesis applies.
+
+      Then \( e(b') = e(b) \), so naturally \( e(b) = e(b') \).
+
+      \item Finally, if \( b \cong b' \) due to \ref{inf:thm:generated_equivalence_relation/trans}, there exists some \( b^\dprime \) such that \( b \cong b^\dprime \) and \( b^\dprime \cong b' \), and to which the inductive hypothesis applies.
+
+      Then \( e(b) = e(b^\dprime) = e(b') \).
+    \end{itemize}
+
+    Therefore, we can indeed define \( l_Y(\pi(b)) \) as \( e(b) \), and this map would satisfy the universal property. Uniqueness of \( l_Y \) follows from the requirement that \( l_Y(\pi(b)) \) must equal \( e(b) \).
+
+    This example will be important for us when discussing cokernels in certain categories of first-order models in \cref{thm:equational_theory_zero_morphisms}.
   \end{thmenum}
 \end{example}
 
