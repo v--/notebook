@@ -41,12 +41,16 @@
   ]
   {biblatex}
 
+% Fonts
+\RequirePackage{packages/fonts}
+
 % Internationalization
 \RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
 
 \useshorthands*{"}
-\defineshorthand{"-}{-\babelhyphen{soft}}
+\defineshorthand{"-}{\babelhyphen{soft}}
+\defineshorthand{"=}{-\babelhyphen{soft}}
 
 % Misc nonmath packages
 \RequirePackage{subcaption}
@@ -107,7 +111,6 @@
 \ebproofnewrulestyle{norule}{rule~code={}}
 
 % Custom code
-\RequirePackage{packages/fonts}
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
 \RequirePackage{packages/paired_delimiters}

@@ -1,4 +1,4 @@
-COMPILER := pdflatex -interaction=batchmode
+COMPILER := lualatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
 FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out src/notebook/figures/__init__.py, $(wildcard src/notebook/figures/*.py)))

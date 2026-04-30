@@ -36,7 +36,7 @@ class LaTeXTask(CliTask):
 
     @override
     def get_build_command(self) -> str:
-        return rf'pdflatex -interaction=batchmode -output-directory={AUX_PATH} {self.trigger.path}'
+        return f'lualatex -interaction=batchmode -output-directory={AUX_PATH} {self.trigger.path}'
 
     @override
     def get_build_out_buffer(self) -> int:
