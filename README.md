@@ -24,16 +24,38 @@ See the README at [`src/notebook`](./src/notebook) for an overview of how the co
 
 If you happen to be interested in any aspect of the setup, feel free to [contact me](https://ivasilev.net).
 
+### References
+
+There are hundreds of connections between the text and the code - every algorithm has an implementation, as do many examples. To help maintain them, I created a code reference ("coderef") system, which allows attaching LaTeX labels to Python objects. The "collection" process is implemented in [`coderefs.py`](./src/notebook/src/support/coderefs.py). An auxiliary file is created by running `uv run coderefs collect` and then read in the monograph using the [`ProcessCodeRefs`](./packages/coderefs.sty) macro.
+
+In the simple case, we directly attach a reference using the Python code
+
+    @collector.ref('alg:euclidean_algorithm')
+    def gcd(n: int, m: int) -> int:
+      ...
+
+After running the collector, we can write out the fully qualified name of the function in the text using
+
+    \begin{CodeRefDisplay}
+      \GetCodeRef{alg:euclidean_algorithm}
+    \end{CodeRefDisplay}
+
+### Figures
+
+Rather than drawing figures inline, we create standalone PDF files and then import them using `\includegraphics`. These externalized figures can be found in the [`figures`](./figures) directory.
+
+We use the following kinds of figures:
+* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. 2D projection is used instead of proper 3D rendering (the latter is flaky).
+* [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
+* [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
+
 ### Build system
 
 There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `uv run watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
 
-Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) from the `metadata` file, if it exists. Similarly, a list of files to be whitelisted for building read by [`ProcessIncludeOnly`](./packages/compilation.sty) from the `includeonly` file, if it exists.
+The figures are built using `pdflatex` for speed (saving a second of build time for hundreds of files is worth it), while the monograph is built using `lualatex`. We have implemented some macros in the [`fonts.sty`](./packages/fonts.sty) file to bridge the gap.
 
-There are externalized figures in the [`figures`](./figures) directory of the following kinds:
-* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. 2D projection is used instead of proper 3D rendering (the latter is flaky).
-* [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
-* [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
+Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) from the `metadata` file, if it exists. Similarly, a list of files to be whitelisted for building read by [`ProcessIncludeOnly`](./packages/compilation.sty) from the `includeonly` file, if it exists.
 
 ### Parsers
 
