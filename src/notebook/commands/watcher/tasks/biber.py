@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, override
 
 from ..trigger import TaskTrigger, TaskTriggerKind
 from .cli import CliTask
-from .latex import LaTeXTask
+from .latex import LaTeXCompiler, LaTeXTask
 
 
 if TYPE_CHECKING:
@@ -41,6 +41,7 @@ class BiberTask(CliTask):
     async def build_post_process(self, runner: TaskRunner) -> None:
         runner.schedule(
             LaTeXTask(
+                LaTeXCompiler.lualatex,
                 TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                 reason=self.bcf_path.as_posix(),
                 base_logger=self.base_logger,

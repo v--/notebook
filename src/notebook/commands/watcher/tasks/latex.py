@@ -1,5 +1,6 @@
 import asyncio
 import shutil
+from enum import IntEnum, auto
 from typing import TYPE_CHECKING, override
 
 import texoutparse
@@ -13,13 +14,26 @@ if TYPE_CHECKING:
     import pathlib
     from collections.abc import Iterable
 
+    import loguru
+
     from .runner import TaskRunner
 
 
 TEX_LOG_ENCODING = 'latin-1'
 
 
+class LaTeXCompiler(IntEnum):
+    pdflatex = auto()
+    lualatex = auto()
+
+
 class LaTeXTask(CliTask):
+    compiler: LaTeXCompiler
+
+    def __init__(self, compiler: LaTeXCompiler, trigger: TaskTrigger, reason: str, base_logger: loguru.Logger) -> None:
+        super().__init__(trigger, reason, base_logger)
+        self.compiler = compiler
+
     @override
     def get_default_extension(self) -> str:
         return '.pdf'
@@ -36,7 +50,8 @@ class LaTeXTask(CliTask):
 
     @override
     def get_build_command(self) -> str:
-        return f'lualatex -interaction=batchmode -output-directory={AUX_PATH} {self.trigger.path}'
+        binary = 'lualatex' if self.compiler == LaTeXCompiler.lualatex else 'pdflatex'
+        return f'{binary} -interaction=batchmode -output-directory={AUX_PATH} {self.trigger.path}'
 
     @override
     def get_build_out_buffer(self) -> int:
@@ -85,6 +100,7 @@ class LaTeXTask(CliTask):
         if requires_rerun:
             runner.schedule(
                 LaTeXTask(
+                    self.compiler,
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                     reason='rerunfilecheck',
                     base_logger=self.base_logger,

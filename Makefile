@@ -1,4 +1,5 @@
-COMPILER := lualatex -interaction=batchmode
+DOC_COMPILER := lualatex -interaction=batchmode
+FIGURE_COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
 FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out src/notebook/figures/__init__.py, $(wildcard src/notebook/figures/*.py)))
@@ -20,14 +21,14 @@ output:
 # LaTeX compilation is complicated, so we avoid using Make for intermediate files in aux/
 # In the end, we use dd to copy the result (cp messes up reloading of PDF files in viewers)
 output/notebook.pdf: $(TEXT_SOURCE) images/*.png $(wildcard includeonly metadata) | aux aux/text output
-	$(COMPILER) -output-directory=aux -draftmode notebook.tex
+	$(DOC_COMPILER) -output-directory=aux -draftmode notebook.tex
 	biber --quiet aux/notebook.bcf
-	$(COMPILER) -output-directory=aux -draftmode notebook.tex
-	$(COMPILER) -output-directory=aux notebook.tex
+	$(DOC_COMPILER) -output-directory=aux -draftmode notebook.tex
+	$(DOC_COMPILER) -output-directory=aux notebook.tex
 	dd status=none if=aux/notebook.pdf of=output/notebook.pdf
 
 output/%.pdf: figures/%.tex classes/*.cls packages/*.sty | aux output
-	$(COMPILER) -output-directory=aux figures/$*.tex
+	$(FIGURE_COMPILER) -output-directory=aux figures/$*.tex
 	dd status=none if=aux/$*.pdf of=output/$*.pdf
 
 # Asymptote may fail silently, so we remove the aux file prior to making a new one

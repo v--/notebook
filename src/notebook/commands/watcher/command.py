@@ -8,7 +8,7 @@ from asyncinotify import Inotify, Mask
 
 from ...paths import FIGURES_PATH, ROOT_PATH
 from ..common.logging import configure_loguru
-from .tasks import AsymptoteTask, LaTeXTask, PythonTask, TaskRunner
+from .tasks import AsymptoteTask, LaTeXCompiler, LaTeXTask, PythonTask, TaskRunner
 from .trigger import TaskTrigger, TaskTriggerKind
 
 
@@ -52,7 +52,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
         path = target.path
 
         if path.match('figures/*.tex'):
-            manager.schedule(LaTeXTask(target, reason='watcher', base_logger=base_logger))
+            manager.schedule(LaTeXTask(LaTeXCompiler.pdflatex, target, reason='watcher', base_logger=base_logger))
 
         if path.match('figures/*.asy'):
             manager.schedule(AsymptoteTask(target, reason='watcher', base_logger=base_logger))
@@ -65,7 +65,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                 if path.match('asymptote/*.asy'):
                     for figure_path in FIGURES_PATH.glob('*.asy'):
                         manager.schedule(
-                            LaTeXTask(
+                            AsymptoteTask(
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
                                 base_logger=base_logger,
@@ -77,6 +77,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                     for figure_path in FIGURES_PATH.glob('*.tex'):
                         manager.schedule(
                             LaTeXTask(
+                                LaTeXCompiler.pdflatex,
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
                                 base_logger=base_logger,
@@ -96,6 +97,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
             ):
                 manager.schedule(
                     LaTeXTask(
+                        LaTeXCompiler.lualatex,
                         TaskTrigger(TaskTriggerKind.BUILD, ROOT_PATH / 'notebook.tex'),
                         reason=path.name,
                         base_logger=base_logger,
