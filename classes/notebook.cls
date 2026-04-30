@@ -30,17 +30,6 @@
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 
-% Citations
-\RequirePackage
-  [
-    block=ragged,
-    backend=biber,
-    style=alphabetic,
-    citestyle=alphabetic,
-    datamodel=classes/bibmodel
-  ]
-  {biblatex}
-
 % Fonts
 \RequirePackage{packages/fonts}
 
@@ -52,6 +41,20 @@
 \useshorthands*{"}
 \defineshorthand{"-}{\babelhyphen{soft}}
 \defineshorthand{"=}{-\babelhyphen{soft}}
+
+% Citations
+\RequirePackage
+  [
+    block=ragged,
+    backend=biber,
+    style=alphabetic,
+    citestyle=alphabetic,
+    datamodel=classes/bibmodel
+  ]
+  {biblatex}
+
+% biblatex complains about the lack of latin.lbx otherwise
+\DeclareLanguageMapping {latin} {english}
 
 % Misc nonmath packages
 \RequirePackage{subcaption}
