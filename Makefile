@@ -4,7 +4,7 @@ FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.te
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
 FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out src/notebook/figures/__init__.py, $(wildcard src/notebook/figures/*.py)))
 PYTHON_SOURCE := $(wildcard src/*.py)
-TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy packages/*.sty text/*.tex aux/coderefs.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
+TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy packages/*.sty text/*.tex aux/corderef.aux $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
 
 .PHONY: figures clean clean-text clean-figures touch-figures checkcites
 .DEFAULT_GOAL := output/notebook.pdf
@@ -52,7 +52,7 @@ aux/metadata: .git/refs/heads/master | aux
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'commit={%h},date={%cd}' --date='format:%d %B %Y' HEAD > aux/metadata
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:',pdfdate={%cd}' --date='format:D:%Y%m%d%H%M%S' HEAD >> aux/metadata
 
-aux/coderefs.tex: $(PYTHON_SOURCE) | aux
+aux/corderef.aux: $(PYTHON_SOURCE) | aux
 	uv run coderefs collect
 
 clean-text:

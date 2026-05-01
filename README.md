@@ -26,18 +26,18 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 
 ### References
 
-There are hundreds of connections between the text and the code - every algorithm has an implementation, as do many examples. To help maintain them, I created a code reference ("coderef") system, which allows attaching LaTeX labels to Python objects. The "collection" process is implemented in [`coderefs.py`](./src/notebook/src/support/coderefs.py). An auxiliary file is created by running `uv run coderefs collect` and then read in the monograph using the [`ProcessCodeRefs`](./packages/coderefs.sty) macro.
+There are hundreds of connections between the text and the code - every algorithm has an implementation, as do many examples. To help maintain them, I created a code reference ("coderef") system, which allows attaching LaTeX labels to Python objects. The "collection" process is implemented in [`coderefs.py`](./src/notebook/support/coderefs.py). An auxiliary file is created by running `uv run coderefs collect` and then read in the monograph using the [`ProcessCodeRefs`](./packages/coderefs.sty) macro.
 
-In the simple case, we directly attach a reference using the Python code
+In the average case, we directly attach a reference using the Python code
 
-    @collector.ref('alg:euclidean_algorithm')
-    def gcd(n: int, m: int) -> int:
+    @collector.ref('alg:fol_skolemization')
+    def skolemize[T](formula: PrenexFormula, signature: FormalLogicSignature, model: FormalLogicStructure[T] | None = None) -> SkolemConfiguration:
       ...
 
 After running the collector, we can write out the fully qualified name of the function in the text using
 
     \begin{CodeRefDisplay}
-      \GetCodeRef{alg:euclidean_algorithm}
+      \GetCodeRef{alg:fol_skolemization}
     \end{CodeRefDisplay}
 
 ### Figures

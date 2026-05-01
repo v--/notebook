@@ -32,7 +32,7 @@ def recursively_load_modules(path: pathlib.Path) -> None:
 
 
 @coderefs.command()
-@click.argument('output-path', type=click.Path(writable=True, dir_okay=False, path_type=pathlib.Path), default='aux/coderefs.tex')
+@click.argument('output-path', type=click.Path(writable=True, dir_okay=False, path_type=pathlib.Path), default='aux/corderef.aux')
 def collect(output_path: pathlib.Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     recursively_load_modules(CODE_PATH / 'math')

@@ -91,7 +91,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                 path.match('bibliography/*.bib') or
                 path.match('text/*.tex') or
                 path.match('images/*') or
-                path.match('aux/coderefs.tex') or
+                path.match('aux/corderef.aux') or
                 (path.match('output/*') and not path.match('output/notebook.pdf')) or
                 path.match('packages/*.sty')
             ):
