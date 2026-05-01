@@ -38,7 +38,7 @@
 
   \item We focus on simultaneous substitutions directly instead of defining substituting a single variable. The latter is often done similarly to \fullref{alg:propositional_subformula_substitution}. See \cref{rem:simulating_simultaneous_substitution} for an alternative approach.
 
-  \item This algorithm is a special case of the analogous first-order logic algorithm \fullref{alg:fol_substitution}, implemented in \cite{notebook:code} as
+  \item This algorithm is a special case of the analogous first-order logic algorithm \fullref{alg:fol_formula_substitution}, implemented in \cite{notebook:code} as
   \begin{CodeRefDisplay}
     \GetCodeRef{alg:fol_formula_substitution}
   \end{CodeRefDisplay}
@@ -50,7 +50,7 @@
   We find Hindley's notation useful because:
   \begin{itemize}
     \item Plain Latin letters adjacent to \( p \), like \( s \), are used for both propositional variables and \hyperref[def:fol_signature/predicate]{first-order predicates}.
-    \item Greek letters adjacent to \( \tau \), like \( \sigma \), are used for both \hyperref[def:fol_schema]{first-order terms} and for \hyperref[rem:type_theory]{types}.
+    \item Greek letters adjacent to \( \tau \), like \( \sigma \), are used for both \hyperref[def:fol_term]{first-order terms} and for \hyperref[rem:type_theory]{types}.
   \end{itemize}
 \end{remark}
 
@@ -189,7 +189,7 @@
 
 \paragraph{Subformula substitution}
 
-For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:formula_to_cnf_and_dnf}.
+For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:propositional_formula_to_cnf_and_dnf}.
 
 \begin{algorithm}[Propositional subformula substitution]\label{alg:propositional_subformula_substitution}\mcite[def. 1.3.13]{Hinman2005Logic}
   We define the \term[en=substitution]{subformula substitution} of the propositional formula \( \chi \) with \( \omega \) in \( \varphi \) as follows:
@@ -372,7 +372,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{equation*}
 \end{algorithm}
 \begin{comments}
-  \item A variation suitable for \fullref{alg:formula_to_cnf_and_dnf} is to replace \( \syntop \) with \( p_\varphi \synvee \synneg p_\varphi \). This has the downside of only being sound with respect to classical semantics.
+  \item A variation suitable for \fullref{alg:propositional_formula_to_cnf_and_dnf} is to replace \( \syntop \) with \( p_\varphi \synvee \synneg p_\varphi \). This has the downside of only being sound with respect to classical semantics.
 
   \item This algorithm is implemented in \cite{notebook:code} as
   \begin{CodeRefDisplay}
@@ -707,11 +707,11 @@ For propositional logic, We will also find useful the ability to replace an enti
   Denote by \( \syncirc \) the outer connective (\( \synwedge \) for CNF and \( \synvee \) for DNF) and by \( \syncirc^{\oppos} \) its dual, the inner connective.
 
   \begin{thmenum}
-    \thmitem{alg:formula_to_cnf_and_dnf/atomic} If \( \varphi \) is atomic, it is either a constant or a positive literal, and thus it is already in both conjunctive and disjunctive normal form.
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/atomic} If \( \varphi \) is atomic, it is either a constant or a positive literal, and thus it is already in both conjunctive and disjunctive normal form.
 
     In this case, let \( T_{\anon}(\varphi) \coloneqq \varphi \) for both \( {\anon} = \wedge \) and \( {\anon} = \vee \).
 
-    \thmitem{alg:formula_to_cnf_and_dnf/negation} If \( \varphi = \synneg \psi \), let
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/negation} If \( \varphi = \synneg \psi \), let
     \begin{align*}
       T_\wedge(\varphi) \coloneqq \oline{M}(T_\vee(\psi))
       &&
@@ -723,23 +723,23 @@ For propositional logic, We will also find useful the ability to replace an enti
 
     These cases are justified by \cref{thm:propositional_cnf_and_dnf_dualization}.
 
-    \thmitem{alg:formula_to_cnf_and_dnf/conditional} If \( \varphi = \psi \synimplies \theta \), let
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/conditional} If \( \varphi = \psi \synimplies \theta \), let
     \begin{equation*}
       T_{\anon}(\varphi) \coloneqq T_{\anon}(\synneg \psi \synvee \theta).
     \end{equation*}
 
-    \thmitem{alg:formula_to_cnf_and_dnf/biconditional} If \( \varphi = \psi \syniff \theta \), let
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/biconditional} If \( \varphi = \psi \syniff \theta \), let
     \begin{align*}
       T_\wedge(\varphi) &\coloneqq T_\wedge\parens[\big]{ (\synneg \psi \synvee \theta) \synwedge (\psi \synvee \synneg \theta) }, \\
       T_\vee(\varphi)   &\coloneqq T_\vee\parens[\big]{ (\psi \synvee \theta) \synwedge (\synneg \psi \synvee \synneg \theta) }.
     \end{align*}
 
-    \thmitem{alg:formula_to_cnf_and_dnf/outer} If \( \varphi = \psi \syncirc \theta \), let
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/outer} If \( \varphi = \psi \syncirc \theta \), let
     \begin{equation*}
       T_{\syncirc}(\varphi) \coloneqq T_{\syncirc}(\psi) \syncirc T_{\syncirc}(\theta).
     \end{equation*}
 
-    \thmitem{alg:formula_to_cnf_and_dnf/inner} If \( \varphi = \psi \syncirc^{\oppos} \theta \), let \( \psi' \coloneqq T_{\syncirc}(\psi) \) and \( \theta' \coloneqq T_{\syncirc}(\theta) \) and let
+    \thmitem{alg:propositional_formula_to_cnf_and_dnf/inner} If \( \varphi = \psi \syncirc^{\oppos} \theta \), let \( \psi' \coloneqq T_{\syncirc}(\psi) \) and \( \theta' \coloneqq T_{\syncirc}(\theta) \) and let
     \begin{equation*}
       T_{\syncirc}(\varphi) \coloneqq \begin{cases}
         T_{\syncirc}(\chi \syncirc^{\oppos} \psi) \syncirc T_{\syncirc}(\omega \syncirc^{\oppos} \psi),   &\psi' = \chi \syncirc \omega, \\
