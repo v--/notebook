@@ -6,16 +6,46 @@
 \bool_if:nTF
   { \sys_if_engine_luatex_p: }
   {
-    %% We avoid using fontsetup directly because it loads unicode-math, while we want to use lua-unicode-math
-    %% \RequirePackage[default, stixtwo]{fontsetup}
+    % We avoid using fontsetup directly because it loads unicode-math, while we want to use lua-unicode-math
+    % \RequirePackage[default, stixtwo]{fontsetup}
     \RequirePackage{fontspec}
     \RequirePackage{lum-stix2}
     \input{fspstixtwoot} % This is the code from fontsetup that loads stix2 text fonts
+
+    % We can similarly load new computer modern with all its features using \input{fspdefault},
+    % however that turns out to be rather slow (and, furthermore, it relies on unicode-math).
+    % Luckily, the base fontspec usage is simple enough
+    \setsansfont
+      [
+        ItalicFont=NewCMSans10-BookOblique.otf,
+        BoldFont=NewCMSans10-Bold.otf,
+        BoldItalicFont=NewCMSans10-BoldOblique.otf,
+        SmallCapsFeatures={Numbers=OldStyle},
+        SlantedFont=NewCMSans10-BookOblique.otf,
+        BoldSlantedFont=NewCMSans10-BoldOblique.otf,
+      ]
+      {NewCMSans10-Book.otf}
+
+    \setmonofont
+      [
+        ItalicFont=NewCMMono10-BookItalic.otf,
+        BoldFont=NewCMMono10-Bold.otf,
+        BoldItalicFont=NewCMMono10-BoldOblique.otf,
+        SlantedFont=NewCMMono10-Book.otf,
+        SlantedFeatures={FakeSlant=0.25},
+        BoldSlantedFont=NewCMMono10-Bold.otf,
+        BoldSlantedFeatures={FakeSlant=0.25},
+        SmallCapsFeatures={Numbers=OldStyle}
+      ]
+      {NewCMMono10-Book.otf}
+
     \RequirePackage{microtype}
   }
   {
     \RequirePackage[LGR,TS1,OT2,T2A,T1]{fontenc}
     \RequirePackage[not1,notextcomp,lcgreekalpha]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
+    \RenewDocumentCommand \sfdefault {} {lmss} % Latin modern
+    \RenewDocumentCommand \ttdefault {} {lmtt} % Latin modern
     \RequirePackage{microtype}
 
     \let\square\relax
