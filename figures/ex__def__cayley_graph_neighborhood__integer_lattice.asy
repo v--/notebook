@@ -1,5 +1,3 @@
-unitsize(1.5cm);
-
 from notebook access PointLattice;
 
 PointLattice lat = PointLattice(

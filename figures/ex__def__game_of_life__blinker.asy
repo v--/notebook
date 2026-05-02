@@ -1,5 +1,3 @@
-unitsize(1.5cm);
-
 from notebook access SquareGridAutomaton, sga;
 
 SquareGridAutomaton aut = SquareGridAutomaton(

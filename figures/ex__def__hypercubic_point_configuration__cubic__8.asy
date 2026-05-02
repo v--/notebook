@@ -1,4 +1,4 @@
-unitsize(1.5cm);
+unitsize(1cm);
 
 from notebook access CubeGraph;
 

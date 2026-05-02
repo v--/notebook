@@ -1,5 +1,3 @@
-unitsize(1.5cm);
-
 from notebook access grdraw, lab, CycleGraph;
 
 string vertex_label(int power) {
