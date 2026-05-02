@@ -5,18 +5,21 @@
 
 \LoadClass
   [
-    bibliography=totocnumbered,
+    bibliography=numbered,
     footnotes=multiple, % Put a comma between multiple adjacent footnote marks.
     numbers=endperiod,
     twoside=false,
+    draft=true,
   ]
   {scrbook}
 
-\RedeclareSectionCommands[tocdynnumwidth]{section}
+\RedeclareSectionCommands[tocpagenumberwidth=2.2em]{chapter, section}
+\RedeclareSectionCommands[tocdynnumwidth=true]{section}
+
 % Paragraphs do not break the text by default
-% See https://tex.stackexchange.com/a/223524
+%   See https://tex.stackexchange.com/a/223524
 % The afterskip is taken from the same property for subsubsections
-% See https://sourceforge.net/p/koma-script/code/HEAD/tree/trunk/scrkernel-sections.dtx
+%   See https://sourceforge.net/p/koma-script/code/HEAD/tree/trunk/scrkernel-sections.dtx
 \RedeclareSectionCommands[afterskip=1.7ex,level=2,toclevel=2]{paragraph}
 \setcounter{tocdepth}{\sectiontocdepth}
 \setcounter{secnumdepth}{\sectionnumdepth}
