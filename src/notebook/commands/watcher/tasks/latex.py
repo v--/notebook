@@ -19,12 +19,15 @@ if TYPE_CHECKING:
     from .runner import TaskRunner
 
 
-TEX_LOG_ENCODING = 'latin-1'
-
-
 class LaTeXCompiler(IntEnum):
     pdflatex = auto()
     lualatex = auto()
+
+
+TEX_LOG_ENCODING = {
+    LaTeXCompiler.pdflatex: 'latin-1',
+    LaTeXCompiler.lualatex: 'utf-8',
+}
 
 
 class LaTeXTask(CliTask):
@@ -64,7 +67,7 @@ class LaTeXTask(CliTask):
         requires_biber_rerun = False
 
         try:
-            with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING) as log_file:
+            with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING[self.compiler]) as log_file:
                 shutil.copyfile(self.get_aux_path('.log'), self.get_aux_path('.old.log'))
                 requires_rerun = 'Rerun to get' in log_file.read()
                 log_file.seek(0)
