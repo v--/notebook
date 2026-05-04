@@ -194,8 +194,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
     def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
-        head = self.peek()
-
         for _ in range(symbol.arity):
             head = self.peek()
 
