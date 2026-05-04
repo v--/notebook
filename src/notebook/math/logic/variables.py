@@ -1,7 +1,8 @@
 from collections.abc import Collection
 from typing import override
 
-from ...parsing.identifiers import new_latin_identifier
+from notebook.parsing.identifiers import new_latin_identifier
+
 from .formulas import (
     ConnectiveFormula,
     EqualityFormula,

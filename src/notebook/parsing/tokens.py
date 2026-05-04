@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, NamedTuple, cast
 
-from ..support.iteration import dict_accumulator
+from notebook.support.iteration import dict_accumulator
+
 from .exceptions import InvalidTokenError
 
 

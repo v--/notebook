@@ -1,4 +1,5 @@
-from .. import monomial
+from notebook.math.polynomials import monomial
+
 from .common import IRingPolynomial
 
 

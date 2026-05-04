@@ -4,9 +4,9 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from enum import StrEnum
 from typing import Any, Self, cast, overload
 
-from ....support.iteration import string_accumulator
-from ...rings.types import IField, IRing, ISemiring
-from ..exceptions import MatrixIndexError, MatrixValueError
+from notebook.math.matrices.exceptions import MatrixIndexError, MatrixValueError
+from notebook.math.rings.types import IField, IRing, ISemiring
+from notebook.support.iteration import string_accumulator
 
 
 class SpecialChars(StrEnum):

@@ -2,16 +2,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ...logic.conftest import dummy_signature  # noqa: F401
-from ...logic.signature import (
-    FormalLogicSignature,
-    FunctionSymbol,
-    SignatureMorphism,
-)
-from ...logic.structure import FormalLogicStructure, expand_along_signature_morphism
-from ...logic.theories.arithmetic import ARITHMETIC_SIGNATURE as FOL_ARITHMETIC_SIGNATURE
-from ...logic.theories.arithmetic import ModularArithmeticStructure as FolModularStructure
-from ...rings.modular import Z3
+from notebook.math.logic.conftest import dummy_signature  # noqa: F401
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, SignatureMorphism
+from notebook.math.logic.structure import FormalLogicStructure, expand_along_signature_morphism
+from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE as FOL_ARITHMETIC_SIGNATURE
+from notebook.math.logic.theories.arithmetic import ModularArithmeticStructure as FolModularStructure
+from notebook.math.rings.modular import Z3
+
 from .theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
 from .theories.arithmetic import ModularArithmeticStructure as HolModularStructure
 

@@ -1,5 +1,6 @@
-from ...support.coderefs import collector
-from ..matrices.matrix import IntMatrix
+from notebook.math.matrices.matrix import IntMatrix
+from notebook.support.coderefs import collector
+
 from .exceptions import FormalLanguageError
 
 

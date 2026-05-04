@@ -1,6 +1,7 @@
-from ....rings.modular import Z3
-from ...structure import evaluate_formula
-from ..arithmetic import ModularArithmeticStructure
+from notebook.math.logic.structure import evaluate_formula
+from notebook.math.logic.theories.arithmetic import ModularArithmeticStructure
+from notebook.math.rings.modular import Z3
+
 from .cardinality import cardinality_formula_equal, cardinality_formula_geq, cardinality_formula_less
 
 

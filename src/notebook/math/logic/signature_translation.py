@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .formulas import (
     EqualityFormula,
     Formula,

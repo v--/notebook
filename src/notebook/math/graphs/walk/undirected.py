@@ -1,6 +1,7 @@
 from typing import overload
 
-from ..graph import UndirectedEdge
+from notebook.math.graphs.graph import UndirectedEdge
+
 from .base import BaseGraphWalk, GraphWalkSegment
 
 

@@ -10,10 +10,10 @@ def test_error_basic() -> None:
         offset_hi_end=1,
     )
 
-    assert highlighter.highlight() == dedent('''\
+    assert highlighter.highlight() == dedent("""\
         1 │ test
           │  ^
-        ''',
+        """,
     )
 
 
@@ -24,10 +24,10 @@ def test_error_on_end() -> None:
         offset_hi_end=4,
     )
 
-    assert highlighter.highlight() == dedent('''\
+    assert highlighter.highlight() == dedent("""\
         1 │ test↵
           │     ^
-        ''',
+        """,
     )
 
 
@@ -38,10 +38,10 @@ def test_error_multiline_excerpt() -> None:
         offset_hi_end=7,
     )
 
-    assert highlighter.highlight() == dedent('''\
+    assert highlighter.highlight() == dedent("""\
         2 │ test2↵
           │  ^
-        ''',
+        """,
     )
 
 
@@ -52,12 +52,12 @@ def test_error_multiline() -> None:
         offset_hi_end=15,
     )
 
-    assert highlighter.highlight() == dedent('''\
+    assert highlighter.highlight() == dedent("""\
         2 │ test2↵
           │  ^^^^^
         3 │ test3
           │ ^^^^
-        ''',
+        """,
     )
 
 
@@ -70,7 +70,7 @@ def test_error_multiline_wide_visibility() -> None:
         offset_shown_end=25,
     )
 
-    assert highlighter.highlight() == dedent('''\
+    assert highlighter.highlight() == dedent("""\
         1 │ test1↵
         2 │ test2↵
           │  ^^^^^
@@ -78,5 +78,5 @@ def test_error_multiline_wide_visibility() -> None:
           │ ^^^^
         4 │ test4↵
         5 │ test5
-        ''',
+        """,
     )

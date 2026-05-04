@@ -1,9 +1,13 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
-from .....support.coderefs import collector
-from ....logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
-from ....logic.formulas import (
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     EqualityFormula,
     Formula,
@@ -13,18 +17,15 @@ from ....logic.formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from ...terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
-from ...type_context import TypeContext
-from ...variables import get_free_variables
-from .. import common
-from ..expression import HolExpression
+from notebook.support.coderefs import collector
+
 from .signature import fol_signature_to_hol_signature
 from .term import TermTranslationVisitor
 
 
 if TYPE_CHECKING:
-    from ....logic.signature.signature import FormalLogicSignature
-    from ..signature import HolSignature
+    from notebook.math.lambda_.hol.signature import HolSignature
+    from notebook.math.logic.signature.signature import FormalLogicSignature
 
 
 def connective_to_logical_constant(conn: BinaryConnective) -> Constant:

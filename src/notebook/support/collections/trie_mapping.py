@@ -1,7 +1,8 @@
 from collections.abc import Iterable, Iterator, Mapping, MutableMapping, MutableSequence
 from typing import NamedTuple
 
-from ..iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .exceptions import MissingKeyError
 
 

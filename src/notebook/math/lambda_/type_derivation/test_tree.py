@@ -1,11 +1,12 @@
 from textwrap import dedent
 
-from ....support.coderefs import collector
-from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..common import combinators, pairs
-from ..erasure import erase_annotations
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..parsing import parse_type, parse_type_placeholder, parse_variable_assertion
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from notebook.math.lambda_.common import combinators, pairs
+from notebook.math.lambda_.erasure import erase_annotations
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.parsing import parse_type, parse_type_placeholder, parse_variable_assertion
+from notebook.support.coderefs import collector
+
 from .tree import apply, assume, premise_config
 
 
@@ -13,9 +14,9 @@ def test_assumption_tree() -> None:
     assumption = parse_variable_assertion('x: τ')
     tree = assume(assumption)
     assert tree.get_cumulative_assumptions() == {assumption}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         x: τ
-        ''',
+        """,
     )
 
 
@@ -31,11 +32,11 @@ def test_arrow_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                x: τ
         x _________________ →₊
           (λx:τ.x): (τ → τ)
-        ''',
+        """,
     )
 
 
@@ -59,13 +60,13 @@ def test_nested_arrow_intro() -> None:
 
     assert tree.get_cumulative_assumptions() == set()
     assert erase_annotations(tree.conclusion.term) == combinators.k
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                      x: τ
                 _________________ →₊
                 (λy:σ.x): (σ → τ)
         x ______________________________ →₊
           (λx:τ.(λy:σ.x)): (τ → (σ → τ))
-        ''',
+        """,
     )
 
 
@@ -105,7 +106,7 @@ def test_cons() -> None:
     assert tree.get_cumulative_assumptions() == set()
     assert erase_annotations(tree.conclusion.term) == pairs.cons
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                          f: (τ → (σ → ρ))      x: τ
                          ____________________________ →₋
                                 (fx): (σ → ρ)               y: σ
@@ -117,7 +118,7 @@ def test_cons() -> None:
                 (λy:σ.(λf:(τ → (σ → ρ)).((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
         x _________________________________________________________________________ →₊
           (λx:τ.(λy:σ.(λf:(τ → (σ → ρ)).((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
-        ''',
+        """,
     )
 
 
@@ -134,9 +135,9 @@ def test_empty_elim() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {assumption}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
          x: 𝟘
         ________ 𝟘₋
         (E₋x): σ
-        ''',
+        """,
     )

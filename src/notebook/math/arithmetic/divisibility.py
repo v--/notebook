@@ -1,6 +1,7 @@
 from typing import NamedTuple
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .exceptions import NotebookZeroDivisionError
 from .support import sgn
 

@@ -1,7 +1,8 @@
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from ...exceptions import BibToolsNetworkError, BibToolsNotFoundError
+from notebook.commands.bibtools.exceptions import BibToolsNetworkError, BibToolsNotFoundError
+
 from .fixtures import get_doi_fixture_path
 
 

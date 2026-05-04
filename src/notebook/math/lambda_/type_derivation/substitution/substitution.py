@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, override
 
-from .....support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
-from ...terms import TypedAbstraction, TypedTerm, Variable
-from ...variables import get_free_variables, new_variable
-from ..tree import TypeDerivationTree
+from notebook.math.lambda_.terms import TypedAbstraction, TypedTerm, Variable
+from notebook.math.lambda_.type_derivation.tree import TypeDerivationTree
+from notebook.math.lambda_.variables import get_free_variables, new_variable
+from notebook.support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
 
 
 if TYPE_CHECKING:

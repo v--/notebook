@@ -1,9 +1,16 @@
 from typing import TYPE_CHECKING, Literal, get_args
 
-from ....parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
-from ....support.inference import ImproperInferenceRuleSymbol
-from ....support.substitution import ImproperSubstitutionSymbol
-from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstantSymbol, Quantifier, UnaryPrefix
+from notebook.math.logic.alphabet import (
+    AuxImproperSymbol,
+    BinaryConnective,
+    EqualitySymbol,
+    PropConstantSymbol,
+    Quantifier,
+    UnaryPrefix,
+)
+from notebook.parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
+from notebook.support.inference import ImproperInferenceRuleSymbol
+from notebook.support.substitution import ImproperSubstitutionSymbol
 
 
 if TYPE_CHECKING:

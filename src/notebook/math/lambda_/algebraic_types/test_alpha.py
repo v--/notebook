@@ -3,22 +3,29 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..arrow_types import derive_type
-from ..assertions import VariableTypeAssertion
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..parsing import (
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from notebook.math.lambda_.arrow_types import derive_type
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.parsing import (
     parse_type,
     parse_type_placeholder,
     parse_typed_term,
     parse_variable,
     parse_variable_assertion,
 )
-from ..signature import BaseTypeSymbol
-from ..type_context import TypeContext
-from ..type_derivation import RuleApplicationTree, TypeDerivationError, apply, assume, premise_config
-from ..types import BaseType
+from notebook.math.lambda_.signature import BaseTypeSymbol
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.type_derivation import (
+    RuleApplicationTree,
+    TypeDerivationError,
+    apply,
+    assume,
+    premise_config,
+)
+from notebook.math.lambda_.types import BaseType
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .alpha import alpha_convert_derivation
 
 

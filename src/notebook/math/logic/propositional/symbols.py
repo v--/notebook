@@ -1,13 +1,9 @@
 import functools
 from typing import override
 
-from ....parsing import is_greek_identifier, is_latin_identifier
-from ....support.unicode import Capitalization
-from ..signature import (
-    FormalLogicSignatureError,
-    PredicateSymbol,
-    SignatureSymbolNotation,
-)
+from notebook.math.logic.signature import FormalLogicSignatureError, PredicateSymbol, SignatureSymbolNotation
+from notebook.parsing import is_greek_identifier, is_latin_identifier
+from notebook.support.unicode import Capitalization
 
 
 @functools.total_ordering

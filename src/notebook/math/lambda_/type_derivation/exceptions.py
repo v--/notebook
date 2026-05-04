@@ -1,5 +1,5 @@
-from ....support.inference import UnknownInferenceRuleError
-from ..exceptions import LambdaCalculusError
+from notebook.math.lambda_.exceptions import LambdaCalculusError
+from notebook.support.inference import UnknownInferenceRuleError
 
 
 class TypeDerivationError(LambdaCalculusError):

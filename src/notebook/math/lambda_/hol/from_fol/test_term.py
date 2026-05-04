@@ -1,21 +1,22 @@
 import random
 from typing import TYPE_CHECKING
 
-from .....support.pytest import pytest_parametrize_kwargs
-from ....logic.parsing import parse_term
-from ....logic.structure import VariableAssignment as FolVariableAssignment
-from ....logic.structure import evaluate_term
-from ....logic.variables import get_term_variables
-from ....rings.modular import Z3
-from ...parsing import parse_typed_term
-from ..structure import evaluate_hol_expression
+from notebook.math.lambda_.hol.structure import evaluate_hol_expression
+from notebook.math.lambda_.parsing import parse_typed_term
+from notebook.math.logic.parsing import parse_term
+from notebook.math.logic.structure import VariableAssignment as FolVariableAssignment
+from notebook.math.logic.structure import evaluate_term
+from notebook.math.logic.variables import get_term_variables
+from notebook.math.rings.modular import Z3
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .assignment import fol_assignment_to_hol_assignment
 from .term import fol_term_to_hol_expression
 
 
 if TYPE_CHECKING:
-    from ....logic.structure import FormalLogicStructure
-    from ..structure import HolStructure
+    from notebook.math.lambda_.hol.structure import HolStructure
+    from notebook.math.logic.structure import FormalLogicStructure
 
 
 @pytest_parametrize_kwargs(

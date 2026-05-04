@@ -1,7 +1,7 @@
-from ...support.unicode import atoi_subscripts
-from ..identifiers import GreekIdentifier, LatinIdentifier
-from ..parser import Parser
-from ..tokens import Token
+from notebook.parsing.identifiers import GreekIdentifier, LatinIdentifier
+from notebook.parsing.parser import Parser
+from notebook.parsing.tokens import Token
+from notebook.support.unicode import atoi_subscripts
 
 
 class IdentifierParserMixin[TokenKindT, TokenT: Token](Parser[TokenT]):

@@ -1,22 +1,23 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
-from ..assertions import TypeAssertion, VariableTypeAssertion
-from ..instantiation import (
+from notebook.math.lambda_.assertions import TypeAssertion, VariableTypeAssertion
+from notebook.math.lambda_.instantiation import (
     AtomicLambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
     instantiate_assertion_schema,
 )
+from notebook.support.coderefs import collector
+from notebook.support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
+
 from .exceptions import TypeDerivationError
 
 
 if TYPE_CHECKING:
     from collections.abc import Collection, Iterable, Sequence
 
-    from ..terms import Variable
-    from ..type_system import TypingRule
+    from notebook.math.lambda_.terms import Variable
+    from notebook.math.lambda_.type_system import TypingRule
 
 
 @dataclass(frozen=True)

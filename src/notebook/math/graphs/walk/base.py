@@ -3,7 +3,7 @@ from collections.abc import Callable, Collection, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Self
 
-from ..exceptions import GraphWalkError
+from notebook.math.graphs.exceptions import GraphWalkError
 
 
 @dataclass(frozen=True)

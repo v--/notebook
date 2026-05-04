@@ -1,18 +1,19 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
-from ..formulas import ExtendedFormulaPlaceholder, Formula, FormulaWithSubstitution
-from ..instantiation import (
+from notebook.math.logic.formulas import ExtendedFormulaPlaceholder, Formula, FormulaWithSubstitution
+from notebook.math.logic.instantiation import (
     AtomicLogicSchemaInstantiation,
     infer_instantiation_from_formula,
     instantiate_formula_schema,
     instantiate_term_schema,
 )
-from ..substitution import evaluate_substitution
-from ..terms import EigenSchemaSubstitutionSpec, Variable
-from ..variables import get_formula_free_variables
+from notebook.math.logic.substitution import evaluate_substitution
+from notebook.math.logic.terms import EigenSchemaSubstitutionSpec, Variable
+from notebook.math.logic.variables import get_formula_free_variables
+from notebook.support.coderefs import collector
+from notebook.support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
+
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
 

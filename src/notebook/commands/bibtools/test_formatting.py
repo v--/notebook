@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 import loguru
 
-from ...bibtex import VerbatimString, parse_bibtex
+from notebook.bibtex import VerbatimString, parse_bibtex
+
 from .formatting import adjust_entry
 
 
@@ -13,14 +14,14 @@ if TYPE_CHECKING:
 
 def test_author_name_reformatting() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Левенштейн, Владимир},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            ''',
+            """,
         ),
     )
 
@@ -30,14 +31,14 @@ def test_author_name_reformatting() -> None:
 
 def test_author_name_verbatim() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {{Левенштейн, Владимир}},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            ''',
+            """,
         ),
     )
 
@@ -47,14 +48,14 @@ def test_author_name_verbatim() -> None:
 
 def test_author_short() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            ''',
+            """,
         ),
     )
 
@@ -64,7 +65,7 @@ def test_author_short() -> None:
 
 def test_author_short_existing() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
               language = {russian},
@@ -72,7 +73,7 @@ def test_author_short_existing() -> None:
               shortauthor = {Levenshtein},
               date = {1965}
             }
-            ''',
+            """,
         ),
     )
 
@@ -82,14 +83,14 @@ def test_author_short_existing() -> None:
 
 def test_language_reformatting() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
               language = {ru},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
             }
-            ''',
+            """,
         ),
     )
 
@@ -100,13 +101,13 @@ def test_language_reformatting() -> None:
 def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:
     message = 'The date field is blank'
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов}
             }
-            ''',
+            """,
         ),
     )
 
@@ -118,7 +119,7 @@ def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:
 def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
     message = 'The date field is blank'
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
               language = {russian},
@@ -127,7 +128,7 @@ def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
               month = {2},
               day = {1}
             }
-            ''',
+            """,
         ),
     )
 
@@ -143,7 +144,7 @@ def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
 
 def test_title_splitting_with_subtitle() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @book{Barendregt1984LambdaCalculus,
               author = {Henk Barendregt},
               isbn = {0-444-86748-1},
@@ -153,7 +154,7 @@ def test_title_splitting_with_subtitle() -> None:
               subtitle = {Test Subtitle},
               date = {1984}
             }
-            ''',
+            """,
         ),
     )
 
@@ -164,7 +165,7 @@ def test_title_splitting_with_subtitle() -> None:
 
 def test_isbn_formatting() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @book{Barendregt1984LambdaCalculus,
               author = {Henk Barendregt},
               isbn = {0444867481},
@@ -174,7 +175,7 @@ def test_isbn_formatting() -> None:
               subtitle = {Its Syntax and Semantics},
               date = {1984}
             }
-            ''',
+            """,
         ),
     )
 
@@ -184,7 +185,7 @@ def test_isbn_formatting() -> None:
 
 def test_issn_formatting() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Eilenberg1945Equivalences,
               author = {Samuel Eilenberg and Saunders Mac Lane},
               date = {1945-09},
@@ -198,7 +199,7 @@ def test_issn_formatting() -> None:
               url = {http://dx.doi.org/10.2307/1990284},
               volume = {58}
             }
-            ''',
+            """,
         ),
     )
 
@@ -209,7 +210,7 @@ def test_issn_formatting() -> None:
 def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
     message = "No eprint type or id specified for class 'math.HO'"
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{GreshamEtAl2019Trigonometry,
               author = {John Gresham and Bryant Wyatt and Jesse Crawford},
               date = {2019-01-01},
@@ -217,7 +218,7 @@ def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            ''',
+            """,
         ),
     )
 
@@ -229,7 +230,7 @@ def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
 def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
     message = "No eprint type specified for '1906.07050v1'"
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{GreshamEtAl2019Trigonometry,
               author = {John Gresham and Bryant Wyatt and Jesse Crawford},
               date = {2019-01-01},
@@ -237,7 +238,7 @@ def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            ''',
+            """,
         ),
     )
 
@@ -249,7 +250,7 @@ def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
 def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
     message = "No eprint id specified for type 'arXiv'"
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{GreshamEtAl2019Trigonometry,
               author = {John Gresham and Bryant Wyatt and Jesse Crawford},
               date = {2019-01-01},
@@ -258,7 +259,7 @@ def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            ''',
+            """,
         ),
     )
 
@@ -270,7 +271,7 @@ def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
 def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
     message = "No eprint class specified for arXiv entry '1906.07050v1'"
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{GreshamEtAl2019Trigonometry,
               author = {John Gresham and Bryant Wyatt and Jesse Crawford},
               date = {2019-01-01},
@@ -279,7 +280,7 @@ def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            ''',
+            """,
         ),
     )
 
@@ -290,7 +291,7 @@ def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
 
 def test_arxiv_entry_url() -> None:
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{GreshamEtAl2019Trigonometry,
               author = {John Gresham and Bryant Wyatt and Jesse Crawford},
               date = {2019-01-01},
@@ -300,7 +301,7 @@ def test_arxiv_entry_url() -> None:
               language = {english},
               title = {Essential Trignometry Without Geometry}
             }
-            ''',
+            """,
         ),
     )
 
@@ -311,7 +312,7 @@ def test_arxiv_entry_url() -> None:
 def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
     message = 'Extracting a mathnet identifier from the URL'
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965,
               author = {Владимир Левенштейн},
               date = {1965},
@@ -319,7 +320,7 @@ def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               url = {http://mi.mathnet.ru/tm1095}
             }
-            ''',
+            """,
         ),
     )
 
@@ -331,7 +332,7 @@ def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
 def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
     message = 'Removing redundant mathnet URL'
     entry, = parse_bibtex(
-        dedent('''\
+        dedent("""\
             @article{Левенштейн1965,
               author = {Владимир Левенштейн},
               date = {1965},
@@ -340,7 +341,7 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
               mathnet = {dan31411},
               url = {http://mi.mathnet.ru/dan31411}
             }
-            ''',
+            """,
         ),
     )
 

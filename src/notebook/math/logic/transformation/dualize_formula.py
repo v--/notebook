@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective, get_dual_prop_constant, get_dual_quantifier
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, get_dual_prop_constant, get_dual_quantifier
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     EqualityFormula,
     Formula,
@@ -13,7 +12,9 @@ from ..formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from ..propositional import PropFormula, convert_to_prop_formula
+from notebook.math.logic.propositional import PropFormula, convert_to_prop_formula
+from notebook.support.coderefs import collector
+
 from .collapse_repeated_negation import collapse_repeated_negation
 
 

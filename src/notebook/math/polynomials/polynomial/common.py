@@ -1,4 +1,5 @@
-from ...rings.types import IField, IRing, ISemiring
+from notebook.math.rings.types import IField, IRing, ISemiring
+
 from .base import BasePolynomial, PolynomialSubtractionMixin
 from .constructor import PolynomialConstructorMixin
 

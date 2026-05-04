@@ -2,7 +2,8 @@ import itertools
 from collections.abc import Collection, Iterable, Sequence
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .context_free import is_context_free
 from .epsilon_rules import is_epsilon_rule
 from .exceptions import GrammarError, IncompatibleGrammarError

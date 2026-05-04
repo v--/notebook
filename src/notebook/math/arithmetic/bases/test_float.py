@@ -5,7 +5,8 @@ from fractions import Fraction
 
 import pytest
 
-from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists, repeat5
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists, repeat5
+
 from .float import get_digit, get_digit_rational, get_fraction, get_number_expansion, get_rational_number_expansion
 
 

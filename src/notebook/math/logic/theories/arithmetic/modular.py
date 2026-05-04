@@ -1,7 +1,8 @@
 # ruff: noqa: FURB118
 
-from ....rings.modular import BaseIntModulo
-from ...structure import FormalLogicStructure
+from notebook.math.logic.structure import FormalLogicStructure
+from notebook.math.rings.modular import BaseIntModulo
+
 from .signature import ARITHMETIC_SIGNATURE
 
 

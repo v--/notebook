@@ -1,4 +1,5 @@
-from ....support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .formulas import PropNegationFormula
 from .parsing import parse_prop_formula
 from .sat import are_equisatisfiable, are_semantically_equivalent, brute_force_satisfy, is_contradiction, is_tautology

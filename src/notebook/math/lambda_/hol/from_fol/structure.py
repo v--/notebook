@@ -1,15 +1,16 @@
 import functools
 from typing import TYPE_CHECKING
 
-from .....support.coderefs import collector
-from ..alphabet import SortName
-from ..structure import HolStructure, HolStructureValue
+from notebook.math.lambda_.hol.alphabet import SortName
+from notebook.math.lambda_.hol.structure import HolStructure, HolStructureValue
+from notebook.support.coderefs import collector
+
 from .signature import fol_signature_to_hol_signature
 
 
 if TYPE_CHECKING:
-    from ....logic.signature import SignatureSymbol
-    from ....logic.structure import FormalLogicStructure
+    from notebook.math.logic.signature import SignatureSymbol
+    from notebook.math.logic.structure import FormalLogicStructure
 
 
 def _curry_fol_interpretation[T](fol_structure: FormalLogicStructure[T], sym: SignatureSymbol, *args: T) -> HolStructureValue[T]:

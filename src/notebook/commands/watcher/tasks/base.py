@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import loguru
 
-    from ..trigger import TaskTrigger
+    from notebook.commands.watcher.trigger import TaskTrigger
+
     from .runner import TaskRunner
 
 

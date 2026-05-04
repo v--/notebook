@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import override
 
-from .....support.coderefs import collector
-from ....polynomials.monomial import Monomial
-from ....polynomials.polynomial.int import IntPolynomial, const, zero
-from ...terms import FunctionApplication, Term, TermVisitor, Variable
-from ..exceptions import UnrecognizedSymbolError
+from notebook.math.logic.terms import FunctionApplication, Term, TermVisitor, Variable
+from notebook.math.logic.theories.exceptions import UnrecognizedSymbolError
+from notebook.math.polynomials.monomial import Monomial
+from notebook.math.polynomials.polynomial.int import IntPolynomial, const, zero
+from notebook.support.coderefs import collector
 
 
 @dataclass(frozen=True)

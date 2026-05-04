@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, overload
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective
-from ..formulas import ConnectiveFormula, Formula
-from ..parsing import parse_formula_schema
-from ..propositional import PropConnectiveFormula, PropFormula
+from notebook.math.logic.alphabet import BinaryConnective
+from notebook.math.logic.formulas import ConnectiveFormula, Formula
+from notebook.math.logic.parsing import parse_formula_schema
+from notebook.math.logic.propositional import PropConnectiveFormula, PropFormula
+from notebook.support.coderefs import collector
+
 from .axiomatic_derivation import AxiomaticDerivation, get_config_conditional_safe, get_premises
 from .system import AxiomaticDerivationSystem
 

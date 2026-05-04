@@ -1,7 +1,8 @@
 import asyncio
 from typing import TYPE_CHECKING, override
 
-from ..trigger import TaskTrigger, TaskTriggerKind
+from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
+
 from .cli import CliTask
 from .latex import LaTeXCompiler, LaTeXTask
 

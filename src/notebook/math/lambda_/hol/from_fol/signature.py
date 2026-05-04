@@ -1,10 +1,10 @@
-from .....support.coderefs import collector
-from ....logic.signature import FormalLogicSignature, PredicateSymbol, SignatureSymbol
-from ...alphabet import BinaryTypeConnective
-from ...types import SimpleConnectiveType, SimpleType
-from .. import common
-from ..alphabet import SortName
-from ..signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.alphabet import SortName
+from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.types import SimpleConnectiveType, SimpleType
+from notebook.math.logic.signature import FormalLogicSignature, PredicateSymbol, SignatureSymbol
+from notebook.support.coderefs import collector
 
 
 def fol_symbol_to_hol_type(sym: SignatureSymbol) -> SimpleType:

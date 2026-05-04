@@ -1,12 +1,21 @@
 from typing import TYPE_CHECKING
 
-from .....support.coderefs import collector
-from .....support.pytest import pytest_parametrize_kwargs
-from ...common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
-from ...common import variables as var
-from ...parsing import parse_untyped_term
-from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
-from ..alpha import are_terms_alpha_equivalent
+from notebook.math.lambda_.common import (
+    big_omega,
+    church_numeral,
+    church_numeral_to_int,
+    combinators,
+    omega3,
+    pairs,
+    succ,
+)
+from notebook.math.lambda_.common import variables as var
+from notebook.math.lambda_.parsing import parse_untyped_term
+from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from notebook.math.lambda_.untyped.alpha import are_terms_alpha_equivalent
+from notebook.support.coderefs import collector
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .beta import BetaReduction, to_function
 from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_term_once, transitively_reduce_term
 

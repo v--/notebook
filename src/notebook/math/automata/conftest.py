@@ -16,15 +16,12 @@ class FiniteAutomatonFixture:
     whitelist: Sequence[str]
     blacklist: Sequence[str]
 
-    # ruff: disable[S101]
     def assert_equivalent(self, other: FiniteAutomaton) -> None:
         for string in self.whitelist:
             assert other.recognize(string)
 
         for string in self.blacklist:
             assert not other.recognize(string)
-
-    # ruff: enable[S101]
 
 
 @pytest.fixture

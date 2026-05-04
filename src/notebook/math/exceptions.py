@@ -1,4 +1,4 @@
-from ..exceptions import NotebookError, NotebookException
+from notebook.exceptions import NotebookError, NotebookException
 
 
 class NotebookMathException(NotebookException):

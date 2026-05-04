@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .exceptions import IncompatibleSyntaxTreeError
 from .grammar import GrammarRule
 from .symbols import NonTerminal, Terminal

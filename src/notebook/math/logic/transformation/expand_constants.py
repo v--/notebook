@@ -1,20 +1,20 @@
 from dataclasses import dataclass
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective, PropConstantSymbol
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
     NegationFormula,
     PropConstant,
 )
-from ..propositional import (
+from notebook.math.logic.propositional import (
     DEFAULT_PROP_VARIABLE,
     PropFormula,
     convert_to_prop_formula,
     get_prop_variables,
 )
+from notebook.support.coderefs import collector
 
 
 @dataclass(frozen=True)

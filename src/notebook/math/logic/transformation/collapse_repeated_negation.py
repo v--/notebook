@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.coderefs import collector
-from ..formulas import Formula, FormulaTransformationVisitor, NegationFormula
-from ..propositional import PropFormula, convert_to_prop_formula
+from notebook.math.logic.formulas import Formula, FormulaTransformationVisitor, NegationFormula
+from notebook.math.logic.propositional import PropFormula, convert_to_prop_formula
+from notebook.support.coderefs import collector
 
 
 @dataclass(frozen=True)

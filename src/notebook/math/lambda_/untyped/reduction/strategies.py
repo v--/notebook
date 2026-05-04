@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+
 from .exceptions import ReductionError
 
 

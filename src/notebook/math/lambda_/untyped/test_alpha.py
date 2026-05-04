@@ -1,8 +1,9 @@
 # ruff: noqa: E222, E251
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_untyped_term
-from ..variables import get_bound_variables, get_free_variables
+from notebook.math.lambda_.parsing import parse_untyped_term
+from notebook.math.lambda_.variables import get_bound_variables, get_free_variables
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
 
 

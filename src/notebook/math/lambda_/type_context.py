@@ -1,7 +1,8 @@
 from collections.abc import Iterator, Mapping
 from typing import TYPE_CHECKING
 
-from ...support.iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .parsing import parse_variable
 from .terms import Variable
 from .types import SimpleType

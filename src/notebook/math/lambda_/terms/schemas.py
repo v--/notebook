@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..alphabet import BinderSymbol
+from notebook.math.lambda_.alphabet import BinderSymbol
+
 from .terms import Constant
 
 
 if TYPE_CHECKING:
-    from ....parsing.identifiers import LatinIdentifier
-    from ..types import SimpleTypeSchema
+    from notebook.math.lambda_.types import SimpleTypeSchema
+    from notebook.parsing.identifiers import LatinIdentifier
 
 
 @dataclass(frozen=True)

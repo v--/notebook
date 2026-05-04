@@ -1,7 +1,8 @@
 import random
 from fractions import Fraction
 
-from ...support.pytest import pytest_parametrize_lists, repeat5
+from notebook.support.pytest import pytest_parametrize_lists, repeat5
+
 from .rational import power_bisection
 
 

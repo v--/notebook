@@ -1,4 +1,4 @@
-from ...signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
 
 
 ARITHMETIC_SIGNATURE = FormalLogicSignature(

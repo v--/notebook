@@ -3,7 +3,8 @@ from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import Annotated, Literal, get_args, get_type_hints
 
-from ..support.iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .author import BibAuthor
 from .escaping import escape
 from .string import BibString

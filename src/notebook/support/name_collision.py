@@ -1,7 +1,8 @@
 import itertools
 from typing import TYPE_CHECKING
 
-from ..exceptions import UnreachableException
+from notebook.exceptions import UnreachableException
+
 from .unicode import atoi_subscripts, is_numeric_subscript_char, itoa_subscripts
 
 

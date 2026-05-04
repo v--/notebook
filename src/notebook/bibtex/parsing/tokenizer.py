@@ -1,7 +1,8 @@
 import unicodedata
 from typing import TYPE_CHECKING, override
 
-from ...parsing import Tokenizer, TokenizerContext
+from notebook.parsing import Tokenizer, TokenizerContext
+
 from .tokens import SINGLETON_TOKEN_MAP, BibToken, BibTokenKind
 
 

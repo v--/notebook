@@ -1,7 +1,7 @@
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from ...exceptions import BibToolsNetworkError
+from notebook.commands.bibtools.exceptions import BibToolsNetworkError
 
 
 def fetch_html(url: str, encoding: str = 'utf-8') -> str:

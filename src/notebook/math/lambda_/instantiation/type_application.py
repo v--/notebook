@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInstantiationError
-from ..types import (
+from notebook.math.lambda_.types import (
     BaseType,
     SimpleConnectiveType,
     SimpleConnectiveTypeSchema,
@@ -12,6 +10,8 @@ from ..types import (
     TypePlaceholder,
     TypeSchemaVisitor,
 )
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInstantiationError
 
 
 if TYPE_CHECKING:

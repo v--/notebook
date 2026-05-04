@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ....support.substitution import UnspecifiedReplacementError
-from ..assertions import VariableTypeAssertion
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..terms import TypedAbstraction, Variable
-from ..type_derivation import (
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.terms import TypedAbstraction, Variable
+from notebook.math.lambda_.type_derivation import (
     AssumptionTree,
     AtomicTypeDerivationSubstitution,
     RuleApplicationPremise,
@@ -18,6 +16,9 @@ from ..type_derivation import (
     assume,
     premise_config,
 )
+from notebook.support.coderefs import collector
+from notebook.support.substitution import UnspecifiedReplacementError
+
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
 
 

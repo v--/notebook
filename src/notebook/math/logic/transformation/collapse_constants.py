@@ -1,6 +1,5 @@
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective, PropConstantSymbol, get_dual_prop_constant
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, get_dual_prop_constant
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
@@ -8,7 +7,8 @@ from ..formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from ..propositional import PropFormula, convert_to_prop_formula
+from notebook.math.logic.propositional import PropFormula, convert_to_prop_formula
+from notebook.support.coderefs import collector
 
 
 class CollapseConstantsVisitor(FormulaTransformationVisitor):

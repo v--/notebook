@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .brute_force_parse import derives
 from .parsing import parse_grammar_schema
 from .symbols import NonTerminal
@@ -20,7 +21,6 @@ class GrammarFixture(NamedTuple):
     whitelist: Sequence[str]
     blacklist: Sequence[str]
 
-    # ruff: disable[S101]
     def assert_equivalent(self, other: Grammar) -> None:
         for string in self.whitelist:
             assert derives(other, string)
@@ -28,19 +28,17 @@ class GrammarFixture(NamedTuple):
         for string in self.blacklist:
             assert not derives(other, string)
 
-    # ruff: enable[S101]
-
 
 @pytest.fixture
 @collector.ref('ex:def:chomsky_hierarchy/an')
 def an() -> GrammarFixture:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → ε
             <S> → <A>
             <A> → <A> "a"
             <A> → "a"
-            ''',
+            """,
         ),
     )
 
@@ -55,12 +53,12 @@ def an() -> GrammarFixture:
 @collector.ref('ex:def:chomsky_hierarchy/anbn')
 def anbn() -> GrammarFixture:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → ε
             <S> → <A>
             <A> → "a" <A> "b"
             <A> → "a" "b"
-            ''',
+            """,
         ),
     )
 
@@ -75,13 +73,13 @@ def anbn() -> GrammarFixture:
 @collector.ref('ex:def:chomsky_hierarchy/anbncn')
 def anbncn() -> GrammarFixture:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → "a" "b" "c"
             <S> → "a" <S> <B> "c"
             <S> → ε
             "c" <B> → <B> "c"
             "b" <B> → "b" "b"
-            ''',
+            """,
         ),
     )
 
@@ -95,11 +93,11 @@ def anbncn() -> GrammarFixture:
 @pytest.fixture
 def s3() -> GrammarFixture:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → ε
             <S> → <S> <S> <S>
             <S> → "a"
-            ''',
+            """,
         ),
     )
 
@@ -113,10 +111,10 @@ def s3() -> GrammarFixture:
 @pytest.fixture
 def binary() -> GrammarFixture:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <N> → "0" | "1" | "1" <B>
             <B> → "0" | "0" <B> | "1" | "1" <B>
-            ''',
+            """,
         ),
     )
 

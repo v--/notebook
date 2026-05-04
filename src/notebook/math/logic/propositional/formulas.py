@@ -1,7 +1,7 @@
 import functools
 from typing import TYPE_CHECKING
 
-from ..formulas import ConnectiveFormula, NegationFormula, PredicateApplication, PropConstant
+from notebook.math.logic.formulas import ConnectiveFormula, NegationFormula, PredicateApplication, PropConstant
 
 
 if TYPE_CHECKING:

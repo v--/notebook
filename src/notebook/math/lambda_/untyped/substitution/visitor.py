@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from .....support.coderefs import collector
-from ...terms import (
+from notebook.math.lambda_.terms import (
     Constant,
     UntypedAbstraction,
     UntypedApplication,
@@ -10,6 +9,8 @@ from ...terms import (
     UntypedTermVisitor,
     Variable,
 )
+from notebook.support.coderefs import collector
+
 from .substitution import UntypedTermSubstitution
 
 

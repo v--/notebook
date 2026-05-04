@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+
 from .brute_force_parse import derives, iter_partitions, parse
 
 

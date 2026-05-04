@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from ..payload import GraphPayload, LabeledEdge
+    from notebook.math.graphs.graph.payload import GraphPayload, LabeledEdge
 
 
 class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:  # noqa: PLW1641

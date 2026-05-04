@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
-from ...support.collections import MissingKeyError, TrieMapping
-from ..tokenizer import Tokenizer
+from notebook.parsing.tokenizer import Tokenizer
+from notebook.support.collections import MissingKeyError, TrieMapping
 
 
 if TYPE_CHECKING:
-    from ..tokenizer_context import TokenizerContext
-    from ..tokens import Token
+    from notebook.parsing.tokenizer_context import TokenizerContext
+    from notebook.parsing.tokens import Token
 
 
 class TrieTokenizerMixin[TokenKindT, TrieT](Tokenizer[TokenKindT]):

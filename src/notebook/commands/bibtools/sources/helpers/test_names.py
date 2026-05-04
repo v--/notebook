@@ -1,4 +1,5 @@
-from .....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+
 from .names import get_main_human_name, normalize_human_name
 
 

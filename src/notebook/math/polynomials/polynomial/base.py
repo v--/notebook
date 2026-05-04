@@ -2,12 +2,13 @@ import contextlib
 import itertools
 from typing import TYPE_CHECKING, Any, Self, cast, override
 
-from ....parsing import LatinIdentifier, is_latin_identifier
-from ....support.iteration import string_accumulator
-from ....support.unicode import Capitalization
-from ...rings.types import IRing, ISemiring
-from ..exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError
-from ..monomial import Monomial, const
+from notebook.math.polynomials.exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError
+from notebook.math.polynomials.monomial import Monomial, const
+from notebook.math.rings.types import IRing, ISemiring
+from notebook.parsing import LatinIdentifier, is_latin_identifier
+from notebook.support.iteration import string_accumulator
+from notebook.support.unicode import Capitalization
+
 from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
 
 

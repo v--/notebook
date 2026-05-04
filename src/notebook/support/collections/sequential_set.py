@@ -1,6 +1,7 @@
 from collections.abc import Iterable, Iterator, MutableSet
 
-from ..iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .exceptions import MissingKeyError
 
 

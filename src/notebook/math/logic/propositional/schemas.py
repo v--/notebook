@@ -1,4 +1,9 @@
-from ..formulas import ConnectiveFormulaSchema, FormulaPlaceholder, NegationFormulaSchema, PropConstant
+from notebook.math.logic.formulas import (
+    ConnectiveFormulaSchema,
+    FormulaPlaceholder,
+    NegationFormulaSchema,
+    PropConstant,
+)
 
 
 class PropPlaceholder(FormulaPlaceholder):

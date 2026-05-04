@@ -11,7 +11,7 @@ from .formulas import (
 
 
 if TYPE_CHECKING:
-    from ..formulas import PropConstant
+    from notebook.math.logic.formulas import PropConstant
 
 
 class VariableVisitor(PropFormulaVisitor[Collection[PropVariable]]):

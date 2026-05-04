@@ -1,10 +1,11 @@
 import re
 from typing import TYPE_CHECKING
 
-from .....bibtex import BibAuthor, BibEntry, strip_braces
-from .....math.nlp.phrases import Phrase
-from .....math.nlp.rake import RakeNoPhrasesError
-from .....support.iteration import string_accumulator
+from notebook.bibtex import BibAuthor, BibEntry, strip_braces
+from notebook.math.nlp.phrases import Phrase
+from notebook.math.nlp.rake import RakeNoPhrasesError
+from notebook.support.iteration import string_accumulator
+
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
 from .names import get_main_human_name

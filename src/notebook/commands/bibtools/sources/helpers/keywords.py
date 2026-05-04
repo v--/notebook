@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import stop_words
 
-from .....math.nlp.rake import PhraseScoreContext, generate_phrase_scores
+from notebook.math.nlp.rake import PhraseScoreContext, generate_phrase_scores
 
 
 if TYPE_CHECKING:

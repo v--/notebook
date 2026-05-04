@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from .....support.inference import ImproperInferenceRuleSymbol
-from ...alphabet import AuxImproperSymbol, BinaryTypeConnective
-from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignatureError
+from notebook.math.lambda_.alphabet import AuxImproperSymbol, BinaryTypeConnective
+from notebook.math.lambda_.signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignatureError
+from notebook.support.inference import ImproperInferenceRuleSymbol
 
 
 if TYPE_CHECKING:
-    from ...types import SimpleType
+    from notebook.math.lambda_.types import SimpleType
 
 
 # We allow Greek identifiers as sorts since we forbid type variables

@@ -1,7 +1,8 @@
 # ruff: noqa: ARG005, FURB118
 from typing import TYPE_CHECKING
 
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .polynomial import BooleanPolynomial
 from .polynomial import boolean as b
 from .zhegalkin import infer_zhegalkin

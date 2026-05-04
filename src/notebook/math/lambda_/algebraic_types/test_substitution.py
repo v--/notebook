@@ -2,21 +2,28 @@ import re
 
 import pytest
 
-from ....support.coderefs import collector
-from ....support.inference import ImproperInferenceRuleSymbol
-from ..arrow_types import derive_type
-from ..common import variables
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..parsing import (
+from notebook.math.lambda_.arrow_types import derive_type
+from notebook.math.lambda_.common import variables
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.parsing import (
     parse_type,
     parse_type_placeholder,
     parse_typed_term,
     parse_typing_rule,
     parse_variable_assertion,
 )
-from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
-from ..type_context import TypeContext
-from ..type_derivation import TypeDerivationError, UnknownDerivationRuleError, apply, assume, premise_config
+from notebook.math.lambda_.signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.type_derivation import (
+    TypeDerivationError,
+    UnknownDerivationRuleError,
+    apply,
+    assume,
+    premise_config,
+)
+from notebook.support.coderefs import collector
+from notebook.support.inference import ImproperInferenceRuleSymbol
+
 from .substitution import substitute_in_tree
 from .system import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 

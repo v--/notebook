@@ -1,4 +1,4 @@
-from ..exceptions import NotebookCommandError
+from notebook.commands.exceptions import NotebookCommandError
 
 
 class BibToolsError(NotebookCommandError):

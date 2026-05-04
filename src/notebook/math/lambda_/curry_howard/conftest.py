@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ...logic.propositional import PropLogicSignature, PropVariableSymbol
+from notebook.math.logic.propositional import PropLogicSignature, PropVariableSymbol
 
 
 if TYPE_CHECKING:
-    from ...logic.signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest.fixture

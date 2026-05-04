@@ -1,4 +1,5 @@
-from ..alphabet import BinaryTypeConnective
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+
 from .types import BaseType, SimpleConnectiveType, SimpleType, TypeVariable
 
 

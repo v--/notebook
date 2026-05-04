@@ -1,24 +1,24 @@
 from typing import TYPE_CHECKING, override
 
-from .....support.coderefs import collector
-from .....support.name_collision import get_name_without_collision
-from .....support.unicode import itoa_superscripts
-from ....logic.signature import (
+from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol
+from notebook.math.lambda_.hol.type_features import extract_bound_types, get_type_arity, is_predicate_type
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType, TypeVisitor
+from notebook.math.logic.signature import (
     FormalLogicSignature,
     FunctionSymbol,
     PredicateSymbol,
     SignatureSymbol,
     SignatureSymbolNotation,
 )
-from ...types import BaseType, SimpleConnectiveType, SimpleType, TypeVisitor
-from ..signature import HolSignature, NonLogicalConstantSymbol
-from ..type_features import extract_bound_types, get_type_arity, is_predicate_type
+from notebook.support.coderefs import collector
+from notebook.support.name_collision import get_name_without_collision
+from notebook.support.unicode import itoa_superscripts
 
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ..expression import HolExpression
+    from notebook.math.lambda_.hol.expression import HolExpression
 
 
 class SymbolNameVisitor(TypeVisitor[str]):

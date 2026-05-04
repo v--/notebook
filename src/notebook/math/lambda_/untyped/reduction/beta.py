@@ -1,9 +1,10 @@
 import inspect
 from typing import TYPE_CHECKING
 
-from .....support.coderefs import collector
-from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
-from ..substitution import substitute
+from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from notebook.math.lambda_.untyped.substitution import substitute
+from notebook.support.coderefs import collector
+
 from .strategies import Reduction
 
 

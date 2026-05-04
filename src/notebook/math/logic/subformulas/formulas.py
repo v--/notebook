@@ -1,13 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
-from ..formulas import (
-    ConnectiveFormula,
-    Formula,
-    FormulaVisitor,
-    NegationFormula,
-    QuantifierFormula,
-)
+from notebook.math.logic.formulas import ConnectiveFormula, Formula, FormulaVisitor, NegationFormula, QuantifierFormula
 
 
 @dataclass(frozen=True)

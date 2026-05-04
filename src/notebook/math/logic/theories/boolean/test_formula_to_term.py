@@ -1,7 +1,8 @@
-from .....support.pytest import pytest_parametrize_kwargs
-from ...parsing import parse_term, parse_variable
-from ...propositional import evaluate_prop_formula, iter_interpretations, parse_prop_formula
-from ...structure import VariableAssignment, evaluate_term
+from notebook.math.logic.parsing import parse_term, parse_variable
+from notebook.math.logic.propositional import evaluate_prop_formula, iter_interpretations, parse_prop_formula
+from notebook.math.logic.structure import VariableAssignment, evaluate_term
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .formula_to_term import prop_formula_to_boolean_term
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 from .term_to_formula import boolean_term_to_prop_formula

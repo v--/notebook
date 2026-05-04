@@ -2,9 +2,10 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
-from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, TypedTermVisitor
-from ..terms import Variable as LambdaVariable
-from ..types import BaseType, SimpleConnectiveType, SimpleType, TypeVisitor
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, TypedTermVisitor
+from notebook.math.lambda_.terms import Variable as LambdaVariable
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType, TypeVisitor
+
 from . import common
 
 

@@ -6,7 +6,7 @@ from .model import parse_doi_json
 
 
 if TYPE_CHECKING:
-    from .....bibtex import BibEntry
+    from notebook.bibtex import BibEntry
 
 
 def retrieve_doi_entry(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> BibEntry:

@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_formula
+from notebook.math.logic.parsing import parse_formula
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .formulas import is_subformula
 
 
 if TYPE_CHECKING:
-    from ..signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

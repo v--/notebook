@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..arrow_types import derive_type
-from ..parsing import parse_type, parse_typed_term, parse_variable
-from ..type_context import TypeContext
-from ..type_derivation import TypeDerivationError
+from notebook.math.lambda_.arrow_types import derive_type
+from notebook.math.lambda_.parsing import parse_type, parse_typed_term, parse_variable
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.type_derivation import TypeDerivationError
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .reduction import reduce_derivation
 
 

@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from ....parsing.identifiers import GreekIdentifier
-    from ..alphabet import BinaryTypeConnective
-    from ..signature import BaseTypeSymbol
+    from notebook.math.lambda_.alphabet import BinaryTypeConnective
+    from notebook.math.lambda_.signature import BaseTypeSymbol
+    from notebook.parsing.identifiers import GreekIdentifier
 
 
 @dataclass(frozen=True)

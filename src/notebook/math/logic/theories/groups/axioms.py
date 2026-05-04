@@ -1,4 +1,5 @@
-from ...parsing import parse_formula
+from notebook.math.logic.parsing import parse_formula
+
 from .signature import GROUP_SIGNATURE
 
 

@@ -2,10 +2,10 @@ import functools
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import Self
 
-from ...parsing import LatinIdentifier
-from ...parsing import common_identifiers as ci
-from ...support.iteration import string_accumulator
-from ...support.unicode import to_superscript
+from notebook.parsing import LatinIdentifier
+from notebook.parsing import common_identifiers as ci
+from notebook.support.iteration import string_accumulator
+from notebook.support.unicode import to_superscript
 
 
 @functools.total_ordering

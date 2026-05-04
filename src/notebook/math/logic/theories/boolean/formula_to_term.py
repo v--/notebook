@@ -1,16 +1,17 @@
 from typing import TYPE_CHECKING, cast, override
 
-from .....support.coderefs import collector
-from ...parsing import parse_variable
-from ...propositional import (
+from notebook.math.logic.parsing import parse_variable
+from notebook.math.logic.propositional import (
     PropConnectiveFormula,
     PropFormula,
     PropFormulaVisitor,
     PropNegationFormula,
     PropVariable,
 )
-from ...terms import FunctionApplication, Term
-from ..exceptions import UnrecognizedSymbolError
+from notebook.math.logic.terms import FunctionApplication, Term
+from notebook.math.logic.theories.exceptions import UnrecognizedSymbolError
+from notebook.support.coderefs import collector
+
 from .signature import (
     BOOLEAN_ALGEBRA_SIGNATURE,
     FORMULA_CONNECTIVE_TO_TERM_CONNECTIVE,
@@ -19,8 +20,8 @@ from .signature import (
 
 
 if TYPE_CHECKING:
-    from ...alphabet import LatticeConnective
-    from ...formulas import PropConstant
+    from notebook.math.logic.alphabet import LatticeConnective
+    from notebook.math.logic.formulas import PropConstant
 
 
 class FormulaToTermVisitor(PropFormulaVisitor[Term]):

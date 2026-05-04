@@ -1,11 +1,12 @@
 from typing import Any
 
-from .....support.pytest import pytest_parametrize_kwargs
-from ....rings.modular import Z2
-from ...parsing.parser import parse_typed_term
-from .. import common
-from ..expression import HolExpression
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.hol.theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from notebook.math.lambda_.parsing.parser import parse_typed_term
+from notebook.math.rings.modular import Z2
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .evaluation import evaluate_hol_expression
 
 

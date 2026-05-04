@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
-from ..terms import SyntacticApplication, Term, Variable
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
+from notebook.math.logic.terms import SyntacticApplication, Term, Variable
 
 
 if TYPE_CHECKING:
-    from ..signature import PredicateSymbol
+    from notebook.math.logic.signature import PredicateSymbol
 
 
 @dataclass(frozen=True)

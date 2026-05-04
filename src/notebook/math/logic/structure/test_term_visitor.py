@@ -1,6 +1,7 @@
-from ...rings.modular import Z2
-from ..parsing import parse_term
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from notebook.math.logic.parsing import parse_term
+from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from notebook.math.rings.modular import Z2
+
 from .assignment import VariableAssignment
 from .term_visitor import evaluate_term
 

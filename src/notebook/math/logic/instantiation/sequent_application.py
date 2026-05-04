@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ..sequents import Sequent, SequentSchema
+from notebook.math.logic.sequents import Sequent, SequentSchema
+
 from .context_application import instantiate_context_schema
 
 

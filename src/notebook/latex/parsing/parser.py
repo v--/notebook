@@ -1,9 +1,7 @@
 # ruff: noqa: C901
 from typing import TYPE_CHECKING
 
-from ...parsing import Parser
-from ...support.unicode import Capitalization, is_latin_string
-from ..nodes import (
+from notebook.latex.nodes import (
     BraceGroup,
     BracketGroup,
     Command,
@@ -14,6 +12,9 @@ from ..nodes import (
     Text,
     Whitespace,
 )
+from notebook.parsing import Parser
+from notebook.support.unicode import Capitalization, is_latin_string
+
 from .parser_context import LaTeXGroupContext
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, LaTeXTokenKind

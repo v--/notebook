@@ -1,7 +1,8 @@
 from collections.abc import Collection
 
-from .....support.iteration import power_set
-from ...structure import FormalLogicStructure
+from notebook.math.logic.structure import FormalLogicStructure
+from notebook.support.iteration import power_set
+
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 
 

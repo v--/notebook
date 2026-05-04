@@ -2,7 +2,8 @@ from textwrap import dedent
 
 import pytest
 
-from ..exceptions import MatrixIndexError, MatrixValueError
+from notebook.math.matrices.exceptions import MatrixIndexError, MatrixValueError
+
 from .float import FloatMatrix
 from .int import IntMatrix
 
@@ -12,16 +13,16 @@ class TestMatrixToStr:
         assert str(IntMatrix.eye(0)) == '(0×0 matrix)\n'
 
     def test_one_by_one(self) -> None:
-        assert str(IntMatrix.eye(1)) == dedent('''\
+        assert str(IntMatrix.eye(1)) == dedent("""\
             ( 1 )
-        ''')
+        """)
 
     def test_123(self, mat123: IntMatrix) -> None:
-        assert str(mat123) == dedent('''\
+        assert str(mat123) == dedent("""\
             ⎛ 1  2  3  ⎞
             ⎜ 4  5  6  ⎜
             ⎝ 7  8  10 ⎠
-        ''')
+        """)
 
 
 class TestMatrixGetter:

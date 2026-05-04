@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
-from ...support.unicode import Capitalization, is_greek_string, is_latin_string, is_numeric_subscript_char
-from ..tokenizer import Tokenizer
+from notebook.parsing.tokenizer import Tokenizer
+from notebook.support.unicode import Capitalization, is_greek_string, is_latin_string, is_numeric_subscript_char
 
 
 if TYPE_CHECKING:
-    from ..tokenizer_context import TokenizerContext
-    from ..tokens import Token
+    from notebook.parsing.tokenizer_context import TokenizerContext
+    from notebook.parsing.tokens import Token
 
 
 class IdentifierTokenizerMixin[TokenKindT](Tokenizer[TokenKindT]):

@@ -1,4 +1,5 @@
-from ..pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .whitespace import normalize_whitespace
 
 

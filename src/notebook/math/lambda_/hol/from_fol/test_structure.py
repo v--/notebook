@@ -1,17 +1,18 @@
 import itertools
 from typing import TYPE_CHECKING, cast
 
-from .. import common
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+
 from .structure import fol_structure_to_hol_structure
 
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from ....logic.structure.structure import FormalLogicStructure
-    from ....rings.modular import Z3
-    from ..structure import HolStructure
+    from notebook.math.lambda_.hol.structure import HolStructure
+    from notebook.math.logic.structure.structure import FormalLogicStructure
+    from notebook.math.rings.modular import Z3
 
 
 def test_fol_structure_to_hol_structure(fol_z3_model: FormalLogicStructure, hol_z3_model: HolStructure) -> None:

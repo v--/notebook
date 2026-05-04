@@ -1,15 +1,17 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, overload
 
-from ...assertions import VariableTypeAssertion
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+
 from .exceptions import MissingInterpretationError
 
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ...terms import Variable
-    from ...types import SimpleType
+    from notebook.math.lambda_.terms import Variable
+    from notebook.math.lambda_.types import SimpleType
+
     from .structure import HolStructureValue
 
 

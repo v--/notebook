@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Literal, get_args
 
-from ...parsing import Token
+from notebook.parsing import Token
 
 
 if TYPE_CHECKING:

@@ -1,4 +1,5 @@
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .matrix import FloatMatrix, IntMatrix
 from .norm import are_close, is_unit
 from .plu import plu, plu_inv

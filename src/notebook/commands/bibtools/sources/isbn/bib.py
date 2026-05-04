@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 import stdnum.isbn
 
-from .....bibtex import BibEntry
-from .....support.unicode import normalize_whitespace
-from ..common.dates import extract_year
-from ..common.entries import generate_entry_name
-from ..common.languages import normalize_language_name
-from ..common.names import name_to_bib_author
+from notebook.bibtex import BibEntry
+from notebook.commands.bibtools.sources.helpers.dates import extract_year
+from notebook.commands.bibtools.sources.helpers.entries import generate_entry_name
+from notebook.commands.bibtools.sources.helpers.languages import normalize_language_name
+from notebook.commands.bibtools.sources.helpers.names import name_to_bib_author
+from notebook.support.unicode import normalize_whitespace
 
 
 if TYPE_CHECKING:

@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
-from ..parsing import StringContainer
+from notebook.parsing import StringContainer
 
 
 if TYPE_CHECKING:

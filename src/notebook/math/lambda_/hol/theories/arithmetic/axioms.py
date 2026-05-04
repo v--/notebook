@@ -1,6 +1,7 @@
-from ....parsing import parse_typed_term
-from ... import common
-from ...expression import HolExpression
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.parsing import parse_typed_term
+
 from .signature import ARITHMETIC_SIGNATURE
 
 

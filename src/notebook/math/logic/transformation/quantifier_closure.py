@@ -1,6 +1,6 @@
-from ..alphabet import Quantifier
-from ..formulas import Formula, QuantifierFormula
-from ..variables import get_formula_free_variables
+from notebook.math.logic.alphabet import Quantifier
+from notebook.math.logic.formulas import Formula, QuantifierFormula
+from notebook.math.logic.variables import get_formula_free_variables
 
 
 def quantifier_closure(formula: Formula, quantifier: Quantifier) -> Formula:

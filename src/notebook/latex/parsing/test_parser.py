@@ -2,9 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-from ...parsing.parser import ParserError
-from ...paths import FIGURES_PATH
-from ..nodes import (
+from notebook.latex.nodes import (
     BraceGroup,
     BracketGroup,
     Command,
@@ -14,6 +12,9 @@ from ..nodes import (
     Whitespace,
     stringify_nodes,
 )
+from notebook.parsing.parser import ParserError
+from notebook.paths import FIGURES_PATH
+
 from .parser import parse_latex
 
 
@@ -76,10 +77,10 @@ def test_unmatched_brace() -> None:
         parse_latex('\\test{a')
 
     assert str(excinfo.value) == 'Unmatched {'
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \test{a
           │      ^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -97,10 +98,10 @@ def test_unmatched_bracket() -> None:
         parse_latex('\\test[a')
 
     assert str(excinfo.value) == 'Unmatched ['
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \test[a
           │      ^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -141,30 +142,30 @@ def test_unmatched_environment() -> None:
         parse_latex(r'\begin{test}')
 
     assert str(excinfo.value) == "Unclosed environment 'test'"
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin{test}
           │ ^^^^^^^^^^^^
-        '''[1:],
+        """[1:],
     )
 
 
 def test_mismatched_environment() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_latex(
-            dedent(r'''
+            dedent(r"""
                 \begin{test}
                 \end{tes}
-                '''[1:],
+                """[1:],
             ),
         )
 
     assert str(excinfo.value) == "Mismatched environment 'test'"
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin{test}↵
           │ ^^^^^^^^^^^^^
         2 │ \end{tes}↵
           │ ^^^^^^^^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -173,10 +174,10 @@ def test_missing_environment_name() -> None:
         parse_latex(r'\begin')
 
     assert str(excinfo.value) == 'No environment name specified'
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin
           │ ^^^^^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -185,10 +186,10 @@ def test_unclosed_and_missing_environment_name() -> None:
         parse_latex(r'\begin{')
 
     assert str(excinfo.value) == 'No environment name specified'
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin{
           │ ^^^^^^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -197,10 +198,10 @@ def test_invalid_environment_name() -> None:
         parse_latex(r'\begin{&}')
 
     assert str(excinfo.value) == 'No environment name specified'
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin{&}
           │ ^^^^^^^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -209,10 +210,10 @@ def test_unclosed_environment_name() -> None:
         parse_latex(r'\begin{test')
 
     assert str(excinfo.value) == 'Unclosed brace when specifying environment name'
-    assert excinfo.value.__notes__[0] == dedent(r'''
+    assert excinfo.value.__notes__[0] == dedent(r"""
         1 │ \begin{test
           │        ^^^^
-        '''[1:],
+        """[1:],
     )
 
 
@@ -261,12 +262,12 @@ def test_same_nested_environment() -> None:
 
 
 def test_matrix_environment() -> None:
-    string = dedent(r'''
+    string = dedent(r"""
         \begin{pmatrix}
           1 & 0 \\
           0 & 1
         \end{pmatrix}
-        ''',
+        """,
     )
 
     nodes = parse_latex(string)

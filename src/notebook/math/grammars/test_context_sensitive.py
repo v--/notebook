@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.pytest import pytest_parametrize_lists
+from notebook.support.pytest import pytest_parametrize_lists
+
 from .context_sensitive import (
     is_context_sensitive_grammar,
     is_context_sensitive_rule,

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ..parsing import parse_formula, parse_formula_schema
+from notebook.math.logic.parsing import parse_formula, parse_formula_schema
+
 from .exceptions import PropositionalLogicError
 from .formula_conversion import convert_to_prop_formula
 from .formulas import PropFormula, PropVariable

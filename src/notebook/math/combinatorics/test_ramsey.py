@@ -1,7 +1,8 @@
 import itertools
 from typing import TYPE_CHECKING
 
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .ramsey import (
     ExhaustiveRamseyComputationBounds,
     compute_ramsey_number_exhaustively,

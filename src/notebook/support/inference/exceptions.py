@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from ..exceptions import NotebookSupportError
+from notebook.support.exceptions import NotebookSupportError
 
 
 if TYPE_CHECKING:

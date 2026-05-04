@@ -1,7 +1,8 @@
 # ruff: noqa: E222
 
-from ..terms import Constant
-from ..types import BaseType
+from notebook.math.lambda_.terms import Constant
+from notebook.math.lambda_.types import BaseType
+
 from .alphabet import LogicalConstantName
 from .signature import LogicalConstantSymbol, LogicalTypeSymbol, SortSymbol
 

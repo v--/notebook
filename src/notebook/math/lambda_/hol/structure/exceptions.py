@@ -1,4 +1,4 @@
-from ..exceptions import HolError
+from notebook.math.lambda_.hol.exceptions import HolError
 
 
 class HolInterpretationError(HolError):

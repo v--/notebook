@@ -4,23 +4,24 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....support.coderefs import collector
-from ..classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ..instantiation import AtomicLogicSchemaInstantiation
-from ..parsing import (
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.parsing import (
     parse_formula,
     parse_formula_placeholder,
     parse_formula_with_substitution,
     parse_marker,
 )
-from ..propositional import parse_prop_formula
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.support.coderefs import collector
+
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution
 from .proof_tree import AssumptionTree, apply, assume, premise_config
 
 
 if TYPE_CHECKING:
-    from ..signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 def prop_assume(formula: str, marker: str) -> AssumptionTree:
@@ -37,9 +38,9 @@ def prop_marked_formula(formula: str, marker: str) -> MarkedFormula:
 def test_assumption_tree() -> None:
     tree = prop_assume('p', 'u')
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [p]ᵘ
-        ''',
+        """,
     )
 
 
@@ -55,11 +56,11 @@ def test_single_implication_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('q', 'u')}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
           [q]ᵘ
          _______ →₊
          (p → q)
-        ''',
+        """,
     )
 
 
@@ -81,13 +82,13 @@ def test_double_implication_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
               [p]ᵘ
              _______ →₊
              (q → p)
         u _____________ →₊
           (p → (q → p))
-        ''',
+        """,
     )
 
 
@@ -103,11 +104,11 @@ def test_efq() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('⊥', 'u')}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [⊥]ᵘ
         ____ EFQ
          p
-        ''',
+        """,
     )
 
 
@@ -123,11 +124,11 @@ def test_or_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
          [p]ᵘ
         _______ ∨₊ₗ
         (p ∨ q)
-        ''',
+        """,
     )
 
 
@@ -151,7 +152,7 @@ def test_dne() -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
           [¬¬p]ᵘ    [¬p]ᵛ
           _______________ ¬₋
                  ⊥
@@ -159,7 +160,7 @@ def test_dne() -> None:
                  p
         u _______________ →₊
              (¬¬p → p)
-        ''',
+        """,
     )
 
 
@@ -198,7 +199,7 @@ def test_implication_distributivity_axiom_tree() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
           [(p → (q → r))]ᵘ    [p]ᵛ       [(p → q)]ʷ    [p]ᵛ
           ________________________ →₋    __________________ →₋
                   (q → r)                        q
@@ -210,7 +211,7 @@ def test_implication_distributivity_axiom_tree() -> None:
                          ((p → q) → (p → r))
         u _________________________________________________ →₊
                 ((p → (q → r)) → ((p → q) → (p → r)))
-        ''',
+        """,
     )
 
 
@@ -228,11 +229,11 @@ def test_self_biconditional() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
           [p]ᵘ    [p]ᵘ
         u ____________ ↔₊
             (p ↔ p)
-        ''',
+        """,
     )
 
 
@@ -264,12 +265,12 @@ def test_forall_introduction() -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
          _ ⊤₊
          ⊤
         ____ ∀₊
         ∀x.⊤
-        ''',
+        """,
     )
 
 
@@ -282,11 +283,11 @@ def test_forall_elimination(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
            p¹(y)
-        ''',
+        """,
     )
 
 
@@ -305,13 +306,13 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
            p¹(y)
         ___________ ∀₊
          ∀x.p¹(x)
-        ''',
+        """,
     )
 
 
@@ -329,13 +330,13 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
            p¹(y)
         ___________ ∀₊
          ∀z.p¹(z)
-        ''',
+        """,
     )
 
 
@@ -353,13 +354,13 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
            p¹(y)
         ___________ ∃₊
          ∃x.p¹(x)
-        ''',
+        """,
     )
 
 
@@ -378,13 +379,13 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
           p¹(f⁰)
         ___________ ∃₊
          ∃x.p¹(x)
-        ''',
+        """,
     )
 
 
@@ -435,7 +436,7 @@ def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                                              [p¹(x)]ʷ
                                              ________ ∃₊
                              [¬∃x.p¹(x)]ᵛ    ∃x.p¹(x)
@@ -451,7 +452,7 @@ def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
                            ∃x.p¹(x)
         u ___________________________________________ →₊
                     (¬∀x.¬p¹(x) → ∃x.p¹(x))
-        ''',
+        """,
     )
 
 
@@ -474,14 +475,14 @@ def test_forall_introduction_with_implicit_premise(dummy_signature: FormalLogicS
     )
 
     assert tree.get_open_variables() == set()
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
               _ ⊤₊
               ⊤
          ___________ ∨₊ₗ
          (⊤ ∨ p¹(x))
         ______________ ∀₊
         ∀x.(⊤ ∨ p¹(x))
-        ''',
+        """,
     )
 
 
@@ -541,7 +542,7 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                          [∀y.(p¹(y) → q¹(z))]ᵛ
                          _____________________ ∀₋
                             (p¹(y) → q¹(z))          [p¹(y)]ʷ
@@ -549,7 +550,7 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
           [∃x.p¹(x)]ᵘ                   q¹(z)
         w ___________________________________________________ ∃₋
                                  q¹(z)
-        ''',
+        """,
     )
 
 
@@ -631,7 +632,7 @@ def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -
     )
 
     assert tree.get_cumulative_assumptions() == {MarkedFormula(u, parse_marker('u'))}
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                                                                                                  [p¹(y)]ʷ
                                                                                                ____________ →₊
                                                             [(p⁰ → ∃x.p¹(x))]ᵘ    [p⁰]ᵛ        (p⁰ → p¹(y))
@@ -651,7 +652,7 @@ def test_pulling_existential_quantifier(dummy_signature: FormalLogicSignature) -
                                                            ⊥
         t ___________________________________________________________________________________________________ RAA
                                                     ∃x.(p⁰ → p¹(x))
-        ''',
+        """,
     )
 
 

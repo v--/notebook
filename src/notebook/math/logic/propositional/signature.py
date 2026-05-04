@@ -1,10 +1,7 @@
 from typing import override
 
-from ..signature import (
-    FormalLogicSignature,
-    FormalLogicSignatureError,
-    SignatureSymbol,
-)
+from notebook.math.logic.signature import FormalLogicSignature, FormalLogicSignatureError, SignatureSymbol
+
 from .formulas import PropVariable
 from .symbols import PropVariableSymbol
 

@@ -1,5 +1,6 @@
-from ....support.pytest import pytest_parametrize_kwargs
-from ..propositional import are_semantically_equivalent, parse_prop_formula
+from notebook.math.logic.propositional import are_semantically_equivalent, parse_prop_formula
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .formula_to_cnf_or_dnf import formula_to_cnf_prop
 from .validation import is_formula_in_cnf
 

@@ -1,7 +1,8 @@
 import functools
 import operator
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .exceptions import IncompatibleMatrixError
 from .matrix import IFieldMatrix, ISemiringMatrix
 from .triangular import lower_triangular_inv, upper_triangular_inv

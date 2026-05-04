@@ -4,10 +4,11 @@ from collections import deque
 from dataclasses import replace
 from typing import TYPE_CHECKING, cast
 
-from ...parsing.parser import Parser
-from ...support.iteration import list_accumulator
-from ..entry import ENTRY_KEYS, ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
-from ..string import BibString, CompositeString, CompositeStringBuilder
+from notebook.bibtex.entry import ENTRY_KEYS, ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
+from notebook.bibtex.string import BibString, CompositeString, CompositeStringBuilder
+from notebook.parsing.parser import Parser
+from notebook.support.iteration import list_accumulator
+
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken

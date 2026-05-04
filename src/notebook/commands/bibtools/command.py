@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING
 
 import click
 
-from ...exceptions import NotebookError
-from ..common.exception_handling import exit_gracefully_on_exception
-from ..common.formatting import FormatterContextManager
-from ..common.logging import configure_loguru
+from notebook.commands.common.exception_handling import exit_gracefully_on_exception
+from notebook.commands.common.formatting import FormatterContextManager
+from notebook.commands.common.logging import configure_loguru
+from notebook.exceptions import NotebookError
+
 from .formatting import adjust_entry, read_entries, write_entries
 from .sources.arxiv import retrieve_arxiv_entry
 from .sources.doi import retrieve_doi_entry

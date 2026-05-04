@@ -1,8 +1,9 @@
 # ruff: noqa: FURB118
 
-from .....rings.modular import BaseIntModulo
-from ...alphabet import SortName
-from ...structure import HolStructure
+from notebook.math.lambda_.hol.alphabet import SortName
+from notebook.math.lambda_.hol.structure import HolStructure
+from notebook.math.rings.modular import BaseIntModulo
+
 from .signature import ARITHMETIC_SIGNATURE
 
 

@@ -1,5 +1,5 @@
-from ..alphabet import BinaryConnective, LatticeConnective, get_dual_connective
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, LatticeConnective, get_dual_connective
+from notebook.math.logic.formulas import (
     AtomicFormula,
     ConnectiveFormula,
     EqualityFormula,

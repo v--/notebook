@@ -1,4 +1,5 @@
-from ...support.pytest import pytest_parametrize_lists
+from notebook.support.pytest import pytest_parametrize_lists
+
 from .complete import complete_graph
 from .subgraphs import (
     enumerate_fixed_order_subgraphs,

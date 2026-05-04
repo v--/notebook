@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ..support.iteration import get_strip_slice
+from notebook.support.iteration import get_strip_slice
+
 from .nodes import (
     BracketGroup,
     Command,

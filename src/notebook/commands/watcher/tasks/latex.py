@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING, override
 
 import texoutparse
 
-from ....paths import AUX_PATH
-from ..trigger import TaskTrigger, TaskTriggerKind
+from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
+from notebook.paths import AUX_PATH
+
 from .cli import CliTask
 
 

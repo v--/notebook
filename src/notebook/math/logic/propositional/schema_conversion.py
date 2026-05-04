@@ -1,6 +1,6 @@
 from typing import override
 
-from ..formulas import (
+from notebook.math.logic.formulas import (
     ConnectiveFormulaSchema,
     EqualityFormulaSchema,
     FormulaPlaceholder,
@@ -11,6 +11,7 @@ from ..formulas import (
     PropConstant,
     QuantifierFormulaSchema,
 )
+
 from .exceptions import NonPropositionalFormulaError
 from .schemas import PropConnectiveFormulaSchema, PropFormulaSchema, PropNegationFormulaSchema, PropPlaceholder
 

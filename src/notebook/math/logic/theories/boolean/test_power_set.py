@@ -1,4 +1,5 @@
-from ...structure import evaluate_formula
+from notebook.math.logic.structure import evaluate_formula
+
 from .axioms import BOOLEAN_ALGEBRA_AXIOMS
 from .power_set import PowerSetBooleanAlgebra
 

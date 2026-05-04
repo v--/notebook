@@ -2,9 +2,10 @@ import functools
 import inspect
 from typing import TYPE_CHECKING
 
-from ...parsing import LatinIdentifier
-from ...support.coderefs import collector
-from ...support.unicode import Capitalization, is_latin_string
+from notebook.parsing import LatinIdentifier
+from notebook.support.coderefs import collector
+from notebook.support.unicode import Capitalization, is_latin_string
+
 from .exceptions import IndeterminateError
 from .monomial import Monomial
 from .polynomial import BooleanPolynomial

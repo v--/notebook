@@ -1,4 +1,4 @@
-from ..exceptions import NotebookMathError
+from notebook.math.exceptions import NotebookMathError
 
 
 class GraphError(NotebookMathError):

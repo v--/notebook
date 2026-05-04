@@ -1,16 +1,15 @@
 # ruff: noqa: C901
 from typing import TYPE_CHECKING, Literal, overload
 
-from ....parsing import IdentifierParserMixin, Parser, ParserError
-from ..alphabet import BinaryTypeConnective, BinderSymbol
-from ..assertions import (
+from notebook.math.lambda_.alphabet import BinaryTypeConnective, BinderSymbol
+from notebook.math.lambda_.assertions import (
     TypeAssertion,
     TypeAssertionSchema,
     VariableTypeAssertion,
     VariableTypeAssertionSchema,
 )
-from ..signature import EMPTY_SIGNATURE, BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
-from ..terms import (
+from notebook.math.lambda_.signature import EMPTY_SIGNATURE, BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
+from notebook.math.lambda_.terms import (
     Constant,
     TermPlaceholder,
     TypedAbstraction,
@@ -25,8 +24,8 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from ..type_system import TypingRule, TypingRuleEntry
-from ..types import (
+from notebook.math.lambda_.type_system import TypingRule, TypingRuleEntry
+from notebook.math.lambda_.types import (
     BaseType,
     SimpleConnectiveType,
     SimpleConnectiveTypeSchema,
@@ -35,6 +34,8 @@ from ..types import (
     TypePlaceholder,
     TypeVariable,
 )
+from notebook.parsing import IdentifierParserMixin, Parser, ParserError
+
 from .parser_context import LambdaParserContext
 from .tokenizer import tokenize_lambda_string
 from .tokens import LambdaToken, LambdaTokenKind

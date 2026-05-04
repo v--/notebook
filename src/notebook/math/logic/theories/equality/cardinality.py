@@ -1,10 +1,17 @@
-from .....parsing import LatinIdentifier
-from .....support.coderefs import collector
-from ...alphabet import BinaryConnective, PropConstantSymbol, Quantifier
-from ...common import variables as var
-from ...formulas import ConnectiveFormula, EqualityFormula, Formula, NegationFormula, PropConstant, QuantifierFormula
-from ...terms import Variable
-from ...transformation import dualize_formula, universal_closure
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+from notebook.math.logic.common import variables as var
+from notebook.math.logic.formulas import (
+    ConnectiveFormula,
+    EqualityFormula,
+    Formula,
+    NegationFormula,
+    PropConstant,
+    QuantifierFormula,
+)
+from notebook.math.logic.terms import Variable
+from notebook.math.logic.transformation import dualize_formula, universal_closure
+from notebook.parsing import LatinIdentifier
+from notebook.support.coderefs import collector
 
 
 VAR_LETTER = 'x'

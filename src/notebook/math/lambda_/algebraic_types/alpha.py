@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInferenceError
-from ..assertions import VariableTypeAssertion
-from ..instantiation import AtomicLambdaSchemaInstantiation, infer_instantiation_from_term, instantiate_term_schema
-from ..signature import ConstantTermSymbol
-from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
-from ..type_derivation import (
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.instantiation import (
+    AtomicLambdaSchemaInstantiation,
+    infer_instantiation_from_term,
+    instantiate_term_schema,
+)
+from notebook.math.lambda_.signature import ConstantTermSymbol
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
+from notebook.math.lambda_.type_derivation import (
     AssumptionTree,
     RuleApplicationPremise,
     RuleApplicationTree,
@@ -17,7 +19,10 @@ from ..type_derivation import (
     assume,
     premise_config,
 )
-from ..variables import get_free_variables
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInferenceError
+
 from .substitution import substitute_in_tree
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
 

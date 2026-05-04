@@ -1,7 +1,8 @@
 import functools
 from typing import TYPE_CHECKING, Any, Self
 
-from ..arithmetic.divisibility import rem
+from notebook.math.arithmetic.divisibility import rem
+
 from .exceptions import RingMetaError
 
 

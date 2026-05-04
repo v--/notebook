@@ -1,8 +1,9 @@
 import itertools
 from typing import override
 
-from ...signature import SignatureMorphism
-from ...signature_translation import translate_type
+from notebook.math.lambda_.signature import SignatureMorphism
+from notebook.math.lambda_.signature_translation import translate_type
+
 from .exceptions import HolSignatureMorphismError
 from .signature import HolSignature
 from .symbols import LogicalConstantSymbol, LogicalTypeSymbol, NonLogicalConstantSymbol

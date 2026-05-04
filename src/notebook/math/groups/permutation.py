@@ -2,7 +2,8 @@ import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ...support.adt.comparable import IComparable
+from notebook.support.adt.comparable import IComparable
+
 from .cycle import Cycle
 
 

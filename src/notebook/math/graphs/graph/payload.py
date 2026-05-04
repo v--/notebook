@@ -2,9 +2,9 @@ from collections.abc import Collection, MutableMapping
 from itertools import starmap
 from typing import NamedTuple, overload
 
-from ....support.collections.sequential_mapping import SequentialMapping
-from ....support.typing import typesup
-from ..exceptions import MissingEdgeError, MissingVertexError
+from notebook.math.graphs.exceptions import MissingEdgeError, MissingVertexError
+from notebook.support.collections import SequentialMapping
+from notebook.support.typing import typesup
 
 
 class LabeledVertex[VertT, VertLabelT](NamedTuple):

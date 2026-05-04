@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ..alphabet import Quantifier
+from notebook.math.logic.alphabet import Quantifier
 
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from ..terms import Variable
+    from notebook.math.logic.terms import Variable
 
 
 @dataclass(frozen=True)

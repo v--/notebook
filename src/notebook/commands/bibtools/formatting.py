@@ -3,16 +3,17 @@ from typing import TYPE_CHECKING, Any, TextIO
 
 from stdnum import isbn, issn
 
-from ...bibtex import BibAuthor, BibEntry, BibString, parse_bibtex
-from ...parsing.parser import ParserError
-from ..common.names import latinize_cyrillic_name
+from notebook.bibtex import BibAuthor, BibEntry, BibString, parse_bibtex
+from notebook.commands.common.names import latinize_cyrillic_name
+from notebook.parsing.parser import ParserError
+
 from . import url_templates
 from .exceptions import BibToolsParsingError
-from .sources.common.dates import extract_year
-from .sources.common.entries import regenerate_entry_name
-from .sources.common.languages import get_main_entry_language, normalize_language_name
-from .sources.common.names import get_main_human_name, normalize_human_name
-from .sources.common.pages import normalize_pages
+from .sources.helpers.dates import extract_year
+from .sources.helpers.entries import regenerate_entry_name
+from .sources.helpers.languages import get_main_entry_language, normalize_language_name
+from .sources.helpers.names import get_main_human_name, normalize_human_name
+from .sources.helpers.pages import normalize_pages
 
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
     import loguru
 
-    from .sources.common.url_template import UrlTemplate
+    from .sources.helpers.url_template import UrlTemplate
 
 
 class BibEntryAdjuster:

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .epsilon_rules import is_essentially_epsilon_free
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema

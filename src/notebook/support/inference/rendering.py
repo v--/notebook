@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, override
 
-from ..iteration import string_accumulator
-from ..unicode import to_superscript
+from notebook.support.iteration import string_accumulator
+from notebook.support.unicode import to_superscript
+
 from .exceptions import InferenceRuleError
 
 

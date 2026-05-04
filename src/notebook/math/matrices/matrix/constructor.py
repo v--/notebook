@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Self
 
-from ...rings.types import ISemiring
-from ..exceptions import MatrixIndexError
+from notebook.math.matrices.exceptions import MatrixIndexError
+from notebook.math.rings.types import ISemiring
+
 from .base import BaseMatrix
 
 

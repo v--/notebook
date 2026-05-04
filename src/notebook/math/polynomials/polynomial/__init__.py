@@ -1,4 +1,5 @@
-from ..monomial import Monomial
+from notebook.math.polynomials.monomial import Monomial
+
 from .boolean import BooleanPolynomial
 from .common import IFieldPolynomial, IRingPolynomial, ISemiringPolynomial
 from .degree import PolynomialDegree

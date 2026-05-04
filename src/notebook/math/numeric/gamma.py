@@ -1,6 +1,7 @@
 import math
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .exceptions import InvalidArgumentError
 
 

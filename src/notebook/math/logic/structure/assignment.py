@@ -1,14 +1,15 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ..parsing import parse_variable
+from notebook.math.logic.parsing import parse_variable
+
 from .exceptions import MissingInterpretationError
 
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ..terms import Variable
+    from notebook.math.logic.terms import Variable
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,7 @@
 from collections.abc import Collection
 
-from ...support.collections.sequential_mapping import SequentialMapping
-from ...support.collections.sequential_set import SequentialSet
+from notebook.support.collections import SequentialMapping, SequentialSet
+
 from .finite import FiniteAutomaton
 
 

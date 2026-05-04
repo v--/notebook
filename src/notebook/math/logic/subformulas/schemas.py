@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
-from ..formulas import (
+from notebook.math.logic.formulas import (
     ConnectiveFormulaSchema,
     FormulaSchema,
     FormulaSchemaVisitor,

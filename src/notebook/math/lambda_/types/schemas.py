@@ -5,8 +5,8 @@ from .types import BaseType
 
 
 if TYPE_CHECKING:
-    from ....parsing.identifiers import GreekIdentifier
-    from ..alphabet import BinaryTypeConnective
+    from notebook.math.lambda_.alphabet import BinaryTypeConnective
+    from notebook.parsing.identifiers import GreekIdentifier
 
 
 @dataclass(frozen=True)

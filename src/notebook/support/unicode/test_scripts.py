@@ -1,4 +1,5 @@
-from ..pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .scripts import atoi_subscripts, itoa_subscripts, to_superscript
 
 

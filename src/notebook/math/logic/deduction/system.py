@@ -1,5 +1,5 @@
-from ....support.inference import InferenceRule, InferenceRuleEntry, InferenceRuleSystem
-from ..formulas import FormulaSchema
+from notebook.math.logic.formulas import FormulaSchema
+from notebook.support.inference import InferenceRule, InferenceRuleEntry, InferenceRuleSystem
 
 
 class NaturalDeductionEntry(InferenceRuleEntry[FormulaSchema]):

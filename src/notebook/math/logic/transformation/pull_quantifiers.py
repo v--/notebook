@@ -1,15 +1,16 @@
 from typing import override
 
-from ..alphabet import BinaryConnective, get_dual_quantifier
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, get_dual_quantifier
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
     NegationFormula,
     QuantifierFormula,
 )
-from ..substitution import substitute_in_formula
-from ..variables import get_formula_free_variables, new_variable
+from notebook.math.logic.substitution import substitute_in_formula
+from notebook.math.logic.variables import get_formula_free_variables, new_variable
+
 from .collapse_repeated_negation import collapse_repeated_negation
 
 

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
-from ....support.coderefs import collector
-from ..formulas import Formula, QuantifierFormula
-from ..transformation import pull_quantifiers
+from notebook.math.logic.formulas import Formula, QuantifierFormula
+from notebook.math.logic.transformation import pull_quantifiers
+from notebook.support.coderefs import collector
+
 from .prefix import QuantifierPrefix
 
 

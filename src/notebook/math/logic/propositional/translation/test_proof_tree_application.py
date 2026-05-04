@@ -1,16 +1,17 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from ...classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...deduction import MarkedFormula, apply, assume, premise_config
-from ...instantiation import AtomicLogicSchemaInstantiation
-from ...parsing import parse_formula, parse_formula_placeholder, parse_marker
-from ..parsing import parse_prop_formula, parse_prop_variable
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction import MarkedFormula, apply, assume, premise_config
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
+from notebook.math.logic.propositional.parsing import parse_prop_formula, parse_prop_variable
+
 from .proof_tree_application import translate_prop_proof_tree
 
 
 if TYPE_CHECKING:
-    from ...signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 def test_assumption_tree(dummy_signature: FormalLogicSignature) -> None:
@@ -20,9 +21,9 @@ def test_assumption_tree(dummy_signature: FormalLogicSignature) -> None:
         {parse_prop_variable('p'): parse_formula('p²(x, y)', dummy_signature)},
     )
 
-    assert str(translated) == dedent('''\
+    assert str(translated) == dedent("""\
         [p²(x, y)]ᵘ
-        ''',
+        """,
     )
 
 
@@ -51,11 +52,11 @@ def test_double_implication_intro(dummy_signature: FormalLogicSignature) -> None
         },
     )
 
-    assert str(translated) == dedent('''\
+    assert str(translated) == dedent("""\
                   [p¹(x)]ᵘ
                _______________ →₊
                (q¹(x) → p¹(x))
         u _________________________ →₊
           (p¹(x) → (q¹(x) → p¹(x)))
-        ''',
+        """,
     )

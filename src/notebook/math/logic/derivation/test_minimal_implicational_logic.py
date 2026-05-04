@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..propositional import parse_prop_formula
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .axiomatic_derivation import AxiomaticDerivation, get_premises
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,

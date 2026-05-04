@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ....parsing import GreekIdentifier
-    from ..formulas import FormulaSchema
+    from notebook.math.logic.formulas import FormulaSchema
+    from notebook.parsing import GreekIdentifier
 
 
 @dataclass(frozen=True)

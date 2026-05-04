@@ -1,7 +1,7 @@
-from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
-from ..parsing import parse_typing_rule
-from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
-from ..type_system import ExplicitTypeSystem
+from notebook.math.lambda_.arrow_types import ARROW_ONLY_TYPE_SYSTEM
+from notebook.math.lambda_.parsing import parse_typing_rule
+from notebook.math.lambda_.signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
+from notebook.math.lambda_.type_system import ExplicitTypeSystem
 
 
 SIMPLE_ALGEBRAIC_SIGNATURE = LambdaSignature(

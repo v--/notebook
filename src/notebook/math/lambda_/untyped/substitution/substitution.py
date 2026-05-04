@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, override
 
-from .....support.substitution import AbstractAtomicSubstitution
-from ...terms import UntypedAbstraction, UntypedTerm, Variable
-from ...variables import get_free_variables, new_variable
+from notebook.math.lambda_.terms import UntypedAbstraction, UntypedTerm, Variable
+from notebook.math.lambda_.variables import get_free_variables, new_variable
+from notebook.support.substitution import AbstractAtomicSubstitution
 
 
 if TYPE_CHECKING:

@@ -1,5 +1,5 @@
 # ruff: noqa: E222
-from .sources.common.url_template import UrlTemplate
+from .sources.helpers.url_template import UrlTemplate
 
 
 doi =        UrlTemplate('dx.doi.org/{identifier}', r'https?://(dx\.)?doi\.org/(?P<identifier>.+)')

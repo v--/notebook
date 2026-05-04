@@ -1,8 +1,9 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..propositional import parse_prop_formula
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+
 from .axiomatic_derivation import (
     AxiomaticDerivation,
     are_derivations_equivalent,
@@ -82,32 +83,32 @@ def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload:
 @pytest_parametrize_kwargs(
     dict(
         payload=['p'],
-        expected=dedent('''\
+        expected=dedent("""\
             [p]ᵃ
-            ''',
+            """,
         ),
     ),
 
     dict(
         payload=['(p → q)', 'p', 'q'],
-        expected=dedent('''\
+        expected=dedent("""\
             [(p → q)]ᵃ    [p]ᵇ
             __________________ MP
                     q
-            ''',
+            """,
         ),
     ),
 
     dict(
         payload=IDENTITY_DERIVATION,
-        expected=dedent('''\
+        expected=dedent("""\
             _________________________________________________ ↠    ___________________ →₊
             ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))      (p → ((p → p) → p))
             __________________________________________________________________________ MP    _____________ →₊
                                     ((p → (p → p)) → (p → p))                                (p → (p → p))
             ______________________________________________________________________________________________ MP
                                                        (p → p)
-            ''',
+            """,
         ),
     ),
 )

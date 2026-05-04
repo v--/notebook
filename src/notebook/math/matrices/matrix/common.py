@@ -1,4 +1,5 @@
-from ...rings.types import IField, INormedField, IRing, ISemiring
+from notebook.math.rings.types import IField, INormedField, IRing, ISemiring
+
 from .base import BaseMatrix, MatrixDivisionMixin, MatrixSubtractionMixin
 from .constructor import MatrixConstructorMixin
 

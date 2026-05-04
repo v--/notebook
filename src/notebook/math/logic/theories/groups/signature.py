@@ -1,4 +1,4 @@
-from ...signature import FormalLogicSignature, FunctionSymbol
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol
 
 
 GROUP_SIGNATURE = FormalLogicSignature(

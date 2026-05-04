@@ -1,8 +1,8 @@
 from collections.abc import Collection
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
-from ....support.collections.sequential_set import SequentialSet
+from notebook.support.coderefs import collector
+from notebook.support.collections import SequentialSet
 
 
 if TYPE_CHECKING:

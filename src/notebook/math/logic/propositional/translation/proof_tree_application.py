@@ -1,9 +1,18 @@
 from typing import TYPE_CHECKING
 
-from .....support.coderefs import collector
-from ...deduction import AssumptionTree, MarkedFormula, ProofTree, RuleApplicationTree, apply, assume, premise_config
-from ...instantiation import AtomicLogicSchemaInstantiation
-from ..formula_conversion import convert_to_prop_formula
+from notebook.math.logic.deduction import (
+    AssumptionTree,
+    MarkedFormula,
+    ProofTree,
+    RuleApplicationTree,
+    apply,
+    assume,
+    premise_config,
+)
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.propositional.formula_conversion import convert_to_prop_formula
+from notebook.support.coderefs import collector
+
 from .base import PropFormulaTranslation
 from .formula_application import apply_prop_formula_translation
 
@@ -11,8 +20,8 @@ from .formula_application import apply_prop_formula_translation
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ...formulas import Formula
-    from ..formulas import PropVariable
+    from notebook.math.logic.formulas import Formula
+    from notebook.math.logic.propositional.formulas import PropVariable
 
 
 # Proof trees use general formulas, so when translating them we must first convert them to propositional formulas and then translate them.

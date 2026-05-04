@@ -3,11 +3,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
-from ...exceptions import UnreachableException
-from ...support.coderefs import collector
-from ..graphs.complete import max_edge_count
-from ..graphs.graph import UndirectedGraph
-from ..graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
+from notebook.exceptions import UnreachableException
+from notebook.math.graphs.complete import max_edge_count
+from notebook.math.graphs.graph import UndirectedGraph
+from notebook.math.graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
+from notebook.support.coderefs import collector
+
 from .binomial import choose
 
 

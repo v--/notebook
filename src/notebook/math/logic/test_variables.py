@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .parsing import parse_formula
 from .variables import get_formula_free_variables
 

@@ -1,4 +1,4 @@
-from ..exceptions import NotebookSupportError
+from notebook.support.exceptions import NotebookSupportError
 
 
 class CollectionError(NotebookSupportError):

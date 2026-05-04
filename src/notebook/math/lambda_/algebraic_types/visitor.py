@@ -2,13 +2,19 @@
 
 from typing import TYPE_CHECKING
 
-from ..type_derivation import AssumptionTree, RuleApplicationTree, TypeDerivationTree, UnknownDerivationRuleError
+from notebook.math.lambda_.type_derivation import (
+    AssumptionTree,
+    RuleApplicationTree,
+    TypeDerivationTree,
+    UnknownDerivationRuleError,
+)
+
 from .system import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 
 
 if TYPE_CHECKING:
-    from ..assertions import VariableTypeAssertion
-    from ..types import SimpleType
+    from notebook.math.lambda_.assertions import VariableTypeAssertion
+    from notebook.math.lambda_.types import SimpleType
 
 
 class SimpleAlgebraicDerivationTreeVisitor[T]:

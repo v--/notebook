@@ -1,31 +1,39 @@
 from typing import TYPE_CHECKING, override
 
-from ....parsing import GreekIdentifier
-from ....support.coderefs import collector
-from ...logic.alphabet import BinaryConnective, PropConstantSymbol
-from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...logic.deduction import MarkedFormula, Marker, NaturalDeductionRule
-from ...logic.deduction import proof_tree as ptree
-from ...logic.formulas import (
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.type_derivation import UnknownDerivationRuleError
+from notebook.math.lambda_.type_derivation import tree as dtree
+from notebook.math.lambda_.types import (
+    BaseType,
+    SimpleConnectiveType,
+    SimpleType,
+    TypePlaceholder,
+    TypeVariable,
+    TypeVisitor,
+)
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction import MarkedFormula, Marker, NaturalDeductionRule
+from notebook.math.logic.deduction import proof_tree as ptree
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaPlaceholder,
     PredicateApplication,
     PropConstant,
 )
-from ...logic.instantiation import AtomicLogicSchemaInstantiation
-from ...logic.propositional import PropVariableSymbol
-from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..alphabet import BinaryTypeConnective
-from ..type_derivation import UnknownDerivationRuleError
-from ..type_derivation import tree as dtree
-from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVariable, TypeVisitor
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.propositional import PropVariableSymbol
+from notebook.parsing import GreekIdentifier
+from notebook.support.coderefs import collector
+
 from .exceptions import DerivationToProofError
 
 
 if TYPE_CHECKING:
-    from ..instantiation import AtomicLambdaSchemaInstantiation
-    from ..type_system import TypingRule
+    from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+    from notebook.math.lambda_.type_system import TypingRule
 
 
 def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryConnective:

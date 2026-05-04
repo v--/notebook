@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, override
 
-from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
-from ....support.unicode import Capitalization
-from ..signature import LambdaSignature, SignatureSymbol
+from notebook.math.lambda_.signature import LambdaSignature, SignatureSymbol
+from notebook.parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
+from notebook.support.unicode import Capitalization
+
 from .tokens import SINGLETON_TOKEN_MAP, LambdaToken, LambdaTokenKind
 
 

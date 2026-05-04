@@ -1,10 +1,9 @@
 import inspect
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective, PropConstantSymbol
-from ..formulas import PropConstant
-from ..propositional import (
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol
+from notebook.math.logic.formulas import PropConstant
+from notebook.math.logic.propositional import (
     DEFAULT_PROP_SIGNATURE,
     PropConnectiveFormula,
     PropFormula,
@@ -12,6 +11,8 @@ from ..propositional import (
     PropVariable,
     iter_interpretations_for_variables,
 )
+from notebook.support.coderefs import collector
+
 from .exceptions import VariableNameError
 
 

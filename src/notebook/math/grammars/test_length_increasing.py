@@ -25,10 +25,10 @@ def test_is_length_increasing_grammar_anbncn(anbncn: GrammarFixture) -> None:
 
 def test_is_length_increasing_grammar_failure() -> None:
     schema = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → "a" <S> "b"
             "a" <S> "b" → <S>
-            ''',
+            """,
         ),
     )
 

@@ -1,6 +1,7 @@
-from .....support.pytest import pytest_parametrize_kwargs
-from ....polynomials.polynomial.int import IntPolynomial, const, x, y
-from ...parsing import parse_term
+from notebook.math.logic.parsing import parse_term
+from notebook.math.polynomials.polynomial.int import IntPolynomial, const, x, y
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .polynomial_to_term import polynomial_to_term
 from .signature import RING_SIGNATURE
 from .term_to_polynomial import term_to_polynomial

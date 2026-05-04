@@ -1,16 +1,11 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ...exceptions import NotebookMathException
-from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
-from ..assertions import VariableTypeAssertion
-from ..terms import (
-    TypedAbstraction,
-    TypedApplication,
-    TypedTerm,
-)
-from ..type_derivation import (
+from notebook.math.exceptions import NotebookMathException
+from notebook.math.lambda_.arrow_types import ARROW_ONLY_TYPE_SYSTEM
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.terms import TypedAbstraction, TypedApplication, TypedTerm
+from notebook.math.lambda_.type_derivation import (
     AssumptionTree,
     RuleApplicationTree,
     TypeDerivationError,
@@ -19,7 +14,9 @@ from ..type_derivation import (
     assume,
     premise_config,
 )
-from ..variables import get_free_variables
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.support.coderefs import collector
+
 from .alpha import alpha_convert_derivation
 from .substitution import substitute_in_tree
 from .visitor import SimpleAlgebraicDerivationTreeVisitor

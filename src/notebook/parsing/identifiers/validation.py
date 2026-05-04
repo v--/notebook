@@ -1,4 +1,4 @@
-from ...support.unicode import Capitalization, is_greek_string, is_latin_string, is_numeric_subscript_char
+from notebook.support.unicode import Capitalization, is_greek_string, is_latin_string, is_numeric_subscript_char
 
 
 def is_latin_identifier(string: str, capitalization: Capitalization) -> bool:

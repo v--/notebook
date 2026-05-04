@@ -1,7 +1,8 @@
-from ..contexts import LogicalContext
-from ..parsing import parse_context_placeholder, parse_formula_placeholder, parse_sequent_schema
-from ..propositional import parse_prop_formula
-from ..sequents import Sequent
+from notebook.math.logic.contexts import LogicalContext
+from notebook.math.logic.parsing import parse_context_placeholder, parse_formula_placeholder, parse_sequent_schema
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.math.logic.sequents import Sequent
+
 from .base import AtomicLogicSchemaInstantiation
 from .sequent_application import instantiate_sequent_schema
 

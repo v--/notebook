@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInstantiationError
-from ..terms import (
+from notebook.math.lambda_.terms import (
     Constant,
     TermPlaceholder,
     TypedAbstraction,
@@ -16,6 +14,9 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInstantiationError
+
 from .type_application import instantiate_type_schema
 
 

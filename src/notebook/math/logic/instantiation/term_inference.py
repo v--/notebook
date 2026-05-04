@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.schemas import SchemaInferenceError
-from ..terms import (
+from notebook.math.logic.terms import (
     FunctionApplication,
     FunctionApplicationSchema,
     Term,
@@ -12,6 +11,8 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
+from notebook.support.schemas import SchemaInferenceError
+
 from .base import AtomicLogicSchemaInstantiation
 
 

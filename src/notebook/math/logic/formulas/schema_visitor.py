@@ -1,4 +1,5 @@
-from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+
 from .schemas import (
     AtomicFormulaSchema,
     ConnectiveFormulaSchema,

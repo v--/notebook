@@ -1,7 +1,8 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .brute_force_parse import derives
 from .epsilon_rules import (
     is_epsilon_free,
@@ -19,9 +20,9 @@ if TYPE_CHECKING:
 @collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → ε | "a" <S>
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 
@@ -37,11 +38,11 @@ def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
 @collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_terminal_rule() -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → <A> <B>
             <A> → ε | "a"
             <B> → ε
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 
@@ -64,10 +65,10 @@ def test_remove_epsilon_rules_terminal_rule() -> None:
 @collector.ref('ex:alg:epsilon_rule_removal/an')
 def test_remove_epsilon_rules_natural(binary: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <N> → "0" | "1" <B>
             <B> → ε | "0" <B> | "1" <B>
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('N'))
 

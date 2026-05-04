@@ -1,7 +1,8 @@
-from .....support.coderefs import collector
-from ....polynomials.monomial import Monomial
-from ....polynomials.polynomial.int import IntPolynomial
-from ...terms import FunctionApplication, Term, Variable
+from notebook.math.logic.terms import FunctionApplication, Term, Variable
+from notebook.math.polynomials.monomial import Monomial
+from notebook.math.polynomials.polynomial.int import IntPolynomial
+from notebook.support.coderefs import collector
+
 from .signature import RING_SIGNATURE
 
 

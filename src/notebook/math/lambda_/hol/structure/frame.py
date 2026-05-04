@@ -2,10 +2,11 @@ import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .....support.collections import SequentialMapping
-from ...types import BaseType, SimpleConnectiveType, SimpleType
-from .. import common
-from ..signature import SortSymbol
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.signature import SortSymbol
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType
+from notebook.support.collections import SequentialMapping
+
 from .exceptions import MissingInterpretationError
 
 

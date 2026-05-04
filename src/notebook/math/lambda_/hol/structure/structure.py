@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Protocol
 if TYPE_CHECKING:
     from collections.abc import Collection, Mapping
 
-    from ..signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+    from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
 
 
 # We should wait for a further development, e.g. PEP 827, so that we can introduce better typing here.

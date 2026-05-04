@@ -7,7 +7,7 @@ from .exceptions import FormalLogicInterpretationError, MissingInterpretationErr
 if TYPE_CHECKING:
     from collections.abc import Callable, Collection, Mapping
 
-    from ..signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
+    from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
 @dataclass

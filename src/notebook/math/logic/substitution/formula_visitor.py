@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ..formulas import (
+from notebook.math.logic.formulas import (
     EqualityFormula,
     Formula,
     FormulaTransformationVisitor,
@@ -10,6 +9,8 @@ from ..formulas import (
     PredicateApplication,
     QuantifierFormula,
 )
+from notebook.support.coderefs import collector
+
 from .substitution import AtomicLogicSubstitution, infer_substitution
 from .term_visitor import TermSubstitutionVisitor
 
@@ -17,7 +18,7 @@ from .term_visitor import TermSubstitutionVisitor
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ..terms import Term, Variable
+    from notebook.math.logic.terms import Term, Variable
 
 
 @dataclass(frozen=True)

@@ -1,21 +1,13 @@
 from typing import TYPE_CHECKING, Any
 
-from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
+from notebook.support.schemas import SchemaInferenceError, iter_mapping_discrepancy
 
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ..terms import (
-        TermPlaceholder,
-        TypedTerm,
-        Variable,
-        VariablePlaceholder,
-    )
-    from ..types import (
-        SimpleType,
-        TypePlaceholder,
-    )
+    from notebook.math.lambda_.terms import TermPlaceholder, TypedTerm, Variable, VariablePlaceholder
+    from notebook.math.lambda_.types import SimpleType, TypePlaceholder
 
 
 class AtomicLambdaSchemaInstantiation:

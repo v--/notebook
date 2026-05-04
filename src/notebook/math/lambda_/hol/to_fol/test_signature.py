@@ -1,7 +1,8 @@
-from ...parsing import parse_type, parse_typed_term
-from ..expression import HolExpression
-from ..signature import PLAIN_HOL_SIGNATURE
-from ..theories.digraphs import DIRECTED_GRAPH_SIGNATURE
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.hol.signature import PLAIN_HOL_SIGNATURE
+from notebook.math.lambda_.hol.theories.digraphs import DIRECTED_GRAPH_SIGNATURE
+from notebook.math.lambda_.parsing import parse_type, parse_typed_term
+
 from .signature import hol_signature_to_fol
 
 

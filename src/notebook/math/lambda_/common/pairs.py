@@ -1,4 +1,4 @@
-from ..parsing import parse_untyped_term
+from notebook.math.lambda_.parsing import parse_untyped_term
 
 
 cons = parse_untyped_term('(λx.(λy.(λf.((fx)y))))')

@@ -1,6 +1,6 @@
-from ....parsing import parse_type
-from ...alphabet import SortName
-from ...signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.hol.alphabet import SortName
+from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.parsing import parse_type
 
 
 ARITHMETIC_SIGNATURE = HolSignature(SortSymbol(SortName.INDIVIDUAL))

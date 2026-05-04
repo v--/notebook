@@ -1,6 +1,7 @@
-from ...matrices.matrix import IntMatrix, MinPlusMatrix
-from ...rings.tropical import MinPlusFloat
-from ..graph import DirectedGraph
+from notebook.math.graphs.graph import DirectedGraph
+from notebook.math.matrices.matrix import IntMatrix, MinPlusMatrix
+from notebook.math.rings.tropical import MinPlusFloat
+
 from .adjacency import get_adjacency_matrix, get_min_walk_weights
 
 

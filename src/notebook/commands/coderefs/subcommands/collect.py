@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, cast
 
 import click
 
-from ....paths import CODE_PATH
-from ....support.coderefs import collector
-from ..command import coderefs
+from notebook.commands.coderefs.command import coderefs
+from notebook.paths import CODE_PATH
+from notebook.support.coderefs import collector
 
 
 if TYPE_CHECKING:

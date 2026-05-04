@@ -1,6 +1,7 @@
 import pytest
 
-from ..exceptions import MissingVertexError
+from notebook.math.graphs.exceptions import MissingVertexError
+
 from .payload import GraphPayload
 
 

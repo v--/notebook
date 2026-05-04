@@ -1,5 +1,6 @@
-from ...support.inference import InferenceRule, InferenceRuleEntry
-from ...support.inference.system import InferenceRuleSystem
+from notebook.support.inference import InferenceRule, InferenceRuleEntry
+from notebook.support.inference.system import InferenceRuleSystem
+
 from .assertions import TypeAssertionSchema, VariableTypeAssertionSchema
 
 

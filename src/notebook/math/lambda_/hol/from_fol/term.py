@@ -1,21 +1,22 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from .....support.coderefs import collector
-from ....logic.terms import FunctionApplication, Term, TermVisitor
-from ....logic.terms import Variable as FolVariable
-from ...terms import Constant, TypedApplication, TypedTerm
-from ...terms import Variable as LambdaVariable
-from ...type_context import TypeContext
-from ...variables import get_free_variables
-from .. import common
-from ..expression import HolExpression
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.terms import Constant, TypedApplication, TypedTerm
+from notebook.math.lambda_.terms import Variable as LambdaVariable
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.math.logic.terms import FunctionApplication, Term, TermVisitor
+from notebook.math.logic.terms import Variable as FolVariable
+from notebook.support.coderefs import collector
+
 from .signature import fol_signature_to_hol_signature
 
 
 if TYPE_CHECKING:
-    from ....logic.signature.signature import FormalLogicSignature
-    from ..signature import HolSignature
+    from notebook.math.lambda_.hol.signature import HolSignature
+    from notebook.math.logic.signature.signature import FormalLogicSignature
 
 
 @dataclass(frozen=True)

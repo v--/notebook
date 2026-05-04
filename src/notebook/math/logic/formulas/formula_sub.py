@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from ..terms import TermSubstitutionSpec
+    from notebook.math.logic.terms import TermSubstitutionSpec
+
     from .formulas import Formula
 
 

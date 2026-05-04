@@ -1,13 +1,14 @@
-from .....support.coderefs import collector
-from ...formulas import PropConstant
-from ...propositional import (
+from notebook.math.logic.formulas import PropConstant
+from notebook.math.logic.propositional import (
     DEFAULT_PROP_SIGNATURE,
     PropConnectiveFormula,
     PropFormula,
     PropNegationFormula,
 )
-from ...terms import FunctionApplication, Term, Variable
-from ..exceptions import UnrecognizedSymbolError
+from notebook.math.logic.terms import FunctionApplication, Term, Variable
+from notebook.math.logic.theories.exceptions import UnrecognizedSymbolError
+from notebook.support.coderefs import collector
+
 from .signature import (
     BOOLEAN_ALGEBRA_SIGNATURE,
     TERM_CONNECTIVE_TO_FORMULA_CONNECTIVE,

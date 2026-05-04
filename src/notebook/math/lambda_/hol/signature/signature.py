@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-from ...signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
-from ..alphabet import LogicalConstantName, LogicalTypeName, SortName
+from notebook.math.lambda_.hol.alphabet import LogicalConstantName, LogicalTypeName, SortName
+from notebook.math.lambda_.signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
+
 from .exceptions import HolSignatureError
 from .symbols import (
     HolSignatureSymbol,

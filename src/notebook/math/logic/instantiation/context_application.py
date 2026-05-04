@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInstantiationError
-from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
-from ..formulas import Formula, FormulaSchema
+from notebook.math.logic.contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
+from notebook.math.logic.formulas import Formula, FormulaSchema
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInstantiationError
+
 from .formula_application import instantiate_formula_schema
 
 

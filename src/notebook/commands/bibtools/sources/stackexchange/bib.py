@@ -2,10 +2,10 @@ import unicodedata
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from .....bibtex import BibAuthor, BibEntry, BibString, VerbatimString
-from .....support.iteration import string_accumulator
-from ...exceptions import BibToolsParsingError
-from ..common.dates import to_iso_date
+from notebook.bibtex import BibAuthor, BibEntry, BibString, VerbatimString
+from notebook.commands.bibtools.exceptions import BibToolsParsingError
+from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
+from notebook.support.iteration import string_accumulator
 
 
 if TYPE_CHECKING:

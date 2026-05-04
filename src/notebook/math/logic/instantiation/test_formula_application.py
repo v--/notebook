@@ -2,10 +2,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ....support.schemas import SchemaInstantiationError
-from ..parsing import parse_formula_placeholder, parse_formula_schema
-from ..propositional import convert_to_prop_formula, parse_prop_formula
+from notebook.math.logic.parsing import parse_formula_placeholder, parse_formula_schema
+from notebook.math.logic.propositional import convert_to_prop_formula, parse_prop_formula
+from notebook.support.pytest import pytest_parametrize_kwargs
+from notebook.support.schemas import SchemaInstantiationError
+
 from .base import AtomicLogicSchemaInstantiation
 from .formula_application import instantiate_formula_schema
 
@@ -13,7 +14,7 @@ from .formula_application import instantiate_formula_schema
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ..formulas import Formula
+    from notebook.math.logic.formulas import Formula
 
 
 def instantiate_prop_schema(schema: str, **kwargs: str) -> Formula:

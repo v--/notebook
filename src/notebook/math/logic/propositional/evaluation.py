@@ -1,12 +1,14 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .formula_visitor import PropFormulaVisitor
 
 
 if TYPE_CHECKING:
-    from ..formulas import PropConstant
+    from notebook.math.logic.formulas import PropConstant
+
     from .formulas import (
         PropConnectiveFormula,
         PropFormula,

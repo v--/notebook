@@ -1,9 +1,14 @@
 from typing import TYPE_CHECKING, cast, overload
 
-from .....exceptions import UnreachableException
-from .....support.coderefs import collector
-from ....logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
-from ....logic.formulas import (
+from notebook.exceptions import UnreachableException
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.exceptions import HolTranslationError
+from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
+from notebook.math.lambda_.terms import Variable as LambdaVariable
+from notebook.math.lambda_.variables import is_closed_term
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     EqualityFormula,
     NegationFormula,
@@ -11,30 +16,21 @@ from ....logic.formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from ....logic.formulas import Formula as FolFormula
-from ....logic.signature import FunctionSymbol, PredicateSymbol, SignatureSymbol
-from ....logic.terms import FunctionApplication
-from ....logic.terms import Term as FolTerm
-from ....logic.terms import Variable as FolVariable
-from ...terms import (
-    Constant,
-    TypedAbstraction,
-    TypedApplication,
-    TypedTerm,
-)
-from ...terms import Variable as LambdaVariable
-from ...variables import is_closed_term
-from .. import common
-from ..exceptions import HolTranslationError
-from ..signature import HolSignature, NonLogicalConstantSymbol
+from notebook.math.logic.formulas import Formula as FolFormula
+from notebook.math.logic.signature import FunctionSymbol, PredicateSymbol, SignatureSymbol
+from notebook.math.logic.terms import FunctionApplication
+from notebook.math.logic.terms import Term as FolTerm
+from notebook.math.logic.terms import Variable as FolVariable
+from notebook.support.coderefs import collector
+
 from .signature import FolTranslatedSignature, hol_signature_to_fol
 
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ...type_context import TypeContext
-    from ..expression import HolExpression
+    from notebook.math.lambda_.hol.expression import HolExpression
+    from notebook.math.lambda_.type_context import TypeContext
 
 
 def logical_constant_to_connective(const: Constant) -> BinaryConnective:

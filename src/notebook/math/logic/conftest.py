@@ -1,6 +1,7 @@
 import pytest
 
-from ...support.unicode import itoa_superscripts
+from notebook.support.unicode import itoa_superscripts
+
 from .signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbolNotation
 
 

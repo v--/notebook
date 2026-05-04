@@ -1,14 +1,14 @@
 from typing import TYPE_CHECKING, Any
 
-from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
+from notebook.support.schemas import SchemaInferenceError, iter_mapping_discrepancy
 
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-    from ..contexts import LogicalContextPlaceholder
-    from ..formulas import Formula, FormulaPlaceholder
-    from ..terms import Term, TermPlaceholder, Variable, VariablePlaceholder
+    from notebook.math.logic.contexts import LogicalContextPlaceholder
+    from notebook.math.logic.formulas import Formula, FormulaPlaceholder
+    from notebook.math.logic.terms import Term, TermPlaceholder, Variable, VariablePlaceholder
 
 
 class AtomicLogicSchemaInstantiation:

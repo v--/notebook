@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ..terms import FunctionApplication, Term, TermVisitor, Variable
+from notebook.math.logic.terms import FunctionApplication, Term, TermVisitor, Variable
+from notebook.support.coderefs import collector
+
 from .assignment import VariableAssignment
 
 

@@ -1,5 +1,5 @@
-from ..parsing import parse_typing_rule
-from ..type_system import ExplicitTypeSystem
+from notebook.math.lambda_.parsing import parse_typing_rule
+from notebook.math.lambda_.type_system import ExplicitTypeSystem
 
 
 ARROW_ONLY_TYPE_SYSTEM = ExplicitTypeSystem([

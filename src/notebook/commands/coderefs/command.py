@@ -1,6 +1,6 @@
 import click
 
-from ..common.logging import configure_loguru
+from notebook.commands.common.logging import configure_loguru
 
 
 @click.group()

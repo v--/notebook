@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .formula_visitor import PropFormulaTransformationVisitor
 
 

@@ -5,11 +5,11 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
-from ..divisibility import divides, quot, rem
-from ..exceptions import InvalidArgumentError, RadixError
-from ..primes import factor, totient
-from ..support import SignT, sgn
+from notebook.math.arithmetic.divisibility import divides, quot, rem
+from notebook.math.arithmetic.exceptions import InvalidArgumentError, RadixError
+from notebook.math.arithmetic.primes import factor, totient
+from notebook.math.arithmetic.support import SignT, sgn
+from notebook.support.coderefs import collector
 
 
 if TYPE_CHECKING:

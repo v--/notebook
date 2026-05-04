@@ -2,10 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ....support.schemas import SchemaInferenceError
-from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE
-from ..parsing import (
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE
+from notebook.math.lambda_.parsing import (
     parse_term_placeholder,
     parse_type,
     parse_type_placeholder,
@@ -14,6 +12,9 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
+from notebook.support.pytest import pytest_parametrize_kwargs
+from notebook.support.schemas import SchemaInferenceError
+
 from .base import AtomicLambdaSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
 

@@ -1,7 +1,8 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from ..automata.finite import FiniteAutomaton
+from notebook.math.automata.finite import FiniteAutomaton
+
 from .parsing import parse_grammar_schema
 from .regular import (
     from_finite_automaton,
@@ -40,11 +41,11 @@ def test_from_finite_automaton_an(an: GrammarFixture) -> None:
 
 def test_to_finite_automaton_complex() -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → "a" "b" "c" <D>
             <D> → "d" <E> | ε
             <E> → "e" "f" <E> | ε
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 

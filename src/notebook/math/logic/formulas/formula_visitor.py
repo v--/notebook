@@ -1,6 +1,7 @@
 from typing import override
 
-from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier
+
 from .formulas import (
     AtomicFormula,
     ConnectiveFormula,

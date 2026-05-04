@@ -2,9 +2,9 @@ import functools
 import itertools
 from typing import TYPE_CHECKING, Self
 
-from ...exceptions import UnreachableException
-from ...support.unicode import itoa_subscripts
-from ..strings import StringContainer
+from notebook.exceptions import UnreachableException
+from notebook.parsing.strings import StringContainer
+from notebook.support.unicode import itoa_subscripts
 
 
 if TYPE_CHECKING:

@@ -1,7 +1,8 @@
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .evaluation import evaluate_prop_formula
 from .interpretation import PropInterpretation
 from .variables import get_prop_variables

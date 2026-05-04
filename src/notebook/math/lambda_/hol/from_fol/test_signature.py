@@ -1,8 +1,9 @@
-from .....support.pytest import pytest_parametrize_kwargs
-from ....logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
-from ...parsing import parse_type
-from ..signature import PLAIN_HOL_SIGNATURE
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from notebook.math.lambda_.hol.signature import PLAIN_HOL_SIGNATURE
+from notebook.math.lambda_.hol.theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from notebook.math.lambda_.parsing import parse_type
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .signature import fol_signature_to_hol_signature, fol_symbol_to_hol_type
 
 

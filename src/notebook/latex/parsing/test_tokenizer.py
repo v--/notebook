@@ -1,4 +1,5 @@
-from ...paths import FIGURES_PATH
+from notebook.paths import FIGURES_PATH
+
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken
 

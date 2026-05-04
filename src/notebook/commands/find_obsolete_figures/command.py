@@ -4,9 +4,9 @@ from mmap import PROT_READ, mmap
 import click
 import loguru
 
-from ...paths import FIGURES_PATH, TEXT_PATH
-from ..common.inflection import prefix_cardinal
-from ..common.logging import configure_loguru
+from notebook.commands.common.inflection import prefix_cardinal
+from notebook.commands.common.logging import configure_loguru
+from notebook.paths import FIGURES_PATH, TEXT_PATH
 
 
 def check_is_figure_used(figure_name: str) -> bool:

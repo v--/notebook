@@ -1,12 +1,13 @@
-from .....support.pytest import pytest_parametrize_kwargs
-from ....logic.parsing import parse_formula
-from ....logic.parsing import parse_term as parse_fol_term
-from ...parsing import parse_type, parse_typed_term
-from .. import common
-from ..expression import HolExpression
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
-from ..theories.arithmetic import PEANO_INDUCTION_AXIOM as HOL_INDUCTION_AXIOM
-from ..theories.digraphs import DIRECTED_GRAPH_SIGNATURE
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.hol.theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
+from notebook.math.lambda_.hol.theories.arithmetic import PEANO_INDUCTION_AXIOM as HOL_INDUCTION_AXIOM
+from notebook.math.lambda_.hol.theories.digraphs import DIRECTED_GRAPH_SIGNATURE
+from notebook.math.lambda_.parsing import parse_type, parse_typed_term
+from notebook.math.logic.parsing import parse_formula
+from notebook.math.logic.parsing import parse_term as parse_fol_term
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .expression import hol_expression_to_fol
 from .signature import hol_signature_to_fol
 

@@ -8,10 +8,10 @@ from .symbols import NonTerminal
 
 def test_collapse_renaming_rules_simple() -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → <A>
             <A> → "a"
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 
@@ -30,10 +30,10 @@ def test_collapse_renaming_rules_simple() -> None:
 
 def test_collapse_renaming_rules_cyclic() -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → <A>
             <A> → "a" | <S>
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 
@@ -44,14 +44,14 @@ def test_collapse_renaming_rules_cyclic() -> None:
 
 def test_collapse_renaming_rules_complex() -> None:
     grammar = parse_grammar_schema(
-        dedent('''\
+        dedent("""\
             <S> → <A> | <C> | <E>
             <A> → <B>
             <B> → "c"
             <B> → <C>
             <C> → "d"
             <E> → "e"
-            ''',
+            """,
         ),
     ).instantiate(NonTerminal('S'))
 

@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, override
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInstantiationError
-from ..formulas import (
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
     EqualityFormula,
@@ -20,7 +18,10 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from ..substitution import substitute_in_formula
+from notebook.math.logic.substitution import substitute_in_formula
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInstantiationError
+
 from .term_application import TermInstantiationApplicationVisitor
 
 

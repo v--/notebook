@@ -1,9 +1,10 @@
-from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
-from ..assertions import TypeAssertionSchema
-from ..parsing import parse_typing_rule
-from ..terms import Constant
-from ..type_system import ExplicitTypeSystem, TypingRule, TypingRuleEntry
-from ..types import translate_type_to_schema
+from notebook.math.lambda_.arrow_types import ARROW_ONLY_TYPE_SYSTEM
+from notebook.math.lambda_.assertions import TypeAssertionSchema
+from notebook.math.lambda_.parsing import parse_typing_rule
+from notebook.math.lambda_.terms import Constant
+from notebook.math.lambda_.type_system import ExplicitTypeSystem, TypingRule, TypingRuleEntry
+from notebook.math.lambda_.types import translate_type_to_schema
+
 from .signature import PLAIN_HOL_SIGNATURE, HolSignature
 
 

@@ -1,17 +1,18 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryConnective, LatticeConnective, get_dual_connective
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, LatticeConnective, get_dual_connective
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
     NegationFormula,
     QuantifierFormula,
 )
-from ..propositional import PropFormula, convert_to_prop_formula
-from ..transformation import dualize_formula
+from notebook.math.logic.propositional import PropFormula, convert_to_prop_formula
+from notebook.math.logic.transformation import dualize_formula
+from notebook.support.coderefs import collector
+
 from .exceptions import UnsupportedFormulaError
 
 

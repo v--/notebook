@@ -1,11 +1,10 @@
 from textwrap import dedent
 
-from .....support.coderefs import collector
-from ...classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...deduction.proof_tree import apply, premise_config
-from ...formulas import ConnectiveFormula, QuantifierFormula
-from ...instantiation import AtomicLogicSchemaInstantiation
-from ...parsing import (
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction.proof_tree import apply, premise_config
+from notebook.math.logic.formulas import ConnectiveFormula, QuantifierFormula
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.parsing import (
     parse_formula,
     parse_formula_placeholder,
     parse_formula_with_substitution,
@@ -13,7 +12,9 @@ from ...parsing import (
     parse_term_placeholder,
     parse_variable,
 )
-from ...substitution import substitute_in_formula
+from notebook.math.logic.substitution import substitute_in_formula
+from notebook.support.coderefs import collector
+
 from .axioms import get_induction_axiom
 from .signature import ARITHMETIC_SIGNATURE
 
@@ -89,7 +90,7 @@ def test_predecessor_existence_proof() -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                                                              _________ =₊
                                                              (Sy = Sy)
                                                             ____________ ∃₊
@@ -102,7 +103,7 @@ def test_predecessor_existence_proof() -> None:
         ((0 = 0) ∨ ∃y.(0 = Sy))        ∀n.(((n = 0) ∨ ∃y.(n = Sy)) → ((Sn = 0) ∨ ∃y.(Sn = Sy)))
         _______________________________________________________________________________________ ∧₊
          (((0 = 0) ∨ ∃y.(0 = Sy)) ∧ ∀n.(((n = 0) ∨ ∃y.(n = Sy)) → ((Sn = 0) ∨ ∃y.(Sn = Sy))))
-        ''',
+        """,
     )
 
     assert induction_axiom.left == tree.conclusion

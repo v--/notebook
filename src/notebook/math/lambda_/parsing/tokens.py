@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Literal, get_args
 
-from ....parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
-from ....support.inference import ImproperInferenceRuleSymbol
-from ..alphabet import AuxImproperSymbol, BinaryTypeConnective
+from notebook.math.lambda_.alphabet import AuxImproperSymbol, BinaryTypeConnective
+from notebook.parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
+from notebook.support.inference import ImproperInferenceRuleSymbol
 
 
 if TYPE_CHECKING:

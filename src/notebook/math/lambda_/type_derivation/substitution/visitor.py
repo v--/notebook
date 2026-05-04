@@ -1,11 +1,19 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, override
 
-from .....support.coderefs import collector
-from .....support.substitution.exceptions import UnspecifiedReplacementError
-from ...assertions import VariableTypeAssertion
-from ...terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, TypedTermVisitor, Variable
-from ..tree import TypeDerivationTree, assume
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.terms import (
+    Constant,
+    TypedAbstraction,
+    TypedApplication,
+    TypedTerm,
+    TypedTermVisitor,
+    Variable,
+)
+from notebook.math.lambda_.type_derivation.tree import TypeDerivationTree, assume
+from notebook.support.coderefs import collector
+from notebook.support.substitution.exceptions import UnspecifiedReplacementError
+
 from .substitution import AtomicTypeDerivationSubstitution
 
 

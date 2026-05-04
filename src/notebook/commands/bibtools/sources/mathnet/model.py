@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 import bs4
 from pydantic import BaseModel
 
-from .....latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, Whitespace
-from .....latex.parsing import parse_latex
-from .....support.iteration import get_strip_slice, string_accumulator
-from ...exceptions import BibToolsNotFoundError, BibToolsParsingError
+from notebook.commands.bibtools.exceptions import BibToolsNotFoundError, BibToolsParsingError
+from notebook.latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, Whitespace
+from notebook.latex.parsing import parse_latex
+from notebook.support.iteration import get_strip_slice, string_accumulator
 
 
 if TYPE_CHECKING:

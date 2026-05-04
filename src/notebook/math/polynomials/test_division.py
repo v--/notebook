@@ -1,9 +1,10 @@
 import pytest
 
-from ...parsing import LatinIdentifier
-from ...parsing import common_identifiers as ci
-from ...support.pytest import pytest_parametrize_kwargs
-from ..rings.modular import Z4
+from notebook.math.rings.modular import Z4
+from notebook.parsing import LatinIdentifier
+from notebook.parsing import common_identifiers as ci
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from . import monomial as mon
 from .division import DivMod, euclidean_divmod, horner_divmod
 from .exceptions import PolynomialDivisionError, ZeroPolynomialError

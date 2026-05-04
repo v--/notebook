@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ..formulas import Formula
+    from notebook.math.logic.formulas import Formula
 
 
 @dataclass(frozen=True)

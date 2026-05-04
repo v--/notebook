@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from ..support.iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
 
 
 if TYPE_CHECKING:

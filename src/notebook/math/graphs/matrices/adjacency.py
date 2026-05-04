@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING
 
-from ...matrices.matrix import ISemiringMatrix, MinPlusMatrix
-from ...rings.tropical import MinPlusFloat
-from ...rings.types import ISemiring
-from ..exceptions import GraphWalkError
+from notebook.math.graphs.exceptions import GraphWalkError
+from notebook.math.matrices.matrix import ISemiringMatrix, MinPlusMatrix
+from notebook.math.rings.tropical import MinPlusFloat
+from notebook.math.rings.types import ISemiring
 
 
 if TYPE_CHECKING:
-    from ..graph import DirectedGraph
+    from notebook.math.graphs.graph import DirectedGraph
 
 
 def get_adjacency_matrix[N: ISemiring, T: ISemiringMatrix, VertLabelT](cls: type[T], graph: DirectedGraph[int, VertLabelT, N]) -> T:

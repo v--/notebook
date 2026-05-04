@@ -7,8 +7,8 @@ from .exceptions import UnspecifiedReplacementError
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ...formulas import Formula
-    from ..formulas import PropVariable
+    from notebook.math.logic.formulas import Formula
+    from notebook.math.logic.propositional.formulas import PropVariable
 
 
 @dataclass(frozen=True)

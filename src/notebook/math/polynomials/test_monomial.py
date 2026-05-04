@@ -1,5 +1,6 @@
-from ...parsing import common_identifiers as ci
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.parsing import common_identifiers as ci
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .monomial import Monomial
 
 

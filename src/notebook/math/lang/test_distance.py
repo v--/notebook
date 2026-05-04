@@ -1,4 +1,5 @@
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .distance import hamming, wagner_fisher
 
 

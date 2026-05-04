@@ -1,7 +1,8 @@
-from ...rings.modular import Z5
-from ..signature import SignatureMorphism
-from ..theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
-from ..theories.groups import GROUP_ASSOCIATIVITY, GROUP_SIGNATURE
+from notebook.math.logic.signature import SignatureMorphism
+from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from notebook.math.logic.theories.groups import GROUP_ASSOCIATIVITY, GROUP_SIGNATURE
+from notebook.math.rings.modular import Z5
+
 from .formula_visitor import evaluate_formula
 from .reduction import reduce_along_signature_morphism
 

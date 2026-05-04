@@ -1,5 +1,6 @@
-from .....graphs.graph import DirectedEdge, DirectedGraph
-from ...structure import HolStructure
+from notebook.math.graphs.graph import DirectedEdge, DirectedGraph
+from notebook.math.lambda_.hol.structure import HolStructure
+
 from .signature import DIRECTED_GRAPH_SIGNATURE
 
 

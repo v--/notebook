@@ -1,4 +1,5 @@
-from ..common.network import fetch_html
+from notebook.commands.bibtools.sources.helpers.network import fetch_html
+
 from .fixtures import get_mathnet_fixture_path
 
 

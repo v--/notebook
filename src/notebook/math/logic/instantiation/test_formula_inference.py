@@ -1,6 +1,7 @@
-from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_formula_schema
-from ..propositional import parse_prop_formula
+from notebook.math.logic.parsing import parse_formula_schema
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .formula_inference import is_formula_schema_instance
 
 

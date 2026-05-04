@@ -1,6 +1,7 @@
 from collections.abc import ItemsView, Iterable, Iterator, KeysView, Mapping, MutableMapping, ValuesView
 
-from ..iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .exceptions import MissingKeyError
 
 

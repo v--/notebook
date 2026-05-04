@@ -3,15 +3,16 @@ import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload
 
-from ....exceptions import UnreachableException
-from ....parsing import iter_latin_identifiers
-from ....support.coderefs import collector
-from ....support.unicode import itoa_superscripts
-from ..alphabet import Quantifier
-from ..signature import FormalLogicSignature, FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
-from ..structure import FormalLogicStructure, VariableAssignment, evaluate_formula
-from ..substitution import substitute_in_formula
-from ..terms import FunctionApplication, Variable
+from notebook.exceptions import UnreachableException
+from notebook.math.logic.alphabet import Quantifier
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
+from notebook.math.logic.structure import FormalLogicStructure, VariableAssignment, evaluate_formula
+from notebook.math.logic.substitution import substitute_in_formula
+from notebook.math.logic.terms import FunctionApplication, Variable
+from notebook.parsing import iter_latin_identifiers
+from notebook.support.coderefs import collector
+from notebook.support.unicode import itoa_superscripts
+
 from .exceptions import InvalidModelError
 from .prefix import QuantifierPrefix
 from .prenex_formula import PrenexFormula
@@ -20,7 +21,7 @@ from .prenex_formula import PrenexFormula
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from ..formulas import Formula
+    from notebook.math.logic.formulas import Formula
 
 
 @dataclass(frozen=True)

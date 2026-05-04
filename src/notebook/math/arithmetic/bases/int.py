@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
-from ....parsing import common_identifiers as ci
-from ....support.coderefs import collector
-from ...polynomials import monomial
-from ...polynomials.polynomial.int import IntPolynomial, const, x
-from ..divisibility import int_divmod
-from ..exceptions import InvalidArgumentError, NotebookZeroDivisionError, RadixError
-from ..support import SignT, sgn
+from notebook.math.arithmetic.divisibility import int_divmod
+from notebook.math.arithmetic.exceptions import InvalidArgumentError, NotebookZeroDivisionError, RadixError
+from notebook.math.arithmetic.support import SignT, sgn
+from notebook.math.polynomials import monomial
+from notebook.math.polynomials.polynomial.int import IntPolynomial, const, x
+from notebook.parsing import common_identifiers as ci
+from notebook.support.coderefs import collector
 
 
 @dataclass(frozen=True)

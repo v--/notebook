@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Self
 
-from ...rings.tropical import MaxPlusFloat, MinPlusFloat
+from notebook.math.rings.tropical import MaxPlusFloat, MinPlusFloat
+
 from .common import ISemiringMatrix
 
 

@@ -2,14 +2,15 @@ from textwrap import dedent
 
 import pytest
 
-from ....parsing import GreekIdentifier, LatinIdentifier, ParserError, TokenizerError
-from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..alphabet import BinaryTypeConnective
-from ..assertions import TypeAssertion
-from ..hol import PLAIN_HOL_SIGNATURE
-from ..signature import ConstantTermSymbol, LambdaSignature
-from ..terms import Constant, TypedAbstraction, TypedApplication, Variable
-from ..types import SimpleConnectiveType, SimpleType, TypeVariable
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.assertions import TypeAssertion
+from notebook.math.lambda_.hol import PLAIN_HOL_SIGNATURE
+from notebook.math.lambda_.signature import ConstantTermSymbol, LambdaSignature
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, Variable
+from notebook.math.lambda_.types import SimpleConnectiveType, SimpleType, TypeVariable
+from notebook.parsing import GreekIdentifier, LatinIdentifier, ParserError, TokenizerError
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+
 from .parser import (
     parse_type,
     parse_type_assertion,
@@ -45,10 +46,10 @@ def test_parsing_accented_variable_name() -> None:
         parse_variable('ä')
 
     assert str(excinfo.value) == 'Unexpected symbol'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ä
           │ ^
-        ''',
+        """,
     )
 
 
@@ -57,10 +58,10 @@ def test_parsing_long_variable_names() -> None:
         parse_untyped_term('xy')
 
     assert str(excinfo.value) == 'Finished parsing but there is still input left'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ xy
           │  ^
-        ''',
+        """,
     )
 
 
@@ -69,10 +70,10 @@ def test_parsing_invalid_variable_suffix() -> None:
         parse_untyped_term('x₀₁')
 
     assert str(excinfo.value) == 'Nonzero subscripts cannot start with zero'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ x₀₁
           │ ^^^
-        ''',
+        """,
     )
 
 
@@ -114,10 +115,10 @@ def test_parsing_abstraction_with_unclosed_parens() -> None:
         parse_untyped_term('(λx.x')
 
     assert str(excinfo.value) == 'Unclosed parentheses for abstraction'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (λx.x
           │ ^^^^^
-        ''',
+        """,
     )
 
 
@@ -126,10 +127,10 @@ def test_parsing_abstraction_with_unclosed_parens_truncated() -> None:
         parse_untyped_term('(λ')
 
     assert str(excinfo.value) == 'Expected a variable name after λ'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (λ
           │ ^^
-        ''',
+        """,
     )
 
 
@@ -138,10 +139,10 @@ def test_parsing_abstraction_with_no_dot() -> None:
         parse_untyped_term('(λxx)')
 
     assert str(excinfo.value) == 'Expected a dot after an abstraction variable'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (λxx)
           │ ^^^^
-        ''',
+        """,
     )
 
 
@@ -150,10 +151,10 @@ def test_parsing_empty_application() -> None:
         parse_untyped_term('()')
 
     assert str(excinfo.value) == 'Applications must have two terms, while abstractions must begin with λ'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ()
           │ ^^
-        ''',
+        """,
     )
 
 
@@ -162,10 +163,10 @@ def test_parsing_incomplete_application() -> None:
         parse_untyped_term('(x)')
 
     assert str(excinfo.value) == 'Applications must have a second subterm'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x)
           │ ^^^
-        ''',
+        """,
     )
 
 
@@ -228,10 +229,10 @@ def test_parsing_term_schema_with_regular_parser() -> None:
         parse_typed_term('M')
 
     assert str(excinfo.value) == 'Term placeholders are only allowed in schemas'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ M
           │ ^
-        ''',
+        """,
     )
 
 
@@ -292,10 +293,10 @@ def test_parsing_type_assertion_missing_arrow() -> None:
         parse_type('(τ σ)')
 
     assert str(excinfo.value) == 'Binary types must have a connective after the first subtype'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (τ σ)
           │ ^^^^
-        ''',
+        """,
     )
 
 
@@ -311,10 +312,10 @@ def test_parsing_typed_abstraction_with_untyped_parser() -> None:
         parse_untyped_term('(λx:τ.x)')
 
     assert str(excinfo.value) == 'Unexpected type annotation for the abstractor variable in an untyped abstraction'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (λx:τ.x)
           │ ^^^^
-        ''',
+        """,
     )
 
 
@@ -323,10 +324,10 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
         parse_typed_term('(λx.x)')
 
     assert str(excinfo.value) == 'Expected a type annotation for the abstractor variable in a typed abstraction'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (λx.x)
           │ ^^^^
-        ''',
+        """,
     )
 
 
@@ -352,10 +353,10 @@ def test_parsing_type_assertion_missing_colon() -> None:
         parse_type_assertion('x τ')
 
     assert str(excinfo.value) == 'Expected a colon after the term in a type specification'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ x τ
           │ ^^^
-        ''',
+        """,
     )
 
 
@@ -376,10 +377,10 @@ def test_parsing_attached_schema_with_no_name() -> None:
         parse_typing_rule('name', '[] x: τ ⊩ y: τ')
 
     assert str(excinfo.value) == 'Empty attached schemas are disallowed'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ [] x: τ ⊩ y: τ
           │ ^^
-        ''',
+        """,
     )
 
 
@@ -388,8 +389,8 @@ def test_parsing_attached_schema_with_no_closing_bracket() -> None:
         parse_typing_rule('name', '[x: τ y: τ ⊩ z: τ')
 
     assert str(excinfo.value) == 'Unclosed bracket for attached schema'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ [x: τ y: τ ⊩ z: τ
           │ ^^^^^
-        ''',
+        """,
     )

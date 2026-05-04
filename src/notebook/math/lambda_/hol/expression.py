@@ -1,18 +1,19 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ....support.iteration import string_accumulator
-from ..alphabet import AuxImproperSymbol
-from ..type_context import TypeContext
-from ..variables import get_free_variables
+from notebook.math.lambda_.alphabet import AuxImproperSymbol
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.support.iteration import string_accumulator
+
 from .exceptions import HolError
 
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from ..terms import TypedTerm
-    from ..types import SimpleType
+    from notebook.math.lambda_.terms import TypedTerm
+    from notebook.math.lambda_.types import SimpleType
 
 
 @dataclass

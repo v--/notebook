@@ -1,4 +1,5 @@
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .divisibility import quot_dist, quot_floor, quot_max, quot_trunc
 
 

@@ -2,10 +2,11 @@ import abc
 from dataclasses import dataclass
 from typing import override
 
-from ....parsing import is_greek_identifier, is_latin_identifier
-from ....support.inference import ImproperInferenceRuleSymbol
-from ....support.unicode import Capitalization
-from ..alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
+from notebook.math.lambda_.alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
+from notebook.parsing import is_greek_identifier, is_latin_identifier
+from notebook.support.inference import ImproperInferenceRuleSymbol
+from notebook.support.unicode import Capitalization
+
 from .exceptions import LambdaSignatureError
 
 

@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 
-from ...rings.modular import Z3
-from ..parsing import parse_type, parse_typed_term, parse_variable_assertion
-from ..type_context import TypeContext
+from notebook.math.lambda_.parsing import parse_type, parse_typed_term, parse_variable_assertion
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.rings.modular import Z3
+
 from .abstraction_elimination import eliminate_abstractions
 from .alphabet import SortName
 from .expression import HolExpression

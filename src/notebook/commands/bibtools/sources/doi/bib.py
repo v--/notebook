@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING
 from nameparser import HumanName
 from stdnum import isbn, issn
 
-from .....bibtex import BibAuthor, BibEntry, BibEntryType
-from .....exceptions import UnreachableException
-from .....support.unicode import normalize_whitespace
-from ..common.entries import generate_entry_name
-from ..common.languages import normalize_language_name
-from ..common.pages import normalize_pages
+from notebook.bibtex import BibAuthor, BibEntry, BibEntryType
+from notebook.commands.bibtools.sources.helpers.entries import generate_entry_name
+from notebook.commands.bibtools.sources.helpers.languages import normalize_language_name
+from notebook.commands.bibtools.sources.helpers.pages import normalize_pages
+from notebook.exceptions import UnreachableException
+from notebook.support.unicode import normalize_whitespace
 
 
 if TYPE_CHECKING:

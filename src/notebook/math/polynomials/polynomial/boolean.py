@@ -1,5 +1,6 @@
-from ...rings.modular import Z2
-from .. import monomial
+from notebook.math.polynomials import monomial
+from notebook.math.rings.modular import Z2
+
 from .common import IRingPolynomial
 
 

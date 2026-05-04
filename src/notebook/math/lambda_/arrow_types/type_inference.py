@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from typing import Never, override
 
-from ....support.coderefs import collector
-from ..alphabet import BinaryTypeConnective
-from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
-from ..assertions import VariableTypeAssertion
-from ..terms import (
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.arrow_types import ARROW_ONLY_TYPE_SYSTEM
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.terms import (
     Constant,
     TypedAbstraction,
     TypedApplication,
@@ -13,9 +12,10 @@ from ..terms import (
     TypedTermVisitor,
     Variable,
 )
-from ..type_context import EMPTY_CONTEXT, TypeContext
-from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise_config
-from ..types import SimpleConnectiveType, SimpleType
+from notebook.math.lambda_.type_context import EMPTY_CONTEXT, TypeContext
+from notebook.math.lambda_.type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise_config
+from notebook.math.lambda_.types import SimpleConnectiveType, SimpleType
+from notebook.support.coderefs import collector
 
 
 @collector.ref('alg:simply_typed_term_type_inference')

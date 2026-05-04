@@ -1,7 +1,8 @@
 import pytest
 from xsdata.exceptions import ParserError
 
-from .....bibtex import BibAuthor, BibEntry
+from notebook.bibtex import BibAuthor, BibEntry
+
 from .bib import arxiv_entry_to_bib
 from .fixtures import get_arxiv_fixture_path
 from .model import parse_arxiv_xml

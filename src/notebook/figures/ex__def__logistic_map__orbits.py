@@ -9,7 +9,7 @@ from textwrap import dedent
 import numpy as np
 import PIL.Image
 
-from ..paths import AUX_PATH, ROOT_PATH
+from notebook.paths import AUX_PATH, ROOT_PATH
 
 
 output_path = AUX_PATH / pathlib.Path(__file__).with_suffix('').name
@@ -61,7 +61,7 @@ img.save(raster_path)
 
 
 pathlib.Path(code_path).write_text(
-    dedent(f'''\
+    dedent(f"""\
         unitsize(6.5cm);
 
         import graph;
@@ -85,13 +85,13 @@ pathlib.Path(code_path).write_text(
           axis=Left,
           ticks=Ticks(pTick=pens.thin, Step=0.2, step=0.1)
         );
-        ''',
+        """,
     ),
     encoding='utf-8',
 )
 
 try:
-    subprocess.run(f'asy -dir={ROOT_PATH} -outname={output_path} {code_path}', shell=True, check=True)  # noqa: S602
+    subprocess.run(f'asy -dir={ROOT_PATH} -outname={output_path} {code_path}', shell=True, check=True)
 except subprocess.CalledProcessError as err:
     raise SystemExit(1) from err
 finally:

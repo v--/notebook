@@ -1,5 +1,5 @@
-from ....parsing import parse_type
-from ...signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.parsing import parse_type
 
 
 DIRECTED_GRAPH_SIGNATURE = HolSignature(

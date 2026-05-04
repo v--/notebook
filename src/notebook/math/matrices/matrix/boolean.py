@@ -1,4 +1,5 @@
-from ...rings.modular import Z2
+from notebook.math.rings.modular import Z2
+
 from .common import IRingMatrix
 
 

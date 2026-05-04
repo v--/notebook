@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Self, cast
 
-from ....support.iteration import list_accumulator
-from ...rings.types import ISemiring
-from ..monomial import Monomial, const
+from notebook.math.polynomials.monomial import Monomial, const
+from notebook.math.rings.types import ISemiring
+from notebook.support.iteration import list_accumulator
+
 from .base import BasePolynomial
 
 

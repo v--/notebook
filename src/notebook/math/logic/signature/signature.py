@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ....support.collections import MissingKeyError, TrieMapping
+from notebook.support.collections import MissingKeyError, TrieMapping
+
 from .exceptions import FormalLogicSignatureError
 from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
 

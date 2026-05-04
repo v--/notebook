@@ -1,4 +1,5 @@
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .erasure import erase_annotations
 from .parsing import parse_typed_term, parse_untyped_term
 

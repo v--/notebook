@@ -1,27 +1,28 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...logic.deduction import proof_tree as ptree
-from ...logic.instantiation import AtomicLogicSchemaInstantiation
-from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
-from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..parsing import (
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.parsing import (
     parse_type,
     parse_type_placeholder,
     parse_variable,
     parse_variable_assertion,
     parse_variable_placeholder,
 )
-from ..type_derivation import tree as dtree
+from notebook.math.lambda_.type_derivation import tree as dtree
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction import proof_tree as ptree
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
+from notebook.math.logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .derivation_to_proof import type_derivation_to_proof_tree, type_to_formula
 from .proof_to_derivation import formula_to_type, proof_tree_to_type_derivation
 
 
 if TYPE_CHECKING:
-    from ...logic.signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -47,9 +48,9 @@ class TestTypeDerivationToProofTree:
             parse_variable_assertion('x: τ'),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
             x: τ
-            ''',
+            """,
         )
 
         proof = ptree.assume(
@@ -65,10 +66,10 @@ class TestTypeDerivationToProofTree:
         derivation = dtree.apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊'])
         proof = ptree.apply(CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤₊'])
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
             _____ 𝟙₊
             U₊: 𝟙
-            ''',
+            """,
         )
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
@@ -87,11 +88,11 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
              x: 𝟘
             ________ 𝟘₋
             (E₋x): τ
-            ''',
+            """,
         )
 
         proof = ptree.apply(
@@ -121,11 +122,11 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
                  y: σ
             _________________ →₊
             (λx:τ.y): (τ → σ)
-            ''',
+            """,
         )
 
         proof = ptree.apply(
@@ -158,11 +159,11 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
             x: τ      y: σ
             _________________ ×₊
             ((P₊x)y): (τ × σ)
-            ''',
+            """,
         )
 
         proof = ptree.apply(
@@ -194,13 +195,13 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
             x: τ      y: σ
             _________________ ×₊
             ((P₊x)y): (τ × σ)
             _________________ ×₋ₗ
             (P₋ₗ((P₊x)y)): τ
-            ''',
+            """,
         )
 
         proof = ptree.apply(
@@ -250,13 +251,13 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
                                             b: 𝟘
                                            ________ 𝟘₋
                  x: (τ + 𝟘)      a: τ      (E₋b): τ
             a, b __________________________________ +₋
                   (((S₋(λa:τ.a))(λb:𝟘.(E₋b)))x): τ
-            ''',
+            """,
         )
 
         proof = ptree.apply(
@@ -349,7 +350,7 @@ class TestTypeDerivationToProofTree:
             ),
         )
 
-        assert str(derivation) == dedent('''\
+        assert str(derivation) == dedent("""\
                                                                 x: (τ × (σ + ρ))
                                                                 __________________ ×₋ₗ
               x: (τ × (σ + ρ))              a: σ                    (P₋ₗx): τ
@@ -357,7 +358,7 @@ class TestTypeDerivationToProofTree:
                (P₋ᵣx): (σ + ρ)          (S₊ᵣa): (τ + σ)        (S₊ₗ(P₋ₗx)): (τ + σ)
             a _____________________________________________________________________ +₋
                      (((S₋(λa:σ.(S₊ᵣa)))(λb:ρ.(S₊ₗ(P₋ₗx))))(P₋ᵣx)): (τ + σ)
-            ''',
+            """,
         )
 
         proof = ptree.apply(

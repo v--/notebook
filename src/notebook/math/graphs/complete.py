@@ -1,4 +1,5 @@
-from ..combinatorics.binomial import choose
+from notebook.math.combinatorics.binomial import choose
+
 from .graph import UndirectedGraph
 
 

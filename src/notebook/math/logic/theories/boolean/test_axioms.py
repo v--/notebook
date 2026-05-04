@@ -1,8 +1,9 @@
 from textwrap import dedent
 
-from ...classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...deduction.proof_tree import apply, assume, premise_config
-from ...parsing import parse_formula, parse_formula_with_substitution, parse_marker
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction.proof_tree import apply, assume, premise_config
+from notebook.math.logic.parsing import parse_formula, parse_formula_with_substitution, parse_marker
+
 from .axioms import ABSORPTION_AXIOMS, COMMUTATIVITY_AXIOMS, EXTREMA_AXIOMS, INEQUALITY_COMPATIBILITY_AXIOMS
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 
@@ -56,7 +57,7 @@ def test_bottom_absorption_proof() -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
                                                                      [∀x.∀y.((x ⩔ y) = (y ⩔ x))]ʷ
                                                                      ____________________________ ∀₋
         [∀x.∀y.((x ⩓ (x ⩔ y)) = x)]ᵘ       [∀x.((x ⩔ ⫫) = x)]ᵛ          ∀y.((x ⩔ y) = (y ⩔ x))
@@ -68,7 +69,7 @@ def test_bottom_absorption_proof() -> None:
                                               ((⫫ ⩓ x) = ⫫)
         _________________________________________________________________________________________ ∀₊
                                             ∀x.((⫫ ⩓ x) = ⫫)
-        ''',
+        """,
     )
 
 
@@ -101,7 +102,7 @@ def test_bottom_minimality_proof() -> None:
         ),
     )
 
-    assert str(tree) == dedent('''\
+    assert str(tree) == dedent("""\
         [∀x.∀y.((x ≤ y) ↔ ((x ⩓ y) = x))]ᵘ
         __________________________________ ∀₋
            ∀y.((⫫ ≤ y) ↔ ((⫫ ⩓ y) = ⫫))          [∀x.((⫫ ⩓ x) = ⫫)]ᵛ
@@ -111,5 +112,5 @@ def test_bottom_minimality_proof() -> None:
                                   (⫫ ≤ x)
         ____________________________________________________________ ∀₊
                                  ∀x.(⫫ ≤ x)
-        ''',
+        """,
     )

@@ -2,7 +2,8 @@ import itertools
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from ...support.iteration import string_accumulator
+from notebook.support.iteration import string_accumulator
+
 from .exceptions import IncompatibleRuleError, UnknownSymbolError
 from .symbols import NonTerminal, Terminal, empty
 

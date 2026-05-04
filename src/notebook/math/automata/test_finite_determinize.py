@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize, is_automata_deterministic
 

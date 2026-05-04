@@ -1,7 +1,8 @@
 from typing import override
 
-from ...parsing import ErrorHighlighter, Parser, ParserContext, ParserError
-from ..string import CompositeStringBuilder
+from notebook.bibtex.string import CompositeStringBuilder
+from notebook.parsing import ErrorHighlighter, Parser, ParserContext, ParserError
+
 from .tokens import BibToken
 
 

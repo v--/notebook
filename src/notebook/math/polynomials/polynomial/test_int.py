@@ -2,11 +2,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....parsing import LatinIdentifier
-from ....parsing import common_identifiers as ci
-from ....support.pytest import pytest_parametrize_kwargs
-from .. import monomial
-from ..exceptions import PolynomialEvaluationError
+from notebook.math.polynomials import monomial
+from notebook.math.polynomials.exceptions import PolynomialEvaluationError
+from notebook.parsing import LatinIdentifier
+from notebook.parsing import common_identifiers as ci
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .int import IntPolynomial, const, x, y, z, zero
 
 

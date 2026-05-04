@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
-from .....bibtex import BibEntry
-from .....support.unicode import normalize_whitespace
-from ... import url_templates
-from ..common.dates import extract_year
-from ..common.entries import generate_entry_name
-from ..common.names import name_to_bib_author
-from ..common.pages import normalize_pages
+from notebook.bibtex import BibEntry
+from notebook.commands.bibtools import url_templates
+from notebook.commands.bibtools.sources.helpers.dates import extract_year
+from notebook.commands.bibtools.sources.helpers.entries import generate_entry_name
+from notebook.commands.bibtools.sources.helpers.names import name_to_bib_author
+from notebook.commands.bibtools.sources.helpers.pages import normalize_pages
+from notebook.support.unicode import normalize_whitespace
 
 
 if TYPE_CHECKING:

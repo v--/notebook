@@ -6,8 +6,9 @@ import click
 import loguru
 from asyncinotify import Inotify, Mask
 
-from ...paths import FIGURES_PATH, ROOT_PATH
-from ..common.logging import configure_loguru
+from notebook.commands.common.logging import configure_loguru
+from notebook.paths import FIGURES_PATH, ROOT_PATH
+
 from .tasks import AsymptoteTask, LaTeXCompiler, LaTeXTask, PythonTask, TaskRunner
 from .trigger import TaskTrigger, TaskTriggerKind
 

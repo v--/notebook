@@ -3,22 +3,23 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .....exceptions import UnreachableException
-from .....support.coderefs import collector
-from ....logic.signature import SignatureSymbol
-from ....logic.structure import FormalLogicStructure
-from ...alphabet import BinaryTypeConnective
-from ...types import BaseType, SimpleConnectiveType, SimpleType
-from .. import common
-from ..structure import HolStructureValue, iter_universe
-from ..type_features import extract_bound_types, get_subtypes
+from notebook.exceptions import UnreachableException
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.structure import HolStructureValue, iter_universe
+from notebook.math.lambda_.hol.type_features import extract_bound_types, get_subtypes
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType
+from notebook.math.logic.signature import SignatureSymbol
+from notebook.math.logic.structure import FormalLogicStructure
+from notebook.support.coderefs import collector
+
 from .signature import hol_signature_to_fol
 
 
 if TYPE_CHECKING:
-    from ..expression import HolExpression
-    from ..signature import NonLogicalConstantSymbol
-    from ..structure import HolStructure
+    from notebook.math.lambda_.hol.expression import HolExpression
+    from notebook.math.lambda_.hol.signature import NonLogicalConstantSymbol
+    from notebook.math.lambda_.hol.structure import HolStructure
 
 
 @dataclass

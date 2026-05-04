@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import override
 
-from ....support.schemas import SchemaInferenceError
-from ..formulas import (
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
     EqualityFormula,
@@ -21,6 +20,8 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
+from notebook.support.schemas import SchemaInferenceError
+
 from .base import AtomicLogicSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
 

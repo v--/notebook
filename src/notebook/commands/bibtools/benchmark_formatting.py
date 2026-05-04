@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 import loguru
 import pytest
 
-from ...paths import BIB_PATH
+from notebook.paths import BIB_PATH
+
 from .formatting import adjust_entry, read_entries, write_entries
 
 

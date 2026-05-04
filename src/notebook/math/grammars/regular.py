@@ -1,7 +1,8 @@
-from ...support.coderefs import collector
-from ...support.name_collision import get_name_without_collision
-from ..automata.finite import FiniteAutomaton, reverse_automaton
-from ..automata.finite_determinize import determinize
+from notebook.math.automata.finite import FiniteAutomaton, reverse_automaton
+from notebook.math.automata.finite_determinize import determinize
+from notebook.support.coderefs import collector
+from notebook.support.name_collision import get_name_without_collision
+
 from .context_free import reverse_grammar
 from .epsilon_rules import is_epsilon_free, is_epsilon_rule, remove_epsilon_rules
 from .exceptions import IncompatibleGrammarError

@@ -3,11 +3,19 @@ from dataclasses import dataclass
 from enum import IntEnum, auto
 from typing import override
 
-from ....parsing import is_greek_identifier, is_latin_identifier
-from ....support.inference import ImproperInferenceRuleSymbol
-from ....support.substitution import ImproperSubstitutionSymbol
-from ....support.unicode import Capitalization
-from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstantSymbol, Quantifier, UnaryPrefix
+from notebook.math.logic.alphabet import (
+    AuxImproperSymbol,
+    BinaryConnective,
+    EqualitySymbol,
+    PropConstantSymbol,
+    Quantifier,
+    UnaryPrefix,
+)
+from notebook.parsing import is_greek_identifier, is_latin_identifier
+from notebook.support.inference import ImproperInferenceRuleSymbol
+from notebook.support.substitution import ImproperSubstitutionSymbol
+from notebook.support.unicode import Capitalization
+
 from .exceptions import FormalLogicSignatureError
 
 

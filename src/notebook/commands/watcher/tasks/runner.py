@@ -2,7 +2,7 @@ import asyncio
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..trigger import TaskTrigger, TaskTriggerKind
+from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
 
 
 if TYPE_CHECKING:

@@ -1,6 +1,6 @@
 import pathlib
 
-from ..common.file_names import escape_file_name
+from notebook.commands.bibtools.sources.helpers.file_names import escape_file_name
 
 
 FIXTURE_DIR = pathlib.Path(__file__).resolve().parent / 'fixtures'

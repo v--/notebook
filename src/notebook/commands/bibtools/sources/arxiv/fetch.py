@@ -2,7 +2,8 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-from ...exceptions import BibToolsNetworkError
+from notebook.commands.bibtools.exceptions import BibToolsNetworkError
+
 from .fixtures import get_arxiv_fixture_path
 
 

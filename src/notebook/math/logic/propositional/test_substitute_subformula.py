@@ -1,4 +1,5 @@
-from ....support.pytest import pytest_parametrize_kwargs
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .parsing import parse_prop_formula
 from .substitute_subformula import substitute_subformula
 

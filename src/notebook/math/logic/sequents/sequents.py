@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..alphabet import AuxImproperSymbol
+from notebook.math.logic.alphabet import AuxImproperSymbol
 
 
 if TYPE_CHECKING:
-    from ..contexts import LogicalContext
+    from notebook.math.logic.contexts import LogicalContext
 
 
 @dataclass(frozen=True)

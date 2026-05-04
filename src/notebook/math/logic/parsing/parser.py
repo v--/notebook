@@ -2,12 +2,10 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast, overload
 
-from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
-from ....support.substitution import ImproperSubstitutionSymbol
-from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
-from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
-from ..deduction import Marker, NaturalDeductionEntry, NaturalDeductionRule
-from ..formulas import (
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
+from notebook.math.logic.contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
+from notebook.math.logic.deduction import Marker, NaturalDeductionEntry, NaturalDeductionRule
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
     EqualityFormula,
@@ -25,8 +23,8 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from ..sequents import Sequent, SequentSchema
-from ..signature import (
+from notebook.math.logic.sequents import Sequent, SequentSchema
+from notebook.math.logic.signature import (
     EMPTY_SIGNATURE,
     FormalLogicSignature,
     FunctionSymbol,
@@ -34,7 +32,7 @@ from ..signature import (
     SignatureSymbol,
     SignatureSymbolNotation,
 )
-from ..terms import (
+from notebook.math.logic.terms import (
     EigenSchemaSubstitutionSpec,
     FunctionApplication,
     FunctionApplicationSchema,
@@ -46,6 +44,9 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
+from notebook.parsing import GreekIdentifier, IdentifierParserMixin, Parser
+from notebook.support.substitution import ImproperSubstitutionSymbol
+
 from .parser_context import LogicParserContext
 from .tokenizer import tokenize_formal_logic_string
 from .tokens import LogicToken, LogicTokenKind

@@ -6,7 +6,7 @@ from .model import parse_stackexchange_html
 
 
 if TYPE_CHECKING:
-    from .....bibtex import BibEntry
+    from notebook.bibtex import BibEntry
 
 
 def retrieve_stackexchange_entry(identifier: str, *, dump_as_fixture: bool) -> BibEntry:

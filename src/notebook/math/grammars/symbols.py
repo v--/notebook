@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Literal
 
-from ...parsing import StringContainer
-from ...support.name_collision import get_name_without_collision
+from notebook.parsing import StringContainer
+from notebook.support.name_collision import get_name_without_collision
 
 
 if TYPE_CHECKING:

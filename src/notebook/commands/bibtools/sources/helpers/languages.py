@@ -1,8 +1,8 @@
 from iso639 import Lang
 from iso639.exceptions import InvalidLanguageValue
 
-from .....bibtex import BibEntry, BibString, strip_braces
-from ...exceptions import BibToolsParsingError
+from notebook.bibtex import BibEntry, BibString, strip_braces
+from notebook.commands.bibtools.exceptions import BibToolsParsingError
 
 
 def create_lang_object(language: str) -> Lang:

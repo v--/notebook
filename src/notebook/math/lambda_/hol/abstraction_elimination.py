@@ -1,11 +1,9 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, overload, override
 
-from ....support.coderefs import collector
-from ....support.name_collision import get_name_without_collision
-from ..alphabet import BinaryTypeConnective
-from ..arrow_types.type_inference import infer_type
-from ..terms import (
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.arrow_types.type_inference import infer_type
+from notebook.math.lambda_.terms import (
     Constant,
     TypedAbstraction,
     TypedApplication,
@@ -13,9 +11,12 @@ from ..terms import (
     TypedTermVisitor,
     Variable,
 )
-from ..type_context import TypeContext
-from ..types import SimpleConnectiveType, SimpleType
-from ..variables import get_free_variables
+from notebook.math.lambda_.type_context import TypeContext
+from notebook.math.lambda_.types import SimpleConnectiveType, SimpleType
+from notebook.math.lambda_.variables import get_free_variables
+from notebook.support.coderefs import collector
+from notebook.support.name_collision import get_name_without_collision
+
 from . import common
 from .expression import HolExpression
 from .signature import HolSignature, NonLogicalConstantSymbol

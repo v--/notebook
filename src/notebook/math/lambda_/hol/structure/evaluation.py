@@ -3,14 +3,15 @@ import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .....exceptions import UnreachableException
-from .....support.coderefs import collector
-from ...alphabet import BinaryTypeConnective
-from ...assertions import VariableTypeAssertion
-from ...terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Variable
-from ...types import BaseType, SimpleConnectiveType, SimpleType
-from .. import common
-from ..signature import NonLogicalConstantSymbol, SortSymbol
+from notebook.exceptions import UnreachableException
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.hol import common
+from notebook.math.lambda_.hol.signature import NonLogicalConstantSymbol, SortSymbol
+from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Variable
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType
+from notebook.support.coderefs import collector
+
 from .assignment import HolVariableAssignment
 from .exceptions import HolInterpretationError, MissingInterpretationError
 
@@ -18,8 +19,9 @@ from .exceptions import HolInterpretationError, MissingInterpretationError
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from ...type_context import TypeContext
-    from ..expression import HolExpression
+    from notebook.math.lambda_.hol.expression import HolExpression
+    from notebook.math.lambda_.type_context import TypeContext
+
     from .structure import HolStructure, HolStructureValue
 
 

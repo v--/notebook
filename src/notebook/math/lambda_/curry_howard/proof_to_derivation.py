@@ -1,12 +1,19 @@
 from typing import TYPE_CHECKING, override
 
-from ....parsing import GreekIdentifier
-from ....support.coderefs import collector
-from ...logic.alphabet import BinaryConnective, PropConstantSymbol
-from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...logic.deduction import NaturalDeductionRule, UnknownNaturalDeductionRuleError
-from ...logic.deduction import proof_tree as ptree
-from ...logic.formulas import (
+from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
+from notebook.math.lambda_.alphabet import BinaryTypeConnective
+from notebook.math.lambda_.assertions import VariableTypeAssertion
+from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
+from notebook.math.lambda_.parsing import parse_type_variable
+from notebook.math.lambda_.signature import BaseTypeSymbol
+from notebook.math.lambda_.terms import Variable
+from notebook.math.lambda_.type_derivation import tree as dtree
+from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVariable
+from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol
+from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from notebook.math.logic.deduction import NaturalDeductionRule, UnknownNaturalDeductionRuleError
+from notebook.math.logic.deduction import proof_tree as ptree
+from notebook.math.logic.formulas import (
     ConnectiveFormula,
     Formula,
     FormulaPlaceholder,
@@ -14,27 +21,15 @@ from ...logic.formulas import (
     PredicateApplication,
     PropConstant,
 )
-from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..alphabet import BinaryTypeConnective
-from ..assertions import VariableTypeAssertion
-from ..instantiation import AtomicLambdaSchemaInstantiation
-from ..parsing import parse_type_variable
-from ..signature import BaseTypeSymbol
-from ..terms import Variable
-from ..type_derivation import tree as dtree
-from ..types import (
-    BaseType,
-    SimpleConnectiveType,
-    SimpleType,
-    TypePlaceholder,
-    TypeVariable,
-)
+from notebook.parsing import GreekIdentifier
+from notebook.support.coderefs import collector
+
 from .exceptions import ProofToDerivationError
 
 
 if TYPE_CHECKING:
-    from ...logic.instantiation import AtomicLogicSchemaInstantiation
-    from ..type_system import TypingRule
+    from notebook.math.lambda_.type_system import TypingRule
+    from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
 
 
 def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeConnective:

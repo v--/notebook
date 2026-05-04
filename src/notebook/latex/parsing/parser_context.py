@@ -1,4 +1,5 @@
-from ...parsing import ParserContext
+from notebook.parsing import ParserContext
+
 from .tokens import LaTeXToken
 
 

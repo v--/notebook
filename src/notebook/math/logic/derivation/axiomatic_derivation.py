@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, NamedTuple
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInferenceError
-from ..alphabet import BinaryConnective
-from ..deduction import (
+from notebook.math.logic.alphabet import BinaryConnective
+from notebook.math.logic.deduction import (
     Marker,
     NaturalDeductionSystem,
     ProofTree,
@@ -13,9 +11,12 @@ from ..deduction import (
     assume,
     new_marker,
 )
-from ..formulas import ConnectiveFormula, Formula
-from ..instantiation import AtomicLogicSchemaInstantiation, infer_instantiation_from_formula
-from ..parsing import parse_formula_placeholder
+from notebook.math.logic.formulas import ConnectiveFormula, Formula
+from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation, infer_instantiation_from_formula
+from notebook.math.logic.parsing import parse_formula_placeholder
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInferenceError
+
 from .exceptions import AxiomaticDerivationError
 from .system import AxiomaticDerivationSystem, derivation_system_to_natural_deduction_system
 

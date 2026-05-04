@@ -14,13 +14,13 @@ def test_entry_stringify() -> None:
         languages=['english'],
     )
 
-    assert str(entry) == dedent(r'''
+    assert str(entry) == dedent(r"""
         @book{test,
           author = {A B and C D},
           language = {english},
           title = {Test}
         }
-        '''[1:])
+        """[1:])
 
 
 def test_entry_stringify_multilang() -> None:
@@ -32,13 +32,13 @@ def test_entry_stringify_multilang() -> None:
         languages=['english', 'russian'],
     )
 
-    assert str(entry) == dedent(r'''
+    assert str(entry) == dedent(r"""
         @book{test,
           author = {A B},
           language = {english and russian},
           title = {Test}
         }
-        '''[1:])
+        """[1:])
 
 
 def test_entry_stringify_verbatim_author() -> None:
@@ -50,13 +50,13 @@ def test_entry_stringify_verbatim_author() -> None:
         languages=['english'],
     )
 
-    assert str(entry) == dedent(r'''
+    assert str(entry) == dedent(r"""
         @book{test,
           author = {{A B}},
           language = {english},
           title = {Test}
         }
-        '''[1:])
+        """[1:])
 
 
 def test_entry_stringify_partially_verbatim_author() -> None:
@@ -68,13 +68,13 @@ def test_entry_stringify_partially_verbatim_author() -> None:
         languages=['english'],
     )
 
-    assert str(entry) == dedent(r'''
+    assert str(entry) == dedent(r"""
         @book{test,
           author = {The {A B}},
           language = {english},
           title = {Test}
         }
-        '''[1:])
+        """[1:])
 
 
 def test_entry_stringify_shortauthor() -> None:
@@ -86,11 +86,11 @@ def test_entry_stringify_shortauthor() -> None:
         languages=['russian'],
     )
 
-    assert str(entry) == dedent(r'''
+    assert str(entry) == dedent(r"""
         @book{тест,
           author = {А and Б},
           language = {russian},
           shortauthor = {A and B},
           title = {Тест}
         }
-        '''[1:])
+        """[1:])

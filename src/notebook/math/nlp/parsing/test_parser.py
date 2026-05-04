@@ -1,4 +1,5 @@
-from ..phrases import Phrase
+from notebook.math.nlp.phrases import Phrase
+
 from .parser import extract_phrases
 
 

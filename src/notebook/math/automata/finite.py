@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, NamedTuple, overload
 
-from ...support.collections.sequential_set import SequentialSet
+from notebook.support.collections import SequentialSet
 
 
 if TYPE_CHECKING:

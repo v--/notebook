@@ -1,7 +1,8 @@
-from ....support.pytest import pytest_parametrize_kwargs
-from ...polynomials.polynomial.int import IntPolynomial, const, x, zero
-from ..divisibility import quot, rem
-from ..support import sgn
+from notebook.math.arithmetic.divisibility import quot, rem
+from notebook.math.arithmetic.support import sgn
+from notebook.math.polynomials.polynomial.int import IntPolynomial, const, x, zero
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .int import (
     IntRadixExpansion,
     add_with_carrying,

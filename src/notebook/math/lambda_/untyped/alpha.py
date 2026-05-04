@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 
-from ....support.coderefs import collector
-from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
-from ..variables import get_free_variables, new_variable
+from notebook.math.lambda_.terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
+from notebook.math.lambda_.variables import get_free_variables, new_variable
+from notebook.support.coderefs import collector
+
 from .substitution import substitute
 
 

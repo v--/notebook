@@ -1,5 +1,6 @@
 # ruff: noqa: FURB118
-from ...structure import FormalLogicStructure
+from notebook.math.logic.structure import FormalLogicStructure
+
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 
 

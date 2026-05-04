@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .exceptions import IncompatibleRuleError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .symbols import NonTerminal, Terminal, new_non_terminal

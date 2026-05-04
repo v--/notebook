@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload, override
 
-from ....support.coderefs import collector
-from ....support.schemas import SchemaInstantiationError
-from ..terms import (
+from notebook.math.logic.terms import (
     FunctionApplication,
     FunctionApplicationSchema,
     Term,
@@ -13,6 +11,8 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
+from notebook.support.coderefs import collector
+from notebook.support.schemas import SchemaInstantiationError
 
 
 if TYPE_CHECKING:

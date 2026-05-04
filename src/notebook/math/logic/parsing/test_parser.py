@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ....parsing import LatinIdentifier, ParserError, TokenizerError
-from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..formulas import EqualityFormula
-from ..propositional import parse_prop_formula
-from ..terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
+from notebook.math.logic.formulas import EqualityFormula
+from notebook.math.logic.propositional import parse_prop_formula
+from notebook.math.logic.terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
+from notebook.parsing import LatinIdentifier, ParserError, TokenizerError
+from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+
 from .parser import (
     parse_formula,
     parse_formula_schema,
@@ -22,7 +23,7 @@ from .parser import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ..signature import FormalLogicSignature
+    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(
@@ -79,10 +80,10 @@ def test_parsing_functions_with_unrecognized_names() -> None:
         parse_term('Ḟ')
 
     assert str(excinfo.value) == 'Unexpected symbol'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ Ḟ
           │ ^
-    ''')
+    """)
 
 
 def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> None:
@@ -90,10 +91,10 @@ def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> Non
         parse_term('p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Encountered a formula where a term was expected'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ p⁰
           │ ^^
-    ''')
+    """)
 
 
 def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
@@ -101,10 +102,10 @@ def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: For
         parse_term('f¹()', dummy_signature)
 
     assert str(excinfo.value) == 'Empty argument lists are disallowed'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f¹()
           │ ^^^^
-    ''')
+    """)
 
 
 def test_parsing_function_with_only_open_paren(dummy_signature: FormalLogicSignature) -> None:
@@ -112,10 +113,10 @@ def test_parsing_function_with_only_open_paren(dummy_signature: FormalLogicSigna
         parse_term('f¹(', dummy_signature)
 
     assert str(excinfo.value) == 'Unclosed argument list'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f¹(
           │ ^^^
-    ''')
+    """)
 
 
 def test_parsing_function_with_unclosed_arg_list(dummy_signature: FormalLogicSignature) -> None:
@@ -123,10 +124,10 @@ def test_parsing_function_with_unclosed_arg_list(dummy_signature: FormalLogicSig
         parse_term('f²(x,y', dummy_signature)
 
     assert str(excinfo.value) == 'Unclosed argument list'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f²(x,y
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_function_with_missing_arg(dummy_signature: FormalLogicSignature) -> None:
@@ -134,10 +135,10 @@ def test_parsing_function_with_missing_arg(dummy_signature: FormalLogicSignature
         parse_term('f²(x,)', dummy_signature)
 
     assert str(excinfo.value) == 'Unexpected closing parenthesis for argument list'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f²(x,)
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature) -> None:
@@ -145,10 +146,10 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
         parse_term('f²(x)', dummy_signature)
 
     assert str(excinfo.value) == 'Expected 2 arguments for the function f², but got 1'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f²(x)
           │ ^^^^^
-    ''')
+    """)
 
 
 def test_parsing_parenthesized_expression_without_symbol(dummy_signature: FormalLogicSignature) -> None:
@@ -156,10 +157,10 @@ def test_parsing_parenthesized_expression_without_symbol(dummy_signature: Formal
         parse_term('(x', dummy_signature)
 
     assert str(excinfo.value) == 'Parenthesized expression must have a propositional connective, infix proper symbol or equality after the first subexpression'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x
           │ ^^
-    ''')
+    """)
 
 
 def test_parsing_unrecognized_infix_symbol(dummy_signature: FormalLogicSignature) -> None:
@@ -167,10 +168,10 @@ def test_parsing_unrecognized_infix_symbol(dummy_signature: FormalLogicSignature
         parse_term('(x ( y)', dummy_signature)
 
     assert str(excinfo.value) == "The symbol '(' is not an infix operator"
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ( y)
           │    ^
-    ''')
+    """)
 
 
 def test_parsing_infix_function(dummy_signature: FormalLogicSignature) -> None:
@@ -190,10 +191,10 @@ def test_parsing_infix_function_without_second_term(dummy_signature: FormalLogic
         parse_term('(x ∘', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a second term'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ∘
           │ ^^^^
-    ''')
+    """)
 
 
 def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
@@ -201,10 +202,10 @@ def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLo
         parse_term('(x ≠ y', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ≠ y
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_infix_function_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
@@ -212,10 +213,10 @@ def test_parsing_infix_function_with_non_infix_notation(dummy_signature: FormalL
         parse_term('∘(x, y)', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a prefix proper symbol, but got ∘'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ∘(x, y)
           │ ^
-    ''')
+    """)
 
 
 def test_parsing_non_infix_function_with_infix_notation(dummy_signature: FormalLogicSignature) -> None:
@@ -223,10 +224,10 @@ def test_parsing_non_infix_function_with_infix_notation(dummy_signature: FormalL
         parse_term('(x f³ y)', dummy_signature)
 
     assert str(excinfo.value) == 'Expected an infix proper symbol, but got f³'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x f³ y)
           │    ^^
-    ''')
+    """)
 
 
 def test_parsing_infix_predicate(dummy_signature: FormalLogicSignature) -> None:
@@ -240,10 +241,10 @@ def test_parsing_infix_predicate_without_second_term(dummy_signature: FormalLogi
         parse_formula('(x ≠', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a second term'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ≠
           │ ^^^^
-    ''')
+    """)
 
 
 def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
@@ -251,10 +252,10 @@ def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalL
         parse_formula('(x ≠ y', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ≠ y
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_infix_predicate_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
@@ -262,10 +263,10 @@ def test_parsing_infix_predicate_with_non_infix_notation(dummy_signature: Formal
         parse_formula('≠(x, y)', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a prefix proper symbol, but got ≠'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ≠(x, y)
           │ ^
-    ''')
+    """)
 
 
 def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: FormalLogicSignature) -> None:
@@ -273,10 +274,10 @@ def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: Formal
         parse_formula('(x p³ y)', dummy_signature)
 
     assert str(excinfo.value) == 'Expected an infix proper symbol, but got p³'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x p³ y)
           │    ^^
-    ''')
+    """)
 
 
 @pytest_parametrize_lists(
@@ -307,10 +308,10 @@ def test_parsing_prefix_function_without_parentheses(dummy_signature: FormalLogi
         parse_term('f¹x', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a parenthesized argument list for the function f¹'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ f¹x
           │ ^^^
-    ''')
+    """)
 
 
 def test_parsing_condensed_function_with_parentheses(dummy_signature: FormalLogicSignature) -> None:
@@ -318,10 +319,10 @@ def test_parsing_condensed_function_with_parentheses(dummy_signature: FormalLogi
         parse_term('fᶜ¹(', dummy_signature)
 
     assert str(excinfo.value) == 'Parenthesized expression must start with a subexpression'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ fᶜ¹(
           │    ^
-    ''')
+    """)
 
 
 def test_parsing_condensed_function_with_missing_arguments(dummy_signature: FormalLogicSignature) -> None:
@@ -329,10 +330,10 @@ def test_parsing_condensed_function_with_missing_arguments(dummy_signature: Form
         parse_term('fᶜ¹', dummy_signature)
 
     assert str(excinfo.value) == 'Insufficient arguments for the symbol fᶜ¹ of arity 1'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ fᶜ¹
           │ ^^^
-    ''')
+    """)
 
 
 @pytest_parametrize_kwargs(
@@ -356,10 +357,10 @@ def test_parsing_unclosed_equality_parentheses(dummy_signature: FormalLogicSigna
         parse_formula('(x = y =', dummy_signature)
 
     assert str(excinfo.value) == 'Equality formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x = y =
           │ ^^^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_unclosed_equality_parentheses_truncated() -> None:
@@ -367,10 +368,10 @@ def test_parsing_unclosed_equality_parentheses_truncated() -> None:
         parse_formula('(x = y')
 
     assert str(excinfo.value) == 'Equality formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x = y
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_invalid_equality() -> None:
@@ -378,10 +379,10 @@ def test_parsing_invalid_equality() -> None:
         parse_formula('(x = )')
 
     assert str(excinfo.value) == 'Equality formulas must have a second term'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x = )
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
@@ -389,10 +390,10 @@ def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSigna
         parse_formula('(¬p⁰ = y)', dummy_signature)
 
     assert str(excinfo.value) == 'The first argument of an equality formula must be a term'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (¬p⁰ = y)
           │  ^^^
-    ''')
+    """)
 
 
 @pytest_parametrize_lists(
@@ -417,10 +418,10 @@ def test_parsing_unclosed_conjunction_parentheses() -> None:
         parse_prop_formula('(p ∧ q ∧')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (p ∧ q ∧
           │ ^^^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
@@ -428,10 +429,10 @@ def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
         parse_prop_formula('(p ∧ q')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (p ∧ q
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_invalid_conjunction() -> None:
@@ -439,10 +440,10 @@ def test_parsing_invalid_conjunction() -> None:
         parse_prop_formula('(p ∧ )')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a second subformula'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (p ∧ )
           │ ^^^^^^
-    ''')
+    """)
 
 
 def test_parsing_conjunction_with_term_inside(dummy_signature: FormalLogicSignature) -> None:
@@ -450,10 +451,10 @@ def test_parsing_conjunction_with_term_inside(dummy_signature: FormalLogicSignat
         parse_formula('(x ∧ q₀)', dummy_signature)
 
     assert str(excinfo.value) == 'The first argument of a connective formula must itself be a formula'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (x ∧ q₀)
           │  ^
-    ''')
+    """)
 
 
 def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> None:
@@ -461,10 +462,10 @@ def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> No
         parse_formula('(∀x.(q²(z, x) → ¬r²(y, x) ∧ ¬p¹(z))', dummy_signature)
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ (∀x.(q²(z, x) → ¬r²(y, x) ∧ ¬p¹(z))
           │     ^^^^^^^^^^^^^^^^^^^^^^^
-    ''')
+    """)
 
 
 def test_lone_quantifier() -> None:
@@ -472,10 +473,10 @@ def test_lone_quantifier() -> None:
         parse_formula('∀')
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ∀
           │ ^
-    ''')
+    """)
 
 
 def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature) -> None:
@@ -483,10 +484,10 @@ def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature)
         parse_formula('∀p⁰.p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ∀p⁰.p⁰
           │ ^^^
-    ''')
+    """)
 
 
 def test_quantifier_with_no_dot(dummy_signature: FormalLogicSignature) -> None:
@@ -494,10 +495,10 @@ def test_quantifier_with_no_dot(dummy_signature: FormalLogicSignature) -> None:
         parse_formula('∀xp⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected dot after variable'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ∀xp⁰
           │ ^^
-    ''')
+    """)
 
 
 def test_quantifier_with_no_subformula(dummy_signature: FormalLogicSignature) -> None:
@@ -505,10 +506,10 @@ def test_quantifier_with_no_subformula(dummy_signature: FormalLogicSignature) ->
         parse_formula('∀x.', dummy_signature)
 
     assert str(excinfo.value) == 'Unexpected end of input'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ ∀x.
           │   ^
-    ''')
+    """)
 
 
 @pytest_parametrize_lists(
@@ -541,10 +542,10 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
         parse_formula('φ')
 
     assert str(excinfo.value) == 'Placeholders are only allowed in schemas'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ φ
           │ ^
-    ''')
+    """)
 
 
 @pytest_parametrize_lists(
@@ -564,10 +565,10 @@ def test_parsing_empty_attached_schema() -> None:
         parse_natural_deduction_rule('name', '[] φ ⊩ ψ')
 
     assert str(excinfo.value) == 'Empty attached schemas are disallowed'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ [] φ ⊩ ψ
           │ ^^
-        ''',
+        """,
     )
 
 
@@ -576,10 +577,10 @@ def test_parsing_conclusion_with_attachment() -> None:
         parse_natural_deduction_rule('name', '[θ] [φ] θ ⊩ [χ] ω')
 
     assert str(excinfo.value) == 'The conclusion of a rule cannot have attached formulas'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ [θ] [φ] θ ⊩ [χ] ω
           │             ^
-        ''',
+        """,
     )
 
 
@@ -588,10 +589,10 @@ def test_parsing_attached_schema_with_no_closing_bracket() -> None:
         parse_natural_deduction_rule('name', '[θ φ ⊩ ψ')
 
     assert str(excinfo.value) == 'Unclosed brackets for attached schemas'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ [θ φ ⊩ ψ
           │ ^^
-        ''',
+        """,
     )
 
 
@@ -600,10 +601,10 @@ def test_parsing_substitution_schema_with_no_connective() -> None:
         parse_term_schema_substitution_spec('x')
 
     assert str(excinfo.value) == 'Expected ↦ after the variable in a substitution'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ x
           │ ^
-        ''',
+        """,
     )
 
 
@@ -620,10 +621,10 @@ def test_parsing_substitution_schema_with_star_on_term_placeholder() -> None:
         parse_term_schema_substitution_spec('x ↦ τ*')
 
     assert str(excinfo.value) == 'Cannot place an eigenvariable marker on a more general term'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ x ↦ τ*
           │      ^
-        ''',
+        """,
     )
 
 
@@ -632,10 +633,10 @@ def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
         parse_formula_schema('φ[x ↦ y')
 
     assert str(excinfo.value) == 'Unclosed brackets for substitution specification'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ φ[x ↦ y
           │ ^^^^^^^
-        ''',
+        """,
     )
 
 
@@ -644,10 +645,10 @@ def test_parsing_formula_schema_with_no_closing_bracket() -> None:
         parse_formula_schema('φ[x ↦ y')
 
     assert str(excinfo.value) == 'Unclosed brackets for substitution specification'
-    assert excinfo.value.__notes__[0] == dedent('''\
+    assert excinfo.value.__notes__[0] == dedent("""\
         1 │ φ[x ↦ y
           │ ^^^^^^^
-        ''',
+        """,
     )
 
 

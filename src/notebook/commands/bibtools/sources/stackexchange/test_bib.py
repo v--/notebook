@@ -2,9 +2,10 @@ from datetime import UTC, datetime
 
 import pytest
 
-from .....bibtex import BibAuthor, BibEntry, VerbatimString
-from ...exceptions import BibToolsParsingError
-from ..common.dates import to_iso_date
+from notebook.bibtex import BibAuthor, BibEntry, VerbatimString
+from notebook.commands.bibtools.exceptions import BibToolsParsingError
+from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
+
 from .bib import stackexchange_entry_to_bib
 from .fixtures import get_stackexchange_fixture_path
 from .model import parse_stackexchange_html

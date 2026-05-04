@@ -1,19 +1,20 @@
 import itertools
 from typing import TYPE_CHECKING
 
-from ....graphs.graph import DirectedEdge, DirectedGraph
-from ...parsing import parse_type, parse_typed_term
-from ..expression import HolExpression
-from ..theories.digraphs import DIRECTED_GRAPH_SIGNATURE, DirectedGraphStructure
+from notebook.math.graphs.graph import DirectedEdge, DirectedGraph
+from notebook.math.lambda_.hol.expression import HolExpression
+from notebook.math.lambda_.hol.theories.digraphs import DIRECTED_GRAPH_SIGNATURE, DirectedGraphStructure
+from notebook.math.lambda_.parsing import parse_type, parse_typed_term
+
 from .signature import hol_signature_to_fol
 from .structure import hol_structure_to_fol
 
 
 if TYPE_CHECKING:
-    from ....logic.signature import FormalLogicSignature
-    from ....logic.structure import FormalLogicStructure
-    from ..signature import HolSignature
-    from ..structure import HolStructure
+    from notebook.math.lambda_.hol.signature import HolSignature
+    from notebook.math.lambda_.hol.structure import HolStructure
+    from notebook.math.logic.signature import FormalLogicSignature
+    from notebook.math.logic.structure import FormalLogicStructure
 
 
 def test_hol_expression_to_fol_digraph() -> None:

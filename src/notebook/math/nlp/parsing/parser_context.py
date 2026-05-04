@@ -1,5 +1,6 @@
-from ....parsing import ParserContext
-from ..phrases import Phrase
+from notebook.math.nlp.phrases import Phrase
+from notebook.parsing import ParserContext
+
 from .tokens import TextToken
 
 

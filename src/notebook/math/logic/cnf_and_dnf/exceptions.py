@@ -1,4 +1,4 @@
-from ..exceptions import FormalLogicError
+from notebook.math.logic.exceptions import FormalLogicError
 
 
 class UnsupportedFormulaError(FormalLogicError):

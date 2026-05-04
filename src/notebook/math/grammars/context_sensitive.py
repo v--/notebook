@@ -1,4 +1,5 @@
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .epsilon_rules import is_epsilon_rule
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema

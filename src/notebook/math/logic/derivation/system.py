@@ -1,10 +1,10 @@
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 
-from ..deduction import NaturalDeductionRule, NaturalDeductionSystem
-from ..formulas import Formula, FormulaSchema
-from ..instantiation import is_formula_schema_instance
-from ..parsing import parse_natural_deduction_rule
+from notebook.math.logic.deduction import NaturalDeductionRule, NaturalDeductionSystem
+from notebook.math.logic.formulas import Formula, FormulaSchema
+from notebook.math.logic.instantiation import is_formula_schema_instance
+from notebook.math.logic.parsing import parse_natural_deduction_rule
 
 
 MODUS_PONENS_RULE = parse_natural_deduction_rule('MP', '(φ → ψ), φ ⊩ ψ')

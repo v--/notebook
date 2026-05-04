@@ -3,7 +3,8 @@ import asyncio
 from time import monotonic_ns
 from typing import TYPE_CHECKING, override
 
-from ....paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
+from notebook.paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
+
 from .base import Task
 
 

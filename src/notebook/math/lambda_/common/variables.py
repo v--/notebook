@@ -1,4 +1,4 @@
-from ..parsing import parse_variable
+from notebook.math.lambda_.parsing import parse_variable
 
 
 a = parse_variable('a')

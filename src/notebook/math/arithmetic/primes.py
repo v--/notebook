@@ -4,7 +4,8 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ...support.coderefs import collector
+from notebook.support.coderefs import collector
+
 from .divisibility import divides, quot
 from .exceptions import InvalidArgumentError, NotPositiveIntegerError
 from .gcd import gcd

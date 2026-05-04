@@ -5,8 +5,8 @@ from .terms import SyntacticApplication
 
 
 if TYPE_CHECKING:
-    from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-    from ..signature import FunctionSymbol
+    from notebook.math.logic.signature import FunctionSymbol
+    from notebook.parsing.identifiers import GreekIdentifier, LatinIdentifier
 
 
 @dataclass(frozen=True)

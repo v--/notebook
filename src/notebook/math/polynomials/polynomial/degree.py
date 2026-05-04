@@ -1,6 +1,6 @@
 import functools
 
-from ..exceptions import PolynomialDegreeError
+from notebook.math.polynomials.exceptions import PolynomialDegreeError
 
 
 @functools.total_ordering

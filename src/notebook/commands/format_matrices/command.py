@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 
 import click
 
-from ...exceptions import NotebookError
-from ...latex.format_matrices import format_tex_matrices
-from ..common.exception_handling import exit_gracefully_on_exception
-from ..common.formatting import FormatterContextManager
-from ..common.logging import configure_loguru
+from notebook.commands.common.exception_handling import exit_gracefully_on_exception
+from notebook.commands.common.formatting import FormatterContextManager
+from notebook.commands.common.logging import configure_loguru
+from notebook.exceptions import NotebookError
+from notebook.latex.format_matrices import format_tex_matrices
 
 
 if TYPE_CHECKING:

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from ...alphabet import BinaryConnective, LatticeConnective, PropConstantSymbol
-from ...signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
+from notebook.math.logic.alphabet import BinaryConnective, LatticeConnective, PropConstantSymbol
+from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
 
 
 if TYPE_CHECKING:

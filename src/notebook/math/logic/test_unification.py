@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ...support.coderefs import collector
-from ...support.pytest import pytest_parametrize_kwargs
+from notebook.support.coderefs import collector
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .parsing import parse_equation, parse_term, parse_variable
 from .substitution import AtomicLogicSubstitution
 from .unification import UnificationError, unify

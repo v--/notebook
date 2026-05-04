@@ -5,7 +5,7 @@ from datetime import datetime
 import bs4
 from pydantic import BaseModel
 
-from ...exceptions import BibToolsParsingError
+from notebook.commands.bibtools.exceptions import BibToolsParsingError
 
 
 class StackExchangeEntry(BaseModel):

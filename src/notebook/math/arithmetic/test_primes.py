@@ -1,7 +1,8 @@
 import itertools
 import random
 
-from ...support.pytest import pytest_parametrize_lists, repeat5
+from notebook.support.pytest import pytest_parametrize_lists, repeat5
+
 from .primes import (
     are_coprime,
     factor,

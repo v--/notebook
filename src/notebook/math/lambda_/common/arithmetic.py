@@ -1,6 +1,7 @@
-from ..exceptions import LambdaCalculusError
-from ..parsing import parse_untyped_term
-from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from notebook.math.lambda_.exceptions import LambdaCalculusError
+from notebook.math.lambda_.parsing import parse_untyped_term
+from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+
 from .variables import x, y
 
 
