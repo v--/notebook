@@ -1,3 +1,5 @@
+from typing import override
+
 from .schema_visitor import TypeSchemaVisitor
 from .schemas import SimpleConnectiveTypeSchema, SimpleTypeSchema, TypePlaceholder
 from .type_visitor import TypeVisitor
@@ -5,9 +7,11 @@ from .types import BaseType, SimpleConnectiveType, SimpleType, TypeVariable
 
 
 class TypeToSchemaTranslator(TypeVisitor[SimpleTypeSchema]):
+    @override
     def visit_base(self, type_: BaseType) -> BaseType:
         return type_
 
+    @override
     def visit_variable(self, type_: TypeVariable) -> TypePlaceholder:
         return TypePlaceholder(type_.identifier)
 
@@ -24,11 +28,13 @@ def translate_type_to_schema(type_: SimpleType) -> SimpleTypeSchema:
 
 
 class SchemaToTypeTranslator(TypeSchemaVisitor[SimpleType]):
+    @override
     def visit_base(self, schema: BaseType) -> BaseType:
         return schema
 
-    def visit_variable(self, schema: TypeVariable) -> TypePlaceholder:
-        return TypePlaceholder(schema.identifier)
+    @override
+    def visit_type_placeholder(self, schema: TypePlaceholder) -> TypeVariable:
+        return TypeVariable(schema.identifier)
 
     def visit_connective(self, schema: SimpleConnectiveTypeSchema) -> SimpleConnectiveType:
         return SimpleConnectiveType(

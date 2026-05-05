@@ -64,7 +64,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
             instantiation=new_instantiation,
         )
 
-    def _visit_abstractor_premise(self, body_tree: TypeDerivationTree, assertion: VariableTypeAssertion, other: TypedTerm) -> RuleApplicationPremise:
+    def _visit_abstractor_premise(self, body_tree: TypeDerivationTree, assertion: VariableTypeAssertion, other: TypedTerm) -> RuleApplicationPremise:  # noqa: PLR6301
         abstraction = TypedAbstraction(assertion.term, assertion.type, body_tree.conclusion.term)
 
         if not isinstance(other, TypedAbstraction) or abstraction.var_type != other.var_type:

@@ -43,7 +43,7 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             marker=str(self.marker),
         )
 
-    def get_local_eigenvariables(self) -> Collection[Variable]:
+    def get_local_eigenvariables(self) -> Collection[Variable]:  # noqa: PLR6301
         return set()
 
     def get_open_variables(

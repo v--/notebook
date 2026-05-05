@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from notebook.math.lambda_.untyped.substitution import substitute
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class BetaReduction(Reduction):
+    @override
     def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
         if isinstance(term, UntypedApplication) and isinstance(term.left, UntypedAbstraction):
             return substitute(term.left.body, {term.left.var: term.right})

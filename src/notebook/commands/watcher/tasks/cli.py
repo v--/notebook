@@ -93,7 +93,7 @@ class CliTask(Task):
     def get_build_command(self) -> str:
         ...
 
-    def get_build_out_buffer(self) -> int | None:
+    def get_build_out_buffer(self) -> int | None:  # noqa: PLR6301
         return None
 
     def get_build_err_buffer(self) -> int | None:

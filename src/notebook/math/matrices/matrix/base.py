@@ -232,7 +232,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):  # noqa: PLW1641
             lambda i, j: self[j, i],
         )
 
-    def stringify_value(self, value: N) -> str:
+    def stringify_value(self, value: N) -> str:  # noqa: PLR6301
         return str(value)
 
     # These two methods are useful for pytest's approx function

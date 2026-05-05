@@ -1,4 +1,4 @@
-# ruff: noqa: E221
+# ruff: noqa: E221, E241
 import pytest
 
 from .matrix import FloatMatrix, IntMatrix

@@ -221,7 +221,7 @@ class DoiData(DoiBaseModel):
 
     container_title_short: str | None = None
     publisher_location: str | None = None
-    special_numbering: Annotated[str | None,  Field(alias='special_numbering', default=None)]  # Not kebab-case
+    special_numbering: Annotated[str | None, Field(alias='special_numbering', default=None)]  # Not kebab-case
     edition_number: str | None = None
     article_number: str | None = None
     update_policy: str | None = None
