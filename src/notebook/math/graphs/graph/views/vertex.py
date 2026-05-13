@@ -6,10 +6,10 @@ if TYPE_CHECKING:
     from notebook.math.graphs.graph.payload import GraphPayload, LabeledVertex
 
 
-class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:  # noqa: PLW1641
-    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]
+class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:  # noqa: PLW1641
+    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]
 
-    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]) -> None:
+    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]) -> None:
         self.payload = payload
 
     @property

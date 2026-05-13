@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from notebook.math.rings.modular import Z3
 
 
-def test_fol_structure_to_hol_structure(fol_z3_model: FormalLogicStructure, hol_z3_model: HolStructure) -> None:
+def test_fol_structure_to_hol_structure(fol_z3_model: FormalLogicStructure[Z3], hol_z3_model: HolStructure) -> None:
     translated_hol_model = fol_structure_to_hol_structure(fol_z3_model)
 
     assert translated_hol_model.sort_universes == {common.individual.value: fol_z3_model.universe}

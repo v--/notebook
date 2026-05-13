@@ -31,7 +31,7 @@ def fol_z3_signature(arithmetic_signature_morphism: SignatureMorphism) -> Formal
 
 
 @pytest.fixture
-def fol_z3_model(arithmetic_signature_morphism: SignatureMorphism) -> FormalLogicStructure:
+def fol_z3_model(arithmetic_signature_morphism: SignatureMorphism) -> FormalLogicStructure[Z3]:
     return expand_along_signature_morphism(
         arithmetic_signature_morphism,
         FolModularStructure(Z3),

@@ -17,5 +17,5 @@ class UndirectedEdge[VertT](NamedTuple):
         return hash({self.src, self.dest})
 
 
-class UndirectedEdgeView[VertT, VertLabelT, EdgeSymbolT](BinaryEdgeView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_class=UndirectedEdge):
+class UndirectedEdgeView[VertT, VertLabelT, EdgeLabelT](BinaryEdgeView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT], edge_class=UndirectedEdge):
     pass

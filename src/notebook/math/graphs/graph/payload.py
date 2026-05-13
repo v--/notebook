@@ -1,10 +1,9 @@
 from collections.abc import Collection, MutableMapping
 from itertools import starmap
-from typing import NamedTuple, overload
+from typing import NamedTuple, cast, overload
 
 from notebook.math.graphs.exceptions import MissingEdgeError, MissingVertexError
 from notebook.support.collections import SequentialMapping
-from notebook.support.typing import typesup
 
 
 class LabeledVertex[VertT, VertLabelT](NamedTuple):
@@ -12,30 +11,30 @@ class LabeledVertex[VertT, VertLabelT](NamedTuple):
     label: VertLabelT
 
 
-class LabeledEdge[EdgeT: Collection, EdgeSymbolT](NamedTuple):
+class LabeledEdge[EdgeT: Collection, EdgeLabelT](NamedTuple):
     vertex: EdgeT
-    label: EdgeSymbolT
+    label: EdgeLabelT
 
 
-class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
+class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
     _vertex_map: MutableMapping[VertT, VertLabelT]
-    _edge_map: MutableMapping[EdgeT, EdgeSymbolT]
+    _edge_map: MutableMapping[EdgeT, EdgeLabelT]
     default_vertex_label: VertLabelT
-    default_edge_label: EdgeSymbolT
+    default_edge_label: EdgeLabelT
 
     @overload
-    def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeSymbolT) -> None: ...
+    def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeLabelT) -> None: ...
     @overload
     def __init__(self: GraphPayload[VertT, EdgeT, VertLabelT, None], *, default_vertex_label: VertLabelT) -> None: ...
     @overload
-    def __init__(self: GraphPayload[VertT, EdgeT, None, EdgeSymbolT], *, default_edge_label: EdgeSymbolT) -> None: ...
+    def __init__(self: GraphPayload[VertT, EdgeT, None, EdgeLabelT], *, default_edge_label: EdgeLabelT) -> None: ...
     @overload
     def __init__(self: GraphPayload[VertT, EdgeT, None, None]) -> None: ...
-    def __init__(self, *, default_vertex_label: VertLabelT | None = None, default_edge_label: EdgeSymbolT | None = None) -> None:
+    def __init__(self, *, default_vertex_label: VertLabelT | None = None, default_edge_label: EdgeLabelT | None = None) -> None:
         self._vertex_map = SequentialMapping()
         self._edge_map = SequentialMapping()
-        self.default_vertex_label = typesup(default_vertex_label)
-        self.default_edge_label = typesup(default_edge_label)
+        self.default_vertex_label = cast('VertLabelT', default_vertex_label)
+        self.default_edge_label = cast('EdgeLabelT', default_edge_label)
 
     def has_vertex(self, vertex: VertT) -> bool:
         return vertex in self._vertex_map
@@ -71,7 +70,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
     def has_edge(self, edge: EdgeT) -> bool:
         return edge in self._edge_map
 
-    def set_edge(self, edge: EdgeT, label: EdgeSymbolT | None = None) -> None:
+    def set_edge(self, edge: EdgeT, label: EdgeLabelT | None = None) -> None:
         for vertex in edge:
             if vertex not in self._vertex_map:
                 self._vertex_map[vertex] = self.default_vertex_label
@@ -84,7 +83,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
         except KeyError:
             raise MissingEdgeError(f'The edge {edge!r} is in not in the graph') from None
 
-    def get_edge_label(self, edge: EdgeT) -> EdgeSymbolT:
+    def get_edge_label(self, edge: EdgeT) -> EdgeLabelT:
         try:
             return self._edge_map[edge]
         except KeyError:
@@ -93,7 +92,7 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
     def get_edges(self) -> Collection[EdgeT]:
         return self._edge_map.keys()
 
-    def get_labeled_edges(self) -> Collection[LabeledEdge[EdgeT, EdgeSymbolT]]:
+    def get_labeled_edges(self) -> Collection[LabeledEdge[EdgeT, EdgeLabelT]]:
         return list(starmap(LabeledEdge, self._edge_map.items()))
 
     def get_edge_count(self) -> int:

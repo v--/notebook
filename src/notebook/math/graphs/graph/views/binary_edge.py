@@ -4,7 +4,7 @@ from typing import Any, overload
 from .base_edge import BaseEdgeView
 
 
-class BinaryEdgeViewMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
+class BinaryEdgeViewMeta[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](type):
     edge_class: type[EdgeT]
 
     def normalize_edge(cls, edge: tuple[VertT, VertT] | EdgeT) -> EdgeT:
@@ -25,7 +25,7 @@ class BinaryEdgeViewMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type
         return type.__new__(meta, name, bases, attrs)
 
 
-class BinaryEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](BaseEdgeView[VertT, EdgeT, VertLabelT, EdgeSymbolT], metaclass=BinaryEdgeViewMeta):
+class BinaryEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](BaseEdgeView[VertT, EdgeT, VertLabelT, EdgeLabelT], metaclass=BinaryEdgeViewMeta):
     edge_class: type[EdgeT]
     normalize_edge: Callable[[tuple[VertT, VertT] | EdgeT], EdgeT]
 
@@ -64,10 +64,10 @@ class BinaryEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](BaseEdge
     def __contains__(self, edge: tuple[VertT, VertT] | EdgeT) -> bool:
         return super().__contains__(self.normalize_edge(edge))
 
-    def __getitem__(self, edge: tuple[VertT, VertT] | EdgeT) -> EdgeSymbolT:
+    def __getitem__(self, edge: tuple[VertT, VertT] | EdgeT) -> EdgeLabelT:
         return super().__getitem__(self.normalize_edge(edge))
 
-    def __setitem__(self, edge: tuple[VertT, VertT] | EdgeT, label: EdgeSymbolT) -> None:
+    def __setitem__(self, edge: tuple[VertT, VertT] | EdgeT, label: EdgeLabelT) -> None:
         return super().__setitem__(self.normalize_edge(edge), label)
 
     def __delitem__(self, edge: tuple[VertT, VertT] | EdgeT) -> None:

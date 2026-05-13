@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 def test_fol_symbol_to_hol_type(
     fol_term: str,
     hol_term: str,
-    fol_z3_model: FormalLogicStructure,
+    fol_z3_model: FormalLogicStructure[Z3],
     hol_z3_model: HolStructure,
 ) -> None:
     fol_term_ = parse_term(fol_term, fol_z3_model.signature)

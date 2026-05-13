@@ -7,7 +7,7 @@ from .views.base_edge import BaseEdgeView
 from .views.vertex import VertexView
 
 
-class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
+class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](type):
     payload_class: type[GraphPayload]
     vertex_view_class: type[VertexView]
     edge_view_class: type[BaseEdgeView]
@@ -32,20 +32,20 @@ class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
         return result
 
 
-class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](metaclass=GraphMeta):  # noqa: PLW1641
+class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](metaclass=GraphMeta):  # noqa: PLW1641
     clone_initial: Callable[[], Self]
     vertices: VertexView
     edges: BaseEdgeView
 
     @overload
-    def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeSymbolT) -> None: ...
+    def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeLabelT) -> None: ...
     @overload
     def __init__(self: BaseGraph[VertT, EdgeT, VertLabelT, None], *, default_vertex_label: VertLabelT, default_edge_label: None = None) -> None: ...
     @overload
-    def __init__(self: BaseGraph[VertT, EdgeT, None, EdgeSymbolT], *, default_vertex_label: None = None, default_edge_label: EdgeSymbolT) -> None: ...
+    def __init__(self: BaseGraph[VertT, EdgeT, None, EdgeLabelT], *, default_vertex_label: None = None, default_edge_label: EdgeLabelT) -> None: ...
     @overload
     def __init__(self: BaseGraph[VertT, EdgeT, None, None], *, default_vertex_label: None = None, default_edge_label: None = None) -> None: ...
-    def __init__(self, *, default_vertex_label: VertLabelT | None = None, default_edge_label: EdgeSymbolT | None = None) -> None:
+    def __init__(self, *, default_vertex_label: VertLabelT | None = None, default_edge_label: EdgeLabelT | None = None) -> None:
         cls = type(self)
         payload = cls.payload_class(default_vertex_label=default_vertex_label, default_edge_label=default_edge_label)
         self.vertices = cls.vertex_view_class(payload)

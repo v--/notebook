@@ -8,6 +8,6 @@ if TYPE_CHECKING:
     from .views.vertex import VertexView
 
 
-class UndirectedGraph[VertT, VertLabelT = None, EdgeSymbolT = None](BaseGraph[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_view=UndirectedEdgeView):
-    vertices: VertexView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT]
-    edges: UndirectedEdgeView[VertT, VertLabelT, EdgeSymbolT]
+class UndirectedGraph[VertT, VertLabelT = None, EdgeLabelT = None](BaseGraph[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT], edge_view=UndirectedEdgeView):
+    vertices: VertexView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT]
+    edges: UndirectedEdgeView[VertT, VertLabelT, EdgeLabelT]

@@ -28,8 +28,8 @@ class Cycle[T]:
     @overload
     def __getitem__(self, key: int) -> T: ...
     @overload
-    def __getitem__(self, key: slice) -> Sequence[T]: ...
-    def __getitem__(self, key: int | slice) -> T | Sequence[T]:
+    def __getitem__(self, key: slice[int | None, int | None, int | None]) -> Sequence[T]: ...
+    def __getitem__(self, key: int | slice[int | None, int | None, int | None]) -> T | Sequence[T]:
         return self.payload[key]
 
     def iter_decomposed(self) -> Iterable[Cycle[T]]:

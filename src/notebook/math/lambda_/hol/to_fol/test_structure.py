@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from notebook.math.lambda_.hol.structure import HolStructure
     from notebook.math.logic.signature import FormalLogicSignature
     from notebook.math.logic.structure import FormalLogicStructure
+    from notebook.math.rings.modular import Z3
 
 
 def test_hol_expression_to_fol_digraph() -> None:
@@ -39,7 +40,7 @@ def test_hol_expression_to_fol_digraph() -> None:
 
 def test_hol_structure_to_fol_z3(
     fol_z3_signature: FormalLogicSignature,
-    fol_z3_model: FormalLogicStructure,
+    fol_z3_model: FormalLogicStructure[Z3],
     hol_z3_signature: HolSignature,
     hol_z3_model: HolStructure,
 ) -> None:

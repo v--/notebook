@@ -6,14 +6,14 @@ if TYPE_CHECKING:
     from notebook.math.graphs.graph.payload import GraphPayload, LabeledEdge
 
 
-class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:  # noqa: PLW1641
-    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]
+class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:  # noqa: PLW1641
+    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]
 
-    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]) -> None:
+    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]) -> None:
         self.payload = payload
 
     @property
-    def default_label(self) -> EdgeSymbolT:
+    def default_label(self) -> EdgeLabelT:
         return self.payload.default_edge_label
 
     def add(self, edge: EdgeT) -> None:
@@ -22,16 +22,16 @@ class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:  # noqa: 
     def remove(self, edge: EdgeT) -> None:
         self.payload.remove_edge(edge)
 
-    def get_labeled(self) -> Collection[LabeledEdge[EdgeT, EdgeSymbolT]]:
+    def get_labeled(self) -> Collection[LabeledEdge[EdgeT, EdgeLabelT]]:
         return self.payload.get_labeled_edges()
 
     def __contains__(self, edge: EdgeT) -> bool:
         return self.payload.has_edge(edge)
 
-    def __getitem__(self, edge: EdgeT) -> EdgeSymbolT:
+    def __getitem__(self, edge: EdgeT) -> EdgeLabelT:
         return self.payload.get_edge_label(edge)
 
-    def __setitem__(self, edge: EdgeT, label: EdgeSymbolT) -> None:
+    def __setitem__(self, edge: EdgeT, label: EdgeLabelT) -> None:
         self.payload.set_edge(edge, label)
 
     def __delitem__(self, edge: EdgeT) -> None:
