@@ -18,7 +18,7 @@ This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: 
 
 ## Project structure
 
-While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU [`Makefile`]('./Makefile') specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are available as [executable scripts](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts) (can be run via `uv run <command>`).
+While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU [`Makefile`](./Makefile) specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are available as [executable scripts](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts) (can be run via `uv run <command>`).
 
 See the README at [`src/notebook`](./src/notebook) for an overview of how the code is structured.
 
@@ -45,6 +45,7 @@ After running the collector, we can write out the fully qualified name of the fu
 Rather than drawing figures inline, we create standalone PDF files and then import them using `\includegraphics`. These externalized figures can be found in the [`figures`](./figures) directory.
 
 We use the following kinds of figures:
+
 * [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. 2D projection is used instead of proper 3D rendering (the latter is flaky).
 * [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
 * [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
@@ -60,12 +61,14 @@ Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) 
 ### Parsers
 
 A lot of the monograph-related code, as well as some of the tools are based on a recursive descent [parser framework](./src/notebook/parsing) created specifically for various (micro)languages in the monograph:
+
 * [Formal grammar schemas](./src/notebook/math/grammars/parsing)
 * [First-order logic terms and formulas with schemas](./src/notebook/math/logic/parsing)
-* [Lambda calculus terms with schemas](./src/notebook/math/lambda/parsing)
+* [Lambda calculus terms with schemas](./src/notebook/math/lambda_/parsing)
 * [Plain text](./src/notebook/math/nlp/parsing)
 
 Two additional parsers are included:
+
 * (Limited) [LaTeX](./src/notebook/latex/parsing)
 * (Opinionated) [BibTeX](./src/notebook/bibtex/parsing)
 
@@ -76,6 +79,7 @@ There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/f
 ### Bib(La)TeX tools
 
 There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/bibtools) (Usage: `uv run bibtools`), consisting of:
+
 * A "formatter" (`... format bibliography bibliography/*.bib`) that handles name and ISBN/ISSN normalization, reference translation (e.g. DOI, mathnet, zbMATH and other URLs to fields) and other mundane tasks. It also emits warnings when it detects mistakes, e.g. an `@article` entry without a `journal` or an `@inbook` entry without a `booktitle`.
 
 * Several BibLaTeX entry fetch tools:
@@ -86,6 +90,7 @@ There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/
   * `... fetch stackexchange <url>` (supports question and answer URLs).
 
 Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular.
+
 * The rules for entry fields are based on those of BibLaTeX with some additions (e.g. mathnet, zbMATH, jstor).
 * The parser only allows the fields from the [`BibEntry`](./src/notebook/bibtex/entry.py) class. Because this tool was built upon years of maintaining references with other improvised tools, however, a lot of (standard and nonstandard) entry properties accumulated.
 * The parser auxiliary logic for handling author names via the [`BibAuthor`](./src/notebook/bibtex/author.py) class. This involves parsing and handling each author separately (with `and` acting as a separator). For Cyrillic languages, Latin transliteration is enforced via the `BibAuthor.short` field that gets read and written to the `shortauthor` BibTeX field.
