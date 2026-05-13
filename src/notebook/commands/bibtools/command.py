@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 import click
 
-from notebook.commands.common.exception_handling import exit_gracefully_on_exception
+from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
 from notebook.commands.common.logging import configure_loguru
 from notebook.exceptions import NotebookError
@@ -21,13 +21,14 @@ if TYPE_CHECKING:
 
 
 @click.group()
-def bibtools() -> None:
+@click.pass_context
+def bibtools(ctx: click.Context) -> None:
+    ctx.with_resource(with_cli_exception_handler(NotebookError))
     configure_loguru(verbose=False)
 
 
 @bibtools.command('format')
 @click.argument('paths', nargs=-1, type=click.Path(readable=True, dir_okay=False, path_type=pathlib.Path))
-@exit_gracefully_on_exception(NotebookError)
 def format_(paths: Sequence[pathlib.Path]) -> None:
     for path in paths:
         with FormatterContextManager(path) as context:
@@ -52,7 +53,6 @@ def fetch() -> None:
 @fetch.command()
 @click.argument('identifier', type=str)
 @click.option('--dump-as-fixture', is_flag=True)
-@exit_gracefully_on_exception(NotebookError)
 def arxiv(identifier: str, *, dump_as_fixture: bool) -> None:
     entry = retrieve_arxiv_entry(identifier, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
@@ -61,7 +61,6 @@ def arxiv(identifier: str, *, dump_as_fixture: bool) -> None:
 @fetch.command()
 @click.argument('identifier', type=str)
 @click.option('--dump-as-fixture', is_flag=True)
-@exit_gracefully_on_exception(NotebookError)
 def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
     entry = retrieve_isbn_entry(identifier, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
@@ -71,7 +70,6 @@ def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
 @click.argument('identifier', type=str)
 @click.option('--print', 'print_edition', is_flag=True)
 @click.option('--dump-as-fixture', is_flag=True)
-@exit_gracefully_on_exception(NotebookError)
 def doi(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> None:
     entry = retrieve_doi_entry(identifier, print_edition=print_edition, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
@@ -81,7 +79,6 @@ def doi(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> None:
 @click.argument('identifier', type=str)
 @click.option('--english', is_flag=True)
 @click.option('--dump-as-fixture', is_flag=True)
-@exit_gracefully_on_exception(NotebookError)
 def mathnet(identifier: str, *, english: bool, dump_as_fixture: bool) -> None:
     entry = retrieve_mathnet_entry(identifier, english=english, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
@@ -90,7 +87,6 @@ def mathnet(identifier: str, *, english: bool, dump_as_fixture: bool) -> None:
 @fetch.command()
 @click.argument('identifier', type=str)
 @click.option('--dump-as-fixture', is_flag=True)
-@exit_gracefully_on_exception(NotebookError)
 def stackexchange(identifier: str, *, dump_as_fixture: bool) -> None:
     entry = retrieve_stackexchange_entry(identifier, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)

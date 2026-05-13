@@ -1,21 +1,17 @@
-import functools
+import contextlib
 from typing import TYPE_CHECKING
+
+import click
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Generator
 
 
-def exit_gracefully_on_exception[R, **P](*exceptions: type[BaseException]) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    # The outer ParamSpec seems not to be sufficient for ty because it is only used in the return value.
-    def decorator[S, **Q](fun: Callable[Q, S]) -> Callable[Q, S]:
-        @functools.wraps(fun)
-        def wrapper(*args: Q.args, **kwargs: Q.kwargs) -> S:
-            try:
-                return fun(*args, **kwargs)
-            except exceptions as err:
-                raise SystemExit(str(err)) from err
-
-        return wrapper
-
-    return decorator
+@contextlib.contextmanager
+def with_cli_exception_handler(*exceptions: type[Exception]) -> Generator[None]:
+    """Set up an handler that pretty prints viat exceptions."""
+    try:
+        yield
+    except exceptions as err:
+        raise click.ClickException(str(err)) from err
