@@ -30,18 +30,23 @@ if TYPE_CHECKING:
     ),
 
     # Multiple replacements in abstractions
-    collector.ref_proxy('ex:alg:lambda_term_substitution/simultaneous',
-        term='(λx.((xy)z))',
-        mapping=dict(x='a', y='b', z='c'),
-        expected='(λx.((xb)c))',
+    *collector.ref_proxy('ex:alg:lambda_term_substitution/simultaneous',
+        dict(
+            term='(λx.((xy)z))',
+            mapping=dict(x='a', y='b', z='c'),
+            expected='(λx.((xb)c))',
+        ),
     ),
 
     # Combinators should remain unchanged
-    collector.ref_proxy('ex:alg:lambda_term_substitution/nested_noop',
-        term='(λx.x)',
-        mapping=dict(y='x'),
-        expected='(λx.x)',
+    *collector.ref_proxy('ex:alg:lambda_term_substitution/nested_noop',
+        dict(
+            term='(λx.x)',
+            mapping=dict(y='x'),
+            expected='(λx.x)',
+        ),
     ),
+
     dict(
         term='(λx.(λy.(yx)))',
         mapping=dict(y='x'),
@@ -49,31 +54,44 @@ if TYPE_CHECKING:
     ),
 
     # Renaming
-    collector.ref_proxy('ex:alg:lambda_term_substitution/capture',
-        term='(λx.(xy))',
-        mapping=dict(y='x'),
-        expected='(λa.(ax))',
+    *collector.ref_proxy('ex:alg:lambda_term_substitution/capture',
+        dict(
+            term='(λx.(xy))',
+            mapping=dict(y='x'),
+            expected='(λa.(ax))',
+        ),
     ),
-    collector.ref_proxy('ex:alg:lambda_term_substitution/ignoring',
-        term='(λx.(xy))',
-        mapping=dict(y='z'),
-        expected='(λx.(xz))',
+
+    *collector.ref_proxy('ex:alg:lambda_term_substitution/ignoring',
+        dict(
+            term='(λx.(xy))',
+            mapping=dict(y='z'),
+            expected='(λx.(xz))',
+        ),
     ),
-    collector.ref_proxy('ex:alg:lambda_term_substitution/composed_vs_iterated',
-        term='(λa.(xb))',
-        mapping=dict(x='a', b='x'),
-        expected='(λb.(ax))',
+
+    *collector.ref_proxy('ex:alg:lambda_term_substitution/composed_vs_iterated',
+        dict(
+            term='(λa.(xb))',
+            mapping=dict(x='a', b='x'),
+            expected='(λb.(ax))',
+        ),
     ),
+
     dict(
         term='(λa.(xb))',
         mapping=dict(x='a'),
         expected='(λc.(ab))',
     ),
-    collector.ref_proxy('thm:lambda_substitutions_agree',
-        term='(λx.(xy))',
-        mapping=dict(y='x'),
-        expected='(λa.(ax))',
+
+    *collector.ref_proxy('thm:lambda_substitutions_agree',
+        dict(
+            term='(λx.(xy))',
+            mapping=dict(y='x'),
+            expected='(λa.(ax))',
+        ),
     ),
+
     dict(
         term='(λx.(xy))',
         # Specifying how to substitute bound variables should not affect the result since we override the specification.

@@ -1,26 +1,11 @@
-import inspect
 from collections.abc import Callable, Iterator, Mapping, MutableMapping
 from dataclasses import dataclass
 
 
-def determine_calling_function() -> Callable | None:
-    call_stack = inspect.stack()
-
-    for frame_info in call_stack[1:]:
-        if mod := inspect.getmodule(frame_info.frame):
-            try:
-                value = getattr(mod, frame_info.function)
-            except AttributeError:
-                continue
-
-            if inspect.getmodule(value) == mod and mod.__name__.startswith('notebook.math'):
-                return value
-
-    return None
-
-
 @dataclass
 class DictMetadataProxy[K, V](Mapping[K, V]):
+    """This proxy is used by `pytest_parametrize_kwargs` to put the appropriate function into the collector."""
+
     collector: CodeRefCollector
     doc_ref: str
     subject: Mapping[K, V]
@@ -51,12 +36,9 @@ class CodeRefCollector:
 
         return decorator
 
-    def ref_inline[T](self, doc_ref: str) -> None:
-        if calling := determine_calling_function():
-            self.mapping[doc_ref] = calling
-
-    def ref_proxy[T](self, doc_ref: str, **kwargs: T) -> Mapping[str, T]:
-        return DictMetadataProxy(self, doc_ref, dict(**kwargs))
+    def ref_proxy[T](self, doc_ref: str, *args: Mapping[str, T]) -> Iterator[Mapping[str, T]]:
+        for mapping in args:
+            yield DictMetadataProxy(self, doc_ref, mapping)
 
 
 collector = CodeRefCollector()
