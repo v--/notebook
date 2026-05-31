@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import MutableSequence, Sequence
 
 
 class VerbatimString:
@@ -64,7 +64,7 @@ BibString = str | VerbatimString | CompositeString
 
 
 class CompositeStringBuilder:
-    segments: list[BibString]
+    segments: MutableSequence[BibString]
     buffer: io.StringIO
 
     def __init__(self) -> None:

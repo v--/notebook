@@ -1,6 +1,6 @@
 import functools
 import operator
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, MutableSequence, Sequence
 from enum import StrEnum
 from typing import Any, Self, cast, overload
 
@@ -49,7 +49,7 @@ class MatrixMeta(type):
 class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):  # noqa: PLW1641
     m: int
     n: int
-    payload: list[N]
+    payload: MutableSequence[N]
 
     @classmethod
     def lift_to_scalar(cls, value: int) -> N:
