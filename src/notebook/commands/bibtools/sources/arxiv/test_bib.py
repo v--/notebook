@@ -70,7 +70,7 @@ def test_parse_2011_00412v3(arxiv_id: str = '2011.00412v3') -> None:
 
     assert entry == BibEntry(
         entry_type='misc',
-        entry_name='Leinster2023LebesgueIntegration',
+        entry_name='Leinster2023CategoricalDerivation',
         title='A categorical derivation of Lebesgue integration',
         authors=[
             BibAuthor(full_name='Tom Leinster'),
