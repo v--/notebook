@@ -332,7 +332,7 @@ class BibParser(Parser[BibToken]):
         if short_value_context and len(short_segments) > 0:
             raise short_value_context.annotate_context_error(error_message)
 
-    def process_language(self, properties: dict[str, BibValueContext], key: str) -> Sequence[BibString]:
+    def process_str_list(self, properties: dict[str, BibValueContext], key: str) -> Sequence[BibString]:
         value_context = properties.pop(key, None)
 
         if value_context is None:
@@ -397,8 +397,8 @@ class BibParser(Parser[BibToken]):
             yield BibEntry(
                 entry_type=cast('BibEntryType', entry_type),
                 entry_name=entry_name,
-                languages=self.process_language(properties, 'language'),
-                origlanguages=self.process_language(properties, 'origlanguage'),
+                languages=self.process_str_list(properties, 'language'),
+                origlanguages=self.process_str_list(properties, 'origlanguage'),
                 authors=self.process_authors(properties, 'author'),
                 compilers=self.process_authors(properties, 'compiler'),
                 translators=self.process_authors(properties, 'translator'),
@@ -406,6 +406,7 @@ class BibParser(Parser[BibToken]):
                 editors=self.process_authors(properties, 'editor'),
                 annotators=self.process_authors(properties, 'annotator'),
                 foreword=self.process_authors(properties, 'foreword'),
+                publishers=self.process_str_list(properties, 'publisher'),
                 **{
                     key: context.string_builder.get_value() for key, context in properties.items()
                 },

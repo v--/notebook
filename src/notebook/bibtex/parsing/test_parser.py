@@ -714,7 +714,7 @@ def test_ampersand_removal() -> None:
         title='Test',
         authors=[BibAuthor(full_name='A B')],
         languages=['english'],
-        publisher='Chapman & Hall/CRC',
+        publishers=['Chapman & Hall/CRC'],
     )
 
 
@@ -919,7 +919,7 @@ def test_article_entry() -> None:
         authors=[BibAuthor(full_name='Andreas Blass')],
         languages=['english'],
         doi='10.1090/conm/031/763890',
-        publisher='American Mathematical Society',
+        publishers=['American Mathematical Society'],
         journal='Contemporary Mathematics',
         date='1984',
         pages='31-33',
@@ -958,6 +958,6 @@ def test_arxiv_entry() -> None:
         issn='1532-4125',
         date='1988-01',
         pages='1221-1229',
-        publisher='Informa UK Limited',
+        publishers=['Informa UK Limited'],
         volume='16',
     )

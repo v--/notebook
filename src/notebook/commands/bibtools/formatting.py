@@ -130,7 +130,7 @@ class BibEntryAdjuster:
             case 'inbook' | 'incollection' | 'inproceedings' if (self.adjusted.booktitle is None) and (self.adjusted.crossref is None):
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
-            case 'book' | 'article' if not self.merged.publisher and not possibly_reprinted:
+            case 'book' | 'article' if len(self.merged.publishers) == 0 and not possibly_reprinted:
                 self.logger.warning(f'No publisher and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'article' if not self.adjusted.journal and not possibly_reprinted:

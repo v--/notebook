@@ -28,7 +28,7 @@ def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool)
         date=year,
         journal=entry.jour,
         series=entry.serial,
-        publisher=entry.publ,
+        publishers=[entry.publ] if entry.publ else [],
         volume=entry.vol,
         issue=entry.issue,
         pages=normalize_pages(entry.pages) if entry.pages else None,

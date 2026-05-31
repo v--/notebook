@@ -82,7 +82,7 @@ def test_parse_tm1095_rus_no_journal(identifier: str = 'tm1095') -> None:
         title='О компактных топологических пространствах',
         authors=[BibAuthor(full_name='П. С. Александров'), BibAuthor(full_name='П. С. Урысон')],
         languages=['russian'],
-        publisher='Изд-во АН СССР',
+        publishers=['Изд-во АН СССР'],
         date='1950',
         series='Тр. МИАН СССР',
         volume='31',
