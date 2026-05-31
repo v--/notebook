@@ -31,14 +31,14 @@ class WordScoreContext:
         if key not in self.degree:
             return 0.0
 
-        return self.degree[key] / self.frequency[key]
+        # We inflate the degree because, if a keyword occurs on its own, its score becomes canonically 0
+        return (1 + self.degree[key]) / self.frequency[key]
 
 
 def generate_word_score(phrases: Iterable[Phrase]) -> WordScoreContext:
     frequency = dict[str, int]()
     # The degree of a word is the sum of lengths of all phrases it occurs in minus the number of phrases.
     # This is the degree of the word in the adjacency graph if we count all words within a phrase as adjacent.
-    # We inflate this degree with additional phrases
     degree = dict[str, int]()
 
     for phrase in phrases:
@@ -91,10 +91,12 @@ def generate_phrase_scores(
     if len(phrases) == 0:
         raise RakeNoPhrasesError(f'No phrases found in {str(main_text)!r}')
 
-    word_scores = generate_word_score(phrases)
-
-    aux_phrases = itertools.chain(*(extract_phrases(aux, stop_words) for aux in aux_texts))
-    aux_word_scores = generate_word_score(aux_phrases)
+    word_scores = generate_word_score(
+        itertools.chain(
+            phrases,
+            *(extract_phrases(aux, stop_words) for aux in aux_texts),
+        ),
+    )
 
     phrase_scores = dict[Phrase, float]()
 
@@ -102,6 +104,6 @@ def generate_phrase_scores(
         phrase_scores.setdefault(phrase, 0.0)
 
         for word in phrase:
-            phrase_scores[phrase] += word_scores.get_score(word) + aux_word_scores.get_score(word)
+            phrase_scores[phrase] += word_scores.get_score(word)
 
     return PhraseScoreContext(phrase_scores)
