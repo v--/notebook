@@ -81,14 +81,14 @@ def get_entry_type(doi_type: str) -> BibEntryType:
 
 
 # We have no way of knowing whether an ISSN is digital or not, so we list them all
-def get_issn(choices: list[str]) -> str | None:
+def get_issn(choices: Sequence[str]) -> str | None:
     if len(choices) > 0:
         return ','.join(issn.format(sn) for sn in choices)
 
     return None
 
 
-def get_isbn(structured: list[DoiIsbn], unstructured: list[str], *, print_edition: bool) -> str | None:
+def get_isbn(structured: Sequence[DoiIsbn], unstructured: Sequence[str], *, print_edition: bool) -> str | None:
     if len(structured) == 0:
         if print_edition and len(unstructured) > 1:
             return isbn.format(unstructured[1])

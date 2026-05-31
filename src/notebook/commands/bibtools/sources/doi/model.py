@@ -1,3 +1,4 @@
+from collections.abc import Sequence  # noqa: TC003
 from datetime import datetime  # noqa: TC003
 from typing import Annotated
 
@@ -16,7 +17,7 @@ class DoiBaseModel(BaseModel):
 
 
 class DoiDateTime(DoiBaseModel):
-    date_parts: Annotated[list[list[int] | list[None]], Len(min_length=1)]
+    date_parts: Annotated[Sequence[Sequence[int] | Sequence[None]], Len(min_length=1)]
     date_time: datetime | None = None
     timestamp: int | None = None
     version: str | None = None
@@ -30,13 +31,13 @@ class DoiLicense(DoiBaseModel):
 
 
 class DoiContentDomain(DoiBaseModel):
-    domain: list[str]
+    domain: Sequence[str]
     crossmark_restriction: bool
 
 
 class DoiAffiliation(DoiBaseModel):
     name: str
-    place: Annotated[list[str], Field(default_factory=list)]
+    place: Annotated[Sequence[str], Field(default_factory=list)]
 
 
 class DoiAuthor(DoiBaseModel):
@@ -44,7 +45,7 @@ class DoiAuthor(DoiBaseModel):
     family: str | None = None
     given: str | None = None
     suffix: str | None = None
-    affiliation: list[DoiAffiliation] | None = None
+    affiliation: Sequence[DoiAffiliation] | None = None
     sequence: str | None = None
     authenticated_orcid: bool | None = None
     orcid: str | None = None
@@ -119,7 +120,7 @@ class DoiRelation(DoiBaseModel):
 
 
 class DoiRelationMap(DoiBaseModel):
-    is_identical_to: Annotated[list[DoiRelation], Field(default_factory=list)]
+    is_identical_to: Annotated[Sequence[DoiRelation], Field(default_factory=list)]
 
 
 class DoiSubject(DoiBaseModel):
@@ -142,8 +143,8 @@ class DoiFunder(DoiBaseModel):
     doi: str | None = None
     doi_asserted_by: str | None = None
 
-    award: Annotated[list[str], Field(default_factory=list)]
-    id: Annotated[list[DoiFunderId], Field(default_factory=list)]
+    award: Annotated[Sequence[str], Field(default_factory=list)]
+    id: Annotated[Sequence[DoiFunderId], Field(default_factory=list)]
 
 
 class DoiStandardsBody(DoiBaseModel):
@@ -167,7 +168,7 @@ class DoiData(DoiBaseModel):
 
     resource: DoiResource | None = None
     relation: DoiRelationMap | None = None
-    subject: list[DoiSubject] | None = None
+    subject: Sequence[DoiSubject] | None = None
 
     is_referenced_by_count: int | None = None
     references_count: int | None = None
@@ -184,36 +185,36 @@ class DoiData(DoiBaseModel):
     published_other: DoiDateTime | None = None
     approved: DoiDateTime | None = None
 
-    title: str | list[str]
-    container_title: str | list[str] | None = None
-    original_title: str | list[str] | None = None
-    short_title: str | list[str] | None = None
-    subtitle: str | list[str] | None = None
-    event: str | list[str] | None = None
-    proceedings_subject: str | list[str] | None = None
+    title: str | Sequence[str]
+    container_title: str | Sequence[str] | None = None
+    original_title: str | Sequence[str] | None = None
+    short_title: str | Sequence[str] | None = None
+    subtitle: str | Sequence[str] | None = None
+    event: str | Sequence[str] | None = None
+    proceedings_subject: str | Sequence[str] | None = None
 
-    author: Annotated[list[DoiAuthor], Field(default_factory=list)]
-    editor: Annotated[list[DoiAuthor], Field(default_factory=list)]
-    link: Annotated[list[DoiLink], Field(default_factory=list)]
-    assertion: Annotated[list[DoiAssertion], Field(default_factory=list)]
-    reference: Annotated[list[DoiReference], Field(default_factory=list)]
-    license: Annotated[list[DoiLicense], Field(default_factory=list)]
-    funder: Annotated[list[DoiFunder], Field(default_factory=list)]
-    updated_by: Annotated[list[DoiUpdatedBy], Field(default_factory=list)]
+    author: Annotated[Sequence[DoiAuthor], Field(default_factory=list)]
+    editor: Annotated[Sequence[DoiAuthor], Field(default_factory=list)]
+    link: Annotated[Sequence[DoiLink], Field(default_factory=list)]
+    assertion: Annotated[Sequence[DoiAssertion], Field(default_factory=list)]
+    reference: Annotated[Sequence[DoiReference], Field(default_factory=list)]
+    license: Annotated[Sequence[DoiLicense], Field(default_factory=list)]
+    funder: Annotated[Sequence[DoiFunder], Field(default_factory=list)]
+    updated_by: Annotated[Sequence[DoiUpdatedBy], Field(default_factory=list)]
 
     # arXiv
-    categories: list[str] | None = None
+    categories: Sequence[str] | None = None
     copyright: str | None = None
     version: str | None = None
     prefix: str | None = None
     source: str | None = None
     id: str | None = None
 
-    aliases: Annotated[list[str], Field(default_factory=list)]
-    alternative_id: Annotated[list[str], Field(default_factory=list)]
-    isbn_type: Annotated[list[DoiIsbn], Field(default_factory=list)]
-    isbn: Annotated[list[str], Field(default_factory=list)]
-    issn: Annotated[list[str], Field(default_factory=list)]
+    aliases: Annotated[Sequence[str], Field(default_factory=list)]
+    alternative_id: Annotated[Sequence[str], Field(default_factory=list)]
+    isbn_type: Annotated[Sequence[DoiIsbn], Field(default_factory=list)]
+    isbn: Annotated[Sequence[str], Field(default_factory=list)]
+    issn: Annotated[Sequence[str], Field(default_factory=list)]
 
     content_domain: DoiContentDomain | None = None
     journal_issue: DoiJournalIssue | None = None

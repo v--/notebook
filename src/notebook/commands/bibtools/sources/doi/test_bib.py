@@ -100,7 +100,7 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='AseevVeliov2015InfiniteHorizonOptimalControl',
+        entry_name='AseevVeliov2015WeakRegularityAssumptions',
         title='Maximum principle for infinite-horizon optimal control problems under weak regularity assumptions',
         publisher='Pleiades Publishing Ltd',
         journal='Proceedings of the Steklov Institute of Mathematics',
@@ -126,7 +126,7 @@ def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.201
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='BezhanishviliHolliday2019IntuitionisticLogic',
+        entry_name='BezhanishviliHolliday2019SemanticHierarchy',
         title='A semantic hierarchy for intuitionistic logic',
         publisher='Elsevier BV',
         journal='Indagationes Mathematicae',
@@ -441,7 +441,7 @@ def test_parse_103934_dcdsb2018020_no_family_name(doi: str = '10.3934/dcdsb.2018
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Krukowski2018UniformSpaces',
+        entry_name='Krukowski2018ArzelàAscoliSTheorem',
         title="Arzelà-Ascoli's theorem in uniform spaces",
         authors=[
             BibAuthor(full_name='Mateusz Krukowski'),
@@ -515,7 +515,7 @@ def test_parse_101145_190347190362_affiliation_places(doi: str = '10.1145/190347
 
     assert entry == BibEntry(
         entry_type='misc',
-        entry_name='BosmaEtAl1994MAGMALanguage',
+        entry_name='BosmaEtAl1994AlgebraicStructures',
         authors=[
             BibAuthor(full_name='Wieb Bosma'),
             BibAuthor(full_name='John Cannon'),
