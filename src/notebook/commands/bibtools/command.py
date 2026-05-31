@@ -2,6 +2,7 @@ import pathlib
 from typing import TYPE_CHECKING
 
 import click
+import stdnum.isbn
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
@@ -62,7 +63,8 @@ def arxiv(identifier: str, *, dump_as_fixture: bool) -> None:
 @click.argument('identifier', type=str)
 @click.option('--dump-as-fixture', is_flag=True)
 def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
-    entry = retrieve_isbn_entry(identifier, dump_as_fixture=dump_as_fixture)
+    isbn = stdnum.isbn.compact(identifier)
+    entry = retrieve_isbn_entry(isbn, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
 
 

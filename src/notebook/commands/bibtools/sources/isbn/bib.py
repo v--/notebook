@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import stdnum.isbn
+from transliterate import translit
 
 from notebook.bibtex import BibEntry
 from notebook.commands.bibtools.sources.helpers.dates import extract_year
@@ -11,27 +12,51 @@ from notebook.support.unicode import normalize_whitespace
 
 
 if TYPE_CHECKING:
-    from .model import GoogleBook
+    from .model import OLBook
 
 
-def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
-    vi = book.volume_info
-    si = book.search_info
+def get_language_name(lang_key: str) -> str:
+    return normalize_language_name(lang_key.replace('/languages/', ''))
 
-    language = normalize_language_name(vi.language)
-    authors = [name_to_bib_author(author) for author in vi.authors] if vi.authors else []
-    year = extract_year(vi.published_date)
 
-    title = normalize_whitespace(vi.title)
-    subtitle = normalize_whitespace(vi.subtitle) if vi.subtitle else None
+def transliterate_string(string: str, main_language: str) -> str:
+    match main_language:
+        case 'russian':
+            return translit(string, 'ru')
+
+        case 'bulgarian':
+            return translit(string, 'bg')
+
+        case _:
+            return string
+
+
+def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
+    bd = book.details
+
+    languages = [get_language_name(lang.key) for lang in bd.languages]
+    main_language = languages[0]
+    authors = [name_to_bib_author(transliterate_string(author.name, main_language)) for author in bd.authors] if bd.authors else []
+    year = extract_year(bd.publish_date)
+
+    title = normalize_whitespace(transliterate_string(bd.title, main_language))
+    subtitle = normalize_whitespace(transliterate_string(bd.subtitle, main_language)) if bd.subtitle else None
+
+    aux_text = list[str]()
+
+    if main_language == 'english' and bd.subjects:
+        aux_text.extend(bd.subjects)
+
+    if bd.description and bd.description.type == '/type/text':
+        aux_text.append(transliterate_string(bd.description.value, main_language))
 
     return BibEntry(
         entry_type='book',
-        entry_name=generate_entry_name(authors, year, title, language, vi.description, si.text_snippet if si else None, subtitle=subtitle),
+        entry_name=generate_entry_name(authors, year, title, languages[0], *aux_text, subtitle=subtitle),
         authors=authors,
         title=title,
-        subtitle=subtitle or None,
-        languages=[language],
-        date=vi.published_date,
+        subtitle=subtitle,
+        languages=languages,
+        date=bd.publish_date,
         isbn=stdnum.isbn.format(isbn),
     )

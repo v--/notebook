@@ -7,7 +7,7 @@ from notebook.commands.bibtools.exceptions import BibToolsParsingError
 
 def create_lang_object(language: str) -> Lang:
     try:
-        if len(language) == 2:
+        if len(language) == 2 or len(language) == 3:
             return Lang(language)
 
         return Lang(language.title())

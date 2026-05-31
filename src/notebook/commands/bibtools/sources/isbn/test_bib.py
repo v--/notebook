@@ -1,3 +1,7 @@
+import json
+
+import stdnum.isbn
+
 from notebook.bibtex import BibAuthor, BibEntry
 
 from .bib import isbn_book_to_bib
@@ -5,47 +9,37 @@ from .fixtures import get_isbn_fixture_path
 from .model import parse_isbn_json
 
 
-def test_parse_9783961340057_empty_response(isbn: str = '978-3-96134-005-7') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
-
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 0
-
-
 def test_parse_9780821810255(isbn: str = '978-0-8218-1025-5') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Birkhoff1940LatticeTheory',
-        title='Lattice Theory',
+        entry_name='Birkhoff1979LatticeTheory',
+        title='Lattice Theory (Colloquium Publications (Amer Mathematical Soc))',
         authors=[
             BibAuthor(full_name='Garrett Birkhoff'),
         ],
         isbn=isbn,
         languages=['english'],
-        date='1940-12-31',
+        date='December 1979',
     )
 
 
 def test_parse_9780821847817(isbn: str = '978-0-8218-4781-7') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
         entry_name='Aluffi2009Algebra',
-        title='Algebra: Chapter 0',
+        title='Algebra',
         authors=[
             BibAuthor(full_name='Paolo Aluffi'),
         ],
@@ -55,105 +49,59 @@ def test_parse_9780821847817(isbn: str = '978-0-8218-4781-7') -> None:
     )
 
 
-# The response here doesn't even contain the ISBN itself
-def test_parse_3885380064_limited_data(isbn: str = '3-88538-006-4') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+def test_parse_3885380064_polish(isbn: str = '3-88538-006-4') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
         entry_name='Engelking1989Topology',
-        title='General Topology',
+        title='General topology',
         authors=[
             BibAuthor(full_name='Ryszard Engelking'),
         ],
-        languages=['english'],
+        languages=['english', 'polish'],
         date='1989',
         isbn=isbn,
     )
 
 
-def test_parse_9781071635971_subtitle_and_no_year(isbn: str = '978-1-0716-3597-1') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+def test_parse_9785922102667_russian(isbn: str = '978-5-9221-0266-7') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
-
-    assert entry == BibEntry(
-        entry_type='book',
-        entry_name='SoiferMathematicalColoringBook',
-        title='The New Mathematical Coloring Book',
-        subtitle='Mathematics of Coloring and the Colorful Life of Its Creators',
-        authors=[
-            BibAuthor(full_name='Alexander Soifer'),
-        ],
-        languages=['english'],
-        isbn=isbn,
-    )
-
-
-def test_parse_5898060227_russian(isbn: str = '5-89806-022-7') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
-
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Шафаревич1999ОсновныеПонятияАлгебры',
-        title='Основные понятия алгебры',
+        entry_name='Колмогоров2006ÉлементыТеорииФункций',
+        title='Éлементы теории функций и функционалЬного анализа',
         authors=[
-            BibAuthor(full_name='Игорь Ростиславович Шафаревич'),
+            BibAuthor(full_name='Андреи Николаевич Колмогоров'),
         ],
         languages=['russian'],
-        date='1999',
-        isbn=isbn,
-    )
-
-
-def test_parse_9785922102667_empty_subtitle(isbn: str = '978-5-9221-0266-7') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
-
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
-
-    assert entry == BibEntry(
-        entry_type='book',
-        entry_name='Колмогоров2004ФункциональногоАнализа',
-        title='Элементы теории функций и функционального анализа',
-        authors=[
-            BibAuthor(full_name='Андрей Николаевич Колмогоров'),
-        ],
-        languages=['russian'],
-        date='2004',
+        date='2006',
         isbn=isbn,
     )
 
 
 def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Tyrtyshnikov2007MatrichnyĭAnalizILineĭnaiAAlgebra',
-        title='Matrichnyĭ analiz i lineĭnai͡a algebra',
+        entry_name='Тыртышников2007МатричныĭАнализ',
+        title='Матричныĭ анализ и линеĭнаи͡а алгебра',
         authors=[
-            BibAuthor(full_name='Evgeniĭ Evgenʹevich Tyrtyshnikov'),
+            BibAuthor(full_name='Е. Е. Тыртышников'),
         ],
         languages=['russian'],
         date='2007',
@@ -161,61 +109,19 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
     )
 
 
-def test_parse_9548706733_bulgarian(isbn: str = '954-8706-73-3') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
+def test_parse_5791300166_toc_and_no_authors(isbn: str = '0-471-43334-9') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
 
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-    entry = isbn_book_to_bib(res.items[0], isbn)
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Станилов1997ДиференциалнаГеометрия',
-        title='Диференциална геометрия',
-        subtitle='Учебник за студентите от СУ Св. Климент Охридски',
-        authors=[
-            BibAuthor(full_name='Грозяо Станилов'),
-        ],
-        languages=['bulgarian'],
-        date='1997',
-        isbn=isbn,
-    )
-
-
-def test_parse_5791300166_no_authors(isbn: str = '5-7913-0016-6') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
-
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-
-    entry = isbn_book_to_bib(res.items[0], isbn)
-    assert entry == BibEntry(
-        entry_type='book',
-        entry_name='2000CambridgeCompanionToJung',
-        title='Cambridge companion to Jung',
+        entry_name='2004AbstractAlgebra',
+        title='Abstract algebra',
         authors=[],
-        languages=['russian'],
-        date='2000',
-        isbn=isbn,
-    )
-
-
-def test_parse_5791300166_no_industry_identifiers(isbn: str = '0-471-43334-9') -> None:
-    with get_isbn_fixture_path(isbn).open() as file:
-        json_body = file.read()
-
-    res = parse_isbn_json(json_body)
-    assert len(res.items) == 1
-
-    entry = isbn_book_to_bib(res.items[0], isbn)
-    assert entry == BibEntry(
-        entry_type='book',
-        entry_name='DummitFoote2003AbstractAlgebra',
-        title='Abstract Algebra',
-        authors=[BibAuthor(full_name='David S. Dummit'), BibAuthor(full_name='Richard M. Foote')],
         languages=['english'],
-        date='2003-07-14',
+        date='2004',
         isbn=isbn,
     )
