@@ -70,11 +70,11 @@ class BibEntry:
     foreword:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True)] = field(default_factory=list)
     languages:     Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='language')] = field(default_factory=list)
     origlanguages: Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='origlanguage')] = field(default_factory=list)
+    publishers:    Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='publisher')] = field(default_factory=list)
     options:       Annotated[BibString | None, BibFieldAnnotation()] = None
     related:       Annotated[BibString | None, BibFieldAnnotation()] = None
     relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
     crossref:      Annotated[BibString | None, BibFieldAnnotation()] = None
-    publisher:     Annotated[BibString | None, BibFieldAnnotation()] = None
     pubstate:      Annotated[BibString | None, BibFieldAnnotation()] = None
     titleaddon:    Annotated[BibString | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[BibString | None, BibFieldAnnotation()] = None

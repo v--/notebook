@@ -41,6 +41,7 @@ def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
 
     title = normalize_whitespace(transliterate_string(bd.title, main_language))
     subtitle = normalize_whitespace(transliterate_string(bd.subtitle, main_language)) if bd.subtitle else None
+    publishers = [transliterate_string(publisher, main_language) for publisher in bd.publishers]
 
     aux_text = list[str]()
 
@@ -58,5 +59,6 @@ def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
         subtitle=subtitle,
         languages=languages,
         date=bd.publish_date,
+        publishers=publishers,
         isbn=stdnum.isbn.format(isbn),
     )
