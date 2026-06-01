@@ -40,15 +40,21 @@ class DoiAffiliation(DoiBaseModel):
     place: Annotated[Sequence[str], Field(default_factory=list)]
 
 
+class DoiAuthorRole(DoiBaseModel):
+    vocabulary: str | None = None
+    role: str
+
+
 class DoiAuthor(DoiBaseModel):
     name: str | None = None
     family: str | None = None
     given: str | None = None
     suffix: str | None = None
-    affiliation: Sequence[DoiAffiliation] | None = None
     sequence: str | None = None
     authenticated_orcid: bool | None = None
     orcid: str | None = None
+    affiliation: Sequence[DoiAffiliation] | None = None
+    role: Sequence[DoiAuthorRole] | None = None
 
 
 class DoiReference(DoiBaseModel):

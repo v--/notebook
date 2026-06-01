@@ -843,3 +843,29 @@ def test_parse_101023_a_1011497229317_no_title(doi: str = '10.1023/A:10114972293
         issn='1382-4090',
         languages=['english'],
     )
+
+
+def test_parse_101002_jgt70029_author_role(doi: str = '10.1002/jgt.70029') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='AngeltveitMcKay2026',
+        title='R(5,5)≤46',
+        publishers=['Wiley'],
+        authors=[
+            BibAuthor(full_name='Vigleik Angeltveit'),
+            BibAuthor(full_name='Brendan D. McKay'),
+        ],
+        doi=doi,
+        date='2026-03-20',
+        journal='Journal of Graph Theory',
+        volume='112',
+        pages='198-208',
+        issn='0364-9024,1097-0118',
+        languages=['english'],
+    )
