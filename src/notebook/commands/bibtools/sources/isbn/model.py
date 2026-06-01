@@ -61,6 +61,11 @@ class OLBookClassifications(OLBaseModel):
     pass
 
 
+class OLBookFirstSentence(OLBaseModel):
+    type: str
+    value: str
+
+
 class OLBookDetails(OLBaseModel):
     created: OLBookDate
     key: str
@@ -82,6 +87,8 @@ class OLBookDetails(OLBaseModel):
     description: OLBookDescription | None = None
     dewey_decimal_class: Sequence[str] | None = None
     edition_name: str | None = None
+    first_sentence: OLBookFirstSentence | None = None
+    full_title: str | None = None
     genres: Sequence[str] | None = None
     identifiers: OLBookIdentifiers | None = None
     isbn_10: Sequence[str] | None = None
@@ -114,7 +121,7 @@ class OLBook(OLBaseModel):
     info_url: str
     preview: str
     preview_url: str
-    thumbnail_url: str
+    thumbnail_url: str | None = None
     details: OLBookDetails
 
 

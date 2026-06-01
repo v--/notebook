@@ -39,7 +39,7 @@ def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
     authors = [name_to_bib_author(transliterate_string(author.name, main_language)) for author in bd.authors] if bd.authors else []
     year = extract_year(bd.publish_date)
 
-    title = normalize_whitespace(transliterate_string(bd.title, main_language))
+    title = normalize_whitespace(transliterate_string(bd.full_title or bd.title, main_language))
     subtitle = normalize_whitespace(transliterate_string(bd.subtitle, main_language)) if bd.subtitle else None
     publishers = [transliterate_string(publisher, main_language) for publisher in bd.publishers]
 
@@ -50,6 +50,9 @@ def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
 
     if bd.description and bd.description.type == '/type/text':
         aux_text.append(transliterate_string(bd.description.value, main_language))
+
+    if bd.first_sentence and bd.first_sentence.type == '/type/text':
+        aux_text.append(transliterate_string(bd.first_sentence.value, main_language))
 
     return BibEntry(
         entry_type='book',

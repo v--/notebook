@@ -72,6 +72,68 @@ def test_parse_3885380064_polish(isbn: str = '3-88538-006-4') -> None:
     )
 
 
+def test_parse_5791300166_toc_and_no_authors(isbn: str = '0-471-43334-9') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='2004AbstractAlgebra',
+        title='Abstract algebra',
+        authors=[],
+        languages=['english'],
+        date='2004',
+        publishers=['Wiley'],
+        isbn=isbn,
+    )
+
+
+def test_parse_0387987606_first_sentence(isbn: str = '0-387-98760-6') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='Marker2002ModelTheory',
+        title='Model Theory',
+        subtitle='An Introduction',
+        authors=[
+            BibAuthor(full_name='David Marker'),
+        ],
+        languages=['english'],
+        date='August 21, 2002',
+        publishers=['Springer'],
+        isbn=isbn,
+    )
+
+
+def test_parse_9780521763240_full_title(isbn: str = '978-0-521-76324-0') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='Tent2012ModelTheory',
+        title='A course in model theory',
+        authors=[
+            BibAuthor(full_name='Katrin Tent'),
+        ],
+        languages=['english'],
+        date='2012',
+        publishers=['Cambridge University Press'],
+        isbn=isbn,
+    )
+
+
 def test_parse_9785922102667_russian(isbn: str = '978-5-9221-0266-7') -> None:
     with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
         book_json = json.load(file)
@@ -110,24 +172,5 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
         languages=['russian'],
         date='2007',
         publishers=['Физматлит'],
-        isbn=isbn,
-    )
-
-
-def test_parse_5791300166_toc_and_no_authors(isbn: str = '0-471-43334-9') -> None:
-    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
-        book_json = json.load(file)
-
-    book = parse_isbn_json(book_json)
-    entry = isbn_book_to_bib(book, isbn)
-
-    assert entry == BibEntry(
-        entry_type='book',
-        entry_name='2004AbstractAlgebra',
-        title='Abstract algebra',
-        authors=[],
-        languages=['english'],
-        date='2004',
-        publishers=['Wiley'],
         isbn=isbn,
     )
