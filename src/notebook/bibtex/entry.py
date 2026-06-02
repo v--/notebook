@@ -79,6 +79,8 @@ class BibEntry:
     titleaddon:    Annotated[BibString | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[BibString | None, BibFieldAnnotation()] = None
     subtitleaddon: Annotated[BibString | None, BibFieldAnnotation()] = None
+    maintitle:     Annotated[BibString | None, BibFieldAnnotation()] = None
+    mainsubtitle:  Annotated[BibString | None, BibFieldAnnotation()] = None
     origdate:      Annotated[BibString | None, BibFieldAnnotation()] = None
     origpublisher: Annotated[BibString | None, BibFieldAnnotation()] = None
     origtitle:     Annotated[BibString | None, BibFieldAnnotation()] = None
