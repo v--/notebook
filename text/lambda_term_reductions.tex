@@ -1,5 +1,39 @@
 \section{\texorpdfstring{\( \muplambda \)}{λ}-term reductions}\label{sec:lambda_term_reductions}
 
+\paragraph{Simulating functions}
+
+\begin{algorithm}[\texorpdfstring{\( \muplambda \)}{λ}-term to function]\label{alg:untyped_lambda_term_to_function}
+  \hyperref[def:lambda_term]{\( \muplambda \)-abstractions} were introduced by \textcite[352]{Church1932LambdaCalculus} as a syntax for \hyperref[def:function]{functions}.
+
+  Fix a \( \muplambda \)-term \( M \). First, we must determine the arity of \( M \) --- the number of directly nested abstractions:
+  \begin{equation}\label{eq:alg:untyped_lambda_term_to_function/arity}
+    \op*{Arity}(M) \coloneqq \begin{cases}
+      1 + \op*{Arity}(N), &M = \qabs x N, \\
+      0,                  &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+
+  For every \( n \leq \op*{Arity}(M) \), we can define an \( n \)-ary operator corresponding to \( M \):
+  \begin{equation}\label{eq:alg:untyped_lambda_term_to_function/apply}
+    \op*{Apply}_M(A_1, \ldots, A_n) \coloneqq \begin{cases}
+      \op*{Apply}_N(A_1, \ldots, A_{n-1})[x \mapsto A_n], &M = \qabs x N, \\
+      M,                                                  &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+
+  In case \( n < \op*{Arity}(M) \), we call \( \op*{Apply}_M(A_1, \ldots, A_n) \) a \term[en=partial application (\cite[21]{Mimram2020ProgramEqualsProof})]{partial application} of \( M \).
+\end{algorithm}
+\begin{comments}
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:untyped_lambda_term_to_function}
+  \end{CodeRefDisplay}
+
+  \item For \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms}, we need to restrict each argument to the corresponding type. See \cref{rem:simply_typed_lambda_term_dependency}.
+
+  \item As described in \cref{rem:quantifiable_type_uncurrying}, knowing the arity of a \( \muplambda \)-term allows us to use the dedicated function syntax from \cref{def:function_application_notation}.
+\end{comments}
+
 \paragraph{Subterm occurrences}
 
 \begin{definition}\label{def:lambda_subterm_occurrence}\mimprovised
@@ -182,36 +216,6 @@
 \end{definition}
 \begin{comments}
   \item Of course, we also consider equivalences and multi-step reductions based on the above single-step reductions.
-\end{comments}
-
-\begin{algorithm}[\texorpdfstring{\( \muplambda \)}{λ}-term to function]\label{alg:untyped_lambda_term_to_function}
-  To each \( \muplambda \)-term \( M \), there corresponds an \hyperref[def:operation_on_set]{\( n \)-ary operation}, where the arity \( n \) is determined as follows:
-  \begin{equation}\label{eq:alg:untyped_lambda_term_to_function/arity}
-    \op*{Arity}(M) \coloneqq \begin{cases}
-      1 + \op*{Arity}(N), &M = \qabs x N, \\
-      0,                  &\T{otherwise.}
-    \end{cases}
-  \end{equation}
-
-  This arity counts the number of abstractions in the prefix of \( M \).
-
-  Knowing the arity allows us to recursively apply \( n \) arguments to \( M \):
-  \begin{equation}\label{eq:alg:untyped_lambda_term_to_function/apply}
-    \op*{Apply}_M(A_1, \ldots, A_n) \coloneqq \begin{cases}
-      \op*{Apply}_N(A_1, \ldots, A_{n-1})[x \mapsto A_n], &M = \qabs x N, \\
-      M,                                                   &\T{otherwise.}
-    \end{cases}
-  \end{equation}
-\end{algorithm}
-\begin{comments}
-  \item This algorithm is implemented in \cite{notebook:code} as
-  \begin{CodeRefDisplay}
-    \GetCodeRef{alg:untyped_lambda_term_to_function}
-  \end{CodeRefDisplay}
-
-  \item For \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms}, \( \op*{Apply}_M \) becomes a \hyperref[def:set_valued_map/partial]{partial function} because we need to restrict each argument to the corresponding type. See \cref{rem:simply_typed_lambda_term_dependency}.
-
-  \item As described in \cref{rem:quantifiable_type_uncurrying}, knowing the arity of a \( \muplambda \)-term allows us to use the dedicated function syntax from \cref{def:function_application_notation}.
 \end{comments}
 
 \begin{example}\label{ex:def:beta_eta_reduction}
