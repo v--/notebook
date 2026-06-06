@@ -68,31 +68,32 @@ class LaTeXTask(CliTask):
         requires_biber_rerun = False
 
         try:
-            with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING[self.compiler]) as log_file:
-                shutil.copyfile(self.get_aux_path('.log'), self.get_aux_path('.old.log'))
-                requires_rerun = 'Rerun to get' in log_file.read()
-                log_file.seek(0)
-                requires_biber_rerun = 'Please (re)run Biber' in log_file.read()
-                log_file.seek(0)
-                parser.process(log_file)
+            shutil.copyfile(self.get_aux_path('.log'), self.get_aux_path('.old.log'))
         except OSError:
             self.sublogger.exception('Could not open TeX log file.')
-        else:
-            if len(parser.errors) > 0:
-                if len(parser.errors) == 1:
-                    self.sublogger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
-                else:
-                    self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
-            elif len(parser.warnings) > 0:
-                if len(parser.warnings) == 1:
-                    self.sublogger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
-                else:
-                    self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
-            elif len(parser.badboxes) > 0:
-                if len(parser.badboxes) == 1:
-                    self.sublogger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
-                else:
-                    self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
+
+        with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING[self.compiler]) as log_file:
+            requires_rerun = 'Rerun to get' in log_file.read()
+            log_file.seek(0)
+            requires_biber_rerun = 'Please (re)run Biber' in log_file.read()
+            log_file.seek(0)
+            parser.process(log_file)
+
+        if len(parser.errors) > 0:
+            if len(parser.errors) == 1:
+                self.sublogger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
+            else:
+                self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
+        elif len(parser.warnings) > 0:
+            if len(parser.warnings) == 1:
+                self.sublogger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
+            else:
+                self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
+        elif len(parser.badboxes) > 0:
+            if len(parser.badboxes) == 1:
+                self.sublogger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
+            else:
+                self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
 
         if len(parser.errors) != 0:
             return
