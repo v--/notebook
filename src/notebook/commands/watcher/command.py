@@ -22,34 +22,33 @@ CLEAN_MASK = Mask.MOVED_FROM | Mask.DELETE
 MASK = BUILD_MASK | CLEAN_MASK
 
 
-async def iter_build_file_changes(logger: loguru.Logger) -> AsyncIterator[TaskTrigger]:
-    with Inotify() as inotify:
-        inotify.add_watch(ROOT_PATH, MASK)
-        inotify.add_watch(ROOT_PATH / 'text', MASK)
-        inotify.add_watch(ROOT_PATH / 'packages', MASK)
-        inotify.add_watch(ROOT_PATH / 'figures', MASK)
-        inotify.add_watch(ROOT_PATH / 'src' / 'notebook' / 'figures', MASK)
-        inotify.add_watch(ROOT_PATH / 'images', MASK)
-        inotify.add_watch(ROOT_PATH / 'bibliography', MASK)
-        inotify.add_watch(ROOT_PATH / 'asymptote', MASK)
-        inotify.add_watch(ROOT_PATH / 'classes', MASK)
-        inotify.add_watch(ROOT_PATH / 'aux', MASK)
-        inotify.add_watch(ROOT_PATH / 'output', MASK)
-        logger.info('Started daemon and initialized watchers')
+async def iter_build_file_changes(inotify: Inotify, logger: loguru.Logger) -> AsyncIterator[TaskTrigger]:
+    inotify.add_watch(ROOT_PATH, MASK)
+    inotify.add_watch(ROOT_PATH / 'text', MASK)
+    inotify.add_watch(ROOT_PATH / 'packages', MASK)
+    inotify.add_watch(ROOT_PATH / 'figures', MASK)
+    inotify.add_watch(ROOT_PATH / 'src' / 'notebook' / 'figures', MASK)
+    inotify.add_watch(ROOT_PATH / 'images', MASK)
+    inotify.add_watch(ROOT_PATH / 'bibliography', MASK)
+    inotify.add_watch(ROOT_PATH / 'asymptote', MASK)
+    inotify.add_watch(ROOT_PATH / 'classes', MASK)
+    inotify.add_watch(ROOT_PATH / 'aux', MASK)
+    inotify.add_watch(ROOT_PATH / 'output', MASK)
+    logger.info('Started daemon and initialized watchers')
 
-        async for target in inotify:
-            if target.path is not None:
-                relative = pathlib.Path(target.path).relative_to(ROOT_PATH)
+    async for target in inotify:
+        if target.path is not None:
+            relative = pathlib.Path(target.path).relative_to(ROOT_PATH)
 
-                if target.mask & BUILD_MASK == target.mask:
-                    yield TaskTrigger(TaskTriggerKind.BUILD, relative)
+            if target.mask & BUILD_MASK == target.mask:
+                yield TaskTrigger(TaskTriggerKind.BUILD, relative)
 
-                if target.mask & CLEAN_MASK == target.mask:
-                    yield TaskTrigger(TaskTriggerKind.CLEAN, relative)
+            if target.mask & CLEAN_MASK == target.mask:
+                yield TaskTrigger(TaskTriggerKind.CLEAN, relative)
 
 
-async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, rebuild_all_figures: bool) -> None:  # noqa: C901
-    async for target in iter_build_file_changes(base_logger):
+async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: loguru.Logger, rebuild_all_figures: bool) -> None:  # noqa: C901
+    async for target in iter_build_file_changes(inotify, base_logger):
         path = target.path
 
         if path.match('figures/*.tex'):
@@ -114,14 +113,16 @@ def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
     base_logger = loguru.logger
     manager = TaskRunner()
 
-    try:
-        asyncio.run(
-            setup_watchers(
-                manager,
-                base_logger=base_logger,
-                rebuild_all_figures=rebuild_all_figures,
-            ),
-        )
-    except KeyboardInterrupt:
-        manager.finalize()
-        base_logger.info('Gracefully shutting down')
+    with Inotify() as inotify:
+        try:
+            asyncio.run(
+                setup_watchers(
+                    manager,
+                    inotify,
+                    base_logger=base_logger,
+                    rebuild_all_figures=rebuild_all_figures,
+                ),
+            )
+        except KeyboardInterrupt:
+            manager.finalize()
+            base_logger.info('Gracefully shutting down')
