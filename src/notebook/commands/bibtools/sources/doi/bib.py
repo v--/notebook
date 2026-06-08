@@ -4,10 +4,10 @@ from nameparser import HumanName
 from stdnum import isbn, issn
 
 from notebook.bibtex import BibAuthor, BibEntry, BibEntryType
+from notebook.commands.bibtools.exceptions import BibToolsDecodingError
 from notebook.commands.bibtools.sources.helpers.entries import generate_entry_name
 from notebook.commands.bibtools.sources.helpers.languages import normalize_language_name
 from notebook.commands.bibtools.sources.helpers.pages import normalize_pages
-from notebook.exceptions import UnreachableException
 from notebook.support.unicode import normalize_whitespace
 
 
@@ -39,8 +39,8 @@ def doi_datetime_get_year(doi_datetime: DoiDateTime) -> int | None:
     if doi_datetime.date_time:
         return doi_datetime.date_time.year
 
-    if len(doi_datetime.date_parts[0]) > 0:
-        return doi_datetime.date_parts[0][0]
+    if len(doi_datetime.date_parts) > 0:
+        return doi_datetime.date_parts[0].year
 
     return None
 
@@ -49,18 +49,19 @@ def doi_datetime_to_string(doi_datetime: DoiDateTime) -> str:
     if doi_datetime.date_time:
         return doi_datetime.date_time.strftime('%Y-%m-%d')
 
-    match doi_datetime.date_parts[0]:
-        case [year, month, day, *_]:
-            return f'{year}-{month:02}-{day:02}'
+    first = doi_datetime.date_parts[0]
+    print(first)
 
-        case [year, month]:
-            return f'{year}-{month:02}'
+    if first.day is None:
+        if first.month is None:
+            if first.year is None:
+                raise BibToolsDecodingError('Unexpected empty year')
 
-        case [year]:
-            return str(year)
+            return str(first.year)
 
-        case _:
-            raise UnreachableException
+        return f'{first.year}-{first.month:02}'
+
+    return f'{first.year}-{first.month:02}-{first.day:02}'
 
 
 def get_entry_type(doi_type: str) -> BibEntryType:

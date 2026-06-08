@@ -13,5 +13,9 @@ class BibToolsParsingError(BibToolsError):
     pass
 
 
+class BibToolsDecodingError(BibToolsError):
+    pass
+
+
 class BibToolsNotFoundError(BibToolsError):
     pass

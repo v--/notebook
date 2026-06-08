@@ -2,22 +2,36 @@ from collections.abc import Sequence  # noqa: TC003
 from datetime import datetime  # noqa: TC003
 from typing import Annotated
 
-from annotated_types import Len
-from pydantic import BaseModel, ConfigDict, Field
+import msgspec
+import msgspec.json
 
 
+FIELD_NAMES_TO_BE_PRESERVED = ['special_numbering']
 FIELD_NAMES_TO_BE_CAPITALIZED = ['url', 'doi', 'issn', 'isbn', 'orcid']
 
 
-class DoiBaseModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=lambda name: name.upper() if name in FIELD_NAMES_TO_BE_CAPITALIZED else name.replace('_', '-'),
-        extra='forbid',
-    )
+def get_doi_field_name(name: str) -> str:
+    if name in FIELD_NAMES_TO_BE_PRESERVED:
+        return name
+
+    if name in FIELD_NAMES_TO_BE_CAPITALIZED:
+        return name.upper()
+
+    return name.replace('_', '-')
+
+
+class DoiBaseModel(msgspec.Struct, forbid_unknown_fields=True, rename=get_doi_field_name):
+    pass
+
+
+class DoiDateTimePart(msgspec.Struct, array_like=True):
+    year: int | None = None
+    month: int | None = None
+    day: int | None = None
 
 
 class DoiDateTime(DoiBaseModel):
-    date_parts: Annotated[Sequence[Sequence[int] | Sequence[None]], Len(min_length=1)]
+    date_parts: Annotated[Sequence[DoiDateTimePart], msgspec.Meta(min_length=1)]
     date_time: datetime | None = None
     timestamp: int | None = None
     version: str | None = None
@@ -37,12 +51,12 @@ class DoiContentDomain(DoiBaseModel):
 
 class DoiAffiliation(DoiBaseModel):
     name: str
-    place: Annotated[Sequence[str], Field(default_factory=list)]
+    place: Sequence[str] = msgspec.field(default_factory=list)
 
 
 class DoiAuthorRole(DoiBaseModel):
-    vocabulary: str | None = None
     role: str
+    vocabulary: str | None = None
 
 
 class DoiAuthor(DoiBaseModel):
@@ -126,7 +140,7 @@ class DoiRelation(DoiBaseModel):
 
 
 class DoiRelationMap(DoiBaseModel):
-    is_identical_to: Annotated[Sequence[DoiRelation], Field(default_factory=list)]
+    is_identical_to: Sequence[DoiRelation] = msgspec.field(default_factory=list)
 
 
 class DoiSubject(DoiBaseModel):
@@ -149,8 +163,8 @@ class DoiFunder(DoiBaseModel):
     doi: str | None = None
     doi_asserted_by: str | None = None
 
-    award: Annotated[Sequence[str], Field(default_factory=list)]
-    id: Annotated[Sequence[DoiFunderId], Field(default_factory=list)]
+    award: Sequence[str] = msgspec.field(default_factory=list)
+    id: Sequence[DoiFunderId] = msgspec.field(default_factory=list)
 
 
 class DoiStandardsBody(DoiBaseModel):
@@ -171,6 +185,8 @@ class DoiData(DoiBaseModel):
     type: str
     doi: str
     url: str
+    issued: DoiDateTime
+    title: str | Sequence[str]
 
     resource: DoiResource | None = None
     relation: DoiRelationMap | None = None
@@ -181,7 +197,6 @@ class DoiData(DoiBaseModel):
     reference_count: int | None = None
     score: int | None = None
 
-    issued: DoiDateTime
     deposited: DoiDateTime | None = None
     indexed: DoiDateTime | None = None
     created: DoiDateTime | None = None
@@ -191,7 +206,6 @@ class DoiData(DoiBaseModel):
     published_other: DoiDateTime | None = None
     approved: DoiDateTime | None = None
 
-    title: str | Sequence[str]
     container_title: str | Sequence[str] | None = None
     original_title: str | Sequence[str] | None = None
     short_title: str | Sequence[str] | None = None
@@ -199,14 +213,14 @@ class DoiData(DoiBaseModel):
     event: str | Sequence[str] | None = None
     proceedings_subject: str | Sequence[str] | None = None
 
-    author: Annotated[Sequence[DoiAuthor], Field(default_factory=list)]
-    editor: Annotated[Sequence[DoiAuthor], Field(default_factory=list)]
-    link: Annotated[Sequence[DoiLink], Field(default_factory=list)]
-    assertion: Annotated[Sequence[DoiAssertion], Field(default_factory=list)]
-    reference: Annotated[Sequence[DoiReference], Field(default_factory=list)]
-    license: Annotated[Sequence[DoiLicense], Field(default_factory=list)]
-    funder: Annotated[Sequence[DoiFunder], Field(default_factory=list)]
-    updated_by: Annotated[Sequence[DoiUpdatedBy], Field(default_factory=list)]
+    author: Sequence[DoiAuthor] = msgspec.field(default_factory=list)
+    editor: Sequence[DoiAuthor] = msgspec.field(default_factory=list)
+    link: Sequence[DoiLink] = msgspec.field(default_factory=list)
+    assertion: Sequence[DoiAssertion] = msgspec.field(default_factory=list)
+    reference: Sequence[DoiReference] = msgspec.field(default_factory=list)
+    license: Sequence[DoiLicense] = msgspec.field(default_factory=list)
+    funder: Sequence[DoiFunder] = msgspec.field(default_factory=list)
+    updated_by: Sequence[DoiUpdatedBy] = msgspec.field(default_factory=list)
 
     # arXiv
     categories: Sequence[str] | None = None
@@ -216,11 +230,11 @@ class DoiData(DoiBaseModel):
     source: str | None = None
     id: str | None = None
 
-    aliases: Annotated[Sequence[str], Field(default_factory=list)]
-    alternative_id: Annotated[Sequence[str], Field(default_factory=list)]
-    isbn_type: Annotated[Sequence[DoiIsbn], Field(default_factory=list)]
-    isbn: Annotated[Sequence[str], Field(default_factory=list)]
-    issn: Annotated[Sequence[str], Field(default_factory=list)]
+    aliases: Sequence[str] = msgspec.field(default_factory=list)
+    alternative_id: Sequence[str] = msgspec.field(default_factory=list)
+    isbn_type: Sequence[DoiIsbn] = msgspec.field(default_factory=list)
+    isbn: Sequence[str] = msgspec.field(default_factory=list)
+    issn: Sequence[str] = msgspec.field(default_factory=list)
 
     content_domain: DoiContentDomain | None = None
     journal_issue: DoiJournalIssue | None = None
@@ -228,7 +242,7 @@ class DoiData(DoiBaseModel):
 
     container_title_short: str | None = None
     publisher_location: str | None = None
-    special_numbering: Annotated[str | None, Field(alias='special_numbering', default=None)]  # Not kebab-case
+    special_numbering: str | None = None
     edition_number: str | None = None
     article_number: str | None = None
     update_policy: str | None = None
@@ -241,4 +255,4 @@ class DoiData(DoiBaseModel):
 
 
 def parse_doi_json(json_body: str) -> DoiData:
-    return DoiData.model_validate_json(json_body, strict=True)
+    return msgspec.json.decode(json_body, type=DoiData)

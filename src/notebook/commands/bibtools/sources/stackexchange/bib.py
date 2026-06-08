@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from notebook.bibtex import BibAuthor, BibEntry, BibString, VerbatimString
-from notebook.commands.bibtools.exceptions import BibToolsParsingError
+from notebook.commands.bibtools.exceptions import BibToolsDecodingError
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
 from notebook.support.iteration import string_accumulator
 
@@ -39,7 +39,7 @@ def mangle_title(title: str) -> Iterable[str]:
 
 def stackexchange_entry_to_bib(entry: StackExchangeEntry, identifier: str) -> BibEntry:
     if entry.site not in SITE_ENTRY_PREFIX_MAP:
-        raise BibToolsParsingError(f'Cannot generate an entry name for {entry.site!r} because we do not have a dedicated prefix.')
+        raise BibToolsDecodingError(f'Cannot generate an entry name for {entry.site!r} because we do not have a dedicated prefix.')
 
     author_name: BibString = entry.author_username if len(entry.author_username.split()) > 1 else VerbatimString(f"User ``{entry.author_username}''")
 

@@ -3,12 +3,12 @@ import re
 from datetime import datetime
 
 import bs4
-from pydantic import BaseModel
+import msgspec
 
 from notebook.commands.bibtools.exceptions import BibToolsParsingError
 
 
-class StackExchangeEntry(BaseModel):
+class StackExchangeEntry(msgspec.Struct):
     title: str
     site: str
     author_username: str

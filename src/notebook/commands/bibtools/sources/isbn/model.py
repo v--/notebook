@@ -1,10 +1,11 @@
-from collections.abc import Sequence  # noqa: TC003
+from collections.abc import Mapping, Sequence  # noqa: TC003
+from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Json
+import msgspec
 
 
-class OLBaseModel(BaseModel):
-    model_config = ConfigDict(extra='forbid')
+class OLBaseModel(msgspec.Struct, forbid_unknown_fields=True):
+    pass
 
 
 class OLBookType(OLBaseModel):
@@ -79,6 +80,7 @@ class OLBookDetails(OLBaseModel):
     source_records: Sequence[str]
     title: str
     type: OLBookType
+    works: Sequence[OLBookWork]
     authors: Sequence[OLBookAuthor] | None = None
     by_statement: str | None = None
     classifications: OLBookClassifications | None = None
@@ -113,17 +115,16 @@ class OLBookDetails(OLBaseModel):
     url: Sequence[str] | None = None
     weight: str | None = None
     work_titles: Sequence[str] | None = None
-    works: Sequence[OLBookWork]
 
 
 class OLBook(OLBaseModel):
+    details: OLBookDetails
     bib_key: str
     info_url: str
     preview: str
     preview_url: str
     thumbnail_url: str | None = None
-    details: OLBookDetails
 
 
-def parse_isbn_json(json: Json) -> OLBook:
-    return OLBook.model_validate(json)
+def parse_isbn_json(json: Mapping[str, Any]) -> OLBook:
+    return msgspec.convert(json, OLBook)

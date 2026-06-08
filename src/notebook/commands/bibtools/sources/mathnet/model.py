@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 import bs4
-from pydantic import BaseModel
+import msgspec
 
 from notebook.commands.bibtools.exceptions import BibToolsNotFoundError, BibToolsParsingError
 from notebook.latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, Whitespace
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-class MathNetEntry(BaseModel):
+class MathNetEntry(msgspec.Struct, forbid_unknown_fields=True):
     RBibitem: str
     by: str
     paper: str
@@ -123,4 +123,4 @@ def parse_mathnet_html(html: str, *, english: bool) -> MathNetEntry:
     if english and not transl:
         raise BibToolsNotFoundError('Could not find English metadata')
 
-    return MathNetEntry.model_validate(kv, strict=True)
+    return msgspec.convert(kv, MathNetEntry)
