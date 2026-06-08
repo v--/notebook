@@ -1,14 +1,12 @@
 from dataclasses import replace
-from typing import TYPE_CHECKING, Any, TextIO
+from typing import TYPE_CHECKING, Any
 
 from stdnum import isbn, issn
 
-from notebook.bibtex import BibAuthor, BibEntry, BibString, parse_bibtex
+from notebook.bibtex import BibAuthor, BibEntry, BibString
 from notebook.commands.common.names import latinize_cyrillic_name
-from notebook.parsing.parser import ParserError
 
 from . import url_templates
-from .exceptions import BibToolsParsingError
 from .sources.helpers.dates import extract_year
 from .sources.helpers.entries import regenerate_entry_name
 from .sources.helpers.languages import get_main_entry_language, normalize_language_name
@@ -17,7 +15,6 @@ from .sources.helpers.pages import normalize_pages
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
 
     import loguru
 
@@ -302,18 +299,3 @@ def adjust_entry(entry: BibEntry, crossref: BibEntry | None, logger: loguru.Logg
     adjuster = BibEntryAdjuster(entry, crossref, logger)
     adjuster.adjust()
     return adjuster.adjusted
-
-
-def read_entries(src: TextIO) -> Sequence[BibEntry]:
-    try:
-        return parse_bibtex(src.read())
-    except ParserError as err:
-        raise BibToolsParsingError(str(err) + '\n\n' + err.__notes__[0]) from err
-
-
-def write_entries(entries: Sequence[BibEntry], dest: TextIO) -> None:
-    for i, entry in enumerate(entries):
-        dest.write(str(entry))
-
-        if i + 1 < len(entries):
-            dest.write('\n')

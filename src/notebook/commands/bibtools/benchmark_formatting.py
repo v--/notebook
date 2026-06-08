@@ -7,7 +7,8 @@ import pytest
 
 from notebook.paths import BIB_PATH
 
-from .formatting import adjust_entry, read_entries, write_entries
+from .file import read_entries, write_entries
+from .formatting import adjust_entry
 
 
 if TYPE_CHECKING:

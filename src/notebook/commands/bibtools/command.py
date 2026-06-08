@@ -9,7 +9,8 @@ from notebook.commands.common.formatting import FormatterContextManager
 from notebook.commands.common.logging import configure_loguru
 from notebook.exceptions import NotebookError
 
-from .formatting import adjust_entry, read_entries, write_entries
+from .file import read_entries, write_entries
+from .formatting import adjust_entry
 from .sources.arxiv import retrieve_arxiv_entry
 from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
