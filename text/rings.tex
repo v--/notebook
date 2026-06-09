@@ -201,13 +201,17 @@
 
 \paragraph{Integers modulo \( n \)}
 
-\begin{definition}\label{def:ring_of_integers_modulo}\mimprovised
-  For any positive integer \( n > 1 \), we can endow the group \hyperref[def:group_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) with the operation
-  \begin{equation*}
-    x \odot y \coloneqq \rem(xy, n).
-  \end{equation*}
+\begin{definition}\label{def:ring_of_integers_modulo}
+  For each positive integers \( n \), we define the \term[ru=кольцо вычетов по модулю (\cite[30]{Винберг2014КурсАлгебры}), en=ring of integers modulo \( n \) (\cite[112]{Bourbaki1998Algebra1to3})]{ring of integers modulo} \( n \) as the group \hyperref[def:group_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) with multiplication defined in any of the following equivalent ways:
 
-  With this, \( \BbbZ_n \) becomes a \hyperref[def:ring/commutative]{commutative ring}, which we call the \term[ru=кольцо вычетов по модулю (\cite[30]{Винберг2014КурсАлгебры})]{ring of integers modulo} \( n \).
+  \begin{thmenum}
+    \thmitem{def:ring_of_integers_modulo/quotient}\mcite[112]{Bourbaki1998Algebra1to3} We can define \( \BbbZ_n \) as the \hyperref[def:ring/quotient]{quotient} \( \BbbZ / n \BbbZ \) by the ideal \( n \BbbZ \) of multiples of \( n \).
+
+    \thmitem{def:ring_of_integers_modulo/direct}\mimprovised We can endow the group \( \BbbZ_n \) with the operation
+    \begin{equation*}
+      x \odot y \coloneqq \rem(xy, n).
+    \end{equation*}
+  \end{thmenum}
 \end{definition}
 \begin{defproof}
   We must show that \( \BbbZ_n \) is really a ring. First, note that
@@ -406,7 +410,19 @@
 \paragraph{Ring characteristic}
 
 \begin{proposition}\label{thm:ring_characteristic_homomorphism}
-  Similarly to how \( \BbbN \) is an \hyperref[def:universal_objects/initial]{initial object} in the category \hyperref[def:semiring/category]{\( \cat{SRing} \)} of semirings, \( \BbbZ \) is an initial object in the category \hyperref[def:ring/category]{\( \cat{Ring} \)} of unital rings.
+  In any \hyperref[def:ring]{unital ring} \( R \), multiplication extends iterated addition/subtraction of \( 1_R \)\fnote{We discuss iterated addition in additive monoids in \cref{thm:monoid_distributivity}.}.
+
+  More precisely, the following map is the unique (unital) homomorphism from \( \BbbZ \) to \( R \).
+  \begin{equation}\label{eq:thm:ring_characteristic_homomorphism}
+    \begin{aligned}
+      &\iota: \BbbZ \to R \\
+      &\iota(n) \coloneqq \begin{cases}
+        0_R                &n = 0, \\
+        \iota(n - 1) + 1_R &n > 0, \\
+        \iota(n - 1) - 1_R &n < 0.
+      \end{cases}
+    \end{aligned}
+  \end{equation}
 \end{proposition}
 \begin{proof}
   Follows from \cref{thm:semiring_characteristic_homomorphism} by noting that \( (-n)x = -nx \).
@@ -431,18 +447,15 @@
 \begin{definition}\label{def:ring_characteristic}
   We define the \term[bg=характеристика (\cite[396]{Обрешков1962ВисшаАлгебра}), ru=характеристика (\cite[32]{Винберг2014КурсАлгебры}), en=characteristic (\cite[148]{Knapp2016BasicAlgebra})]{characteristic} \( \op{char}(R) \) of a ring \( R \) via the following equivalent definitions:
   \begin{thmenum}
-    \thmitem{def:ring_characteristic/embedding}\mimprovised \( \op{char}(R) \) is the unique nonnegative integer \( n \) for which the kernel of the characteristic morphism \( \iota \) defined via \eqref{eq:thm:semiring_characteristic_homomorphism} is \( n\BbbZ \).
+    \thmitem{def:ring_characteristic/embedding}\mimprovised \( \op{char}(R) \) is the unique nonnegative integer \( n \) for which the kernel of the characteristic morphism \( \iota \) from \eqref{eq:thm:semiring_characteristic_homomorphism} is \( n\BbbZ \).
 
     We use here that \( 0\BbbZ \) is the \hyperref[def:ring/trivial]{zero ring} and \( 1\BbbZ = \BbbZ \).
 
-    \thmitem{def:ring_characteristic/direct}\mcite[90]{Lang2002Algebra} \( \op{char}(R) \) is the \hyperref[def:group_order]{order} of \( 1 \) in the additive group of \( R \) and \( 0 \) if the order is infinite.
+    \thmitem{def:ring_characteristic/direct}\mcite[90]{Lang2002Algebra} \( \op{char}(R) \) is the \hyperref[def:group_order]{order} of \( 1_R \) in the additive group of \( R \) and \( 0 \) if the order is infinite.
 
-    Explicitly, \( \op{char}(R) \) is the smallest positive integer \( n \) such that \( n \cdot 1 = 0 \) and \( \op{char}(R) = 0 \) if such an integer does not exist.
+    Explicitly, \( \op{char}(R) \) is the smallest positive integer \( n \) such that \( n \cdot 1_R = 0_R \) and \( \op{char}(R) = 0 \) if such an integer does not exist.
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item
-\end{comments}
 \begin{defproof}
   \EquivalenceSubProof{def:ring_characteristic/embedding}{def:ring_characteristic/direct} Let \( n \) be such that
   \begin{equation*}
@@ -479,26 +492,28 @@
 \begin{proof}
   \SubProofOf{thm:def:ring_characteristic/zero} Let \( R \) be a ring of characteristic \( 0 \).
 
-  The characteristic morphism \( n \mapsto n \cdot 1_R \) thus has a trivial kernel, and \cref{thm:group_homomorphism_trivial_kernel} implies that it is injective. Then \( R \) is infinite since it contains an embedding of every integer.
+  The characteristic morphism \( n \mapsto \iota(n) \) thus has a trivial kernel, and \cref{thm:group_homomorphism_trivial_kernel} implies that it is injective. Then \( R \) is infinite since it contains an embedding of every integer.
 
-  \SubProofOf{thm:def:ring_characteristic/trivial} The characteristic of \( R \) is \( 1 \) if \( 1 \cdot 1 = 0 \), which is equivalent to the ring being trivial.
+  \SubProofOf{thm:def:ring_characteristic/trivial} The characteristic of \( R \) is \( 1 \) if \( \iota(1) = 0 \), which is equivalent to the ring being trivial.
 
   \SubProofOf{thm:def:ring_characteristic/entire} Fix an entire ring \( R \) and let \( n \) be its characteristic.
 
-  We will use \cref{def:ring_characteristic/direct}, according to which \( n \) is the additive order of \( 1 \) if it is finite and \( 0 \) if the order is infinite.
+  We will use \cref{def:ring_characteristic/direct}, according to which \( n \) is the additive order of \( 1_R \) if it is finite and \( 0 \) if the order is infinite.
 
   Let \( n = mk \) for nonnegative integers \( m \) and \( k \). Then
   \begin{equation*}
-    0 = n \cdot 1 = mk \cdot 1 = (m \cdot 1) (k \cdot 1).
+    0 = \iota(n) = \iota(mk) = \iota(m) \cdot \iota(k).
   \end{equation*}
 
-  Since \( R \) has no proper zero divisors, either \( m \cdot 1 \) or \( k \cdot 1 \) must be zero. Thus, either \( m \) or \( k \) is a multiple of the characteristic \( n \) of \( D \). Since both are integers, either \( m \) or \( k \) must equal \( n \).
+  Since \( R \) has no proper zero divisors, either \( \iota(m) \) or \( \iota(k) \) must be zero. Thus, either \( m \) or \( k \) is a multiple of the characteristic \( n \) of \( R \). Since both are integers, either \( m \) or \( k \) must equal \( n \).
 
   Then \( n \) is either \( 0 \) or a prime number.
 
-  \SubProofOf{thm:def:ring_characteristic/embedding} First suppose that \( R \) has positive characteristic \( n \). Then \( n \cdot 1 = 0 \), which implies \( n \cdot \varphi(1) = \varphi(0) \), hence \( \op{char}(T) \leq n \). But \( \varphi \) is an embedding, hence if \( k \cdot 1 \neq 0 \), then
+  \SubProofOf{thm:def:ring_characteristic/embedding} Fix an embedding \( \varphi: R \to S \).
+
+  First suppose that \( R \) has positive characteristic \( n \). Then \( \iota(n) = 0_R \), which implies \( \iota(n) \cdot \varphi(1) = \varphi(0) \), hence \( \op{char}(T) \leq n \). But \( \varphi \) is an embedding, hence if \( \iota(k) \neq 0_R \), then
   \begin{equation*}
-    k \cdot \varphi(1) \neq \varphi(0).
+    \varphi(\iota(k)) \neq \varphi(0_R).
   \end{equation*}
 
   This implies that \( \op{char}(S) \geq \op{char}(R) \), which in turn shows that \( \op{char}(S) = \op{char}(R) \).
@@ -511,9 +526,9 @@
   \begin{thmenum}
     \thmitem{ex:def:ring_characteristic/natural_numbers} The \hyperref[def:integers]{integers} \( \BbbZ \) have characteristic \( \op{char}(\BbbZ) = 0 \) because \( \iota \) is an isomorphism. Consequently, by \cref{thm:def:ring_characteristic/embedding}, any superring of \( \BbbZ \) has characteristic zero, most notably the fields \( \BbbQ \), \( \BbbR \) and \( \BbbC \).
 
-    \thmitem{ex:def:ring_characteristic/integers_modulo} The ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) has characteristic \( \op{char}(\BbbZ_n) = n \) because of \cref{thm:integers_modulo_isomorphic_to_quotient_group}.
+    \thmitem{ex:def:ring_characteristic/integers_modulo} The ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) has characteristic \( \op{char}(\BbbZ_n) = n \) because \( \iota \) is again an isomorphism.
 
-    \thmitem{ex:def:ring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_semiring]{algebra} \( M \) over a commutative unital ring \( R \) has the same characteristic as \( R \) because of the canonical embedding of \( R \) in \( M \). In particular, the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) has the same characteristic as its ring.
+    \thmitem{ex:def:ring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_ring]{algebra} \( M \) over a commutative unital ring \( R \) has the same characteristic as \( R \) because of the canonical embedding of \( R \) in \( M \). In particular, the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) has the same characteristic as its ring.
 
     \thmitem{ex:def:ring_characteristic/boolean_ring} \Cref{thm:boolean_ring_characteristic} implies that the characteristic of a \hyperref[def:boolean_ring]{Boolean ring} is \( 2 \).
   \end{thmenum}
@@ -522,9 +537,9 @@
 \paragraph{Algebraic equations}
 
 \begin{algorithm}[Logical term to integer polynomial]\label{alg:logical_term_to_integer_polynomial}
-  Fix a \hyperref[def:fol_term]{logical term} \( \tau \) from the first-order logical theory of rings described in \cref{def:ring/theory}.
+  Fix a \hyperref[def:fol_term]{logical term} \( \tau \) from the first-order theory of unital rings described in \cref{def:ring/theory}.
 
-  Fix a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into the \hyperref[def:integers]{ring of integers} \( \BbbZ \). We will build a \hyperref[def:polynomial_algebra/polynomials]{polynomial} \( f_\tau \) over \( R \), whose indeterminates are the variables of \( \tau \), and such that the denotation \( \Bracks{ \tau }_R^v \), as defined in \cref{def:fol_parameterized_term_denotation}, coincides with the evaluation \( \Phi_v(f_\tau) \) given by \fullref{thm:polynomial_algebra_universal_property}.
+  Fix a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into some ring \( R \). We will build a \hyperref[def:polynomial_algebra/polynomials]{polynomial} \( f_\tau \) over \( R \), whose indeterminates are the variables of \( \tau \), and such that the parameterized denotation \( \Bracks{ \tau }_R^v \), as defined in \cref{def:fol_parameterized_term_denotation}, coincides with the evaluation \( \Phi_v(f_\tau) \) given by \fullref{thm:polynomial_algebra_universal_property}.
 
   The construction itself is quite straightforward:
   \begin{equation}\label{eq:alg:logical_term_to_integer_polynomial}
@@ -559,7 +574,7 @@
         \syn0,                     &k = 0, \\
         \syn1,                     &k = 1, \\
         \syn1 \synplus \tau_{k-1}, &k > 1, \\
-        \synminus \tau_{k-1},      &k < 0.
+        \synminus \tau_{-k},       &k < 0.
       \end{cases}
     \end{equation}
 
@@ -595,38 +610,53 @@
 \end{defproof}
 
 \begin{proposition}\label{thm:integer_polynomials_and_logical_terms}
-  Let \( \Sigma \) be the \hyperref[def:hol_signature]{signature} of the \hyperref[def:ring/theory]{theory of rings}. Consider the set \( \op*{Term}_\Sigma \) of all \hyperref[def:fol_term]{logical terms} over it. Denote by \( f_\tau \) the corresponding polynomials produced via \fullref{alg:logical_term_to_integer_polynomial} for the term \( \tau \).
+  As an \hyperref[def:fol_equational_theory]{equational theory}, the \hyperref[def:fol_theory]{first-order theory} \( T \) \hyperref[def:ring/theory]{of unital rings} has a \hyperref[def:fol_free_term_model]{free term model} \( \mscrT(\mscrX) \) for any specific set of indeterminates \( \mscrX \).
 
-  Let \( {\sim} \) be the \hyperref[def:equivalence_relation]{equivalence relation} on \( \op*{Term}_\Sigma \) defined as \( \tau \sim \sigma \) if and only if \( \tau \) and \( \sigma \) have the same \hyperref[alg:fol_term_denotation]{denotation} for every variable assignment into over \( \BbbZ \).
-
-  \begin{thmenum}
-    \thmitem{thm:integer_polynomials_and_logical_terms/denotation} We have \( \tau \sim \sigma \) if and only if \( f_\tau = f_\sigma \).
-
-    \thmitem{thm:integer_polynomials_and_logical_terms/mapping} The map \( \tau \mapsto f_\tau \) from the quotient \( \op*{Term}_\Sigma / {\sim} \) to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( \BbbZ[\mscrX] \) is bijective.
-  \end{thmenum}
+  We claim that, adapted to syntax trees instead of terms, \fullref{alg:logical_term_to_integer_polynomial} provides an isomorphism from \( \mscrT(\mscrX) \) into the \hyperref[def:polynomial_algebra]{polynomial algebra} \( \BbbZ[\mscrX] \).
 \end{proposition}
 \begin{comments}
-  \item The proof of \cref{thm:integer_polynomials_and_logical_terms/denotation} relies fundamentally on \fullref{thm:polynomial_comparison_principle}, which we prove in \fullref{sec:integral_domains}. To avoid forward references, we may simply redefine \( \tau \sim \sigma \) to hold if and only if \( f_\tau = f_\sigma \).
-
-  \item This result is an explicit proof of the equivalence between the \hyperref[def:polynomial_algebra]{polynomial algebra} \( \BbbZ[mscrX] \) and the corresponding \hyperref[def:fol_free_term_model]{free term model}. This point is made more explicit in \cref{ex:def:fol_free_term_model}.
+  \item If we take \( \mscrX \) to be the set of first-order variables, then, as per \cref{rem:fol_free_term_model_with_terms}, we can regard \( \mscrT(\mscrX) \) as the set of all first-order terms in the theory of rings.
 \end{comments}
 \begin{proof}
-  \SubProofOf{thm:integer_polynomials_and_logical_terms/denotation} Fix some terms \( \tau \) and \( \sigma \). By construction, for every variable assignment \( v \), the denotation \( \Bracks{\tau}_\BbbZ^v \) equals the polynomial evaluation \( \Phi_v(f_\tau) \). Similarly, \( \Bracks{\sigma}_\BbbZ^v \) equals \( \Phi_v(f_\sigma) \).
+  We will denote the coset of a syntax tree \( S \) in \( \mscrT(\mscrX) \) by \( [S] \). We will show that the following map is a well-defined isomorphism:
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: \mscrT(\mscrX) \to \BbbZ[\mscrX], \\
+      &\Phi([S]) \coloneqq f_S.
+    \end{aligned}
+  \end{equation*}
 
-  Then \( \Bracks{\tau}_\BbbZ^v = \Bracks{\sigma}_\BbbZ^v \) if and only if \( \Phi_v(f_\tau) = \Phi_v(f_\sigma) \). The latter condition is equivalent to \( \Phi_v(f_\tau - f_\sigma) = 0 \).
+  \SubProof{Proof that \( \Phi \) is well-defined} By the correctness of \fullref{alg:logical_term_to_integer_polynomial}, the evaluation \( \Bracks{ S }_{\BbbZ}^v \)
 
-  If \( \Phi_v(f_\tau - f_\sigma) = 0 \) for every assignment \( v \), the polynomial \( f_\tau - f_\sigma \) has infinitely many roots, and \fullref{thm:polynomial_comparison_principle} implies that \( f_\tau = f_\sigma \).
+  First, we must show that, if \( S \cong S' \), then the polynomials \( f_S \) and \( f_{S'} \) coincide. We use \fullref{thm:induction_on_recursively_defined_relations}:
+  \begin{itemize}
+    \item If \( S \cong S' \) due to \ref{inf:def:fol_free_term_model/congruence/functions} for a function symbol \( s \), we have four sub-cases:
+    \begin{itemize}
+      \item If \( s = \syn0 \), then \( S = S' = \syn0 \) and there is nothing to prove.
+      \item If \( s = \syn1 \), then \( S = S' = \syn1 \).
+      \item If \( s = {\synplus} \), then \( S = A \synplus B \) and \( S' = A' \synplus B' \), where \( A \cong A' \) and \( B \cong B' \).
 
-  Therefore, \( \Bracks{\tau}_\BbbZ^v = \Bracks{\sigma}_\BbbZ^v \) for every \( v \) if and only if \( f_\tau = f_\sigma \).
+      By the inductive hypothesis, \( f_A = f_{A'} \) and \( f_B = f_{B'} \), so their sums \( f_S = f_A + f_B \) and \( f_{S'} = f_{A'} + f_{B'} \) also coincide.
 
-  \SubProofOf{thm:integer_polynomials_and_logical_terms/mapping} Injectivity is obvious considering \cref{thm:integer_polynomials_and_logical_terms/denotation}, while surjectivity is provided by \fullref{alg:integer_polynomial_to_logical_term}.
+      \item If \( s = {\synmult} \), we proceed similarly to prove that \( f_S = f_{S'} \).
+    \end{itemize}
+
+    \item If \( S \cong S' \) due to \ref{inf:def:fol_free_term_model/congruence/axioms} for some axiom of ring theory, then \( f_S = f_{S'} \) by virtue of the fact that \( \BbbZ[\BbbX] \) is a ring.
+  \end{itemize}
+
+  \SubProof{Proof that \( \Phi \) is a ring homomorphism} By construction.
+
+  \SubProof{Proof that \( \Phi \) is injective} We must show that \( \Phi(S) = \Phi(S') \) implies \( S \cong S' \). This can be done similarly to the above, but by induction on the cases in \eqref{eq:alg:logical_term_to_integer_polynomial} instead of on \( {\cong} \).
+
+  \SubProof{Proof that \( \Phi \) is surjective} Given a polynomial \( f \) in \( \BbbZ[\BbbX] \), we can use \fullref{alg:integer_polynomial_to_logical_term} (adapted to syntax trees instead of terms) to produce a tree \( S_f \). It is then straightforward to verify that \( \Phi(S_f) = f \).
 \end{proof}
 
 \begin{definition}\label{def:polynomial_equation}\mimprovised
   As shown in \cref{thm:integer_polynomials_and_logical_terms}, \hyperref[def:fol_term]{logical terms} in the \hyperref[def:ring/theory]{theory of rings} correspond naturally to polynomials over integers. \Fullref{alg:logical_term_to_integer_polynomial} allows transforming the \hyperref[def:fol_equation]{first-order equation} \( \tau \syneq \sigma \) in the object logic to
   \begin{equation}\label{eq:def:polynomial_equation/general}
-    f_\tau(X_1, \ldots, X_n) = f_\sigma(X_1, \ldots, X_n).
+    f_\tau(X_1, \ldots, X_n) = f_\sigma(X_1, \ldots, X_n),
   \end{equation}
+  where the free variables of \( \tau \) and \( \sigma \) are among \( X_1, \ldots, X_n \).
 
   By subtracting these polynomials, we obtain an equation in canonical form
   \begin{equation}\label{eq:def:polynomial_equation/canonical}
