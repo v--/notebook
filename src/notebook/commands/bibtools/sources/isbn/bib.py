@@ -34,7 +34,7 @@ def transliterate_string(string: str, main_language: str) -> str:
 def isbn_book_to_bib(book: OLBook, isbn: str) -> BibEntry:
     bd = book.details
 
-    languages = [get_language_name(lang.key) for lang in bd.languages]
+    languages = [get_language_name(lang.key) for lang in bd.languages] if bd.languages else ['english']
     main_language = languages[0]
     authors = [name_to_bib_author(transliterate_string(author.name, main_language)) for author in bd.authors] if bd.authors else []
     year = extract_year(bd.publish_date)

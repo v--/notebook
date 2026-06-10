@@ -174,3 +174,25 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
         publishers=['Физматлит'],
         isbn=isbn,
     )
+
+
+def test_parse_9780198833871_bad_unicode(isbn: str = '978-0-19-883387-1') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+      entry_type='book',
+      entry_name='Lorch2021ShortIntroduction',
+      title='Biochemistry A Very Short Introduction',
+      subtitle='A Very Short Introduction',
+      authors=[
+          BibAuthor(full_name='Mark Lorch', short_name=None),
+      ],
+      languages=['english'],
+      publishers=['Oxford University Press'],
+      date='Aug 03, 2021',
+      isbn=isbn,
+    )

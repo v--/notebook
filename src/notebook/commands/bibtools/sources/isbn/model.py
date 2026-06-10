@@ -70,7 +70,6 @@ class OLBookFirstSentence(OLBaseModel):
 class OLBookDetails(OLBaseModel):
     created: OLBookDate
     key: str
-    languages: Sequence[OLBookLanguage]
     last_modified: OLBookDate
     latest_revision: int
     number_of_pages: int
@@ -95,6 +94,7 @@ class OLBookDetails(OLBaseModel):
     identifiers: OLBookIdentifiers | None = None
     isbn_10: Sequence[str] | None = None
     isbn_13: Sequence[str] | None = None
+    languages: Sequence[OLBookLanguage] | None = None
     lc_classifications: Sequence[str] | None = None
     lccn: Sequence[str] | None = None
     local_id: Sequence[str] | None = None
