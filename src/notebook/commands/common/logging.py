@@ -1,4 +1,5 @@
 import logging
+import sys
 from typing import TYPE_CHECKING
 
 import colorlog
@@ -25,6 +26,7 @@ class NotebookLoggerHandler(logging.StreamHandler):
         super().__init__()
         self.setFormatter(
             colorlog.ColoredFormatter(
+                stream=sys.stderr,  # Without explicitly setting the stream, TTY detection does not work.
                 style='{',
                 fmt=get_format_string(log_subject),
                 datefmt='%X',
