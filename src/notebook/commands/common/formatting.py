@@ -5,17 +5,19 @@ import shutil
 import tempfile
 from typing import TYPE_CHECKING, NamedTuple, TextIO
 
-import loguru
-
 
 if TYPE_CHECKING:
     from types import TracebackType
+
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class FormatterContext(NamedTuple):
     src: TextIO
     dest: TextIO
-    logger: loguru.Logger
 
 
 class FormatterContextManager:
@@ -27,12 +29,10 @@ class FormatterContextManager:
         self.context = None
 
     def __enter__(self) -> FormatterContext:
-        logger = loguru.logger.bind(logger=self.path.as_posix())
-
         file = self.path.open('r')
         buffer = io.StringIO()
 
-        self.context = FormatterContext(file, buffer, logger)
+        self.context = FormatterContext(file, buffer)
         return self.context
 
     def __exit__(
@@ -44,7 +44,7 @@ class FormatterContextManager:
         if self.context is None:
             return
 
-        src, dest, logger = self.context
+        src, dest = self.context
 
         if exc_value is not None:
             src.close()
@@ -60,7 +60,7 @@ class FormatterContextManager:
             return
 
         bak_path = pathlib.Path(tempfile.gettempdir()) / (old_hash + '.bak')
-        logger.info(f'Formatting and backing up into {bak_path.as_posix()}.')
+        logger.info(f'Formatting and backing up {self.path.as_posix()!r} into {bak_path.as_posix()!r}.')
 
         src.seek(0)
 

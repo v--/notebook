@@ -2,7 +2,6 @@ import io
 import pathlib
 from typing import TYPE_CHECKING
 
-import loguru
 import pytest
 
 from notebook.paths import BIB_PATH
@@ -23,7 +22,7 @@ def benchmark_format(benchmark: BenchmarkFixture) -> None:
         entries = read_entries(file)
 
     benchmark.pedantic(
-        lambda: [adjust_entry(entry, None, loguru.logger) for entry in entries],
+        lambda: [adjust_entry(entry, None) for entry in entries],
         warmup_rounds=5,
         rounds=50,
     )

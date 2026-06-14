@@ -1,3 +1,4 @@
+import logging
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
@@ -15,10 +16,12 @@ from .sources.helpers.pages import normalize_pages
 
 
 if TYPE_CHECKING:
-
-    import loguru
+    from collections.abc import Mapping
 
     from .sources.helpers.url_template import UrlTemplate
+
+
+logger = logging.getLogger(__name__)
 
 
 class BibEntryAdjuster:
@@ -26,13 +29,13 @@ class BibEntryAdjuster:
     adjusted: BibEntry
     crossref: BibEntry | None
     merged: BibEntry
-    logger: loguru.Logger
+    logger: logging.LoggerAdapter
 
-    def __init__(self, entry: BibEntry, crossref: BibEntry | None, logger: loguru.Logger) -> None:
+    def __init__(self, entry: BibEntry, crossref: BibEntry | None, logging_extra: Mapping[str, str] | None = None) -> None:
         self.original = entry
         self.crossref = crossref
         self.adjusted = replace(entry)
-        self.logger = logger
+        self.logger = logging.LoggerAdapter(logger, extra=logging_extra)
 
         if self.crossref:
             self.merged = self.adjusted | self.crossref
@@ -295,7 +298,7 @@ class BibEntryAdjuster:
         self.adjust_entry_date()
 
 
-def adjust_entry(entry: BibEntry, crossref: BibEntry | None, logger: loguru.Logger) -> BibEntry:
-    adjuster = BibEntryAdjuster(entry, crossref, logger)
+def adjust_entry(entry: BibEntry, crossref: BibEntry | None, logging_extra: Mapping[str, str] | None = None) -> BibEntry:
+    adjuster = BibEntryAdjuster(entry, crossref, logging_extra)
     adjuster.adjust()
     return adjuster.adjusted

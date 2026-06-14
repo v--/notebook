@@ -1,12 +1,15 @@
+import logging
 import re
 from mmap import PROT_READ, mmap
 
 import click
-import loguru
+from rich.logging import RichHandler
 
 from notebook.commands.common.inflection import prefix_cardinal
-from notebook.commands.common.logging import configure_loguru
 from notebook.paths import FIGURES_PATH, TEXT_PATH
+
+
+logger = logging.getLogger(__name__)
 
 
 def check_is_figure_used(figure_name: str) -> bool:
@@ -25,7 +28,9 @@ def check_is_figure_used(figure_name: str) -> bool:
 
 @click.command()
 def find_obsolete_figures() -> None:
-    configure_loguru(verbose=False)
+    logger.setLevel(logging.INFO)
+    logger.addHandler(RichHandler())
+
     total_count = 0
     obsolete_count = 0
 
@@ -34,6 +39,6 @@ def find_obsolete_figures() -> None:
 
         if not check_is_figure_used(figure_file_path.stem):
             obsolete_count += 1
-            loguru.logger.info('Figure is not used.', logger=figure_file_path.name)
+            logger.info(f'Figure {figure_file_path.name!r} is not used.')
 
-    loguru.logger.info(f'Processed {prefix_cardinal("figures", total_count)}; {obsolete_count} of them were obsolete.')
+    logger.info(f'Processed {prefix_cardinal("figures", total_count)}; {obsolete_count} of them {'was' if obsolete_count == 1 else 'were'} obsolete.')

@@ -9,10 +9,9 @@ from .base import Task
 
 
 if TYPE_CHECKING:
+    import logging
     import pathlib
     from collections.abc import Iterable
-
-    import loguru
 
     from .runner import TaskRunner
 
@@ -31,6 +30,8 @@ def format_time(start: int, end: int) -> str:
 
 
 class CliTask(Task):
+    logger: logging.LoggerAdapter
+
     def get_output_path(self, extension: str | None = None) -> pathlib.Path:
         extension = extension if extension is not None else self.get_default_extension()
         return OUTPUT_PATH / self.trigger.path.with_suffix(extension).name
@@ -44,28 +45,24 @@ class CliTask(Task):
         ...
 
     @override
-    def create_sublogger(self, base_logger: loguru.Logger) -> loguru.Logger:
-        return base_logger.bind(logger=self.get_output_path().name)
-
-    @override
     async def clean(self, runner: TaskRunner) -> None:
         start = monotonic_ns()
-        self.sublogger.info(f'Cleanup triggered at {self.created:%H:%M:%S} by {self.reason}')
+        self.logger.info(f'Cleanup triggered at {self.created:%H:%M:%S} by {self.reason}')
 
         for path in self.iter_clean_paths():
             try:
                 path.unlink(missing_ok=True)
             except OSError as err:
-                self.sublogger.warning(f'Could not unlink {path.as_posix()}: {err}')
+                self.logger.warning(f'Could not unlink {path.as_posix()}: {err}')
 
         end = monotonic_ns()
-        self.sublogger.info(f'Cleanup finished in {format_time(start, end)}')
+        self.logger.info(f'Cleanup finished in {format_time(start, end)}')
 
     @override
     async def build(self, runner: TaskRunner) -> None:
         await self.build_pre_process(runner)
         start = monotonic_ns()
-        self.sublogger.info(f'Build triggered at {self.created:%H:%M:%S} by {self.reason}')
+        self.logger.info(f'Build triggered by {self.reason}')
 
         proc = await asyncio.create_subprocess_shell(
             self.get_build_command(),
@@ -80,10 +77,10 @@ class CliTask(Task):
 
         if exit_code == 0:
             await self.build_post_process(runner)
-            self.sublogger.info(f'Build finished in {format_time(start, end)}')
+            self.logger.info(f'Build finished in {format_time(start, end)}')
         else:
             await self.build_on_failure(runner)
-            self.sublogger.error(f'Build failed with exit code {exit_code} after {format_time(start, end)}')
+            self.logger.error(f'Build failed with exit code {exit_code} after {format_time(start, end)}')
 
     @abc.abstractmethod
     def iter_clean_paths(self) -> Iterable[pathlib.Path]:

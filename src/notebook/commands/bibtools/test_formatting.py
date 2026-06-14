@@ -1,8 +1,6 @@
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-import loguru
-
 from notebook.bibtex import VerbatimString, parse_bibtex
 
 from .formatting import adjust_entry
@@ -25,7 +23,7 @@ def test_author_name_reformatting() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.authors[0].full_name == 'Владимир Левенштейн'
 
 
@@ -42,7 +40,7 @@ def test_author_name_verbatim() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.authors[0].full_name == VerbatimString('Левенштейн, Владимир')
 
 
@@ -59,7 +57,7 @@ def test_author_short() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.authors[0].short_name == 'Levenshteyn'
 
 
@@ -77,7 +75,7 @@ def test_author_short_existing() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.authors[0].short_name == 'Levenshtein'
 
 
@@ -94,7 +92,7 @@ def test_language_reformatting() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.languages == ['russian']
 
 
@@ -112,7 +110,7 @@ def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -133,7 +131,7 @@ def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjusted = adjust_entry(entry, None, loguru.logger)
+        adjusted = adjust_entry(entry, None)
         assert message not in caplog.text
 
     assert adjusted.date == '1965-02-01'
@@ -158,7 +156,7 @@ def test_title_splitting_with_subtitle() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.title == 'The Lambda Calculus - Its Syntax and Semantics'
     assert adjusted.subtitle == 'Test Subtitle'
 
@@ -179,7 +177,7 @@ def test_isbn_formatting() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.isbn == '0-444-86748-1'
 
 
@@ -203,7 +201,7 @@ def test_issn_formatting() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.issn == '0002-9947'
 
 
@@ -223,7 +221,7 @@ def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -243,7 +241,7 @@ def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -264,7 +262,7 @@ def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -285,7 +283,7 @@ def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('WARNING'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -305,7 +303,7 @@ def test_arxiv_entry_url() -> None:
         ),
     )
 
-    adjusted = adjust_entry(entry, None, loguru.logger)
+    adjusted = adjust_entry(entry, None)
     assert adjusted.eprint == '1906.07050v1'
 
 
@@ -325,7 +323,7 @@ def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('INFO'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text
 
 
@@ -346,5 +344,5 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
     )
 
     with caplog.at_level('INFO'):
-        adjust_entry(entry, None, loguru.logger)
+        adjust_entry(entry, None)
         assert message in caplog.text

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import TYPE_CHECKING, override
 
 from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
@@ -14,7 +15,14 @@ if TYPE_CHECKING:
     from .runner import TaskRunner
 
 
+logger = logging.getLogger(__name__)
+
+
 class BiberTask(CliTask):
+    def __init__(self, trigger: TaskTrigger, reason: str) -> None:
+        super().__init__(trigger, reason)
+        self.logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
+
     @override
     def get_default_extension(self) -> str:
         return '.pdf'
@@ -45,6 +53,5 @@ class BiberTask(CliTask):
                 LaTeXCompiler.lualatex,
                 TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                 reason=self.bcf_path.as_posix(),
-                base_logger=self.base_logger,
             ),
         )

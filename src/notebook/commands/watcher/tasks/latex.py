@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import shutil
 from enum import IntEnum, auto
 from typing import TYPE_CHECKING, override
@@ -15,8 +16,6 @@ if TYPE_CHECKING:
     import pathlib
     from collections.abc import Iterable
 
-    import loguru
-
     from .runner import TaskRunner
 
 
@@ -31,11 +30,15 @@ TEX_LOG_ENCODING = {
 }
 
 
+logger = logging.getLogger(__name__)
+
+
 class LaTeXTask(CliTask):
     compiler: LaTeXCompiler
 
-    def __init__(self, compiler: LaTeXCompiler, trigger: TaskTrigger, reason: str, base_logger: loguru.Logger) -> None:
-        super().__init__(trigger, reason, base_logger)
+    def __init__(self, compiler: LaTeXCompiler, trigger: TaskTrigger, reason: str) -> None:
+        super().__init__(trigger, reason)
+        self.logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
         self.compiler = compiler
 
     @override
@@ -70,7 +73,7 @@ class LaTeXTask(CliTask):
         try:
             shutil.copyfile(self.get_aux_path('.log'), self.get_aux_path('.old.log'))
         except OSError:
-            self.sublogger.exception('Could not open TeX log file.')
+            self.logger.exception('Could not open TeX log file.')
 
         with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING[self.compiler]) as log_file:
             requires_rerun = 'Rerun to get' in log_file.read()
@@ -81,25 +84,25 @@ class LaTeXTask(CliTask):
 
         if len(parser.errors) > 0:
             if len(parser.errors) == 1:
-                self.sublogger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
+                self.logger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
             else:
-                self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
+                self.logger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
         elif len(parser.warnings) > 0:
             if len(parser.warnings) == 1:
-                self.sublogger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
+                self.logger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
             else:
-                self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
+                self.logger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
         elif len(parser.badboxes) > 0:
             if len(parser.badboxes) == 1:
-                self.sublogger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
+                self.logger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
             else:
-                self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
+                self.logger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
 
         if len(parser.errors) != 0:
             return
 
         if not self.get_aux_path('.pdf').exists():
-            self.sublogger.error('No output file')
+            self.logger.error('No output file')
             return
 
         if requires_rerun:
@@ -108,7 +111,6 @@ class LaTeXTask(CliTask):
                     self.compiler,
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                     reason='rerunfilecheck',
-                    base_logger=self.base_logger,
                 ),
             )
         elif requires_biber_rerun:
@@ -117,12 +119,11 @@ class LaTeXTask(CliTask):
                 BiberTask(
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
                     reason=self.trigger.path.name,
-                    base_logger=self.base_logger,
                 ),
             )
         else:
             output_path = self.get_output_path()
-            self.sublogger.debug('No more passes required.')
+            self.logger.debug('No more passes required.')
             shutil.copyfile(self.get_aux_path('.pdf'), output_path)
 
     build_on_failure = build_post_process

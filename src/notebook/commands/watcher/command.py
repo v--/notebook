@@ -1,12 +1,12 @@
 import asyncio
+import logging
 import pathlib
 from typing import TYPE_CHECKING
 
 import click
-import loguru
 from asyncinotify import Inotify, Mask
 
-from notebook.commands.common.logging import configure_loguru
+from notebook.commands.common.logging import SubjectLoggerHandler
 from notebook.paths import FIGURES_PATH, ROOT_PATH
 
 from .tasks import AsymptoteTask, LaTeXCompiler, LaTeXTask, PythonTask, TaskRunner
@@ -22,7 +22,10 @@ CLEAN_MASK = Mask.MOVED_FROM | Mask.DELETE
 MASK = BUILD_MASK | CLEAN_MASK
 
 
-async def iter_build_file_changes(inotify: Inotify, logger: loguru.Logger) -> AsyncIterator[TaskTrigger]:
+logger = logging.getLogger(__name__)
+
+
+async def iter_build_file_changes(inotify: Inotify) -> AsyncIterator[TaskTrigger]:
     inotify.add_watch(ROOT_PATH, MASK)
     inotify.add_watch(ROOT_PATH / 'text', MASK)
     inotify.add_watch(ROOT_PATH / 'packages', MASK)
@@ -47,18 +50,18 @@ async def iter_build_file_changes(inotify: Inotify, logger: loguru.Logger) -> As
                 yield TaskTrigger(TaskTriggerKind.CLEAN, relative)
 
 
-async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: loguru.Logger, rebuild_all_figures: bool) -> None:  # noqa: C901
-    async for target in iter_build_file_changes(inotify, base_logger):
+async def setup_watchers(manager: TaskRunner, inotify: Inotify, rebuild_all_figures: bool) -> None:  # noqa: C901
+    async for target in iter_build_file_changes(inotify):
         path = target.path
 
         if path.match('figures/*.tex'):
-            manager.schedule(LaTeXTask(LaTeXCompiler.pdflatex, target, reason='watcher', base_logger=base_logger))
+            manager.schedule(LaTeXTask(LaTeXCompiler.pdflatex, target, reason='watcher'))
 
         if path.match('figures/*.asy'):
-            manager.schedule(AsymptoteTask(target, reason='watcher', base_logger=base_logger))
+            manager.schedule(AsymptoteTask(target, reason='watcher'))
 
         if path.match('src/notebook/figures/*.py') and path.name != '__init__.py':
-            manager.schedule(PythonTask(target, reason='watcher', base_logger=base_logger))
+            manager.schedule(PythonTask(target, reason='watcher'))
 
         if target.kind == TaskTriggerKind.BUILD or path.match('includeonly'):
             if rebuild_all_figures:
@@ -68,7 +71,6 @@ async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: log
                             AsymptoteTask(
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
-                                base_logger=base_logger,
                             ),
                         )
 
@@ -80,7 +82,6 @@ async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: log
                                 LaTeXCompiler.pdflatex,
                                 TaskTrigger(TaskTriggerKind.BUILD, figure_path),
                                 reason=path.name,
-                                base_logger=base_logger,
                             ),
                         )
 
@@ -100,7 +101,6 @@ async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: log
                         LaTeXCompiler.lualatex,
                         TaskTrigger(TaskTriggerKind.BUILD, ROOT_PATH / 'notebook.tex'),
                         reason=path.name,
-                        base_logger=base_logger,
                     ),
                 )
 
@@ -108,9 +108,11 @@ async def setup_watchers(manager: TaskRunner, inotify: Inotify, base_logger: log
 @click.command()
 @click.option('-v', '--verbose', is_flag=True)
 @click.option('--rebuild-all-figures', is_flag=True)
-def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
-    configure_loguru(verbose=verbose)
-    base_logger = loguru.logger
+def watch(verbose: bool, rebuild_all_figures: bool) -> None:
+    base_logger = logging.getLogger('notebook.commands')
+    base_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    base_logger.addHandler(SubjectLoggerHandler())
+
     manager = TaskRunner()
 
     with Inotify() as inotify:
@@ -119,10 +121,9 @@ def watch(*, verbose: bool, rebuild_all_figures: bool) -> None:
                 setup_watchers(
                     manager,
                     inotify,
-                    base_logger=base_logger,
                     rebuild_all_figures=rebuild_all_figures,
                 ),
             )
         except KeyboardInterrupt:
             manager.finalize()
-            base_logger.info('Gracefully shutting down')
+            logger.info('Gracefully shutting down')

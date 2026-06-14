@@ -1,13 +1,14 @@
-import sys
+import logging
 
-import loguru
+from rich.logging import RichHandler
 
 
-def configure_loguru(*, verbose: bool) -> None:
-    loguru.logger.configure(extra=dict(logger='<system>'))
-    loguru.logger.remove()
-    loguru.logger.add(
-        sys.stderr,
-        format='<level>{level:7}</level> <green>{time:HH:mm:ss}</green>   <cyan>{extra[logger]}</cyan> <level>{message}</level>',
-        level='DEBUG' if verbose else 'INFO',
-    )
+class SubjectLoggerHandler(RichHandler):
+    handler: logging.Handler
+    handler = RichHandler(markup=True)
+
+    def __init__(self) -> None:
+        super().__init__(markup=True)
+        self.setFormatter(
+            logging.Formatter('[bold]%(subject)-15s[/]  %(message)s', defaults={'subject': '<system>'}),
+        )
