@@ -6,7 +6,7 @@ import click
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
-from notebook.commands.common.logging import SubjectLoggerHandler
+from notebook.commands.common.logging import NotebookLoggerHandler
 from notebook.exceptions import NotebookError
 from notebook.latex.format_matrices import format_tex_matrices
 
@@ -23,7 +23,7 @@ def format_matrices(ctx: click.Context, paths: Sequence[pathlib.Path]) -> None:
 
     base_logger = logging.getLogger('notebook.commands')
     base_logger.setLevel(logging.INFO)
-    base_logger.addHandler(SubjectLoggerHandler())
+    base_logger.addHandler(NotebookLoggerHandler())
 
     for path in paths:
         with FormatterContextManager(path) as context:

@@ -16,7 +16,6 @@ from .sources.helpers.pages import normalize_pages
 
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
 
     from .sources.helpers.url_template import UrlTemplate
 
@@ -31,11 +30,11 @@ class BibEntryAdjuster:
     merged: BibEntry
     logger: logging.LoggerAdapter
 
-    def __init__(self, entry: BibEntry, crossref: BibEntry | None, logging_extra: Mapping[str, str] | None = None) -> None:
+    def __init__(self, entry: BibEntry, crossref: BibEntry | None) -> None:
         self.original = entry
         self.crossref = crossref
         self.adjusted = replace(entry)
-        self.logger = logging.LoggerAdapter(logger, extra=logging_extra)
+        self.logger = logging.LoggerAdapter(logger, extra=dict(subject=entry.entry_name))
 
         if self.crossref:
             self.merged = self.adjusted | self.crossref
@@ -298,7 +297,7 @@ class BibEntryAdjuster:
         self.adjust_entry_date()
 
 
-def adjust_entry(entry: BibEntry, crossref: BibEntry | None, logging_extra: Mapping[str, str] | None = None) -> BibEntry:
-    adjuster = BibEntryAdjuster(entry, crossref, logging_extra)
+def adjust_entry(entry: BibEntry, crossref: BibEntry | None) -> BibEntry:
+    adjuster = BibEntryAdjuster(entry, crossref)
     adjuster.adjust()
     return adjuster.adjusted

@@ -1,14 +1,34 @@
 import logging
+from typing import TYPE_CHECKING
 
-from rich.logging import RichHandler
+import colorlog
+
+from notebook.support.iteration import string_accumulator
 
 
-class SubjectLoggerHandler(RichHandler):
-    handler: logging.Handler
-    handler = RichHandler(markup=True)
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
-    def __init__(self) -> None:
-        super().__init__(markup=True)
+
+@string_accumulator(' ')
+def get_format_string(log_subject: bool) -> Iterable[str]:
+    yield '{green}{asctime}{reset} {bold}{log_color}{levelname:8}{reset}'
+
+    if log_subject:
+        yield '{cyan}{subject:15}{reset}'
+
+    yield '{log_color}{message}{reset}'
+
+
+class NotebookLoggerHandler(logging.StreamHandler):
+    def __init__(self, log_subject: bool = False) -> None:
+        super().__init__()
         self.setFormatter(
-            logging.Formatter('[bold]%(subject)-15s[/]  %(message)s', defaults={'subject': '<system>'}),
+            colorlog.ColoredFormatter(
+                style='{',
+                fmt=get_format_string(log_subject),
+                datefmt='%X',
+                defaults={'subject': '<system>'},
+                log_colors={**colorlog.default_log_colors, 'INFO': 'white'},
+            ),
         )

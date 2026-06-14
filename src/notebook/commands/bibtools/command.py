@@ -7,7 +7,7 @@ import stdnum.isbn
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
-from notebook.commands.common.logging import SubjectLoggerHandler
+from notebook.commands.common.logging import NotebookLoggerHandler
 from notebook.exceptions import NotebookError
 
 from .file import read_entries, write_entries
@@ -28,21 +28,20 @@ if TYPE_CHECKING:
 def bibtools(ctx: click.Context) -> None:
     ctx.with_resource(with_cli_exception_handler(NotebookError))
 
-    base_logger = logging.getLogger('notebook.commands')
-    base_logger.setLevel(logging.INFO)
-    base_logger.addHandler(SubjectLoggerHandler())
-
 
 @bibtools.command('format')
 @click.argument('paths', nargs=-1, type=click.Path(readable=True, dir_okay=False, path_type=pathlib.Path))
 def format_(paths: Sequence[pathlib.Path]) -> None:
+    base_logger = logging.getLogger('notebook.commands')
+    base_logger.addHandler(NotebookLoggerHandler(log_subject=True))
+
     for path in paths:
         with FormatterContextManager(path) as context:
             entries = list(read_entries(context.src))
 
             for i, entry in enumerate(entries):
                 crossref = next((e for e in entries if entry.crossref == e.entry_name), None) if entry.crossref else None
-                entries[i] = adjust_entry(entry, crossref, logging_extra={'subject': path.stem + ':' + entry.entry_name})
+                entries[i] = adjust_entry(entry, crossref)
 
             write_entries(
                 sorted(entries, key=lambda entry: entry.entry_name),
