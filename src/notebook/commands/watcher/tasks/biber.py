@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class BiberTask(CliTask):
     def __init__(self, trigger: TaskTrigger, reason: str) -> None:
         super().__init__(trigger, reason)
-        self.logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
+        self.bound_logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
 
     @override
     def get_default_extension(self) -> str:

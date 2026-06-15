@@ -38,7 +38,7 @@ class LaTeXTask(CliTask):
 
     def __init__(self, compiler: LaTeXCompiler, trigger: TaskTrigger, reason: str) -> None:
         super().__init__(trigger, reason)
-        self.logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
+        self.bound_logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
         self.compiler = compiler
 
     @override
@@ -73,7 +73,7 @@ class LaTeXTask(CliTask):
         try:
             shutil.copyfile(self.get_aux_path('.log'), self.get_aux_path('.old.log'))
         except OSError:
-            self.logger.exception('Could not open TeX log file.')
+            self.bound_logger.exception('Could not open TeX log file.')
 
         with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING[self.compiler]) as log_file:
             requires_rerun = 'Rerun to get' in log_file.read()
@@ -84,25 +84,25 @@ class LaTeXTask(CliTask):
 
         if len(parser.errors) > 0:
             if len(parser.errors) == 1:
-                self.logger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
+                self.bound_logger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
             else:
-                self.logger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
+                self.bound_logger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
         elif len(parser.warnings) > 0:
             if len(parser.warnings) == 1:
-                self.logger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
+                self.bound_logger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
             else:
-                self.logger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
+                self.bound_logger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
         elif len(parser.badboxes) > 0:
             if len(parser.badboxes) == 1:
-                self.logger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
+                self.bound_logger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
             else:
-                self.logger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
+                self.bound_logger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
 
         if len(parser.errors) != 0:
             return
 
         if not self.get_aux_path('.pdf').exists():
-            self.logger.error('No output file')
+            self.bound_logger.error('No output file')
             return
 
         if requires_rerun:
@@ -123,7 +123,7 @@ class LaTeXTask(CliTask):
             )
         else:
             output_path = self.get_output_path()
-            self.logger.debug('No more passes required.')
+            self.bound_logger.debug('No more passes required.')
             shutil.copyfile(self.get_aux_path('.pdf'), output_path)
 
     build_on_failure = build_post_process

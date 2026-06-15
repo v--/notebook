@@ -30,7 +30,7 @@ def format_time(start: int, end: int) -> str:
 
 
 class CliTask(Task):
-    logger: logging.LoggerAdapter
+    bound_logger: logging.LoggerAdapter
 
     def get_output_path(self, extension: str | None = None) -> pathlib.Path:
         extension = extension if extension is not None else self.get_default_extension()
@@ -47,22 +47,22 @@ class CliTask(Task):
     @override
     async def clean(self, runner: TaskRunner) -> None:
         start = monotonic_ns()
-        self.logger.info(f'Cleanup triggered at {self.created:%H:%M:%S} by {self.reason}')
+        self.bound_logger.info(f'Cleanup triggered at {self.created:%H:%M:%S} by {self.reason}')
 
         for path in self.iter_clean_paths():
             try:
                 path.unlink(missing_ok=True)
             except OSError as err:
-                self.logger.warning(f'Could not unlink {path.as_posix()}: {err}')
+                self.bound_logger.warning(f'Could not unlink {path.as_posix()}: {err}')
 
         end = monotonic_ns()
-        self.logger.info(f'Cleanup finished in {format_time(start, end)}')
+        self.bound_logger.info(f'Cleanup finished in {format_time(start, end)}')
 
     @override
     async def build(self, runner: TaskRunner) -> None:
         await self.build_pre_process(runner)
         start = monotonic_ns()
-        self.logger.info(f'Build triggered by {self.reason}')
+        self.bound_logger.info(f'Build triggered by {self.reason}')
 
         proc = await asyncio.create_subprocess_shell(
             self.get_build_command(),
@@ -77,10 +77,10 @@ class CliTask(Task):
 
         if exit_code == 0:
             await self.build_post_process(runner)
-            self.logger.info(f'Build finished in {format_time(start, end)}')
+            self.bound_logger.info(f'Build finished in {format_time(start, end)}')
         else:
             await self.build_on_failure(runner)
-            self.logger.error(f'Build failed with exit code {exit_code} after {format_time(start, end)}')
+            self.bound_logger.error(f'Build failed with exit code {exit_code} after {format_time(start, end)}')
 
     @abc.abstractmethod
     def iter_clean_paths(self) -> Iterable[pathlib.Path]:

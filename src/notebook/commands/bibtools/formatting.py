@@ -34,7 +34,7 @@ class BibEntryAdjuster:
         self.original = entry
         self.crossref = crossref
         self.adjusted = replace(entry)
-        self.logger = logging.LoggerAdapter(logger, extra=dict(subject=entry.entry_name))
+        self.bound_logger = logging.LoggerAdapter(logger, extra=dict(subject=entry.entry_name))
 
         if self.crossref:
             self.merged = self.adjusted | self.crossref
@@ -46,11 +46,11 @@ class BibEntryAdjuster:
             return
 
         if new_value is None:
-            self.logger.info(f'Removing {what}')
+            self.bound_logger.info(f'Removing {what}')
         elif old_value is None:
-            self.logger.info(f'Setting {what} to {new_value!r}')
+            self.bound_logger.info(f'Setting {what} to {new_value!r}')
         else:
-            self.logger.info(f'Updating {what} from {old_value!r} to {new_value!r}')
+            self.bound_logger.info(f'Updating {what} from {old_value!r} to {new_value!r}')
 
     def update(self, **kwargs: Any) -> None:  # noqa: ANN401
         for field_name, new_value in kwargs.items():
@@ -93,22 +93,22 @@ class BibEntryAdjuster:
             year = extract_year(str(self.adjusted.date))
 
             if year is None:
-                self.logger.warning(f'Could not extract year from {self.adjusted.date}')
+                self.bound_logger.warning(f'Could not extract year from {self.adjusted.date}')
 
             if self.adjusted.year:
-                self.logger.warning(f'Excess year tag {self.adjusted.year} in the presence of the date tag {self.adjusted.date}')
+                self.bound_logger.warning(f'Excess year tag {self.adjusted.year} in the presence of the date tag {self.adjusted.date}')
 
             if self.adjusted.month:
-                self.logger.warning(f'Excess month tag {self.adjusted.month} in the presence of the date tag {self.adjusted.date}')
+                self.bound_logger.warning(f'Excess month tag {self.adjusted.month} in the presence of the date tag {self.adjusted.date}')
 
             if self.adjusted.day:
-                self.logger.warning(f'Excess day tag {self.adjusted.day} in the presence of the date tag {self.adjusted.date}')
+                self.bound_logger.warning(f'Excess day tag {self.adjusted.day} in the presence of the date tag {self.adjusted.date}')
 
             return
 
         if self.adjusted.year is None:
             if self.adjusted.urldate is None and self.adjusted.crossref is None:
-                self.logger.warning('The date field is blank')
+                self.bound_logger.warning('The date field is blank')
 
             return
 
@@ -127,25 +127,25 @@ class BibEntryAdjuster:
 
         match self.adjusted.entry_type:
             case 'inbook' | 'incollection' | 'inproceedings' if (self.adjusted.booktitle is None) and (self.adjusted.crossref is None):
-                self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
+                self.bound_logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
             case 'book' | 'article' if len(self.merged.publishers) == 0 and not possibly_reprinted:
-                self.logger.warning(f'No publisher and no original publication specified for entry type {self.adjusted.entry_type!r}')
+                self.bound_logger.warning(f'No publisher and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'article' if not self.adjusted.journal and not possibly_reprinted:
-                self.logger.warning(f'No journal and no original publication specified for entry type {self.adjusted.entry_type!r}')
+                self.bound_logger.warning(f'No journal and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'online' if not self.adjusted.urldate:
-                self.logger.warning(f'No URL date specified for entry type {self.adjusted.entry_type!r}')
+                self.bound_logger.warning(f'No URL date specified for entry type {self.adjusted.entry_type!r}')
 
         if self.adjusted.relatedtype == 'translationof' and len(self.adjusted.origlanguages) > 0:
-            self.logger.warning('Specified both an original publication and an original language')
+            self.bound_logger.warning('Specified both an original publication and an original language')
 
         if len(self.adjusted.translators) > 0 and self.adjusted.crossref is None and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
-            self.logger.warning('Specified the translators, but not the original publication nor the original language')
+            self.bound_logger.warning('Specified the translators, but not the original publication nor the original language')
 
         if len(self.adjusted.origlanguages) > 0 and self.adjusted.crossref is None and len(self.adjusted.translators) == 0:
-            self.logger.warning('Specified the original language, but not the translators')
+            self.bound_logger.warning('Specified the original language, but not the translators')
 
     def adjust_entry_name(self) -> None:
         name = self.adjusted.entry_name
@@ -159,36 +159,36 @@ class BibEntryAdjuster:
         crossref_date_year = extract_year(str(self.crossref.date)) if self.crossref else None
 
         if name_year and date_year and name_year != date_year:
-            self.logger.info('Year mismatch between the entry name and date; using the year from the date')
+            self.bound_logger.info('Year mismatch between the entry name and date; using the year from the date')
             self.update(entry_name=self.adjusted.entry_name.replace(name_year, date_year))
 
         if date_year and crossref_date_year:
-            self.logger.warning("Both the entry's and crossref's date field are present")
+            self.bound_logger.warning("Both the entry's and crossref's date field are present")
 
         if self.crossref and name_year and crossref_date_year and name_year != crossref_date_year:
-            self.logger.info("Year mismatch between the entry name and the crossref's date; using the year from the date")
+            self.bound_logger.info("Year mismatch between the entry name and the crossref's date; using the year from the date")
             self.update(entry_name=self.adjusted.entry_name.replace(name_year, crossref_date_year))
 
         if name_year and date_year is None and self.crossref is None:
-            self.logger.warning('The entry name contains a date, but its date field does not')
+            self.bound_logger.warning('The entry name contains a date, but its date field does not')
 
         elif name_year and self.crossref and crossref_date_year is None:
-            self.logger.warning("The entry name contains a date, but neither the entry's nor its crossref's date field does not")
+            self.bound_logger.warning("The entry name contains a date, but neither the entry's nor its crossref's date field does not")
 
         elif name_year is None and date_year:
-            self.logger.warning("The crossref's date field contains a date, but the entry name does not")
+            self.bound_logger.warning("The crossref's date field contains a date, but the entry name does not")
 
         elif name_year is None and self.crossref and crossref_date_year:
-            self.logger.warning("The entry's date field contains a date, but the entry name does not")
+            self.bound_logger.warning("The entry's date field contains a date, but the entry name does not")
 
         elif name_year and name.endswith(name_year):
-            self.logger.warning('No subject present in the entry name')
+            self.bound_logger.warning('No subject present in the entry name')
 
         else:
             return
 
         suggestion = regenerate_entry_name(self.adjusted, get_main_entry_language(self.adjusted))
-        self.logger.warning(f'Consider the entry name {suggestion}')
+        self.bound_logger.warning(f'Consider the entry name {suggestion}')
 
     def adjust_url_identifier(self, field_name: str, url_template: UrlTemplate | None = None) -> None:
         if url_template is None:
@@ -200,10 +200,10 @@ class BibEntryAdjuster:
                 self.update(**{field_name: url_data['identifier']})
 
             if isinstance(self.adjusted.url, str) and url_templates.clean_identifier(self.adjusted.url, url_template) == identifier:
-                self.logger.info(f'Removing redundant {field_name} URL')
+                self.bound_logger.info(f'Removing redundant {field_name} URL')
                 self.update(url=None)
         elif isinstance(self.adjusted.url, str) and (url_data := url_template.extract(self.adjusted.url)):
-            self.logger.info(f'Extracting a {field_name} identifier from the URL')
+            self.bound_logger.info(f'Extracting a {field_name} identifier from the URL')
             self.update(**{field_name: url_data['identifier'], 'url': None})
 
     def adjust_identifiers(self) -> None:
@@ -227,21 +227,21 @@ class BibEntryAdjuster:
             return
 
         if eprint_class and not eprint and not eprint_type:
-            self.logger.warning(f'No eprint type or id specified for class {eprint_class!r}')
+            self.bound_logger.warning(f'No eprint type or id specified for class {eprint_class!r}')
             return
 
         if eprint and not eprint_type:
-            self.logger.warning(f'No eprint type specified for {eprint!r}')
+            self.bound_logger.warning(f'No eprint type specified for {eprint!r}')
             return
 
         if eprint_type and not eprint:
-            self.logger.warning(f'No eprint id specified for type {eprint_type!r}')
+            self.bound_logger.warning(f'No eprint id specified for type {eprint_type!r}')
             return
 
         match eprint_type:
             case 'arXiv':
                 if not eprint_class:
-                    self.logger.warning(f'No eprint class specified for arXiv entry {eprint!r}')
+                    self.bound_logger.warning(f'No eprint class specified for arXiv entry {eprint!r}')
 
                 self.adjust_url_identifier('eprint', url_templates.arxiv)
 
@@ -256,11 +256,11 @@ class BibEntryAdjuster:
 
         match self.adjusted.eprinttype:
             case 'arXiv' if url_templates.clean_identifier(url, url_templates.arxiv) == self.adjusted.eprint:
-                self.logger.info('Redundant arXiv URL')
+                self.bound_logger.info('Redundant arXiv URL')
                 self.update(url=None)
 
             case 'HAL' if url_templates.clean_identifier(url, url_templates.hal) == self.adjusted.eprint:
-                self.logger.info('Redundant HAL URL')
+                self.bound_logger.info('Redundant HAL URL')
                 self.update(url=None)
 
     def adjust(self) -> None:
@@ -268,7 +268,7 @@ class BibEntryAdjuster:
         self.adjust_entry_name()
 
         if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0 and self.adjusted.crossref is None:
-            self.logger.warning('Entry has neither authors nor editors specified')
+            self.bound_logger.warning('Entry has neither authors nor editors specified')
 
         self.update(
             # authors
@@ -289,7 +289,7 @@ class BibEntryAdjuster:
         )
 
         if isinstance(self.adjusted.issn, str) and ',' in self.adjusted.issn:
-            self.logger.warning('Multiple ISSN numbers specified')
+            self.bound_logger.warning('Multiple ISSN numbers specified')
 
         self.adjust_identifiers()
         self.adjust_eprint()

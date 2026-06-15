@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class PythonTask(CliTask):
     def __init__(self, trigger: TaskTrigger, reason: str) -> None:
         super().__init__(trigger, reason)
-        self.logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
+        self.bound_logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
 
     @override
     def get_default_extension(self) -> str:
@@ -41,7 +41,7 @@ class PythonTask(CliTask):
         output_path = self.get_output_path()
 
         if not aux_path.exists():
-            self.logger.error('No output file')
+            self.bound_logger.error('No output file')
             return
 
         shutil.copyfile(aux_path, output_path)
