@@ -49,7 +49,7 @@ class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
 
     @override
     def visit_predicate(self, formula: PredicateApplication) -> Collection[Variable]:
-        return {var for arg in formula.arguments for var in get_term_variables(arg)}
+        return {*get_term_variables(arg) for arg in formula.arguments}
 
     @override
     def visit_negation(self, formula: NegationFormula) -> Collection[Variable]:

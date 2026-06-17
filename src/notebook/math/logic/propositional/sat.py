@@ -20,8 +20,9 @@ def iter_interpretations_for_variables(variables: Sequence[PropVariable]) -> Ite
 
 
 def iter_interpretations(*formulas: PropFormula) -> Iterable[PropInterpretation]:
+    # mypy is not yet compatible with Python 3.15 comprehension unpacking
     return iter_interpretations_for_variables(
-        sorted(var for formula in formulas for var in get_prop_variables(formula)),
+        sorted(*get_prop_variables(formula) for formula in formulas),
     )
 
 
