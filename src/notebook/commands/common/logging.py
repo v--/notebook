@@ -34,3 +34,9 @@ class NotebookLoggerHandler(logging.StreamHandler):
                 log_colors={**colorlog.default_log_colors, 'INFO': 'white'},
             ),
         )
+
+
+def setup_logging(verbose: bool = False, log_subject: bool = False) -> None:
+    base_logger = logging.getLogger('notebook.commands')
+    base_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    base_logger.addHandler(NotebookLoggerHandler(log_subject))

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import click
 from asyncinotify import Inotify, Mask
 
-from notebook.commands.common.logging import NotebookLoggerHandler
+from notebook.commands.common.logging import setup_logging
 from notebook.paths import FIGURES_PATH, ROOT_PATH
 
 from .tasks import AsymptoteTask, LaTeXCompiler, LaTeXTask, PythonTask, TaskRunner
@@ -109,9 +109,7 @@ async def setup_watchers(manager: TaskRunner, inotify: Inotify, rebuild_all_figu
 @click.option('-v', '--verbose', is_flag=True)
 @click.option('--rebuild-all-figures', is_flag=True)
 def watch(verbose: bool, rebuild_all_figures: bool) -> None:
-    base_logger = logging.getLogger('notebook.commands')
-    base_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-    base_logger.addHandler(NotebookLoggerHandler(log_subject=True))
+    setup_logging(verbose=verbose, log_subject=True)
 
     manager = TaskRunner()
 

@@ -5,7 +5,7 @@ from mmap import PROT_READ, mmap
 import click
 
 from notebook.commands.common.inflection import prefix_cardinal
-from notebook.commands.common.logging import NotebookLoggerHandler
+from notebook.commands.common.logging import setup_logging
 from notebook.paths import FIGURES_PATH, TEXT_PATH
 
 
@@ -28,8 +28,7 @@ def check_is_figure_used(figure_name: str) -> bool:
 
 @click.command()
 def find_obsolete_figures() -> None:
-    logger.setLevel(logging.INFO)
-    logger.addHandler(NotebookLoggerHandler())
+    setup_logging(verbose=False, log_subject=False)
 
     total_count = 0
     obsolete_count = 0

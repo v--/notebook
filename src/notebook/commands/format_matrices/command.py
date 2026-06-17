@@ -1,4 +1,3 @@
-import logging
 import pathlib
 from typing import TYPE_CHECKING
 
@@ -6,7 +5,7 @@ import click
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
-from notebook.commands.common.logging import NotebookLoggerHandler
+from notebook.commands.common.logging import setup_logging
 from notebook.exceptions import NotebookError
 from notebook.latex.format_matrices import format_tex_matrices
 
@@ -17,14 +16,9 @@ if TYPE_CHECKING:
 
 @click.command()
 @click.argument('paths', nargs=-1, type=click.Path(readable=True, dir_okay=False, path_type=pathlib.Path))
-@click.pass_context
-def format_matrices(ctx: click.Context, paths: Sequence[pathlib.Path]) -> None:
-    ctx.with_resource(with_cli_exception_handler(NotebookError))
-
-    base_logger = logging.getLogger('notebook.commands')
-    base_logger.setLevel(logging.INFO)
-    base_logger.addHandler(NotebookLoggerHandler())
+def format_matrices(paths: Sequence[pathlib.Path]) -> None:
+    setup_logging(verbose=False, log_subject=False)
 
     for path in paths:
-        with FormatterContextManager(path) as context:
+        with FormatterContextManager(path) as context, with_cli_exception_handler(NotebookError):
             context.dest.write(format_tex_matrices(context.src.read()))
