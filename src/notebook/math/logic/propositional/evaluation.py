@@ -1,21 +1,17 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.formulas import PropConstant
 
 from .formula_visitor import PropFormulaVisitor
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.formulas import PropConstant
-
-    from .formulas import (
-        PropConnectiveFormula,
-        PropFormula,
-        PropNegationFormula,
-        PropVariable,
-    )
-    from .interpretation import PropInterpretation
+lazy from .formulas import (
+    PropConnectiveFormula,
+    PropFormula,
+    PropNegationFormula,
+    PropVariable,
+)
+lazy from .interpretation import PropInterpretation
 
 
 @dataclass

@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable, Sequence
+
+lazy import pytest
 
 from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 
 from .brute_force_parse import derives, iter_partitions, parse
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-
-    import pytest
 
 
 @pytest_parametrize_kwargs(

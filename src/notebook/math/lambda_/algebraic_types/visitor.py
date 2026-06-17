@@ -8,13 +8,10 @@ from notebook.math.lambda_.type_derivation import (
     TypeDerivationTree,
     UnknownDerivationRuleError,
 )
+lazy from notebook.math.lambda_.assertions import VariableTypeAssertion
+lazy from notebook.math.lambda_.types import SimpleType
 
 from .system import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.assertions import VariableTypeAssertion
-    from notebook.math.lambda_.types import SimpleType
 
 
 class SimpleAlgebraicDerivationTreeVisitor[T]:

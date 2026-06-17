@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
+lazy from collections.abc import Mapping, Sequence
 
 from notebook.support.schemas import SchemaInferenceError, iter_mapping_discrepancy
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from notebook.math.logic.contexts import LogicalContextPlaceholder
-    from notebook.math.logic.formulas import Formula, FormulaPlaceholder
-    from notebook.math.logic.terms import Term, TermPlaceholder, Variable, VariablePlaceholder
+lazy from notebook.math.logic.contexts import LogicalContextPlaceholder
+lazy from notebook.math.logic.formulas import Formula, FormulaPlaceholder
+lazy from notebook.math.logic.terms import Term, TermPlaceholder, Variable, VariablePlaceholder
 
 
 class AtomicLogicSchemaInstantiation:

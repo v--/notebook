@@ -1,14 +1,10 @@
 import logging
 import sys
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable
 
 import colorlog
 
 from notebook.support.iteration import string_accumulator
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 
 @string_accumulator(' ')

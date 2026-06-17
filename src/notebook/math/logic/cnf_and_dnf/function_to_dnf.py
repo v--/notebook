@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING
+lazy from collections.abc import Callable, Iterable
 
 from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol
 from notebook.math.logic.formulas import PropConstant
@@ -14,10 +14,6 @@ from notebook.math.logic.propositional import (
 from notebook.support.coderefs import collector
 
 from .exceptions import VariableNameError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
 
 
 def vararg_connect(conn: BinaryConnective, formulas: Iterable[PropFormula]) -> PropFormula:

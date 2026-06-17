@@ -1,16 +1,13 @@
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
 
 from notebook.math.rings.types import IRing
 from notebook.support.coderefs import collector
+lazy from notebook.parsing import LatinIdentifier
 
 from . import monomial
 from .exceptions import PolynomialDivisionError, ZeroPolynomialError
 from .monomial import Monomial
 from .polynomial import IFieldPolynomial, IRingPolynomial, ISemiringPolynomial
-
-
-if TYPE_CHECKING:
-    from notebook.parsing import LatinIdentifier
 
 
 class DivMod[P: ISemiringPolynomial](NamedTuple):

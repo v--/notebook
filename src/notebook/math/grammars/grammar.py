@@ -1,15 +1,12 @@
 import itertools
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.support.iteration import string_accumulator
 
 from .exceptions import IncompatibleRuleError, UnknownSymbolError
 from .symbols import NonTerminal, Terminal, empty
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
 
 
 @dataclass(frozen=True)

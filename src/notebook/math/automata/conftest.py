@@ -1,13 +1,9 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 import pytest
 
 from .finite import FiniteAutomaton
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @dataclass(frozen=True)

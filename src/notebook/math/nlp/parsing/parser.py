@@ -1,17 +1,12 @@
 # ruff: noqa: C901
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.parsing.parser import Parser
+lazy from notebook.math.nlp.phrases import Phrase
 
 from .parser_context import PhraseContext
 from .tokenizer import tokenize_text
 from .tokens import TextToken
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
-
-    from notebook.math.nlp.phrases import Phrase
 
 
 class TextParser(Parser[TextToken]):

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, overload
+from typing import overload
+lazy from collections.abc import Sequence
 
 from notebook.math.logic.alphabet import BinaryConnective
 from notebook.math.logic.formulas import ConnectiveFormula, Formula
@@ -8,10 +9,6 @@ from notebook.support.coderefs import collector
 
 from .axiomatic_derivation import AxiomaticDerivation, get_config_conditional_safe, get_premises
 from .system import AxiomaticDerivationSystem
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem({

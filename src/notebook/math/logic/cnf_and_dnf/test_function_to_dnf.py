@@ -1,16 +1,13 @@
 # ruff: noqa: ARG005, FURB118
 
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Callable
 
 from notebook.math.logic.propositional import parse_prop_formula
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .function_to_dnf import function_to_dnf
 from .validation import is_formula_in_dnf
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 @pytest_parametrize_kwargs(

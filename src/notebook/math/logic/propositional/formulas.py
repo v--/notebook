@@ -1,11 +1,8 @@
 import functools
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.formulas import ConnectiveFormula, NegationFormula, PredicateApplication, PropConstant
 
-
-if TYPE_CHECKING:
-    from .symbols import PropVariableSymbol
+lazy from .symbols import PropVariableSymbol
 
 
 @functools.total_ordering

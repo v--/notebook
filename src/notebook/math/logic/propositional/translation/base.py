@@ -1,14 +1,10 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+lazy from collections.abc import Mapping
+
+lazy from notebook.math.logic.formulas import Formula
+lazy from notebook.math.logic.propositional.formulas import PropVariable
 
 from .exceptions import UnspecifiedReplacementError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.logic.formulas import Formula
-    from notebook.math.logic.propositional.formulas import PropVariable
 
 
 @dataclass(frozen=True)

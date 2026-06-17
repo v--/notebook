@@ -1,17 +1,13 @@
-from typing import TYPE_CHECKING, cast
+from typing import cast
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
 from .epsilon_rules import is_epsilon_rule
 from .exceptions import IncompatibleGrammarError
 from .symbols import Terminal
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-
-    from .grammar import Grammar, GrammarSchema
-    from .symbols import NonTerminal
+lazy from .grammar import Grammar, GrammarSchema
+lazy from .symbols import NonTerminal
 
 
 def is_length_increasing_grammar(grammar: Grammar) -> bool:

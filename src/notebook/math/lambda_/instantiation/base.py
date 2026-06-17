@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
+lazy from collections.abc import Mapping
 
 from notebook.support.schemas import SchemaInferenceError, iter_mapping_discrepancy
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.lambda_.terms import TermPlaceholder, TypedTerm, Variable, VariablePlaceholder
-    from notebook.math.lambda_.types import SimpleType, TypePlaceholder
+lazy from notebook.math.lambda_.terms import TermPlaceholder, TypedTerm, Variable, VariablePlaceholder
+lazy from notebook.math.lambda_.types import SimpleType, TypePlaceholder
 
 
 class AtomicLambdaSchemaInstantiation:

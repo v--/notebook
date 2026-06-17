@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.parsing import parse_formula, parse_formula_schema
 
@@ -7,10 +6,7 @@ from .formula_conversion import convert_to_prop_formula
 from .formulas import PropFormula, PropVariable
 from .schema_conversion import convert_to_prop_schema
 from .signature import DEFAULT_PROP_SIGNATURE, PropLogicSignature
-
-
-if TYPE_CHECKING:
-    from .schemas import PropFormulaSchema
+lazy from .schemas import PropFormulaSchema
 
 
 def parse_prop_formula(source: str, signature: PropLogicSignature = DEFAULT_PROP_SIGNATURE) -> PropFormula:

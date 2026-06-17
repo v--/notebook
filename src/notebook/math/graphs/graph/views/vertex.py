@@ -1,9 +1,6 @@
 from collections.abc import Collection, Iterator
-from typing import TYPE_CHECKING
 
-
-if TYPE_CHECKING:
-    from notebook.math.graphs.graph.payload import GraphPayload, LabeledVertex
+lazy from notebook.math.graphs.graph.payload import GraphPayload, LabeledVertex
 
 
 class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:  # noqa: PLW1641

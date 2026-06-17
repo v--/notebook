@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, overload, override
+from typing import overload, override
 
 from notebook.math.lambda_.terms import (
     Constant,
@@ -18,10 +18,7 @@ from notebook.support.coderefs import collector
 from notebook.support.schemas import SchemaInstantiationError
 
 from .type_application import instantiate_type_schema
-
-
-if TYPE_CHECKING:
-    from .base import AtomicLambdaSchemaInstantiation
+lazy from .base import AtomicLambdaSchemaInstantiation
 
 
 @dataclass(frozen=True)

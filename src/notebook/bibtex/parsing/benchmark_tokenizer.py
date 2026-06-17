@@ -1,13 +1,9 @@
 import pathlib
-from typing import TYPE_CHECKING
 
 import pytest
+lazy from pytest_benchmark.fixture import BenchmarkFixture
 
 from .tokenizer import BibTokenizer
-
-
-if TYPE_CHECKING:
-    from pytest_benchmark.fixture import BenchmarkFixture
 
 
 BIB_ROOT = pathlib.Path(__file__).parent.parent.parent.parent.parent / 'bibliography'

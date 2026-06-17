@@ -1,13 +1,13 @@
 # The schema here is extracted from a few example responses and guided by
 # https://arxiv.org/schemas/atom.xsd
 # ruff: noqa: E222
-from collections.abc import Sequence  # noqa: TC003
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from xsdata.formats.dataclass.parsers import XmlParser
 
 # annotation-only XmlDateTime breaks because of metaprogramming
-from xsdata.models.datatype import XmlDateTime  # noqa: TC002
+from xsdata.models.datatype import XmlDateTime
 
 
 ARXIV_NAMESPACE = 'http://arxiv.org/schemas/atom'

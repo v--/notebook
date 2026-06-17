@@ -1,5 +1,5 @@
 import pathlib
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 import click
 
@@ -8,10 +8,6 @@ from notebook.commands.common.formatting import FormatterContextManager
 from notebook.commands.common.logging import setup_logging
 from notebook.exceptions import NotebookError
 from notebook.latex.format_matrices import format_tex_matrices
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @click.command()

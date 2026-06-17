@@ -1,12 +1,8 @@
-from typing import TYPE_CHECKING
 
 from notebook.parsing.tokenizer import Tokenizer
 from notebook.support.collections import MissingKeyError, TrieMapping
-
-
-if TYPE_CHECKING:
-    from notebook.parsing.tokenizer_context import TokenizerContext
-    from notebook.parsing.tokens import Token
+lazy from notebook.parsing.tokenizer_context import TokenizerContext
+lazy from notebook.parsing.tokens import Token
 
 
 class TrieTokenizerMixin[TokenKindT, TrieT](Tokenizer[TokenKindT]):

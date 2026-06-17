@@ -1,14 +1,11 @@
 import functools
 import itertools
-from typing import TYPE_CHECKING, Self
+from typing import Self
+lazy from collections.abc import Collection, Iterable
 
 from notebook.exceptions import UnreachableException
 from notebook.parsing.strings import StringContainer
 from notebook.support.unicode import itoa_subscripts
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable
 
 
 @functools.total_ordering

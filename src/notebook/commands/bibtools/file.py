@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, TextIO
+from typing import TextIO
+lazy from collections.abc import Sequence
 
 from notebook.bibtex import BibEntry, parse_bibtex
 from notebook.parsing.parser import ParserError
 
 from .exceptions import BibToolsParsingError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 def read_entries(src: TextIO) -> Sequence[BibEntry]:

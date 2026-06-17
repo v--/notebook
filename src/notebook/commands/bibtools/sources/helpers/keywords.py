@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Sequence
 
 import stop_words
 
 from notebook.math.nlp.rake import PhraseScoreContext, generate_phrase_scores
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 def get_stop_words(language: str) -> Sequence[str]:

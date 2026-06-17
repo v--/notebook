@@ -1,15 +1,11 @@
 # ruff: noqa: ARG005, FURB118
-from typing import TYPE_CHECKING
+lazy from collections.abc import Callable
 
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .polynomial import BooleanPolynomial
 from .polynomial import boolean as b
 from .zhegalkin import infer_zhegalkin
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 @pytest_parametrize_kwargs(

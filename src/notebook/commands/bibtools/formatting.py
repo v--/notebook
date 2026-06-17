@@ -1,6 +1,6 @@
 import logging
 from dataclasses import replace
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from stdnum import isbn, issn
 
@@ -13,11 +13,7 @@ from .sources.helpers.entries import regenerate_entry_name
 from .sources.helpers.languages import get_main_entry_language, normalize_language_name
 from .sources.helpers.names import get_main_human_name, normalize_human_name
 from .sources.helpers.pages import normalize_pages
-
-
-if TYPE_CHECKING:
-
-    from .sources.helpers.url_template import UrlTemplate
+lazy from .sources.helpers.url_template import UrlTemplate
 
 
 logger = logging.getLogger(__name__)

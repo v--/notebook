@@ -1,13 +1,10 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.support.coderefs import collector
 
 from .formula_visitor import PropFormulaTransformationVisitor
-
-
-if TYPE_CHECKING:
-    from .formulas import PropFormula
+lazy from .formulas import PropFormula
 
 
 @dataclass(frozen=True)

@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
 from .exceptions import IncompatibleRuleError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .symbols import NonTerminal, Terminal, new_non_terminal
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
 
 
 def is_epsilon_rule(rule: GrammarRule) -> bool:

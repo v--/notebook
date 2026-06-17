@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Sequence
 
 from notebook.math.lambda_.common import (
     big_omega,
@@ -18,10 +19,6 @@ from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .beta import BetaReduction, to_function
 from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_term_once, transitively_reduce_term
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @pytest_parametrize_kwargs(

@@ -1,13 +1,9 @@
 import itertools
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection
 
 from notebook.exceptions import UnreachableException
 
 from .unicode import atoi_subscripts, is_numeric_subscript_char, itoa_subscripts
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 def get_name_without_collision(base_name: str, context: Collection[str] = {}, *, always_add_suffix: bool = False) -> str:

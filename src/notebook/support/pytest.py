@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
+lazy from collections.abc import Callable, Iterable, Mapping
 
 import pytest
 
 from .coderefs import DictMetadataProxy
 from .iteration import repeat
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping
 
 
 def pytest_parametrize_lists[**P](**kwargs: Iterable[Any]) -> Callable[[Callable[P, None]], Callable[[], None]]:

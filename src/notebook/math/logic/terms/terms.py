@@ -1,14 +1,9 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 from notebook.math.logic.exceptions import FormalLogicError
 from notebook.math.logic.signature import FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from notebook.parsing.identifiers import LatinIdentifier
+lazy from notebook.parsing.identifiers import LatinIdentifier
 
 
 @dataclass(frozen=True)

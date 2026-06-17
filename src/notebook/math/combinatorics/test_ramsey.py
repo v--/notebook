@@ -1,5 +1,5 @@
 import itertools
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 from notebook.support.pytest import pytest_parametrize_kwargs
 
@@ -10,10 +10,6 @@ from .ramsey import (
     naive_ramsey_computation_bounds,
     ramsey_upper_bound,
 )
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @pytest_parametrize_kwargs(

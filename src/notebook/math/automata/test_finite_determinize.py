@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
 
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize, is_automata_deterministic
-
-
-if TYPE_CHECKING:
-    from .conftest import FiniteAutomatonFixture
+lazy from .conftest import FiniteAutomatonFixture
 
 
 # fig:def:finite_automaton

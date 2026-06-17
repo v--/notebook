@@ -1,22 +1,18 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.formulas import ConnectiveFormula, Formula, NegationFormula, PropConstant
 from notebook.math.logic.propositional.formula_visitor import PropFormulaVisitor
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.propositional.formulas import (
+    PropConnectiveFormula,
+    PropFormula,
+    PropNegationFormula,
+    PropVariable,
+)
 
 from .base import PropFormulaTranslation
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.logic.propositional.formulas import (
-        PropConnectiveFormula,
-        PropFormula,
-        PropNegationFormula,
-        PropVariable,
-    )
 
 
 @dataclass(frozen=True)

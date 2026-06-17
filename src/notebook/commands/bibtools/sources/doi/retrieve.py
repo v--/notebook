@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
+
+lazy from notebook.bibtex import BibEntry
 
 from .bib import doi_data_to_bib
 from .fetch import fetch_doi_json
 from .model import parse_doi_json
-
-
-if TYPE_CHECKING:
-    from notebook.bibtex import BibEntry
 
 
 def retrieve_doi_entry(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> BibEntry:

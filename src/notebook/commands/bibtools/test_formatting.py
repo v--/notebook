@@ -1,13 +1,10 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
+
+lazy import pytest
 
 from notebook.bibtex import VerbatimString, parse_bibtex
 
 from .formatting import adjust_entry
-
-
-if TYPE_CHECKING:
-    import pytest
 
 
 def test_author_name_reformatting() -> None:

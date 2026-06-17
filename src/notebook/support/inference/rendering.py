@@ -1,14 +1,11 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol, override
+from typing import Protocol, override
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.iteration import string_accumulator
 from notebook.support.unicode import to_superscript
 
 from .exceptions import InferenceRuleError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 SUBTREE_DISTANCE = 4

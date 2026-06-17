@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.math.logic.formulas import (
     ConnectiveFormula,
@@ -15,10 +15,7 @@ from notebook.support.coderefs import collector
 
 from .assignment import VariableAssignment
 from .term_visitor import TermEvaluationVisitor
-
-
-if TYPE_CHECKING:
-    from .structure import FormalLogicStructure
+lazy from .structure import FormalLogicStructure
 
 
 @dataclass

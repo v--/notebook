@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, NamedTuple, cast
+from typing import NamedTuple, cast
+lazy from collections.abc import Collection, Iterable
+lazy from enum import StrEnum
 
 from notebook.support.iteration import dict_accumulator
 
 from .exceptions import InvalidTokenError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable
-    from enum import StrEnum
 
 
 class Token[TokenKindT](NamedTuple):

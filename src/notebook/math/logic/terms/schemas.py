@@ -1,12 +1,9 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+
+lazy from notebook.math.logic.signature import FunctionSymbol
+lazy from notebook.parsing.identifiers import GreekIdentifier, LatinIdentifier
 
 from .terms import SyntacticApplication
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FunctionSymbol
-    from notebook.parsing.identifiers import GreekIdentifier, LatinIdentifier
 
 
 @dataclass(frozen=True)

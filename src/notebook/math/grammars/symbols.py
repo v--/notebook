@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
+lazy from collections.abc import Collection
 
 from notebook.parsing import StringContainer
 from notebook.support.name_collision import get_name_without_collision
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 class Terminal(StringContainer):

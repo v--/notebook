@@ -1,13 +1,10 @@
 from collections.abc import Collection
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
 from notebook.support.collections import SequentialSet
 
-
-if TYPE_CHECKING:
-    from .base import BaseGraphWalk
-    from .directed import DirectedWalk
+lazy from .base import BaseGraphWalk
+lazy from .directed import DirectedWalk
 
 
 def are_closed[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:

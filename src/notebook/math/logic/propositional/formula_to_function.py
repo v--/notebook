@@ -1,17 +1,12 @@
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING
+lazy from collections.abc import Callable
 
 from notebook.support.coderefs import collector
 
 from .evaluation import evaluate_prop_formula
 from .interpretation import PropInterpretation
 from .variables import get_prop_variables
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from .formulas import PropFormula
+lazy from .formulas import PropFormula
 
 
 @collector.ref('def:parametrized_propositional_denotation')

@@ -1,7 +1,6 @@
 import functools
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from notebook.exceptions import UnreachableException
 from notebook.math.lambda_.alphabet import BinaryTypeConnective
@@ -12,14 +11,11 @@ from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleTy
 from notebook.math.logic.signature import SignatureSymbol
 from notebook.math.logic.structure import FormalLogicStructure
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.hol.expression import HolExpression
+lazy from notebook.math.lambda_.hol.signature import NonLogicalConstantSymbol
+lazy from notebook.math.lambda_.hol.structure import HolStructure
 
 from .signature import hol_signature_to_fol
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.hol.expression import HolExpression
-    from notebook.math.lambda_.hol.signature import NonLogicalConstantSymbol
-    from notebook.math.lambda_.hol.structure import HolStructure
 
 
 @dataclass

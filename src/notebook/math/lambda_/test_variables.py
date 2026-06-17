@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection
 
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .parsing import parse_untyped_term
 from .variables import get_free_variables
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 @pytest_parametrize_kwargs(

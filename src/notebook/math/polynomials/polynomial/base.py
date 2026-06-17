@@ -1,6 +1,7 @@
 import contextlib
 import itertools
-from typing import TYPE_CHECKING, Any, Self, cast, override
+from typing import Any, Self, cast, override
+lazy from collections.abc import Iterable, MutableMapping, Sequence
 
 from notebook.math.polynomials.exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError
 from notebook.math.polynomials.monomial import Monomial, const
@@ -10,10 +11,6 @@ from notebook.support.iteration import string_accumulator
 from notebook.support.unicode import Capitalization
 
 from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, MutableMapping, Sequence
 
 
 class PolynomialMeta(type):

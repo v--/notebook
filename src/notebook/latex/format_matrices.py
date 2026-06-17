@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, MutableMapping, Sequence
 
 from notebook.support.iteration import get_strip_slice
 
@@ -14,10 +14,6 @@ from .nodes import (
     stringify_nodes,
 )
 from .parsing import parse_latex
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, MutableMapping, Sequence
 
 
 INDENT = 2

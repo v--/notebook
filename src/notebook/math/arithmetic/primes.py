@@ -2,7 +2,7 @@ import itertools
 import math
 from collections import Counter
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
@@ -10,10 +10,6 @@ from .divisibility import divides, quot
 from .exceptions import InvalidArgumentError, NotPositiveIntegerError
 from .gcd import gcd
 from .support import SignT, sgn
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 @collector.ref('alg:sieve_of_eratosthenes')

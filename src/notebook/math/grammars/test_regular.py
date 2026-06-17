@@ -1,5 +1,4 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 from notebook.math.automata.finite import FiniteAutomaton
 
@@ -11,10 +10,7 @@ from .regular import (
     to_finite_automaton,
 )
 from .symbols import NonTerminal
-
-
-if TYPE_CHECKING:
-    from .conftest import GrammarFixture
+lazy from .conftest import GrammarFixture
 
 
 def test_to_finite_automaton_an(an: GrammarFixture) -> None:

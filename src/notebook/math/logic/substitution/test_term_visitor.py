@@ -1,15 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.parsing import parse_term, parse_variable
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .term_visitor import substitute_in_term
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

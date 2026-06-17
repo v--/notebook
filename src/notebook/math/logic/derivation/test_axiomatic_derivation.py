@@ -1,5 +1,5 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 from notebook.math.logic.propositional import parse_prop_formula
 from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
@@ -12,10 +12,6 @@ from .axiomatic_derivation import (
 )
 from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload
 from .system import derivation_system_to_natural_deduction_system
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 IDENTITY_DERIVATION = [

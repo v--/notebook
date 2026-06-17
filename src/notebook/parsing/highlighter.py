@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
+lazy from collections.abc import Iterable, Sequence
 
 from .exceptions import BaseParsingError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 class SourcePosition(NamedTuple):

@@ -1,5 +1,7 @@
 from collections.abc import Collection
-from typing import TYPE_CHECKING, override
+from typing import override
+
+lazy from notebook.math.logic.formulas import PropConstant
 
 from .formula_visitor import PropFormulaVisitor
 from .formulas import (
@@ -8,10 +10,6 @@ from .formulas import (
     PropNegationFormula,
     PropVariable,
 )
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.formulas import PropConstant
 
 
 class VariableVisitor(PropFormulaVisitor[Collection[PropVariable]]):

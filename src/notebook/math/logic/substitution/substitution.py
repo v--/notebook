@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Collection, Iterable, Mapping
 
 from notebook.math.logic.terms import Term, Variable
 from notebook.math.logic.variables import get_formula_free_variables, get_term_variables, new_variable
 from notebook.support.substitution import AbstractAtomicSubstitution
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping
-
-    from notebook.math.logic.formulas import Formula, FormulaWithSubstitution, QuantifierFormula
+lazy from notebook.math.logic.formulas import Formula, FormulaWithSubstitution, QuantifierFormula
 
 
 class AtomicLogicSubstitution(AbstractAtomicSubstitution[Variable, Term]):

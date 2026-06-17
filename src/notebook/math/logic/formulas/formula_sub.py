@@ -1,11 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+lazy from notebook.math.logic.terms import TermSubstitutionSpec
 
-if TYPE_CHECKING:
-    from notebook.math.logic.terms import TermSubstitutionSpec
-
-    from .formulas import Formula
+lazy from .formulas import Formula
 
 
 @dataclass(frozen=True)

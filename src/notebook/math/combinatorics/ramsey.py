@@ -1,7 +1,7 @@
 import itertools
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection, Iterable, Mapping
 
 from notebook.exceptions import UnreachableException
 from notebook.math.graphs.complete import max_edge_count
@@ -10,10 +10,6 @@ from notebook.math.graphs.subgraphs import enumerate_fixed_order_subgraphs, max_
 from notebook.support.coderefs import collector
 
 from .binomial import choose
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping
 
 
 ColorType = int

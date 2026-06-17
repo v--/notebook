@@ -1,17 +1,13 @@
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.parsing import parse_formula
 from notebook.math.logic.structure import evaluate_formula
 from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
 from notebook.math.rings.modular import Z5
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .prenex_formula import formula_to_prenex_form
 from .skolemize import skolemize
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

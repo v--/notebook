@@ -1,15 +1,10 @@
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.substitution import AtomicLogicSubstitution
 
 from .assignment import VariableAssignment
 from .term_visitor import evaluate_term
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.substitution import AtomicLogicSubstitution
-
-    from .structure import FormalLogicStructure
+lazy from .structure import FormalLogicStructure
 
 
 @collector.ref('alg:fol_assignment_substitution')

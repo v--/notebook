@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable
 
 from notebook.math.grammars.grammar import GrammarRule, GrammarSchema
 from notebook.math.grammars.symbols import NonTerminal, Terminal
@@ -7,10 +8,6 @@ from notebook.parsing import Parser, ParserError
 from .parser_context import GrammarNonterminalContext, GrammarSymbolRunContext, GrammarTerminalContext
 from .tokenizer import tokenize_grammar
 from .tokens import GrammarToken
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 
 class GrammarParser(Parser[GrammarToken]):

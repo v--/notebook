@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection
 
 from notebook.math.lambda_.terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
 from notebook.math.lambda_.variables import get_free_variables, new_variable
 from notebook.support.coderefs import collector
 
 from .substitution import substitute
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 # The assertions are needed because mypy doesn't handle such complicated type narrowing

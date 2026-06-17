@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Collection, Iterable, Mapping
 
 from notebook.math.lambda_.terms import TypedAbstraction, TypedTerm, Variable
 from notebook.math.lambda_.type_derivation.tree import TypeDerivationTree
 from notebook.math.lambda_.variables import get_free_variables, new_variable
 from notebook.support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping
 
 
 class AtomicTypeDerivationSubstitution(AbstractAtomicSubstitution[Variable, TypeDerivationTree]):

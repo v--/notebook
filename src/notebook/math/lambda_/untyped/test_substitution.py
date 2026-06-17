@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping
 
 from notebook.math.lambda_.parsing import parse_untyped_term, parse_variable
 from notebook.support.coderefs import collector
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .substitution import substitute
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @pytest_parametrize_kwargs(

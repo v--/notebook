@@ -1,19 +1,15 @@
 import abc
 import asyncio
 from time import monotonic_ns
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy import logging
+lazy import pathlib
+lazy from collections.abc import Iterable
 
 from notebook.paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
 
 from .base import Task
-
-
-if TYPE_CHECKING:
-    import logging
-    import pathlib
-    from collections.abc import Iterable
-
-    from .runner import TaskRunner
+lazy from .runner import TaskRunner
 
 
 def format_time(start: int, end: int) -> str:

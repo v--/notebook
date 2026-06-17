@@ -1,5 +1,5 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 import pytest
 
@@ -8,6 +8,7 @@ from notebook.math.logic.propositional import parse_prop_formula
 from notebook.math.logic.terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from notebook.parsing import LatinIdentifier, ParserError, TokenizerError
 from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .parser import (
     parse_formula,
@@ -18,12 +19,6 @@ from .parser import (
     parse_term_schema_substitution_spec,
     parse_variable,
 )
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

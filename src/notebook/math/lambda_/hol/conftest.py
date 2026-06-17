@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -11,10 +10,7 @@ from notebook.math.rings.modular import Z3
 
 from .theories.arithmetic import ARITHMETIC_SIGNATURE as HOL_ARITHMETIC_SIGNATURE
 from .theories.arithmetic import ModularArithmeticStructure as HolModularStructure
-
-
-if TYPE_CHECKING:
-    from .signature import HolSignature
+lazy from .signature import HolSignature
 
 
 @pytest.fixture

@@ -1,14 +1,11 @@
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self
+from typing import Self
+lazy from collections.abc import Iterable, Mapping, Sequence
 
 from notebook.support.adt.comparable import IComparable
 
 from .cycle import Cycle
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
 
 
 @dataclass(frozen=True)

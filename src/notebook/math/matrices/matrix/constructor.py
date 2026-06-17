@@ -1,13 +1,10 @@
-from typing import TYPE_CHECKING, Self
+from typing import Self
+lazy from collections.abc import Sequence
 
 from notebook.math.matrices.exceptions import MatrixIndexError
 from notebook.math.rings.types import ISemiring
 
 from .base import BaseMatrix
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):

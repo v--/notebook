@@ -1,7 +1,8 @@
 import functools
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, overload
+from typing import overload
+lazy from collections.abc import Callable
 
 from notebook.exceptions import UnreachableException
 from notebook.math.logic.alphabet import Quantifier
@@ -12,16 +13,11 @@ from notebook.math.logic.terms import FunctionApplication, Variable
 from notebook.parsing import iter_latin_identifiers
 from notebook.support.coderefs import collector
 from notebook.support.unicode import itoa_superscripts
+lazy from notebook.math.logic.formulas import Formula
 
 from .exceptions import InvalidModelError
 from .prefix import QuantifierPrefix
 from .prenex_formula import PrenexFormula
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from notebook.math.logic.formulas import Formula
 
 
 @dataclass(frozen=True)

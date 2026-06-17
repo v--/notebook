@@ -1,5 +1,6 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
+lazy from collections.abc import Sequence
 
 import pytest
 
@@ -8,12 +9,7 @@ from notebook.support.coderefs import collector
 from .brute_force_parse import derives
 from .parsing import parse_grammar_schema
 from .symbols import NonTerminal
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from .grammar import Grammar
+lazy from .grammar import Grammar
 
 
 class GrammarFixture(NamedTuple):

@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterator
 
 from notebook.support.collections import MissingKeyError, TrieMapping
 
 from .exceptions import FormalLogicSignatureError
 from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterator
 
 
 class FormalLogicSignature:  # noqa: PLW1641

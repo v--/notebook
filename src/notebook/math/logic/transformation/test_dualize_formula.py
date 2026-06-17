@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.parsing import parse_formula
 from notebook.math.logic.propositional import evaluate_prop_formula, iter_interpretations, parse_prop_formula
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .dualize_formula import dualize_formula, dualize_formula_prop
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

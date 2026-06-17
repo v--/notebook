@@ -1,14 +1,11 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.terms import FunctionApplication, Term, TermTransformationVisitor, Variable
 from notebook.support.coderefs import collector
 
 from .substitution import AtomicLogicSubstitution
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @dataclass(frozen=True)

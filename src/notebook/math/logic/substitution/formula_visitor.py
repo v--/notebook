@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.formulas import (
     EqualityFormula,
@@ -10,15 +11,10 @@ from notebook.math.logic.formulas import (
     QuantifierFormula,
 )
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.terms import Term, Variable
 
 from .substitution import AtomicLogicSubstitution, infer_substitution
 from .term_visitor import TermSubstitutionVisitor
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.logic.terms import Term, Variable
 
 
 @dataclass(frozen=True)

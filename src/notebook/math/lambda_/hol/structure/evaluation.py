@@ -2,6 +2,7 @@
 import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable
 
 from notebook.exceptions import UnreachableException
 from notebook.math.lambda_.alphabet import BinaryTypeConnective
@@ -11,18 +12,12 @@ from notebook.math.lambda_.hol.signature import NonLogicalConstantSymbol, SortSy
 from notebook.math.lambda_.terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, Variable
 from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleType
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.hol.expression import HolExpression
+lazy from notebook.math.lambda_.type_context import TypeContext
 
 from .assignment import HolVariableAssignment
 from .exceptions import HolInterpretationError, MissingInterpretationError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    from notebook.math.lambda_.hol.expression import HolExpression
-    from notebook.math.lambda_.type_context import TypeContext
-
-    from .structure import HolStructure, HolStructureValue
+lazy from .structure import HolStructure, HolStructureValue
 
 
 def iter_type_values[T](type_: SimpleType, structure: HolStructure[T]) -> Iterable[HolStructureValue[T]]:

@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable
 
 from notebook.math.logic.contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
 from notebook.math.logic.formulas import Formula, FormulaSchema
@@ -6,12 +7,7 @@ from notebook.support.coderefs import collector
 from notebook.support.schemas import SchemaInstantiationError
 
 from .formula_application import instantiate_formula_schema
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    from .base import AtomicLogicSchemaInstantiation
+lazy from .base import AtomicLogicSchemaInstantiation
 
 
 def _instantiate_context_schema_payload(schema: LogicalContextSchema, instantiation: AtomicLogicSchemaInstantiation) -> Iterable[Formula]:

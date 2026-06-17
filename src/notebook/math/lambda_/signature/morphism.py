@@ -1,13 +1,10 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, overload
+from typing import overload
+lazy from collections.abc import Mapping
 
 from .exceptions import MissingSignatureSymbolError, SignatureMorphismError
 from .signature import LambdaSignature
 from .symbols import BaseTypeSymbol, ConstantTermSymbol, SignatureSymbol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @dataclass

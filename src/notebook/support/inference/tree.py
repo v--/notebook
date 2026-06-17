@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
+lazy from collections.abc import Collection
 
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
-
-    from .rendering import InferenceTreeRenderer
+lazy from .rendering import InferenceTreeRenderer
 
 
 @runtime_checkable

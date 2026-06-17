@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.math.lambda_.assertions import TypeAssertion, VariableTypeAssertion
 from notebook.math.lambda_.instantiation import (
@@ -9,15 +10,10 @@ from notebook.math.lambda_.instantiation import (
 )
 from notebook.support.coderefs import collector
 from notebook.support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
+lazy from notebook.math.lambda_.terms import Variable
+lazy from notebook.math.lambda_.type_system import TypingRule
 
 from .exceptions import TypeDerivationError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
-
-    from notebook.math.lambda_.terms import Variable
-    from notebook.math.lambda_.type_system import TypingRule
 
 
 @dataclass(frozen=True)

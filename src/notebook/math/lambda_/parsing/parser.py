@@ -1,5 +1,6 @@
 # ruff: noqa: C901
 from typing import TYPE_CHECKING, Literal, overload
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.math.lambda_.alphabet import BinaryTypeConnective, BinderSymbol
 from notebook.math.lambda_.assertions import (
@@ -39,10 +40,6 @@ from notebook.parsing import IdentifierParserMixin, Parser, ParserError
 from .parser_context import LambdaParserContext
 from .tokenizer import tokenize_lambda_string
 from .tokens import LambdaToken, LambdaTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[LambdaToken]):

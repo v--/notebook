@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping, Sequence
 
 import pytest
 
@@ -8,12 +9,7 @@ from notebook.support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_equation, parse_term, parse_variable
 from .substitution import AtomicLogicSubstitution
 from .unification import UnificationError, unify
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from .signature import FormalLogicSignature
+lazy from .signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

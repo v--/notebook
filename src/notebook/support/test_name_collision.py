@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection
 
 from .name_collision import get_name_without_collision
 from .pytest import pytest_parametrize_kwargs
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 @pytest_parametrize_kwargs(

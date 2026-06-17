@@ -1,9 +1,5 @@
 import io
-from typing import TYPE_CHECKING
-
-
-if TYPE_CHECKING:
-    from collections.abc import MutableSequence, Sequence
+lazy from collections.abc import MutableSequence, Sequence
 
 
 class VerbatimString:

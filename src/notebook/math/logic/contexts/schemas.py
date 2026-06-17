@@ -1,12 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from notebook.math.logic.formulas import FormulaSchema
-    from notebook.parsing import GreekIdentifier
+lazy from notebook.math.logic.formulas import FormulaSchema
+lazy from notebook.parsing import GreekIdentifier
 
 
 @dataclass(frozen=True)

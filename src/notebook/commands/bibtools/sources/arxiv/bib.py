@@ -1,5 +1,4 @@
 import re
-from typing import TYPE_CHECKING
 
 from notebook.bibtex import BibEntry
 from notebook.commands.bibtools import url_templates
@@ -7,9 +6,7 @@ from notebook.commands.bibtools.sources.helpers.entries import generate_entry_na
 from notebook.commands.bibtools.sources.helpers.names import name_to_bib_author
 from notebook.support.unicode import normalize_whitespace
 
-
-if TYPE_CHECKING:
-    from .model import ArxivEntry
+lazy from .model import ArxivEntry
 
 
 def arxiv_entry_to_bib(aentry: ArxivEntry, arxiv_id: str) -> BibEntry:

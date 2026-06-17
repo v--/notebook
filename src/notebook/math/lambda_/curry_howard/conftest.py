@@ -1,12 +1,8 @@
-from typing import TYPE_CHECKING
 
 import pytest
 
 from notebook.math.logic.propositional import PropLogicSignature, PropVariableSymbol
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest.fixture

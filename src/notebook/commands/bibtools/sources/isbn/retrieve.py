@@ -1,16 +1,12 @@
 import json
-from typing import TYPE_CHECKING
 
 from notebook.commands.bibtools.exceptions import BibToolsError
+lazy from notebook.bibtex import BibEntry
 
 from .bib import isbn_book_to_bib
 from .fetch import fetch_isbn_json
 from .fixtures import get_isbn_fixture_path
 from .model import parse_isbn_json
-
-
-if TYPE_CHECKING:
-    from notebook.bibtex import BibEntry
 
 
 def retrieve_isbn_entry(identifier: str, *, dump_as_fixture: bool) -> BibEntry:

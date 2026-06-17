@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping
 
 import pytest
 
@@ -17,10 +18,6 @@ from notebook.support.schemas import SchemaInferenceError
 
 from .base import AtomicLambdaSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @pytest_parametrize_kwargs(

@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.alphabet import BinaryConnective, LatticeConnective, PropConstantSymbol
 from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 # The symbols we use here differ from those used in the monograph because Unicode is more restricted than the symbols we can conjure up in (La)TeX

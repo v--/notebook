@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 import click
 import stdnum.isbn
@@ -17,10 +17,6 @@ from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
 from .sources.mathnet import retrieve_mathnet_entry
 from .sources.stackexchange import retrieve_stackexchange_entry
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @click.group()

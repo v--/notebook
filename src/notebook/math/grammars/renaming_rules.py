@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
@@ -6,10 +7,6 @@ from .epsilon_rules import is_essentially_epsilon_free
 from .exceptions import IncompatibleGrammarError
 from .grammar import Grammar, GrammarRule, GrammarSchema
 from .symbols import NonTerminal, Terminal
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 def is_rule_renaming(rule: GrammarRule) -> bool:

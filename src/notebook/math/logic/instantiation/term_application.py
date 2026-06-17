@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, overload, override
+from typing import overload, override
 
 from notebook.math.logic.terms import (
     FunctionApplication,
@@ -14,9 +14,7 @@ from notebook.math.logic.terms import (
 from notebook.support.coderefs import collector
 from notebook.support.schemas import SchemaInstantiationError
 
-
-if TYPE_CHECKING:
-    from .base import AtomicLogicSchemaInstantiation
+lazy from .base import AtomicLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)

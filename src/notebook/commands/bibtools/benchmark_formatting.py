@@ -1,17 +1,13 @@
 import io
 import pathlib
-from typing import TYPE_CHECKING
 
 import pytest
+lazy from pytest_benchmark.fixture import BenchmarkFixture
 
 from notebook.paths import BIB_PATH
 
 from .file import read_entries, write_entries
 from .formatting import adjust_entry
-
-
-if TYPE_CHECKING:
-    from pytest_benchmark.fixture import BenchmarkFixture
 
 
 @pytest.mark.benchmark(

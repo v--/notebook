@@ -1,5 +1,4 @@
 import random
-from typing import TYPE_CHECKING
 
 from notebook.math.lambda_.hol.structure import evaluate_hol_expression
 from notebook.math.lambda_.parsing import parse_typed_term
@@ -9,14 +8,11 @@ from notebook.math.logic.structure import evaluate_formula
 from notebook.math.logic.variables import get_formula_free_variables
 from notebook.math.rings.modular import Z3
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.lambda_.hol.structure import HolStructure
+lazy from notebook.math.logic.structure import FormalLogicStructure
 
 from .assignment import fol_assignment_to_hol_assignment
 from .formula import fol_formula_to_hol_expression
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.hol.structure import HolStructure
-    from notebook.math.logic.structure import FormalLogicStructure
 
 
 @pytest_parametrize_kwargs(

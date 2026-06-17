@@ -1,18 +1,13 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, overload
+from typing import overload
+lazy from collections.abc import Mapping
 
 from notebook.math.lambda_.assertions import VariableTypeAssertion
+lazy from notebook.math.lambda_.terms import Variable
+lazy from notebook.math.lambda_.types import SimpleType
 
 from .exceptions import MissingInterpretationError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.lambda_.terms import Variable
-    from notebook.math.lambda_.types import SimpleType
-
-    from .structure import HolStructureValue
+lazy from .structure import HolStructureValue
 
 
 @dataclass(frozen=True)

@@ -1,13 +1,9 @@
 import itertools
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection, Iterable
 
 from notebook.math.combinatorics.binomial import choose
 
 from .graph import UndirectedGraph
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable
 
 
 def max_fixed_order_subgraph_count(n: int, order: int) -> int:

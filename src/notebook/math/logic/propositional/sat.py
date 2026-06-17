@@ -8,10 +8,9 @@ from .interpretation import PropInterpretation
 from .variables import get_prop_variables
 
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+lazy from collections.abc import Iterable, Sequence
 
-    from .formulas import PropFormula, PropVariable
+lazy from .formulas import PropFormula, PropVariable
 
 
 def iter_interpretations_for_variables(variables: Sequence[PropVariable]) -> Iterable[PropInterpretation]:

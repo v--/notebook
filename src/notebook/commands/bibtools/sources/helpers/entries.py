@@ -1,5 +1,5 @@
 import re
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.bibtex import BibAuthor, BibEntry, strip_braces
 from notebook.math.nlp.phrases import Phrase
@@ -9,10 +9,6 @@ from notebook.support.iteration import string_accumulator
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
 from .names import get_main_human_name
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 @string_accumulator()

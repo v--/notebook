@@ -1,13 +1,9 @@
 import functools
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.signature import SignatureMorphism
 
 from .structure import FormalLogicStructure
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import SignatureMorphism
 
 
 @collector.ref('def:fol_reduct_along_morphism')

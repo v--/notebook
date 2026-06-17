@@ -1,16 +1,13 @@
 # ruff: noqa: FURB118
 
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Callable
 
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .formula_to_function import prop_formula_to_function
 from .parsing import parse_prop_formula
 from .sat import iter_interpretations
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 @pytest_parametrize_kwargs(

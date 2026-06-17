@@ -1,12 +1,8 @@
-from typing import TYPE_CHECKING
 
 from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokens import Token
-
-
-if TYPE_CHECKING:
-    from .tokenizer import Tokenizer
+lazy from .tokenizer import Tokenizer
 
 
 class TokenizerContext[TokenKindT]:

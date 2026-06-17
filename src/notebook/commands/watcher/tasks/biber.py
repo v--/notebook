@@ -1,18 +1,14 @@
 import asyncio
 import logging
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy import pathlib
+lazy from collections.abc import Iterable
 
 from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
 
 from .cli import CliTask
 from .latex import LaTeXCompiler, LaTeXTask
-
-
-if TYPE_CHECKING:
-    import pathlib
-    from collections.abc import Iterable
-
-    from .runner import TaskRunner
+lazy from .runner import TaskRunner
 
 
 logger = logging.getLogger(__name__)

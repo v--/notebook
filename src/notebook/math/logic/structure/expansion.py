@@ -1,14 +1,10 @@
 import functools
 import itertools
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.signature import SignatureMorphismError
+lazy from notebook.math.logic.signature import SignatureMorphism
 
 from .structure import FormalLogicStructure
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import SignatureMorphism
 
 
 def expand_along_signature_morphism[T](morphism: SignatureMorphism, structure: FormalLogicStructure[T]) -> FormalLogicStructure[T]:

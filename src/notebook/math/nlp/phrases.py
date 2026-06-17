@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+lazy from collections.abc import Iterator, Sequence
 
 
 @dataclass(frozen=True)

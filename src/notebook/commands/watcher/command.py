@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import pathlib
-from typing import TYPE_CHECKING
+lazy from collections.abc import AsyncIterator
 
 import click
 from asyncinotify import Inotify, Mask
@@ -11,10 +11,6 @@ from notebook.paths import FIGURES_PATH, ROOT_PATH
 
 from .tasks import AsymptoteTask, LaTeXCompiler, LaTeXTask, PythonTask, TaskRunner
 from .trigger import TaskTrigger, TaskTriggerKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
 
 
 BUILD_MASK = Mask.CLOSE_WRITE | Mask.MOVED_TO

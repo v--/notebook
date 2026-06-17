@@ -1,16 +1,12 @@
 import abc
-from typing import TYPE_CHECKING, Self
+from typing import Self
+lazy from collections.abc import Iterable, Sequence
+lazy from types import TracebackType
 
 from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokenizer_context import TokenizerContext
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-    from types import TracebackType
-
-    from .tokens import Token
+lazy from .tokens import Token
 
 
 class Tokenizer[TokenKindT](abc.ABC):

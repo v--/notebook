@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.support.coderefs import collector
 
@@ -10,10 +10,7 @@ from .formulas import (
     PredicateApplication,
 )
 from .terms import FunctionApplication, Term, TermTransformationVisitor
-
-
-if TYPE_CHECKING:
-    from .signature import SignatureMorphism
+lazy from .signature import SignatureMorphism
 
 
 @dataclass

@@ -1,15 +1,12 @@
 # ruff: noqa: C901
-from typing import TYPE_CHECKING, cast
+from typing import cast
+lazy from collections.abc import Sequence
 
 from .exceptions import FormalLogicError
 from .formulas import EqualityFormula
 from .substitution import AtomicLogicSubstitution, apply_substitution_to_formula
 from .terms import FunctionApplication, Term, Variable
 from .variables import get_term_variables
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 class UnificationError(FormalLogicError):

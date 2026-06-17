@@ -1,11 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.alphabet import BinaryTypeConnective
-    from notebook.math.lambda_.signature import BaseTypeSymbol
-    from notebook.parsing.identifiers import GreekIdentifier
+lazy from notebook.math.lambda_.alphabet import BinaryTypeConnective
+lazy from notebook.math.lambda_.signature import BaseTypeSymbol
+lazy from notebook.parsing.identifiers import GreekIdentifier
 
 
 @dataclass(frozen=True)

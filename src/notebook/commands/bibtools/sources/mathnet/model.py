@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable
 
 import bs4
 import msgspec
@@ -7,10 +8,6 @@ from notebook.commands.bibtools.exceptions import BibToolsNotFoundError, BibTool
 from notebook.latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, Whitespace
 from notebook.latex.parsing import parse_latex
 from notebook.support.iteration import get_strip_slice, string_accumulator
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 
 class MathNetEntry(msgspec.Struct, forbid_unknown_fields=True):

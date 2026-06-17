@@ -1,13 +1,10 @@
 import unicodedata
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Sequence
 
 from notebook.parsing import Tokenizer, TokenizerContext
 
 from .tokens import SINGLETON_TOKEN_MAP, BibToken, BibTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 class BibTokenizer(Tokenizer[BibTokenKind]):

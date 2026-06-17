@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, cast, overload
+lazy from collections.abc import Sequence
 
 from notebook.exceptions import UnreachableException
 from notebook.math.lambda_.hol import common
@@ -22,15 +23,10 @@ from notebook.math.logic.terms import FunctionApplication
 from notebook.math.logic.terms import Term as FolTerm
 from notebook.math.logic.terms import Variable as FolVariable
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.hol.expression import HolExpression
+lazy from notebook.math.lambda_.type_context import TypeContext
 
 from .signature import FolTranslatedSignature, hol_signature_to_fol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from notebook.math.lambda_.hol.expression import HolExpression
-    from notebook.math.lambda_.type_context import TypeContext
 
 
 def logical_constant_to_connective(const: Constant) -> BinaryConnective:

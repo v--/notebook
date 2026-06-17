@@ -1,17 +1,13 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from notebook.math.logic.deduction import MarkedFormula, apply, assume, premise_config
 from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
 from notebook.math.logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
 from notebook.math.logic.propositional.parsing import parse_prop_formula, parse_prop_variable
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .proof_tree_application import translate_prop_proof_tree
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 def test_assumption_tree(dummy_signature: FormalLogicSignature) -> None:

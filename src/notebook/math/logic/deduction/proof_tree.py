@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.math.logic.formulas import ExtendedFormulaPlaceholder, Formula, FormulaWithSubstitution
 from notebook.math.logic.instantiation import (
@@ -16,12 +17,7 @@ from notebook.support.inference import AssumptionRenderer, InferenceTree, RuleAp
 
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
-
-    from .system import NaturalDeductionRule
+lazy from .system import NaturalDeductionRule
 
 
 @dataclass(frozen=True)

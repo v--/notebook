@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable, Mapping
 
 from .exceptions import NotebookSupportError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
 
 
 class SchemaError(NotebookSupportError):

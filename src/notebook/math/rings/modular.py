@@ -1,13 +1,10 @@
 import functools
-from typing import TYPE_CHECKING, Any, Self
+from typing import Any, Self
+lazy from collections.abc import Callable
 
 from notebook.math.arithmetic.divisibility import rem
 
 from .exceptions import RingMetaError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 class IntModuloMeta(type):

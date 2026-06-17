@@ -1,17 +1,13 @@
 import logging
 import shutil
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy import pathlib
+lazy from collections.abc import Iterable
+
+lazy from notebook.commands.watcher.trigger import TaskTrigger
 
 from .cli import CliTask
-
-
-if TYPE_CHECKING:
-    import pathlib
-    from collections.abc import Iterable
-
-    from notebook.commands.watcher.trigger import TaskTrigger
-
-    from .runner import TaskRunner
+lazy from .runner import TaskRunner
 
 
 logger = logging.getLogger(__name__)

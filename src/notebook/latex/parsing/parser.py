@@ -1,5 +1,5 @@
 # ruff: noqa: C901
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.latex.nodes import (
     BraceGroup,
@@ -18,10 +18,6 @@ from notebook.support.unicode import Capitalization, is_latin_string
 from .parser_context import LaTeXGroupContext
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, LaTeXTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 class LaTeXParser(Parser[LaTeXToken]):

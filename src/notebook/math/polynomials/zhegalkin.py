@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import TYPE_CHECKING
+lazy from collections.abc import Callable
 
 from notebook.parsing import LatinIdentifier
 from notebook.support.coderefs import collector
@@ -10,10 +10,6 @@ from .exceptions import IndeterminateError
 from .monomial import Monomial
 from .polynomial import BooleanPolynomial
 from .polynomial import boolean as b
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 @collector.ref('alg:infer_zhegalkin_polynomial')

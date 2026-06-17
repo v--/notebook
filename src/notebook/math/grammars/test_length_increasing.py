@@ -1,13 +1,9 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 from .length_increasing import is_essentially_length_increasing_grammar, is_length_increasing_grammar, naive_membership
 from .parsing import parse_grammar_schema
 from .symbols import NonTerminal
-
-
-if TYPE_CHECKING:
-    from .conftest import GrammarFixture
+lazy from .conftest import GrammarFixture
 
 
 def test_is_length_increasing_grammar_an(an: GrammarFixture) -> None:

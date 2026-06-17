@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.math.lambda_.hol import common
 from notebook.math.lambda_.hol.expression import HolExpression
@@ -10,13 +10,10 @@ from notebook.math.lambda_.variables import get_free_variables
 from notebook.math.logic.terms import FunctionApplication, Term, TermVisitor
 from notebook.math.logic.terms import Variable as FolVariable
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.hol.signature import HolSignature
+lazy from notebook.math.logic.signature.signature import FormalLogicSignature
 
 from .signature import fol_signature_to_hol_signature
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.hol.signature import HolSignature
-    from notebook.math.logic.signature.signature import FormalLogicSignature
 
 
 @dataclass(frozen=True)

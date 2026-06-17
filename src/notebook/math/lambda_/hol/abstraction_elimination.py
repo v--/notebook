@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, overload, override
+lazy from collections.abc import Iterable, MutableMapping
 
 from notebook.math.lambda_.alphabet import BinaryTypeConnective
 from notebook.math.lambda_.arrow_types.type_inference import infer_type
@@ -21,10 +22,6 @@ from . import common
 from .expression import HolExpression
 from .signature import HolSignature, NonLogicalConstantSymbol
 from .structure import HolStructure, HolStructureValue, HolVariableAssignment, evaluate_hol_expression
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, MutableMapping
 
 
 @dataclass

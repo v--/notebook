@@ -1,11 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol
+lazy from collections.abc import Collection, Mapping
 
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Mapping
-
-    from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
+lazy from notebook.math.lambda_.hol.signature import HolSignature, NonLogicalConstantSymbol, SortSymbol
 
 
 # We should wait for a further development, e.g. PEP 827, so that we can introduce better typing here.

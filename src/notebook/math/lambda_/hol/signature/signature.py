@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable, Iterator
 
 from notebook.math.lambda_.hol.alphabet import LogicalConstantName, LogicalTypeName, SortName
 from notebook.math.lambda_.signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, SignatureSymbol
@@ -11,10 +12,6 @@ from .symbols import (
     NonLogicalConstantSymbol,
     SortSymbol,
 )
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator
 
 
 class HolSignature(LambdaSignature):

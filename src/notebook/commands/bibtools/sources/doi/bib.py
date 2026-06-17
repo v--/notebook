@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable, Sequence
 
 from nameparser import HumanName
 from stdnum import isbn, issn
@@ -10,11 +11,7 @@ from notebook.commands.bibtools.sources.helpers.languages import normalize_langu
 from notebook.commands.bibtools.sources.helpers.pages import normalize_pages
 from notebook.support.unicode import normalize_whitespace
 
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-
-    from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
+lazy from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
 
 def doi_authors_to_bib(authors: Sequence[DoiAuthor]) -> Iterable[BibAuthor]:

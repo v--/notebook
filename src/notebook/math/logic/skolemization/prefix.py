@@ -1,13 +1,8 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterator
 
 from notebook.math.logic.alphabet import Quantifier
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterator
-
-    from notebook.math.logic.terms import Variable
+lazy from notebook.math.logic.terms import Variable
 
 
 @dataclass(frozen=True)

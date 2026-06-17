@@ -1,11 +1,7 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 from .alphabet import ImproperInferenceRuleSymbol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @dataclass(frozen=True)

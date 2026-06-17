@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 from notebook.math.lambda_.parsing import parse_type, parse_typed_term, parse_variable_assertion
 from notebook.math.lambda_.type_context import TypeContext
@@ -9,11 +8,8 @@ from .alphabet import SortName
 from .expression import HolExpression
 from .signature import SortSymbol
 from .structure import HolVariableAssignment, evaluate_hol_expression
-
-
-if TYPE_CHECKING:
-    from .signature import HolSignature
-    from .structure import HolStructure
+lazy from .signature import HolSignature
+lazy from .structure import HolStructure
 
 
 def test_eliminate_abstractions_forall(hol_z3_signature: HolSignature) -> None:

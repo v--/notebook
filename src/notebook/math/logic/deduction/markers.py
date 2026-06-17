@@ -1,15 +1,10 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection
 
 from notebook.math.logic.substitution import evaluate_substitution
 from notebook.parsing.identifiers import LatinIdentifier, new_latin_identifier
 from notebook.support.unicode import to_superscript
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
-
-    from notebook.math.logic.formulas import Formula, FormulaWithSubstitution
+lazy from notebook.math.logic.formulas import Formula, FormulaWithSubstitution
 
 
 @dataclass(frozen=True)

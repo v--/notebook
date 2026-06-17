@@ -1,5 +1,4 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
 
@@ -11,10 +10,7 @@ from .epsilon_rules import (
 )
 from .parsing import parse_grammar_schema
 from .symbols import NonTerminal
-
-
-if TYPE_CHECKING:
-    from .conftest import GrammarFixture
+lazy from .conftest import GrammarFixture
 
 
 @collector.ref('ex:alg:epsilon_rule_removal/an')

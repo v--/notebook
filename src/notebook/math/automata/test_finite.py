@@ -1,12 +1,8 @@
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
 
 from .finite import FiniteAutomaton
-
-
-if TYPE_CHECKING:
-    from .conftest import FiniteAutomatonFixture
+lazy from .conftest import FiniteAutomatonFixture
 
 
 @collector.ref('ex:def:formal_language/an')

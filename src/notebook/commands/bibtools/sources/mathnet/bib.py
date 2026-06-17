@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 from notebook.bibtex import BibEntry
 from notebook.commands.bibtools import url_templates
@@ -8,9 +7,7 @@ from notebook.commands.bibtools.sources.helpers.names import name_to_bib_author
 from notebook.commands.bibtools.sources.helpers.pages import normalize_pages
 from notebook.support.unicode import normalize_whitespace
 
-
-if TYPE_CHECKING:
-    from .model import MathNetEntry
+lazy from .model import MathNetEntry
 
 
 def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool) -> BibEntry:

@@ -1,15 +1,12 @@
 import inspect
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Callable
 
 from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from notebook.math.lambda_.untyped.substitution import substitute
 from notebook.support.coderefs import collector
 
 from .strategies import Reduction
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 class BetaReduction(Reduction):

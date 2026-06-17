@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Iterable
 
 from notebook.support.iteration import string_accumulator
 
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    from .string import BibString
+lazy from .string import BibString
 
 
 @string_accumulator('')

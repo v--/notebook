@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.math.logic.alphabet import BinaryConnective
 from notebook.math.logic.deduction import (
@@ -19,10 +20,6 @@ from notebook.support.schemas import SchemaInferenceError
 
 from .exceptions import AxiomaticDerivationError
 from .system import AxiomaticDerivationSystem, derivation_system_to_natural_deduction_system
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
 
 
 class ModusPonensConfig(NamedTuple):

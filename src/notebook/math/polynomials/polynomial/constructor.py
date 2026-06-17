@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING, Self, cast
+from typing import Self, cast
+lazy from collections.abc import Iterable, Mapping
 
 from notebook.math.polynomials.monomial import Monomial, const
 from notebook.math.rings.types import ISemiring
 from notebook.support.iteration import list_accumulator
 
 from .base import BasePolynomial
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
 
 
 class PolynomialConstructorMixin[N: ISemiring](BasePolynomial[N]):

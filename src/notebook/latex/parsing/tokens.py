@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING, Literal, get_args
+from typing import Literal, get_args
+lazy from collections.abc import Mapping, Sequence
 
 from notebook.latex.nodes import SpecialNode
 from notebook.parsing import Token, map_of_str_enum_to_tokens
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
 
 
 LaTeXTokenKind = Literal[

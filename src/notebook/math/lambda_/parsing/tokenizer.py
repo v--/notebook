@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Sequence
 
 from notebook.math.lambda_.signature import LambdaSignature, SignatureSymbol
 from notebook.parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
 from notebook.support.unicode import Capitalization
 
 from .tokens import SINGLETON_TOKEN_MAP, LambdaToken, LambdaTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 class FormalLambdaTokenizer(IdentifierTokenizerMixin[LambdaTokenKind], TrieTokenizerMixin[LambdaTokenKind, SignatureSymbol], Tokenizer[LambdaTokenKind]):

@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING, NamedTuple, overload
+from typing import NamedTuple, overload
+lazy from collections.abc import Iterable, MutableSet, Sequence
 
 from notebook.support.collections import SequentialSet
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, MutableSet, Sequence
 
 
 class FiniteAutomatonTransition[StateT, SymbolT](NamedTuple):

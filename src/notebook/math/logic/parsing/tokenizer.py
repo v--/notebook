@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Sequence
 
 from notebook.math.logic.signature import FormalLogicSignature, SignatureSymbol
 from notebook.parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
 from notebook.support.unicode import Capitalization
 
 from .tokens import SINGLETON_TOKEN_MAP, LogicToken, LogicTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 class FormalLogicTokenizer(IdentifierTokenizerMixin[LogicTokenKind], TrieTokenizerMixin[LogicTokenKind, SignatureSymbol], Tokenizer[LogicTokenKind]):

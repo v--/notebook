@@ -3,17 +3,13 @@ import math
 import sys
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import TYPE_CHECKING
+lazy from collections.abc import Sequence
 
 from notebook.math.arithmetic.divisibility import divides, quot, rem
 from notebook.math.arithmetic.exceptions import InvalidArgumentError, RadixError
 from notebook.math.arithmetic.primes import factor, totient
 from notebook.math.arithmetic.support import SignT, sgn
 from notebook.support.coderefs import collector
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 @collector.ref('eq:alg:real_number_radix_expansion/direct')

@@ -1,17 +1,13 @@
 import unicodedata
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable
 
 from notebook.bibtex import BibAuthor, BibEntry, BibString, VerbatimString
 from notebook.commands.bibtools.exceptions import BibToolsDecodingError
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
 from notebook.support.iteration import string_accumulator
 
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    from .model import StackExchangeEntry
+lazy from .model import StackExchangeEntry
 
 
 SITE_ENTRY_PREFIX_MAP = {

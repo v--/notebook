@@ -1,6 +1,6 @@
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Mapping
 
 from notebook.math.lambda_.hol import common
 from notebook.math.lambda_.hol.signature import SortSymbol
@@ -8,12 +8,7 @@ from notebook.math.lambda_.types import BaseType, SimpleConnectiveType, SimpleTy
 from notebook.support.collections import SequentialMapping
 
 from .exceptions import MissingInterpretationError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
-
-    from .structure import HolStructure, HolStructureValue
+lazy from .structure import HolStructure, HolStructureValue
 
 
 @dataclass(frozen=True)

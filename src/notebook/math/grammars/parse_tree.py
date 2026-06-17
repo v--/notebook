@@ -1,15 +1,12 @@
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
 from .exceptions import IncompatibleSyntaxTreeError
 from .grammar import GrammarRule
 from .symbols import NonTerminal, Terminal
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 @dataclass(frozen=True)

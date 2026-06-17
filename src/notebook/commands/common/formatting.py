@@ -1,15 +1,11 @@
 import hashlib
 import io
+import logging
 import pathlib
 import shutil
 import tempfile
-from typing import TYPE_CHECKING, NamedTuple, TextIO
-
-
-if TYPE_CHECKING:
-    from types import TracebackType
-
-import logging
+from typing import NamedTuple, TextIO
+lazy from types import TracebackType
 
 
 logger = logging.getLogger(__name__)

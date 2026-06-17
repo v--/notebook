@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Sequence
 
 from .exceptions import ParserError
 from .highlighter import ErrorHighlighter
 from .tokens import Token
-
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from .parser import Parser
+lazy from .parser import Parser
 
 
 class ParserContext[TokenT: Token]:

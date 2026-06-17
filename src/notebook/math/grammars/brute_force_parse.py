@@ -1,6 +1,5 @@
 import itertools
 from collections.abc import Collection, Iterable, Sequence
-from typing import TYPE_CHECKING
 
 from notebook.support.coderefs import collector
 
@@ -9,10 +8,7 @@ from .epsilon_rules import is_epsilon_rule
 from .exceptions import GrammarError, IncompatibleGrammarError
 from .parse_tree import ParseTree
 from .symbols import NonTerminal, Terminal
-
-
-if TYPE_CHECKING:
-    from .grammar import Grammar
+lazy from .grammar import Grammar
 
 
 class BruteForceParseError(GrammarError):

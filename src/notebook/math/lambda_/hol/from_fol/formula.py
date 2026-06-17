@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.math.lambda_.hol import common
 from notebook.math.lambda_.hol.expression import HolExpression
@@ -18,14 +18,11 @@ from notebook.math.logic.formulas import (
     QuantifierFormula,
 )
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.hol.signature import HolSignature
+lazy from notebook.math.logic.signature.signature import FormalLogicSignature
 
 from .signature import fol_signature_to_hol_signature
 from .term import TermTranslationVisitor
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.hol.signature import HolSignature
-    from notebook.math.logic.signature.signature import FormalLogicSignature
 
 
 def connective_to_logical_constant(conn: BinaryConnective) -> Constant:

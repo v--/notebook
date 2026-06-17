@@ -1,15 +1,11 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection
 
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .parsing import parse_formula
 from .variables import get_formula_free_variables
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
-
-    from .signature import FormalLogicSignature
+lazy from .signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

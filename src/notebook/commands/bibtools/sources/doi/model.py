@@ -1,5 +1,5 @@
-from collections.abc import Sequence  # noqa: TC003
-from datetime import datetime  # noqa: TC003
+from collections.abc import Sequence
+from datetime import datetime
 from typing import Annotated
 
 import msgspec

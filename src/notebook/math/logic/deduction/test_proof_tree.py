@@ -1,6 +1,5 @@
 import re
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -14,14 +13,11 @@ from notebook.math.logic.parsing import (
 )
 from notebook.math.logic.propositional import parse_prop_formula
 from notebook.support.coderefs import collector
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution
 from .proof_tree import AssumptionTree, apply, assume, premise_config
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 def prop_assume(formula: str, marker: str) -> AssumptionTree:

@@ -1,13 +1,10 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, overload
+from typing import overload
+lazy from collections.abc import Callable, Collection, Mapping
+
+lazy from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 from .exceptions import FormalLogicInterpretationError, MissingInterpretationError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Collection, Mapping
-
-    from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
 @dataclass

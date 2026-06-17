@@ -2,7 +2,8 @@
 
 from collections import deque
 from dataclasses import replace
-from typing import TYPE_CHECKING, cast
+from typing import cast
+lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.bibtex.entry import ENTRY_KEYS, ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
 from notebook.bibtex.string import BibString, CompositeString, CompositeStringBuilder
@@ -12,10 +13,6 @@ from notebook.support.iteration import list_accumulator
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Sequence
 
 
 class BibParser(Parser[BibToken]):

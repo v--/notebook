@@ -1,15 +1,11 @@
 import itertools
 import operator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+lazy from collections.abc import Collection, Iterable, Mapping
 
 from .exceptions import NlpError
 from .parsing import extract_phrases
 from .phrases import Phrase
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping
 
 
 class RakeError(NlpError):

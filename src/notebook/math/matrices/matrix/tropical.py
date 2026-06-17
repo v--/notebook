@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING, Self
+from typing import Self
 
 from notebook.math.rings.tropical import MaxPlusFloat, MinPlusFloat
 
 from .common import ISemiringMatrix
-
-
-if TYPE_CHECKING:
-    from .float import FloatMatrix
+lazy from .float import FloatMatrix
 
 
 class MinPlusMatrix(ISemiringMatrix[MinPlusFloat], semiring=MinPlusFloat):

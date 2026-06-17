@@ -2,7 +2,9 @@ import asyncio
 import logging
 import shutil
 from enum import IntEnum, auto
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy import pathlib
+lazy from collections.abc import Iterable
 
 import texoutparse
 
@@ -10,13 +12,7 @@ from notebook.commands.watcher.trigger import TaskTrigger, TaskTriggerKind
 from notebook.paths import AUX_PATH
 
 from .cli import CliTask
-
-
-if TYPE_CHECKING:
-    import pathlib
-    from collections.abc import Iterable
-
-    from .runner import TaskRunner
+lazy from .runner import TaskRunner
 
 
 class LaTeXCompiler(IntEnum):

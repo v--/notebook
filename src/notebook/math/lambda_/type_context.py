@@ -1,17 +1,12 @@
 from collections.abc import Iterator, Mapping
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable
 
 from notebook.support.iteration import string_accumulator
 
 from .parsing import parse_variable
 from .terms import Variable
 from .types import SimpleType
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    from .assertions import VariableTypeAssertion
+lazy from .assertions import VariableTypeAssertion
 
 
 class TypeContext(Mapping[Variable, SimpleType]):

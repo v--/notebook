@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Mapping
 
 from notebook.math.lambda_.terms import (
     Constant,
@@ -12,10 +13,6 @@ from notebook.math.lambda_.terms import (
 from notebook.support.coderefs import collector
 
 from .substitution import UntypedTermSubstitution
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @dataclass(frozen=True)

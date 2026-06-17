@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 import stdnum.isbn
 from transliterate import translit
@@ -10,9 +9,7 @@ from notebook.commands.bibtools.sources.helpers.languages import normalize_langu
 from notebook.commands.bibtools.sources.helpers.names import name_to_bib_author
 from notebook.support.unicode import normalize_whitespace
 
-
-if TYPE_CHECKING:
-    from .model import OLBook
+lazy from .model import OLBook
 
 
 def get_language_name(lang_key: str) -> str:

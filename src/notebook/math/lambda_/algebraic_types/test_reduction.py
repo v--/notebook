@@ -1,5 +1,5 @@
 import re
-from typing import TYPE_CHECKING
+lazy from collections.abc import Mapping
 
 import pytest
 
@@ -10,10 +10,6 @@ from notebook.math.lambda_.type_derivation import TypeDerivationError
 from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .reduction import reduce_derivation
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @pytest_parametrize_kwargs(

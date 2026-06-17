@@ -1,5 +1,4 @@
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from notebook.math.lambda_.instantiation import AtomicLambdaSchemaInstantiation
@@ -16,13 +15,10 @@ from notebook.math.logic.deduction import proof_tree as ptree
 from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
 from notebook.math.logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .derivation_to_proof import type_derivation_to_proof_tree, type_to_formula
 from .proof_to_derivation import formula_to_type, proof_tree_to_type_derivation
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

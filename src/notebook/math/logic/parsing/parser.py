@@ -1,6 +1,7 @@
 # ruff: noqa: C901
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast, overload
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.math.logic.alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
 from notebook.math.logic.contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
@@ -50,10 +51,6 @@ from notebook.support.substitution import ImproperSubstitutionSymbol
 from .parser_context import LogicParserContext
 from .tokenizer import tokenize_formal_logic_string
 from .tokens import LogicToken, LogicTokenKind
-
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
 
 
 @dataclass

@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING, Literal, get_args
+from typing import Literal, get_args
+lazy from collections.abc import Mapping, Sequence
 
 from notebook.parsing import Token
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
 
 
 BibTokenKind = Literal[

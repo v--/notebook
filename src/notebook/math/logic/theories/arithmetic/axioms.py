@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation, instantiate_formula_schema
 from notebook.math.logic.parsing import (
@@ -9,13 +8,10 @@ from notebook.math.logic.parsing import (
     parse_variable_placeholder,
 )
 from notebook.math.logic.transformation import universal_closure
+lazy from notebook.math.logic.formulas import Formula
+lazy from notebook.math.logic.terms import Variable
 
 from .signature import ARITHMETIC_SIGNATURE
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.formulas import Formula
-    from notebook.math.logic.terms import Variable
 
 
 PEANO_NO_ZERO_PREDECESSOR = parse_formula('¬∃x.(Sx = 0)', ARITHMETIC_SIGNATURE)

@@ -1,13 +1,9 @@
 import abc
 from datetime import datetime
-from typing import TYPE_CHECKING
 
+lazy from notebook.commands.watcher.trigger import TaskTrigger
 
-if TYPE_CHECKING:
-
-    from notebook.commands.watcher.trigger import TaskTrigger
-
-    from .runner import TaskRunner
+lazy from .runner import TaskRunner
 
 
 class Task(abc.ABC):

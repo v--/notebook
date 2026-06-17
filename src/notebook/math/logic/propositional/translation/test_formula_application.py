@@ -1,16 +1,12 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Mapping
 
 from notebook.math.logic.parsing import parse_formula
 from notebook.math.logic.propositional.parsing import parse_prop_formula, parse_prop_variable
 from notebook.support.pytest import pytest_parametrize_kwargs
+lazy from notebook.math.logic.signature import FormalLogicSignature
 
 from .formula_application import translate_prop_formula
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-
-    from notebook.math.logic.signature import FormalLogicSignature
 
 
 @pytest_parametrize_kwargs(

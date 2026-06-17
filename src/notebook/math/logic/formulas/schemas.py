@@ -1,15 +1,11 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from notebook.math.logic.alphabet import BinaryConnective, Quantifier, UnaryPrefix
 from notebook.math.logic.terms import SyntacticApplication, TermSchema, TermSchemaSubstitutionSpec, VariablePlaceholder
+lazy from notebook.math.logic.signature import PredicateSymbol
+lazy from notebook.parsing.identifiers import GreekIdentifier
 
 from .formulas import PropConstant
-
-
-if TYPE_CHECKING:
-    from notebook.math.logic.signature import PredicateSymbol
-    from notebook.parsing.identifiers import GreekIdentifier
 
 
 @dataclass(frozen=True)

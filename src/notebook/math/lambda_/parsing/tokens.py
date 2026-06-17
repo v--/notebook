@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING, Literal, get_args
+from typing import Literal, get_args
+lazy from collections.abc import Mapping, Sequence
 
 from notebook.math.lambda_.alphabet import AuxImproperSymbol, BinaryTypeConnective
 from notebook.parsing import Token, map_of_str_enum_to_single_token, map_of_str_enum_to_tokens
 from notebook.support.inference import ImproperInferenceRuleSymbol
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
 
 
 LambdaTokenKind = Literal[

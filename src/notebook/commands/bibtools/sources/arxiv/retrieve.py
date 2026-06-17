@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING
 
 from notebook.commands.bibtools.exceptions import BibToolsError
+lazy from notebook.bibtex import BibEntry
 
 from .bib import arxiv_entry_to_bib
 from .fetch import fetch_arxiv_xml
 from .model import parse_arxiv_xml
-
-
-if TYPE_CHECKING:
-    from notebook.bibtex import BibEntry
 
 
 def retrieve_arxiv_entry(identifier: str, *, dump_as_fixture: bool) -> BibEntry:

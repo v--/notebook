@@ -1,11 +1,7 @@
 import contextlib
-from typing import TYPE_CHECKING
+lazy from collections.abc import Generator
 
 import click
-
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
 
 
 @contextlib.contextmanager

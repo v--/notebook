@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING
 
 from notebook.support.exceptions import NotebookSupportError
 
-
-if TYPE_CHECKING:
-    from .rules import InferenceRule
+lazy from .rules import InferenceRule
 
 
 class InferenceRuleError(NotebookSupportError):

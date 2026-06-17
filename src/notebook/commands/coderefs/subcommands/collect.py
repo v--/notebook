@@ -1,17 +1,14 @@
 import contextlib
 import pathlib
 import pkgutil
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 import click
+lazy from _typeshed.importlib import PathEntryFinderProtocol
 
 from notebook.commands.coderefs.command import coderefs
 from notebook.paths import CODE_PATH
 from notebook.support.coderefs import collector
-
-
-if TYPE_CHECKING:
-    from _typeshed.importlib import PathEntryFinderProtocol
 
 
 def recursively_load_modules(path: pathlib.Path) -> None:

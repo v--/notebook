@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection
 
 from .rake import generate_phrase_scores
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection
 
 
 def test_generate_phrase_scores(fifth_postulate: str, fifth_postulate_stop_words: Collection[str]) -> None:

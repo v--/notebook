@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, override
+from typing import override
 
 from notebook.math.lambda_.algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from notebook.math.lambda_.alphabet import BinaryTypeConnective
@@ -23,13 +23,10 @@ from notebook.math.logic.formulas import (
 )
 from notebook.parsing import GreekIdentifier
 from notebook.support.coderefs import collector
+lazy from notebook.math.lambda_.type_system import TypingRule
+lazy from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
 
 from .exceptions import ProofToDerivationError
-
-
-if TYPE_CHECKING:
-    from notebook.math.lambda_.type_system import TypingRule
-    from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation
 
 
 def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeConnective:

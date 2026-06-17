@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+
+lazy from collections.abc import Collection, Sequence
 
 from notebook.math.logic.propositional import parse_prop_formula
 from notebook.support.pytest import pytest_parametrize_kwargs
@@ -9,10 +10,6 @@ from .minimal_implicational_logic import (
     get_identity_derivation_payload,
     introduce_conclusion_hypothesis,
 )
-
-
-if TYPE_CHECKING:
-    from collections.abc import Collection, Sequence
 
 
 IDENTITY_DERIVATION = [

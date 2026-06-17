@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 
 from notebook.support.pytest import pytest_parametrize_lists
 
@@ -8,10 +7,7 @@ from .context_sensitive import (
     length_increasing_to_context_sensitive,
 )
 from .parsing import parse_grammar_schema
-
-
-if TYPE_CHECKING:
-    from .conftest import GrammarFixture
+lazy from .conftest import GrammarFixture
 
 
 @pytest_parametrize_lists(

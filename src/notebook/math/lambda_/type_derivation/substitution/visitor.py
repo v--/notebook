@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, override
+from typing import override
+lazy from collections.abc import Mapping
 
 from notebook.math.lambda_.assertions import VariableTypeAssertion
 from notebook.math.lambda_.terms import (
@@ -15,10 +16,6 @@ from notebook.support.coderefs import collector
 from notebook.support.substitution.exceptions import UnspecifiedReplacementError
 
 from .substitution import AtomicTypeDerivationSubstitution
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 
 @dataclass(frozen=True)

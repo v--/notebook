@@ -1,11 +1,8 @@
 import operator
-from typing import TYPE_CHECKING, Any, Self
+from typing import Any, Self
+lazy from collections.abc import Callable
 
 from .exceptions import RingMetaError
-
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 class TropicalMeta(type):
