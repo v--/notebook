@@ -1,6 +1,9 @@
 name: Test
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'master'
 
 jobs:
   test:
@@ -8,13 +11,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-    - uses: astral-sh/setup-uv@v7
+
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v7
 
     - name: Install dependencies
-      run: uv sync --all-extras
+      run: uv sync --frozen
 
     - name: Lint
-      run: uv run poe lint
+      run: uv run --no-sync ruff check
+
+    - name: Typing
+      run: uv run --no-sync mypy
 
     - name: Test
-      run: uv run poe test
+      run: uv run --no-sync pytest
