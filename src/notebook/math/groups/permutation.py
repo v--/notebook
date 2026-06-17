@@ -1,6 +1,6 @@
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from notebook.support.adt.comparable import IComparable
 
@@ -17,7 +17,7 @@ class Permutation[T: IComparable]:
     _payload: Mapping[T, T]
 
     @classmethod
-    def from_incomplete_mapping(cls: type[Permutation[T]], domain: Sequence[T], incomplete: Mapping[T, T]) -> Permutation[T]:
+    def from_incomplete_mapping(cls: type[Self], domain: Sequence[T], incomplete: Mapping[T, T]) -> Self:
         complete = {}
 
         for key in list(incomplete):
@@ -34,17 +34,17 @@ class Permutation[T: IComparable]:
         return cls(domain, complete)
 
     @classmethod
-    def from_cycle(cls: type[Permutation[T]], domain: Sequence[T], cycle: Cycle[T]) -> Permutation[T]:
+    def from_cycle(cls: type[Self], domain: Sequence[T], cycle: Cycle[T]) -> Self:
         if len(cycle) == 0:
-            return Permutation(domain, {})
+            return cls(domain, {})
 
         mapping = dict(itertools.pairwise(cycle))
         mapping[cycle[-1]] = cycle[0]
-        return Permutation(domain, mapping)
+        return cls(domain, mapping)
 
     @classmethod
-    def identity(cls: type[Permutation[T]], domain: Sequence[T]) -> Permutation[T]:
-        return Permutation(domain, {})
+    def identity(cls: type[Self], domain: Sequence[T]) -> Self:
+        return cls(domain, {})
 
     def __getitem__(self, key: T) -> T:
         return self._payload.get(key, key)
@@ -56,7 +56,7 @@ class Permutation[T: IComparable]:
     def values(self) -> Sequence[T]:
         return sorted(self._payload)
 
-    def __matmul__(self, other: Permutation[T]) -> Permutation[T]:
+    def __matmul__(self, other: Self) -> Permutation[T]:
         if not isinstance(other, Permutation):
             return NotImplemented
 
