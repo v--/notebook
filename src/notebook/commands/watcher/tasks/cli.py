@@ -53,7 +53,7 @@ class CliTask(Task):
             try:
                 path.unlink(missing_ok=True)
             except OSError as err:
-                self.bound_logger.warning(f'Could not unlink {path.as_posix()}: {err}')
+                self.bound_logger.warning(f'Could not unlink {path}: {err}')
 
         end = monotonic_ns()
         self.bound_logger.info(f'Cleanup finished in {format_time(start, end)}')

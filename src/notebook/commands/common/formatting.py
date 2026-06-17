@@ -60,7 +60,7 @@ class FormatterContextManager:
             return
 
         bak_path = pathlib.Path(tempfile.gettempdir()) / (old_hash + '.bak')
-        logger.info(f'Formatting and backing up {self.path.as_posix()!r} into {bak_path.as_posix()!r}.')
+        logger.info(f'Formatting and backing up {self.path} into {bak_path}.')
 
         src.seek(0)
 
