@@ -1,15 +1,11 @@
 from itertools import product
-from typing import TYPE_CHECKING
+lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
 
 from .evaluation import evaluate_prop_formula
 from .interpretation import PropInterpretation
 from .variables import get_prop_variables
-
-
-lazy from collections.abc import Iterable, Sequence
-
 lazy from .formulas import PropFormula, PropVariable
 
 
