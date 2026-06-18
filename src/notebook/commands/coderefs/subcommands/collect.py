@@ -1,38 +1,29 @@
-import contextlib
+import importlib
 import pathlib
 import pkgutil
-from typing import cast
 
 import click
-lazy from _typeshed.importlib import PathEntryFinderProtocol
 
 from notebook.commands.coderefs.command import coderefs
 from notebook.paths import CODE_PATH
 from notebook.support.coderefs import collector
 
 
-def recursively_load_modules(path: pathlib.Path) -> None:
-    for submod_info in pkgutil.walk_packages([path.as_posix()]):
-        subpath = path / submod_info.name
+def recursively_load_modules(module_path: pathlib.Path, module_name: str) -> None:
+    importlib.import_module(module_name)
 
-        module_name = 'notebook.' + subpath.relative_to(CODE_PATH).as_posix().replace('/', '.')
-        finder = cast('PathEntryFinderProtocol', submod_info.module_finder)
-
-        if (spec := finder.find_spec(module_name)) and (loader := spec.loader):
-            # Some modules fail to import with a metaclass error that does not occur otherwise
-            # These modules do not bother us, but ideally this would not occur
-            with contextlib.suppress(TypeError):
-                loader.load_module(module_name)
-
-        if submod_info.ispkg:
-            recursively_load_modules(subpath)
+    for submodule_info in pkgutil.walk_packages([module_path]):
+        recursively_load_modules(
+            module_path / submodule_info.name,
+            module_name + '.' + submodule_info.name,
+        )
 
 
 @coderefs.command()
 @click.argument('output-path', type=click.Path(writable=True, dir_okay=False, path_type=pathlib.Path), default='aux/corderef.aux')
 def collect(output_path: pathlib.Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    recursively_load_modules(CODE_PATH / 'math')
+    recursively_load_modules(CODE_PATH / 'math', 'notebook.math')
 
     with output_path.open('w', encoding='utf-8') as file:
         file.write('\\ExplSyntaxOn\n')
