@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from typing import override
+from typing import no_type_check, override
 
 from notebook.parsing.identifiers import new_latin_identifier
 
@@ -48,6 +48,7 @@ class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
         return {*get_term_variables(formula.left), *get_term_variables(formula.right)}
 
     @override
+    @no_type_check  # mypy does not yet support comprehension unpacking; see https://github.com/python/mypy/issues/21447
     def visit_predicate(self, formula: PredicateApplication) -> Collection[Variable]:
         return {*get_term_variables(arg) for arg in formula.arguments}
 
