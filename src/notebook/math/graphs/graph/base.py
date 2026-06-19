@@ -26,13 +26,15 @@ class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](type):
         attrs['edge_view_class'] = edge_view
         return type.__new__(meta, name, bases, attrs)
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    # ruff: ignore[any-type]
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         result = super().__call__(*args, **kwargs)
         result.clone_initial = functools.partial(cls.__call__, *args, **kwargs)
         return result
 
 
-class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](metaclass=GraphMeta):  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT](metaclass=GraphMeta):
     clone_initial: Callable[[], Self]
     vertices: VertexView
     edges: BaseEdgeView

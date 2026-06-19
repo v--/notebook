@@ -14,14 +14,15 @@ class TropicalMeta(type):
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
-        sum: Callable[[float, float], float] = operator.add,  # noqa: A002
+        sum: Callable[[float, float], float] = operator.add,  # ruff: ignore[builtin-argument-shadowing]
         zero: float = 0,
     ) -> T:
         attrs['sum'] = sum
         attrs['zero'] = zero
         return type.__new__(meta, name, bases, attrs)
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    # ruff: ignore[any-type]
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         result = super().__call__(*args, **kwargs)
         result.new = cls
         return result

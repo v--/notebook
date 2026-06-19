@@ -1,4 +1,5 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
+
 from typing import TYPE_CHECKING, Literal, overload
 lazy from collections.abc import Iterable, Sequence
 

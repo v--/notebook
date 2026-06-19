@@ -202,7 +202,8 @@ def _infer_application_instantiation(
 
 
 @collector.ref('def:fol_natural_deduction_proof_tree')
-def apply(  # noqa: C901
+# ruff: ignore[complex-structure]
+def apply(
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,

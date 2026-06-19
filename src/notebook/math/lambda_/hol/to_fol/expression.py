@@ -76,7 +76,8 @@ def to_fol_application(fol_sym: SignatureSymbol, *args: FolTerm | FolFormula) ->
             raise HolTranslationError(f'Unrecognized symbol {fol_sym}')
 
 
-def construct_application(  # noqa: C901
+# ruff: ignore[complex-structure]
+def construct_application(
     signature: FolTranslatedSignature,
     context: TypeContext,
     term: TypedTerm,

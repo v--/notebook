@@ -61,7 +61,8 @@ class LaTeXTask(CliTask):
         return asyncio.subprocess.DEVNULL
 
     @override
-    async def build_post_process(self, runner: TaskRunner) -> None:  # noqa: C901
+    # ruff: ignore[complex-structure]
+    async def build_post_process(self, runner: TaskRunner) -> None:
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
         requires_biber_rerun = False
@@ -110,7 +111,8 @@ class LaTeXTask(CliTask):
                 ),
             )
         elif requires_biber_rerun:
-            from .biber import BiberTask  # Avoid circular import  # noqa: PLC0415
+            # ruff: ignore[import-outside-top-level]
+            from .biber import BiberTask  # Avoid circular import
             runner.schedule(
                 BiberTask(
                     TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),

@@ -1,4 +1,4 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
 
 from collections import deque
 from dataclasses import replace

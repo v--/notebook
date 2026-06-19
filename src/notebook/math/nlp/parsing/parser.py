@@ -1,4 +1,5 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
+
 lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.parsing.parser import Parser

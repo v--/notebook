@@ -23,7 +23,8 @@ class IntModuloMeta(type):
         attrs['modulus'] = modulus
         return type.__new__(meta, name, bases, attrs)
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    # ruff: ignore[any-type]
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         result = super().__call__(*args, **kwargs)
         result.modulus = cls.modulus
         result.new = cls

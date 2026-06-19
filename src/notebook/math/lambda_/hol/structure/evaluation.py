@@ -1,4 +1,5 @@
-# ruff: noqa: FURB118
+# ruff: file-ignore[reimplemented-operator]
+
 import itertools
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -71,7 +72,8 @@ class HolBinderEvaluator[T]:
 
 
 # We suppose that only well-typed expressions reach this point.
-def evaluate_hol_term[T](  # noqa: C901
+# ruff: ignore[complex-structure]
+def evaluate_hol_term[T](
     term: TypedTerm,
     context: TypeContext,
     structure: HolStructure[T],

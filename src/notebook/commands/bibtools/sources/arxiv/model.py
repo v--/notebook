@@ -1,6 +1,7 @@
+# ruff: file-ignore[multiple-spaces-after-operator]
+
 # The schema here is extracted from a few example responses and guided by
 # https://arxiv.org/schemas/atom.xsd
-# ruff: noqa: E222
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 

@@ -6,7 +6,8 @@ from .exceptions import LambdaSignatureError
 from .symbols import BaseTypeSymbol, ConstantTermSymbol, SignatureSymbol
 
 
-class LambdaSignature:  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class LambdaSignature:
     trie: TrieMapping[SignatureSymbol]
 
     def __init__(self, *symbols: SignatureSymbol) -> None:

@@ -3,7 +3,8 @@ from collections.abc import Collection, Iterator
 lazy from notebook.math.graphs.graph.payload import GraphPayload, LabeledEdge
 
 
-class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
     payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]
 
     def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]) -> None:

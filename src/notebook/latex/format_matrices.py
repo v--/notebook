@@ -156,7 +156,8 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
     )
 
 
-def matrix_to_environment(env: MatrixEnvironment) -> Environment:  # noqa: C901
+# ruff: ignore[complex-structure]
+def matrix_to_environment(env: MatrixEnvironment) -> Environment:
     contents = list[LaTeXNode]()
 
     if env.options is not None:

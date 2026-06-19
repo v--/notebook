@@ -15,7 +15,8 @@ from .schemas import (
 
 
 class FormulaSchemaVisitor[T]:
-    def visit(self, schema: FormulaSchema) -> T:  # noqa: C901
+    # ruff: ignore[complex-structure]
+    def visit(self, schema: FormulaSchema) -> T:
         match schema:
             case PropConstant():
                 match schema.value:

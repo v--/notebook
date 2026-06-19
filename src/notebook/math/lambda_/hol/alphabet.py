@@ -1,4 +1,4 @@
-# ruff: noqa: E222
+# ruff: file-ignore[multiple-spaces-after-operator]
 
 from enum import StrEnum
 

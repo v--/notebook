@@ -1,4 +1,4 @@
-# ruff: noqa: ARG002
+# ruff: file-ignore[unused-method-argument]
 
 from typing import TYPE_CHECKING
 
@@ -15,7 +15,8 @@ from .system import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 
 
 class SimpleAlgebraicDerivationTreeVisitor[T]:
-    def visit(self, tree: TypeDerivationTree) -> T:  # noqa: C901
+    # ruff: ignore[complex-structure]
+    def visit(self, tree: TypeDerivationTree) -> T:
         if isinstance(tree, AssumptionTree):
             return self.visit_assumption(tree)
 

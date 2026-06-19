@@ -3,7 +3,8 @@ from typing import Any
 from titlecase import titlecase
 
 
-def titlecase_callback(string: str, **kwargs: Any) -> str | None:  # noqa: ANN401,ARG001
+# ruff: ignore[any-type, unused-function-argument]
+def titlecase_callback(string: str, **kwargs: Any) -> str | None:
     if not string.isascii() or string == string.upper():
         return string
 

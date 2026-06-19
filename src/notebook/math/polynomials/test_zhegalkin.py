@@ -1,4 +1,5 @@
-# ruff: noqa: ARG005, FURB118
+# ruff: file-ignore[unused-lambda-argument, reimplemented-operator]
+
 lazy from collections.abc import Callable
 
 from notebook.support.pytest import pytest_parametrize_kwargs

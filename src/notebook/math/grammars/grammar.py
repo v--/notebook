@@ -27,7 +27,8 @@ class GrammarRule:
         return value
 
     @string_accumulator()
-    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+    # ruff: ignore[invalid-str-return-type]
+    def __str__(self) -> Iterable[str]:
         for sym in self.src:
             yield str(sym)
             yield ' '

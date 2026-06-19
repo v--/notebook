@@ -1,4 +1,5 @@
-# ruff: noqa: E222
+# ruff: file-ignore[multiple-spaces-after-operator]
+
 from .sources.helpers.url_template import UrlTemplate
 
 

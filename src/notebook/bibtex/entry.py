@@ -158,7 +158,8 @@ class BibEntry:
                 yield key, value
 
     @string_accumulator('')
-    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+    # ruff: ignore[invalid-str-return-type]
+    def __str__(self) -> Iterable[str]:
         properties = dict(self._string_properties())
         total = len(properties)
 

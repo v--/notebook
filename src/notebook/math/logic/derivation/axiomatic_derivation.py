@@ -170,7 +170,8 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
 
 
 @collector.ref('alg:propositional_proof_tree_to_axiomatic_derivation')
-def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
+# ruff: ignore[unused-function-argument]
+def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:
     return AxiomaticDerivation(
         payload=list(_proof_tree_to_derivation_payload(tree)),
     )

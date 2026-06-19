@@ -46,7 +46,8 @@ class MatrixMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
     m: int
     n: int
     payload: MutableSequence[N]
@@ -243,7 +244,8 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):  # noqa: PLW1641
         return len(self.payload)
 
     @string_accumulator()
-    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+    # ruff: ignore[invalid-str-return-type]
+    def __str__(self) -> Iterable[str]:
         if self.m == 0 or self.n == 0:
             yield f'({self.m}×{self.n} matrix)\n'
 

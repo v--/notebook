@@ -1,4 +1,5 @@
-# ruff: noqa: E221, E241
+# ruff: file-ignore[multiple-spaces-before-operator, multiple-spaces-after-comma]
+
 import pytest
 
 from .matrix import FloatMatrix, IntMatrix

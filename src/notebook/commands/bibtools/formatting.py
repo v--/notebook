@@ -48,7 +48,8 @@ class BibEntryAdjuster:
         else:
             self.bound_logger.info(f'Updating {what} from {old_value!r} to {new_value!r}')
 
-    def update(self, **kwargs: Any) -> None:  # noqa: ANN401
+    # ruff: ignore[any-type]
+    def update(self, **kwargs: Any) -> None:
         for field_name, new_value in kwargs.items():
             old_value = getattr(self.adjusted, field_name)
 

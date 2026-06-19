@@ -6,7 +6,8 @@ from .exceptions import FormalLogicSignatureError
 from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
-class FormalLogicSignature:  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class FormalLogicSignature:
     """A collection of symbols with certain restrictions.
 
     What we call here function and predicate symbols can have multiple Unicode graphemes, yet they are guaranteed to correspond to one lexeme ("token").

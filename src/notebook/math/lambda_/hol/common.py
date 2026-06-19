@@ -1,4 +1,4 @@
-# ruff: noqa: E222
+# ruff: file-ignore[multiple-spaces-after-operator]
 
 from notebook.math.lambda_.terms import Constant
 from notebook.math.lambda_.types import BaseType

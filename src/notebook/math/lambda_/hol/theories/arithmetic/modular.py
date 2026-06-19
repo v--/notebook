@@ -1,4 +1,4 @@
-# ruff: noqa: FURB118
+# ruff: file-ignore[reimplemented-operator]
 
 from notebook.math.lambda_.hol.alphabet import SortName
 from notebook.math.lambda_.hol.structure import HolStructure

@@ -1,4 +1,4 @@
-# ruff: noqa: PLR6104
+# ruff: file-ignore[non-augmented-assignment]
 
 from .exceptions import IncompatibleMatrixError
 from .matrix import FloatMatrix, IFieldMatrix, ISemiringMatrix

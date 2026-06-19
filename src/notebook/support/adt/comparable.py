@@ -2,7 +2,8 @@ from typing import Protocol, Self
 
 
 # Based on https://github.com/python/typing/issues/59#issuecomment-353878355
-class IComparable(Protocol):  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class IComparable(Protocol):
     def __eq__(self, other: object) -> bool:
         ...
 

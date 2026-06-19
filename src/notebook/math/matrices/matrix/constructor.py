@@ -35,7 +35,8 @@ class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):
         if n is None:
             n = m
 
-        return cls.from_factory(m, n, lambda i, j: value)  # noqa: ARG005
+        # ruff: ignore[unused-lambda-argument]
+        return cls.from_factory(m, n, lambda i, j: value)
 
     @classmethod
     def zeros(cls, m: int, n: int | None = None) -> Self:

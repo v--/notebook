@@ -1,4 +1,5 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast, overload
 lazy from collections.abc import Iterable, Sequence

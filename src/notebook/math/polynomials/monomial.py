@@ -67,7 +67,7 @@ class Monomial(Mapping[LatinIdentifier, int], Hashable):
     def __str__(self) -> Iterable[str]:
         if len(self._payload) == 0:
             yield '1'
-            return  # noqa: PLE0307
+            return  # ruff: ignore[invalid-str-return-type]
 
         for ind in iter(self):
             yield str(ind)

@@ -1,4 +1,4 @@
-# ruff: noqa: RUF027
+# ruff: file-ignore[missing-f-string-syntax]
 
 from .url_template import UrlTemplate
 

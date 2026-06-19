@@ -22,7 +22,8 @@ class HolExpression:
             raise HolError(f'Mismatch between free variables and context for HOL expression {self.term}')
 
     @string_accumulator()
-    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+    # ruff: ignore[invalid-str-return-type]
+    def __str__(self) -> Iterable[str]:
         for i, (var, type_) in enumerate(self.context.items()):
             if i > 0:
                 yield ','

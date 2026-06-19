@@ -15,7 +15,8 @@ from .formulas import (
 
 
 class FormulaVisitor[T]:
-    def visit(self, formula: Formula) -> T:  # noqa: C901
+    # ruff: ignore[complex-structure]
+    def visit(self, formula: Formula) -> T:
         match formula:
             case PropConstant():
                 match formula.value:

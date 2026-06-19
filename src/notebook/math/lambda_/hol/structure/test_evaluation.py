@@ -28,7 +28,8 @@ from .evaluation import evaluate_hol_expression
     # 0 ≤ S⁺(0)
     dict(formula='((≤0)(S⁺0))',           value=True),
 )
-def test_evaluate_hol_expression(formula: str, value: Any) -> None:  # noqa: ANN401
+# ruff: ignore[any-type]
+def test_evaluate_hol_expression(formula: str, value: Any) -> None:
     model = ModularArithmeticStructure(Z2)
     formula_ = HolExpression(
         parse_typed_term(formula, ARITHMETIC_SIGNATURE),

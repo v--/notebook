@@ -27,7 +27,8 @@ class PolynomialMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):  # noqa: PLR0904, PLW1641
+# ruff: ignore[too-many-public-methods, eq-without-hash]
+class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     _coefficients: MutableMapping[Monomial, N]
 
     @classmethod
@@ -151,7 +152,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):  # noqa: PLR0904, 
             mon = next(it)
         except StopIteration:
             yield str(self.lift_to_scalar(0))
-            return  # noqa: PLE0307
+            return  # ruff: ignore[invalid-str-return-type]
         else:
             yield self.stringify_term_with_prefix(mon, self[mon], is_first=True)
 

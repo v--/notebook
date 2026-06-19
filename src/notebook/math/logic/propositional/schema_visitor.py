@@ -10,7 +10,8 @@ from .schemas import (
 
 
 class PropFormulaSchemaVisitor[T]:
-    def visit(self, schema: PropFormulaSchema) -> T:  # noqa: C901
+    # ruff: ignore[complex-structure]
+    def visit(self, schema: PropFormulaSchema) -> T:
         match schema:
             case PropConstant():
                 match schema.value:

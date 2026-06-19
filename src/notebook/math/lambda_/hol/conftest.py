@@ -1,7 +1,6 @@
-
 import pytest
 
-from notebook.math.logic.conftest import dummy_signature  # noqa: F401
+from notebook.math.logic.conftest import dummy_signature  # ruff: ignore[unused-import]
 from notebook.math.logic.signature import FormalLogicSignature, FunctionSymbol, SignatureMorphism
 from notebook.math.logic.structure import FormalLogicStructure, expand_along_signature_morphism
 from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE as FOL_ARITHMETIC_SIGNATURE

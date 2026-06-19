@@ -1,4 +1,4 @@
-# ruff: noqa: E222, E251
+# ruff: file-ignore[multiple-spaces-after-operator, unexpected-spaces-around-keyword-parameter-equals]
 
 from notebook.math.lambda_.parsing import parse_untyped_term
 from notebook.math.lambda_.variables import get_bound_variables, get_free_variables

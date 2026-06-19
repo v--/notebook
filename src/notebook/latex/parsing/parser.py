@@ -1,4 +1,5 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
+
 lazy from collections.abc import Iterable, Sequence
 
 from notebook.latex.nodes import (

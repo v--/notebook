@@ -1,4 +1,5 @@
-# ruff: noqa: FURB118
+# ruff: file-ignore[reimplemented-operator]
+
 from notebook.math.logic.structure import FormalLogicStructure
 
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE

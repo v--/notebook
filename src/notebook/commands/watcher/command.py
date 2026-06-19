@@ -46,7 +46,8 @@ async def iter_build_file_changes(inotify: Inotify) -> AsyncIterator[TaskTrigger
                 yield TaskTrigger(TaskTriggerKind.CLEAN, relative)
 
 
-async def setup_watchers(manager: TaskRunner, inotify: Inotify, rebuild_all_figures: bool) -> None:  # noqa: C901
+# ruff: ignore[complex-structure]
+async def setup_watchers(manager: TaskRunner, inotify: Inotify, rebuild_all_figures: bool) -> None:
     async for target in iter_build_file_changes(inotify):
         path = target.path
 

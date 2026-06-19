@@ -1,4 +1,5 @@
-# ruff: noqa: C901
+# ruff: file-ignore[complex-structure]
+
 from typing import cast
 lazy from collections.abc import Sequence
 

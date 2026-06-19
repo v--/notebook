@@ -1,5 +1,4 @@
-# ruff: noqa: FURB118
-
+# ruff: file-ignore[reimplemented-operator]
 
 lazy from collections.abc import Callable
 

@@ -13,13 +13,15 @@ class GraphWalkSegment[VertT, EdgeT: Collection]:
 
 
 class BaseGraphWalkMeta[VertT, EdgeT: Collection](type):
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    # ruff: ignore[any-type]
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         result = super().__call__(*args, **kwargs)
         result.clone_initial = functools.partial(cls.__call__, *args, **kwargs)
         return result
 
 
-class BaseGraphWalk[VertT, EdgeT: Collection](metaclass=BaseGraphWalkMeta):  # noqa: PLW1641
+# ruff: ignore[eq-without-hash]
+class BaseGraphWalk[VertT, EdgeT: Collection](metaclass=BaseGraphWalkMeta):
     clone_initial: Callable[[], Self]
 
     _segments: list[GraphWalkSegment[VertT, EdgeT]]
