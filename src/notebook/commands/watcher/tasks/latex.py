@@ -111,17 +111,20 @@ class LaTeXTask(CliTask):
                 ),
             )
         elif requires_biber_rerun:
-            # ruff: ignore[import-outside-top-level]
-            from .biber import BiberTask  # Avoid circular import
-            runner.schedule(
-                BiberTask(
-                    TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
-                    reason=self.trigger.path.name,
-                ),
-            )
+            if self.trigger.path.with_suffix('.bcf').as_posix() == self.reason:
+                self.bound_logger.warning('Cyclic babel rebuild request detected; ignoring.')
+                shutil.copyfile(self.get_aux_path('.pdf'), self.get_output_path())
+            else:
+                # ruff: ignore[import-outside-top-level]
+                from .biber import BiberTask  # Avoid circular import
+                runner.schedule(
+                    BiberTask(
+                        TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
+                        reason=self.trigger.path.name,
+                    ),
+                )
         else:
-            output_path = self.get_output_path()
             self.bound_logger.debug('No more passes required.')
-            shutil.copyfile(self.get_aux_path('.pdf'), output_path)
+            shutil.copyfile(self.get_aux_path('.pdf'), self.get_output_path())
 
     build_on_failure = build_post_process
