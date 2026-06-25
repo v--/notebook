@@ -12,7 +12,6 @@
 % Shorthand macros
 \NewDocumentCommand \op         {sm} {\IfBooleanTF {#1} {\operatorname{\mathbf{#2}}} {\operatorname{#2}}}
 \NewDocumentCommand \logic       {m} {\textsf{\upshape #1}}
-\NewDocumentCommand \cat         {m} {\op*{#1}}
 \NewDocumentCommand \grp         {m} {\op*{#1}}
 \NewDocumentCommand \distr       {m} {\op*{#1}}
 \NewDocumentCommand \symdiff      {} {\mathbin \Delta}
@@ -28,9 +27,25 @@
 \NewDocumentCommand \oppos        {} {{\op*{op}}}
 \NewDocumentCommand \mathdash     {} {\hbox{-}}
 
-\NewDocumentCommand \ucat {O{\mscrU}m}
+\NewDocumentCommand \cat {omo}
   {
-    #1\mathdash\cat{#2}
+    \IfValueTF {#1}
+      {
+        \IfValueTF {#3}
+          {#1\mathdash\op*{#2}\mathdash#3}
+          {#1\mathdash\op*{#2}}
+      }
+
+      {
+        \IfValueTF {#3}
+          {\op*{#2}\mathdash#3}
+          {\op*{#2}}
+      }
+  }
+
+\NewDocumentCommand \ucat {omo}
+  {
+    \mscrU\mathdash\cat[#1]{#2}[#3]
   }
 
 % Semantic logical symbols
