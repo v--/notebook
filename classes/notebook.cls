@@ -49,7 +49,6 @@
 \RequirePackage
   [
     block=ragged,
-    backend=biber,
     style=alphabetic,
     citestyle=alphabetic,
     datamodel=classes/bibmodel
