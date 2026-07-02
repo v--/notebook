@@ -1,7 +1,7 @@
 access patterns;
 
-patterns.add('ne_hatch', patterns.hatch(1, NE, mediumgray));
-patterns.add('nw_hatch', patterns.hatch(1, NW, mediumgray));
+patterns.add('ne_hatch', patterns.hatch(1.5, NE, mediumgray));
+patterns.add('nw_hatch', patterns.hatch(1.5, NW, mediumgray));
 
 pen densely_dashed = linetype(new real[] { 2, 2 });
 pen ne_hatch = pattern('ne_hatch');
