@@ -39,7 +39,7 @@
 % Internationalization
 \RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
-\babeltags{bg=bulgarian, de=german, en=english, la=latin, ru=russian}
+\babeltags{bg=bulgarian, de=german, en=english, la=latin, ru=russian, gr=greek}
 
 \useshorthands*{"}
 \defineshorthand{"-}{\babelhyphen{soft}}
