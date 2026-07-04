@@ -16,6 +16,14 @@
 \RedeclareSectionCommands[tocpagenumberwidth=2.2em]{chapter, section}
 \RedeclareSectionCommands[tocdynnumwidth=true]{section}
 
+% We redefine default float placement as per [1].
+% In [2], Mittelbach claims that the default is usually tbp.
+%
+% [1]: https://tex.stackexchange.com/a/6458
+% [2]: https://tug.org/TUGboat/tb35-3/tb111mitt-float.pdf
+\RenewExpandableDocumentCommand \fps@figure {} {htbp}
+\RenewExpandableDocumentCommand \fps@table  {} {htbp}
+
 % Paragraphs do not break the text by default
 %   See https://tex.stackexchange.com/a/223524
 % The afterskip is taken from the same property for subsubsections
