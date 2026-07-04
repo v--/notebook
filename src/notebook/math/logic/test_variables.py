@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection
 
 from notebook.support.pytest import pytest_parametrize_kwargs

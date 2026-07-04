@@ -1,4 +1,3 @@
-
 from notebook.support.pytest import pytest_parametrize_lists
 
 from .context_sensitive import (

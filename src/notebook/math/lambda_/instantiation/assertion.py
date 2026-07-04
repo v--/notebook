@@ -1,4 +1,3 @@
-
 from notebook.math.lambda_.assertions import TypeAssertion, TypeAssertionSchema
 from notebook.support.coderefs import collector
 

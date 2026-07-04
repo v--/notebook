@@ -1,4 +1,3 @@
-
 from notebook.math.lambda_.assertions import VariableTypeAssertion
 from notebook.math.lambda_.hol import common
 from notebook.math.lambda_.hol.structure import HolVariableAssignment

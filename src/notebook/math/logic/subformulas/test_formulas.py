@@ -1,4 +1,3 @@
-
 from notebook.math.logic.parsing import parse_formula
 from notebook.support.pytest import pytest_parametrize_kwargs
 lazy from notebook.math.logic.signature import FormalLogicSignature

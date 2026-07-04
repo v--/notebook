@@ -1,4 +1,3 @@
-
 from notebook.math.logic.parsing import parse_formula, parse_formula_schema
 
 from .exceptions import PropositionalLogicError

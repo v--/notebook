@@ -1,4 +1,3 @@
-
 import stdnum.isbn
 from transliterate import translit
 

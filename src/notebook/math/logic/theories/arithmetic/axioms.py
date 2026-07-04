@@ -1,4 +1,3 @@
-
 from notebook.math.logic.instantiation import AtomicLogicSchemaInstantiation, instantiate_formula_schema
 from notebook.math.logic.parsing import (
     parse_formula,

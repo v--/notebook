@@ -1,4 +1,3 @@
-
 from notebook.support.exceptions import NotebookSupportError
 
 lazy from .rules import InferenceRule

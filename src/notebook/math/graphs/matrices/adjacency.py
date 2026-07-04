@@ -1,4 +1,3 @@
-
 from notebook.math.graphs.exceptions import GraphWalkError
 from notebook.math.matrices.matrix import ISemiringMatrix, MinPlusMatrix
 from notebook.math.rings.tropical import MinPlusFloat

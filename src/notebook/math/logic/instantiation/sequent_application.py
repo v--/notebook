@@ -1,4 +1,3 @@
-
 from notebook.math.logic.sequents import Sequent, SequentSchema
 
 from .context_application import instantiate_context_schema

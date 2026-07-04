@@ -1,4 +1,3 @@
-
 from notebook.math.logic.parsing import parse_formula
 from notebook.math.logic.structure import evaluate_formula
 from notebook.math.logic.theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure

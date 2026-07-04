@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable
 
 from notebook.support.iteration import string_accumulator

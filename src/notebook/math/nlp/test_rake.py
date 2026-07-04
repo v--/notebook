@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection
 
 from .rake import generate_phrase_scores

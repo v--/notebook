@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection, Sequence
 
 from notebook.math.logic.propositional import parse_prop_formula

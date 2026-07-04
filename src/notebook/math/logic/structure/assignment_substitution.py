@@ -1,4 +1,3 @@
-
 from notebook.support.coderefs import collector
 lazy from notebook.math.logic.substitution import AtomicLogicSubstitution
 

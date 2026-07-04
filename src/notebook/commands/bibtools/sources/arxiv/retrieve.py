@@ -1,4 +1,3 @@
-
 from notebook.commands.bibtools.exceptions import BibToolsError
 lazy from notebook.bibtex import BibEntry
 

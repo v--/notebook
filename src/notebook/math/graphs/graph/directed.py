@@ -1,4 +1,3 @@
-
 from .base import BaseGraph
 from .views.directed import DirectedEdge, DirectedEdgeView
 lazy from .views.vertex import VertexView

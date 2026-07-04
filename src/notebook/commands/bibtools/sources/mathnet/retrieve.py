@@ -1,4 +1,3 @@
-
 lazy from notebook.bibtex import BibEntry
 
 from .bib import mathnet_entry_to_bib

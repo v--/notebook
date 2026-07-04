@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection, Iterable, Sequence
 
 from notebook.support.coderefs import collector

@@ -1,4 +1,3 @@
-
 from notebook.parsing.tokenizer import Tokenizer
 from notebook.support.unicode import Capitalization, is_greek_string, is_latin_string, is_numeric_subscript_char
 lazy from notebook.parsing.tokenizer_context import TokenizerContext

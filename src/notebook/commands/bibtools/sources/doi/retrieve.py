@@ -1,4 +1,3 @@
-
 lazy from notebook.bibtex import BibEntry
 
 from .bib import doi_data_to_bib

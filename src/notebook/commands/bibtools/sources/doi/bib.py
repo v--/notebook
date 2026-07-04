@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable, Sequence
 
 from nameparser import HumanName

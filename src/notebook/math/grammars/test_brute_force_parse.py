@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable, Sequence
 
 lazy import pytest

@@ -1,4 +1,3 @@
-
 from notebook.bibtex import BibEntry
 from notebook.commands.bibtools import url_templates
 from notebook.commands.bibtools.sources.helpers.dates import extract_year

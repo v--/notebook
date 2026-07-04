@@ -1,4 +1,3 @@
-
 from notebook.support.coderefs import collector
 
 from .finite import FiniteAutomaton

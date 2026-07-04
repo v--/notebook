@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection
 
 from notebook.math.lambda_.terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable

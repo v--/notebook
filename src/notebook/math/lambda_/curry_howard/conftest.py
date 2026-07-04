@@ -1,4 +1,3 @@
-
 import pytest
 
 from notebook.math.logic.propositional import PropLogicSignature, PropVariableSymbol

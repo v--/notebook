@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Mapping
 
 from notebook.math.logic.parsing import parse_term, parse_variable

@@ -1,4 +1,3 @@
-
 from notebook.math.logic.parsing import parse_formula
 from notebook.math.logic.propositional import evaluate_prop_formula, iter_interpretations, parse_prop_formula
 from notebook.support.pytest import pytest_parametrize_kwargs

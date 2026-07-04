@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable
 
 from notebook.math.logic.contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema

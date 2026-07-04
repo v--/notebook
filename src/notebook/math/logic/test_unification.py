@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Mapping, Sequence
 
 import pytest

@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable, Iterator
 
 from notebook.math.lambda_.hol.alphabet import LogicalConstantName, LogicalTypeName, SortName

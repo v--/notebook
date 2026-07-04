@@ -1,4 +1,3 @@
-
 from notebook.parsing.tokenizer import Tokenizer
 from notebook.support.collections import MissingKeyError, TrieMapping
 lazy from notebook.parsing.tokenizer_context import TokenizerContext

@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Sequence
 
 from .exceptions import ParserError

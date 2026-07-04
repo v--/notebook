@@ -1,4 +1,3 @@
-
 from notebook.math.lambda_.parsing import parse_type, parse_typed_term, parse_variable_assertion
 from notebook.math.lambda_.type_context import TypeContext
 from notebook.math.rings.modular import Z3

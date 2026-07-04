@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Collection
 
 from .name_collision import get_name_without_collision

@@ -1,4 +1,3 @@
-
 from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokens import Token

@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Iterable, Mapping
 
 from .exceptions import NotebookSupportError

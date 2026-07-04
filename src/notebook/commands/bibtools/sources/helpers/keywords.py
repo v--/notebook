@@ -1,4 +1,3 @@
-
 lazy from collections.abc import Sequence
 
 import stop_words
