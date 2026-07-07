@@ -14,7 +14,7 @@ Last but not least, more algorithmic portions of the monograph have programmatic
 
 ## License
 
-This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: it uses [CC0](https://spdx.org/licenses/CC0-1.0.html) for the text itself and the [Unlicense](https://spdx.org/licenses/Unlicense.html) for the Python code.
+This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: it uses [CC0](https://spdx.org/licenses/CC0-1.0.html) for the text itself and the [Unlicense](https://spdx.org/licenses/Unlicense.html) for the Python code, as per [`REUSE.toml`](./REUSE.toml).
 
 ## Project structure
 
