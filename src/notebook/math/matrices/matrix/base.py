@@ -233,6 +233,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
             lambda i, j: self[j, i],
         )
 
+    # ruff: ignore[no-self-use]
     def stringify_value(self, value: N) -> str:
         return str(value)
 

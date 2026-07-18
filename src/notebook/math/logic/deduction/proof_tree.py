@@ -39,6 +39,7 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             marker=str(self.marker),
         )
 
+    # ruff: ignore[no-self-use]
     def get_local_eigenvariables(self) -> Collection[Variable]:
         return set()
 

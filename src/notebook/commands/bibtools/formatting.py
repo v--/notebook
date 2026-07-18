@@ -82,6 +82,7 @@ class BibEntryAdjuster:
         short_name = self.get_author_short_name(author)
         return BibAuthor(full_name=full_name, short_name=short_name)
 
+    # ruff: ignore[no-self-use]
     def adjust_language(self, language: BibString) -> BibString:
         return normalize_language_name(language)
 

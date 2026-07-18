@@ -1,4 +1,4 @@
-# ruff: file-ignore[complex-structure]
+# ruff: file-ignore[complex-structure, no-self-use]
 
 from collections import deque
 from dataclasses import replace

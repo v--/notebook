@@ -86,6 +86,7 @@ class CliTask(Task):
     def get_build_command(self) -> str:
         ...
 
+    # ruff: ignore[no-self-use]
     def get_build_out_buffer(self) -> int | None:
         return None
 

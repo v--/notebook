@@ -64,6 +64,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
             instantiation=new_instantiation,
         )
 
+    # ruff: ignore[no-self-use]
     def _visit_abstractor_premise(self, body_tree: TypeDerivationTree, assertion: VariableTypeAssertion, other: TypedTerm) -> RuleApplicationPremise:
         abstraction = TypedAbstraction(assertion.term, assertion.type, body_tree.conclusion.term)
 
