@@ -2,57 +2,575 @@
 
 \paragraph{Partial orders}
 
-\hyperref[def:preordered_set]{Preordered sets} are simple to define and arise naturally, for example \cref{def:lindenbaum_tarski_algebra} or \cref{thm:semiring_divisibility_order}. Unfortunately, they require certain uniqueness considerations, as discussed in \cref{ex:preorder_nonuniqueness}. If we want to overcome them, we arrive at the concept of a partially ordered set.
+\begin{definition}\label{def:partially_ordered_set}\mcite[\S 1.1.3.1]{Harzheim2005OrderedSets}
+  We call the \hyperref[def:binary_relation]{binary relation} \( \leq \) on a \hyperref[def:set]{set} \( P \) is a \term[ru=частичный порядок (\cite[def. 3.2]{Гуров2013ТеорияРешёток})]{partial order} if it is \hyperref[def:binary_relation/reflexive]{reflexive}, \hyperref[def:binary_relation/transitive]{transitive} and \hyperref[def:binary_relation/antisymmetric]{antisymmetric}. The pair \( (P, \leq) \) is then called a \term[ru=часточно упорядоченное множество (\cite[def. 3.3]{Гуров2013ТеорияРешёток})]{partially ordered set}.
 
-\begin{definition}\label{def:partially_ordered_set}\mcite[1]{Birkhoff1967LatticeTheory}
-  We define a \term[ru=частично упорядоченное множество (\cite[72]{Гуров2013ТеорияРешёток})]{partially ordered set} to be a \hyperref[def:preordered_set]{preordered set} that also satisfies the antisymmetry condition \eqref{eq:def:binary_relation/antisymmetric}.
+  We also call \( {\leq} \) an \term{order} (and \( (P, \leq) \) --- an \term{ordered set}) if we want to emphasize generality, e.g. a partially or \hyperref[def:totally_ordered_set]{totally ordered set} or a \hyperref[def:lattice]{lattice} or a \hyperref[def:banach_algebra]{Banach algebras} or \ldots.
 
-  The metamathematical properties are inherited from \cref{def:preordered_set} with this additional axiom added. Following \textcite[\S I.3.2]{Johnstone1982StoneSpaces}, we denote the corresponding category via \( \cat{Pos} \).
+  If \( x \leq y \), we say that \( x \) is \term{less than or equal} to \( y \) and that \( y \) is \term{greater than or equal} to \( x \). This terminology suggests that the strict relation \( {<} \), to be defined, is more fundamental, but from an abstract perspective this is not so, as we shall see.
+
+  We introduce several auxiliary notions:
+  \begin{thmenum}[series=def:partially_ordered_set]
+    \thmitem{def:partially_ordered_set/geq}\mcite[\S 1.1.3.2]{Harzheim2005OrderedSets} We also define \( \geq \) as the \hyperref[def:binary_relation/converse]{converse relation} of \( \leq \), with the obvious adjustment in terminology.
+
+    \thmitem{def:partially_ordered_set/strict}\mcite[\S 1.1.3.2]{Harzheim2005OrderedSets} We define the relation \( {<} \) as the difference of \( {\leq} \) and the \hyperref[def:binary_relation/diagonal]{diagonal relation} \( \Delta \), and distinguish it from \( {\leq} \) by calling it \term[bg=строго (неравенство) (\cite[10]{Проданов1982ФункционаленАнализЧаст1}), ru=строгий (порядок) (\cite[74]{Гуров2013ТеорияРешёток}), en=strict (order) (\cite[\S 1.1.3.2]{Harzheim2005OrderedSets})]{strict}.
+
+    The terminology for \( < \) is simpler --- if \( x < y \), we say that \( x \) is \term{less than} \( y \) and that \( y \) is \term{greater than} \( x \).
+
+    We can use the strict relation as \hyperref[con:primitive_notion]{primitive} instead --- see \cref{thm:strict_order_as_primitive}.
+
+    \thmitem{def:partially_ordered_set/comparable}\mcite[\S 1.1.6.1]{Harzheim2005OrderedSets} We call the elements \( x \) and \( y \) are \term{comparable} if either \( x \leq y \) or \( y \leq x \) and \term{incomparable} otherwise.
+  \end{thmenum}
+
+  Partially ordered sets have the following metamathematical properties:
+  \begin{thmenum}[resume=def:partially_ordered_set]
+    \thmitem{def:partially_ordered_set/theory}\mimprovised Partially ordered sets can be described by a \hyperref[def:fol_theory]{first-order theory} over \hyperref[def:fol_signature/notation]{infix} binary \hyperref[def:fol_signature/predicate]{predicate symbol}, \( {\synleq} \), axiomatized by the reflexivity axiom \eqref{eq:def:binary_relation/reflexive}, the transitivity axiom \eqref{eq:def:binary_relation/transitive} and the antisymmetry axiom \eqref{eq:def:binary_relation/antisymmetric}.
+
+    This is simple enough as it is, however we often wish to extend it with the aforementioned relations, introduced as \hyperref[def:fol_definition/predicate]{first-order definitions}:\fnote{Technically, we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of these definitions.}
+    \begin{thmenum}
+      \thmitem{def:partially_ordered_set/theory/geq} The symbol \( {\syngeq} \) can be introduced as to obey
+      \begin{equation}\label{eq:def:partially_ordered_set/theory/geq}
+        \synx \syngeq \syny \syniff \syny \synleq \synx.
+      \end{equation}
+
+      \thmitem{def:partially_ordered_set/theory/strict} The symbol \( {\synless} \) can be introduced as to obey
+      \begin{equation}\label{eq:def:partially_ordered_set/theory/strict}
+        \synx \synless \syny \syniff ((\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny)).
+      \end{equation}
+
+      \thmitem{def:partially_ordered_set/theory/greater} Similarly, based on \( {\syngeq} \) rather than \( {\synleq} \), the symbol \( {\syngreater} \) can be introduced as to obey
+      \begin{equation}\label{eq:def:partially_ordered_set/theory/greater}
+        \synx \syngreater \syny \syniff ((\synx \syngeq \syny) \synwedge \synneg (\synx \syneq \syny)).
+      \end{equation}
+    \end{thmenum}
+
+    \thmitem{def:partially_ordered_set/morphism}\mcite[def. 1.9.2]{Harzheim2005OrderedSets} We say that the function \( \varphi: (P, \leq_P) \to (Q, \leq_Q) \) between (partially) ordered sets is an \term[ru=порядковый гомоморфизм (\cite[92]{Гуров2013ТеорияРешёток}), en=homomorphism (\cite[\S 1.1.9.2]{Harzheim2005OrderedSets})]{order homomorphism} if
+    \begin{equation}\label{eq:def:partially_ordered_set/morphism}
+      x \leq_P y \T{implies} \varphi(x) \leq_Q \varphi(y).
+    \end{equation}
+
+    For the simple first-order signature with only \( {\synleq} \), these are the (weak) \hyperref[def:fol_homomorphism]{first-order homomorphisms}. If we also include \( {\synless} \) in the signature, we obtain \term{strict order homomorphisms}.
+
+    When not dealing with categorical notions, we will often prefer terminology that is more explicit, like strict and nonstrict order-preserving and order-reversing maps. We discuss these notions in \cref{def:order_function}.
+
+    \thmitem{def:partially_ordered_set/category}\mcite[\S I.3.2]{Johnstone1982StoneSpaces} For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the first-order theory described above naturally gives rise to a \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models}. We denote this category by \( \ucat{Pos} \).
+
+    It is isomorphic to the category of \( \mscrU \)-small \hyperref[def:skeletal_category]{skeletal} preorder categories --- see \fullref{thm:order_category_isomorphism}.
+
+    Strict homomorphisms lead to another category.
+
+    \thmitem{def:partially_ordered_set/subobject}\mimprovised Every subset of a (partially) ordered set, endowed with the restricted relation, is itself a (partially) ordered set.
+
+    We call it an \term{ordered subset} if we need to highlight that it is not a plain set, however we often ignore the distinction with the underlying plain set.
+
+    \thmitem{def:partially_ordered_set/opposite}\mcite[\S 1.19]{DaveyPriestley2002LatticeTheory} We define the \term{dual ordered set} of \( (P, \leq)^{\oppos} \) as \( (P, \geq) \). For the relation symbols themselves, we define \( \geq^{\oppos} \) as \( \leq \) and vice versa.
+
+    This induces an \hyperref[con:opposite_object]{opposite object functor} in categories of (partially) ordered sets. Unlike in groups or rings, here we prefer the term \enquote{dual} to \enquote{opposite} because of \fullref{thm:order_duality}.
+  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item \Textcite[72]{Гуров2013ТеорияРешёток}, \textcite[10]{Проданов1982ФункционаленАнализЧаст1}, \textcite[4]{Engelking1989GeneralTopology}, \textcite[2]{DaveyPriestley2002LatticeTheory}, \textcite[13]{Harzheim2005OrderedSets}, \textcite[1]{Grätzer2011LatticeTheory} and \textcite[1]{Birkhoff1967LatticeTheory} define partial orders like us. \Textcite[62]{Enderton1977SetTheory} defines partial orders as what we call \enquote{\hyperref[def:strict_partial_order]{strict partial orders}}, while \textcite[13]{Kelley1975GeneralTopology} defines partial orders as simply \hyperref[def:binary_relation/transitive]{transitive} relations.
+  \item A partial order is defined as a reflexive, transitive and antisymmetric relation in
+  \cite[4]{Engelking1989GeneralTopology},
+  \cite[2]{DaveyPriestley2002LatticeTheory},
+  \cite[13]{Harzheim2005OrderedSets},
+  \cite[1]{Grätzer2011LatticeTheory},
+  \cite[1]{Birkhoff1967LatticeTheory},
+  \cite[72]{Гуров2013ТеорияРешёток} and
+  \cite[10]{Проданов1982ФункционаленАнализЧаст1}.
 
-  \item The category \( \cat{Pos} \) is isomorphic to that of small skeletal preorder categories --- see \fullref{thm:order_category_isomorphism}.
+  \Textcite[62]{Enderton1977SetTheory} takes strict orders as primitive, while \textcite[13]{Kelley1975GeneralTopology} defines partial orders as simply \hyperref[def:binary_relation/transitive]{transitive} relations.
 \end{comments}
 
-\begin{definition}\label{def:strict_partial_order}\mcite[13]{Harzheim2005OrderedSets}
-  We call an \hyperref[def:binary_relation/irreflexive]{irreflexive} and \hyperref[def:binary_relation/transitive]{transitive} \hyperref[def:binary_relation]{binary relation} a \term{strict partial order}.
+\begin{definition}\label{def:inequality}\mimprovised
+  The predicate application formulas in the \hyperref[def:partially_ordered_set/theory]{first-order theory of preordered sets} are either \( \tau \synleq \sigma \) or \( \tau \syngeq \sigma \) for some terms \( \tau \) and \( \sigma \). We call such formulas \term{inequalities}.
+
+  In the extended theory with symbols \( \synless \) and \( \syngreater \), we distinguish between the \term{strict inequality} \( \tau \synless \sigma \) and its corresponding \term{nonstrict inequality} \( \tau \syngeq \sigma \).
+
+  \begin{thmenum}
+    \thmitem{def:inequality/solution} As in the case of \hyperref[def:fol_equation]{equations}, we call the set \hyperref[def:fol_definability]{defined} by an inequality its \term{solution set}.
+  \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:strict_partial_order}
-  For an arbitrary set \( P \) and binary relation \( \leq \) on \( P \), the pair \( (P, \leq) \) is a \hyperref[def:partially_ordered_set]{partially ordered set} if and only the relation \( < \), defined via \eqref{eq:def:preordered_set/compatibility_strict}, is a \hyperref[def:strict_partial_order]{strict partial order}.
-\end{proposition}
-\begin{proof}
-  \SufficiencySubProof Let \( \leq \) be a partial order. We will show that \( < \) is a strict partial order.
+\begin{proposition}\label{thm:partially_ordered_set_theories}
+  Over the \hyperref[def:partially_ordered_set/theory]{signature of ordered sets} with only \( {\synleq} \) and \( {\synless} \), the following theories are \hyperref[def:interderivability]{interderivable} with respect to \hyperref[def:fol_natural_deduction]{classical first-order natural deduction}:
 
-  \SubProofOf*[def:binary_relation/transitive]{transitivity} The relation \( < \) is \hyperref[def:binary_relation/transitive]{transitive}. To see this, let \( x < y \) and \( y < z \). In particular, \( x \leq y \) and \( y \leq z \). From transitivity, we have \( x \leq z \).
-
-  Additionally, \( x \neq y \) and \( y \neq z \). Assume that \( x = z \). From reflexivity of \( \leq \) we have \( z \leq x \) and, since \( y \leq z \), from transitivity we obtain \( y \leq x \). But since \( x \leq y \), from the antisymmetry of \( \leq \), we have \( x = y \), which contradicts the assumption that \( x < y \).
-
-  Therefore, \( x < z \).
-
-  \SubProofOf*[def:binary_relation/irreflexive]{irreflexivity}. Follows directly from reflexivity of \( \leq \) and the compatibility condition.
-
-  Since the right side is false, the left side \( x < x \) is also false.
-
-  \NecessitySubProof Let \( < \) be a strict partial order. We will show that \( \leq \) is a partial order.
-
-  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} Fix \( x \in P \) and assume that \( x \nleq x \). Then \( x \neq x \) which contradicts the reflexivity of equality. Hence, \( x \leq x \).
-
-  \SubProofOf*[def:binary_relation/antisymmetric]{antisymmetry} Let \( x \leq y \) and \( y \leq x \), that is, either \( x = y \) or both \( x < y \) and \( y < x \) hold. Assume the latter. By the transitivity of \( \leq \), we have \( x < x \), which contradicts the irreflexivity of \( < \). Hence, \( x = y \).
-
-  \SubProofOf*[def:binary_relation/transitive]{transitivity} Let \( x \leq y \) and \( y \leq z \). Then we have four cases depending on which of \( x \), \( y \) and \( z \) are equal. Since both relations \( < \) and \( = \) are transitive, it follows that in all four cases \( x \leq z \).
-\end{proof}
-
-\begin{proposition}\label{thm:def:partially_ordered_set}
-  \hyperref[def:partially_ordered_set]{Partially ordered sets} have the following basic properties:
   \begin{thmenum}
-    \thmitem{def:partially_ordered_set/comparables_reflect_inequalities} For any \hyperref[def:order_function/preserving]{order-preserving map} \( f: P \to Q \) between partially ordered sets, if \( x \) and \( y \) are comparable elements, \( f(x) < f(y) \) implies \( x < y \).
+    \thmitem{thm:partially_ordered_set_theories/nonstrict} The nonstrict theory generated by \hyperref[def:binary_relation/reflexive]{reflexivity}, \hyperref[def:binary_relation/transitive]{transitivity} and \hyperref[def:binary_relation/antisymmetric]{antisymmetry} of \( {\synleq} \) and the compatibility axiom \eqref{eq:def:partially_ordered_set/theory/strict}.
+
+    \thmitem{thm:partially_ordered_set_theories/strict} The strict theory generated by \hyperref[def:binary_relation/irreflexive]{irreflexivity} and \hyperref[def:binary_relation/transitive]{transitivity} of \( {\synless} \) and the compatibility axiom
+    \begin{equation}\label{eq:thm:partially_ordered_set_theories/strict/compatibility}
+      \synx \synleq \syny \syniff ((\synx \synless \syny) \synvee (\synx \syneq \syny)).
+    \end{equation}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{def:partially_ordered_set/comparables_reflect_inequalities} Let \( f(x) <_Q f(y) \) and suppose that \( x \geq y \). Since \( f \) is order-preserving, we have \( f(x) \geq_Q f(y) \), which is a contradiction.
+  \SufficiencySubProof Assume the nonstrict theory from \cref{thm:partially_ordered_set_theories/nonstrict}.
+
+  \SubProof*{Irreflexivity of \( \synless \)}
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\synx \synless \synx]^u }
+
+      \hypo{ [\eqref{eq:def:partially_ordered_set/theory/strict}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synx \synless \synx \syniff ((\synx \synleq \synx) \synwedge \synneg (\synx \syneq \synx)) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ (\synx \synleq \synx) \synwedge \synneg (\synx \syneq \synx) }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_right}]{ \synneg (\synx \syneq \synx) }
+
+      \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ \synx \syneq \synx }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label={\( u \)}]1[\ref{inf:def:propositional_natural_deduction/neg/intro}]{ \synneg (\synx \synless \synx) }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synx \synneg (\synx \synless \synx) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof*{Transitivity of \( \synless \)} Let \( P \) be the tree
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synx \synless \syny]^u }
+      \hypo{ [\eqref{eq:def:partially_ordered_set/theory/strict}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \synx \synleq \syny }
+
+      \hypo{ [\syny \synless \synz]^v }
+      \hypo{ [\eqref{eq:def:partially_ordered_set/theory/strict}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \syny \synleq \synz }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ \synx \synleq \syny \synwedge \syny \synleq \synz }
+    \end{prooftree}
+  \end{equation*}
+
+  We will use it twice. First, we will derive \( \synx \synless \synz \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:binary_relation/transitive}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ \substack{ [\synx \synless \syny]^v \\ [\syny \synless \synz]^w } }
+      \ellipsis {\( P \)} { (\synx \synleq \syny \synwedge \syny \synleq \synz) \synimplies (\synx \synleq \synz) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \synx \synleq \synz }
+    \end{prooftree}
+  \end{equation*}
+
+  Second, we will derive \( \synneg (\synx \syneq \synz) \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:binary_relation/antisymmetric}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ \substack{ [\synx \synless \syny]^v \\ [\syny \synless \synz]^w } }
+      \ellipsis {\( P \)} { \synx \synleq \syny \synwedge \syny \synleq \synz }
+
+      \hypo{ [\synx \syneq \synz]^b }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synz \syneq \synx }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synleq \syny \synwedge \syny \synleq \synx }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \synx \syneq \syny }
+
+      \hypo{ [\synx \synless \syny]^v }
+      \ellipsis{} { \synneg (\synx \syneq \syny) }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label={\( b \)}]1[\ref{inf:def:propositional_natural_deduction/neg/intro}]{ \synneg (\synx \syneq \synz) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof*{Compatibility of \( \synless \) with \( \synleq \)} To show \eqref{eq:thm:partially_ordered_set_theories/strict/compatibility}, we must demonstrate that each side can derive the other.
+
+  In one direction, we derive \( \synx \synleq \syny \) from \( (\synx \synless \syny) \synvee (\synx \syneq \syny) \):
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [(\synx \synless \syny) \synvee (\synx \syneq \syny)]^u }
+
+      \hypo{ [\eqref{eq:def:partially_ordered_set/theory/strict}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\synx \synless \syny]^b }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) }
+
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \synx \synleq \syny }
+
+      \hypo{ [\eqref{eq:def:binary_relation/reflexive}]^{a_2} }.
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synx \synleq \synx }
+      \hypo{ [\synx \syneq \syny]^c }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synleq \syny }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \synleq \syny }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  In the other direction, we derive \( (\synx \synless \syny) \synvee (\synx \syneq \syny) \) from \( \synx \synleq \syny \):
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \infer0[\ref{inf:thm:propositional_admissible_rules/lem}]{ (\synx \syneq \syny) \synvee \synneg (\synx \syneq \syny) }
+
+      \hypo{ [\synx \syneq \syny]^b }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \synanon }
+
+      \hypo{ [\eqref{eq:def:partially_ordered_set/theory/strict}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\synx \synleq \syny]^u }
+      \hypo{ [\synneg (\synx \syneq \syny)]^c }
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_left}]{ \synx \synless \syny }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \synanon }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ (\synx \synless \syny) \synvee (\synx \syneq \syny) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  \NecessitySubProof Assume the strict theory from \cref{thm:partially_ordered_set_theories/nonstrict}.
+
+  \SubProof*{Reflexivity of \( \synleq \)}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:thm:partially_ordered_set_theories/strict/compatibility}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synx \synleq \synx \syniff ((\synx \synless \synx) \synvee (\synx \syneq \synx)) }
+
+      \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ \synx \syneq \synx }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ (\synx \synless \synx) \synvee (\synx \syneq \synx) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_left}]{ \synx \synleq \synx }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synx (\synx \synleq \synx) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof*{Transitivity of \( \synleq \)} Transitivity follows from
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [(\synx \synless \syny) \synvee (\synx \syneq \syny)]^u }
+
+      \hypo{ \substack{ [(\syny \synless \synz) \synvee (\syny \syneq \synz)]^v \\ [\synx \synless \syny]^b } }
+      \ellipsis{\( A \)} { \synanon }
+
+      \hypo{ \substack{ [(\syny \synless \synz) \synvee (\syny \syneq \synz)]^v \\ [\synx \syneq \syny]^c } }
+      \ellipsis{\( B \)} { \synanon }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ (\synx \synless \synz) \synvee (\synx \syneq \synz) }
+    \end{prooftree}
+  \end{equation*}
+  where \( A \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [(\syny \synless \synz) \synvee (\syny \syneq \synz)]^v }
+
+      \hypo{ [\eqref{eq:def:binary_relation/transitive}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\synx \synless \syny]^b }
+      \hypo{ [\syny \synless \synz]^d }
+      \infer2{ (\synx \synless \syny) \synwedge (\syny \synless \synz) }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \synx \synless \synz }
+
+      \hypo{ [\synx \synless \syny]^b }
+      \hypo{ [\syny \syneq \synz]^e }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synless \synz }
+
+      \infer[left label={\( d, e \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \synless \synz }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ (\syny \synless \synz) \synvee (\synx \syneq \synz) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  and \( B \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [(\syny \synless \synz) \synvee (\syny \syneq \synz)]^v }
+
+      \hypo{ [\synx \syneq \syny]^c }
+      \hypo{ [\syny \synless \synz]^f }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synless \synz }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \synanon }
+
+      \hypo{ [\synx \syneq \syny]^c }
+      \hypo{ [\syny \syneq \synz]^g }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \syneq \synz }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \synanon }
+
+      \infer[left label={\( f, g \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ (\synx \synless \synz) \synvee (\synx \syneq \synz) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  \SubProof*{Antisymmetry of \( \synleq \)} Antisymmetry follows from
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [(\synx \synless \syny) \synvee (\synx \syneq \syny)]^u }
+
+      \hypo{ [\eqref{eq:def:binary_relation/irreflexive}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synneg (\synx \synless \synx) }
+
+      \hypo{ \substack{ [(\syny \synless \synx) \synvee (\syny \syneq \synx)]^v \\ [\synx \synless \syny]^b } }
+      \ellipsis{\( A \)} { \synx \synless \synx }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \synx \syneq \synx }
+
+      \hypo{ \substack{ [(\syny \synless \synx) \synvee (\syny \syneq \synx)]^v \\ [\synx \syneq \syny]^c } }
+      \ellipsis{\( B \)} { \synx \syneq \synx }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \syneq \synx }
+    \end{prooftree}
+  \end{equation*}
+  where \( A \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [(\syny \synless \synx) \synvee (\syny \syneq \synx)]^v }
+
+      \hypo{ [\eqref{eq:def:binary_relation/transitive}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\synx \synless \syny]^b }
+      \hypo{ [\syny \synless \synx]^d }
+      \infer2{ (\synx \synless \syny) \synwedge (\syny \synless \synx) }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \synx \synless \synx }
+
+      \hypo{ [\synx \synless \syny]^b }
+      \hypo{ [\syny \syneq \synx]^e }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synless \synx }
+
+      \infer[left label={\( d, e \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \synless \synx }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  and \( B \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [(\syny \synless \synx) \synvee (\syny \syneq \synx)]^v }
+
+      \hypo{ [\eqref{eq:def:binary_relation/irreflexive}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synneg (\synx \synless \synx) }
+
+      \hypo{ [\synx \syneq \syny]^c }
+      \hypo{ [\syny \synless \synx]^f }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synless \synx }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \synx \syneq \synx }
+
+      \hypo{ [\synx \syneq \syny]^c }
+      \hypo{ [\syny \syneq \synx]^g }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \syneq \synx }
+
+      \infer[left label={\( f, g \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \syneq \synx }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  \SubProof*{Compatibility of \( \synleq \) with \( \synless \)} To show \eqref{eq:def:partially_ordered_set/theory/strict}, we must demonstrate that each side can derive the other.
+
+  In one direction, we derive \( \synx \synless \syny \) from \( (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) \):
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\eqref{eq:thm:partially_ordered_set_theories/strict/compatibility}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [(\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny)]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \synx \synleq \syny }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ (\synx \synless \syny) \synvee (\synx \syneq \syny) }
+
+      \hypo{ [\synx \synless \syny]^b }
+
+      \hypo{ [\synanon]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_right}]{ \synneg (\synx \syneq \syny) }
+      \hypo{ [\synx \syneq \syny]^c }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer1[\ref{inf:def:propositional_natural_deduction/bot/efq}]{ \synx \synless \syny }
+
+      \infer[left label={\( b, c \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synx \synless \syny }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  In the other direction, we derive \( (\synx \synleq \syny) \synwedge \synneg (\synx \syneq \syny) \) from \( \synx \synless \syny \):
+  \small
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\eqref{eq:thm:partially_ordered_set_theories/strict/compatibility}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synanon }
+
+      \hypo{ [\synx \synless \syny]^u }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \synanon }
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_left}]{ \synx \synless \syny }
+
+      \hypo{ [\eqref{eq:def:binary_relation/irreflexive}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synneg (\synx \synless \synx) }
+
+      \hypo{ [\synx \synless \syny]^u }
+      \hypo{ [\synx \syneq \syny]^b }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \synless \synx }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label={\( b \)}]1[\ref{inf:def:propositional_natural_deduction/neg/intro}]{ \synneg (\synx \syneq \syny) }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ (\synx \syneq \syny) \synwedge \synneg (\synx \syneq \syny) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
 \end{proof}
+
+\begin{corollary}\label{thm:strict_order_as_primitive}
+  Given a set \( P \) with an \hyperref[def:binary_relation/irreflexive]{irreflexive} and \hyperref[def:binary_relation/transitive]{transitive} relation \( {<} \), we can define the nonstrict relation \( {\leq} \) via \eqref{eq:thm:partially_ordered_set_theories/strict/compatibility}, and \( (P, \leq) \) will be a \hyperref[def:partially_ordered_set]{partially ordered set} whose strict order coincides with \( {<} \).
+\end{corollary}
+\begin{proof}
+  All the axioms are verified in \cref{thm:partially_ordered_set_theories}.
+\end{proof}
+
+\paragraph{Duality}
+
+\begin{concept}\label{con:duality}
+  A quintessential notion in mathematics is that of \term[en=duality (\cite[159]{Kuyk1977ComplementarityInMathematics})]{duality}. \Textcite[5]{ConwayGuy1998BookOfNumbers} describe it as follows:
+  \begin{displayquote}
+    A concept exhibits \enquote{duality} when it has two aspects or has a \enquote{dual} purpose.
+  \end{displayquote}
+
+  The authors only mention duality while going through the etymology of English words related to the number \( 2 \). A discussion focused on abstract mathematics can be found in \cite[\S III.19]{GowersEtAl2008PrincetonCompanion}, which starts as follows:
+  \begin{displayquote}
+    Duality is an important general theme that has manifestations in almost every area of mathematics. Over and over again, it turns out that one can associate with a given mathematical object a related, \enquote{dual} object that helps one to understand the properties of the object one started with. Despite the importance of duality in mathematics, there is no single definition that covers all instances of the phenomenon.
+  \end{displayquote}
+
+  More formally, we may regard any \hyperref[def:morphism_invertibility/involution]{involution} as a form of duality. Various \hyperref[con:opposite_object]{opposite objects} are described by involutions that invert the operands of a binary operation or relation.
+
+  A duality may fail to be an involution like in the case of a \hyperref[rem:double_dual]{double dual} vector spaces, where \( V \) can be embedded in \( V^{**} \) but the two are not in general isomorphic.
+
+  In some cases such as \fullref{thm:order_duality}, \fullref{thm:lattice_duality} and \fullref{thm:boolean_algebra_duality}, the syntax of the object language allows encoding the duality.
+\end{concept}
+
+\begin{theorem}[Principle of duality for ordered sets]\label{thm:order_duality}\mcite[thm. 1.20]{DaveyPriestley2002LatticeTheory}
+  A generalization of \hyperref[def:elementary_equivalence]{elementary equivalence} holds for a \hyperref[def:preordered_set]{preordered set} and its \hyperref[def:partially_ordered_set/opposite]{opposite}.
+
+  Consider the \hyperref[def:partially_ordered_set/theory]{first-order theory of preordered sets}. Denote by \( \varphi^{\oppos} \) the transformation of the formula \( \varphi \) in which we swap all instances of \( \synleq \) and \( \syngeq \) via \fullref{alg:fol_formula_signature_translation}. In the extended theory with strict inequalities we must also swap \( \synless \) and \( \syngreater \).
+
+  \begin{thmenum}
+    \thmitem{thm:order_duality/assignment} For every preordered set \( (P, \leq) \), every \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( P \) and every formula \( \varphi \), we have
+    \begin{equation*}
+      \Bracks{\varphi}_{(P, \leq)}^v = \Bracks{\varphi^{\oppos}}_{(P, \geq)}^v.
+    \end{equation*}
+
+    \thmitem{thm:order_duality/equisatisfiable} The set \( \Gamma \) of formulas is \hyperref[def:equisatisfiability]{equisatisfiable} with \( \Gamma^{\oppos} \).
+
+    \thmitem{thm:order_duality/tautology} The formula \( \varphi \) is a \hyperref[def:fol_semantics/tautology]{tautology} if and only if \( \varphi^{\oppos} \) is.
+  \end{thmenum}
+\end{theorem}
+\begin{comments}
+  \item Another form of this principle is formalized in \fullref{thm:order_category_isomorphism}.
+
+  \item Variations of this principle include \fullref{thm:lattice_duality} and \fullref{thm:boolean_algebra_duality}.
+\end{comments}
+\begin{proof}
+  The denotations of \( \leq \) and \( \geq \) are swapped along with the corresponding symbols.
+\end{proof}
+
+\begin{remark}\label{rem:duality}
+  We list various manifestations of \hyperref[con:duality]{duality}:
+  \begin{itemize}
+    \item The multitude of \hyperref[con:opposite_object]{opposite objects} listed in \cref{rem:con:opposite_object}.
+
+    \item \Fullref{alg:propositional_formula_dualization} and \fullref{alg:propositional_formula_dualization}.
+
+    \item \hyperref[def:dual_vector_space]{Dual} and \hyperref[rem:double_dual]{double dual} \hyperref[def:vector_space]{vectors spaces}, as well as \hyperref[def:continuous_dual_space]{continuous dual spaces}.
+  \end{itemize}
+\end{remark}
+
+\paragraph{Preordered sets}
+
+\begin{definition}\label{def:preordered_set}\mcite[def. 1.3.1]{Harzheim2005OrderedSets}
+  We call the \hyperref[def:binary_relation]{binary relation} \( \leq \) on a \hyperref[def:set]{set} \( P \) is a \term[bg=преднаредба (\cite[9]{Проданов1982ФункционаленАнализЧаст1}), ru=предпорядок (\cite[def. 3.1]{Гуров2013ТеорияРешёток})]{preorder} if it is \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive}. The pair \( (P, \leq) \) is the called a \term[en=preordered set (\cite[119]{Golan1999Semirings})]{preordered set}.
+\end{definition}
+\begin{comments}
+  \item The precise relation with partially ordered sets is given in \cref{thm:preordered_set_antisymmetry}.
+
+  \item Do do not study preordered sets systematically because many of the concepts commonly introduced for partially ordered sets are ill-behaved. See \cref{ex:def:preordered_set}.
+
+  \item The term \enquote{preorder} (\enquote{\textru{предпорядок}} in Russian) is used in
+  \cite[133]{Bourbaki2004TheoryOfSets},
+  \cite[3]{Grätzer2011LatticeTheory},
+  \cite[\S 5.4.2]{Mimram2020ProgramEqualsProof},
+  \cite[10]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}
+  \cite[def. 3.1]{Гуров2013ТеорияРешёток}  and
+  \cite[66]{БелоусовТкачёв2004ДискретнаяМатематика}.
+
+  Another possibility is \enquote{quasi-order}, used in
+  \cite[20]{Birkhoff1967LatticeTheory} and
+  \cite[445]{Rotman2015AdvancedModernAlgebraPart1}.
+
+  \item This concept is unrelated to pre-order enumeration of \hyperref[def:ordered_tree]{ordered trees} defined in \cref{def:ordered_tree_enumeration}.
+\end{comments}
+
+\begin{proposition}\label{thm:preordered_set_antisymmetry}
+  A \hyperref[def:preordered_set]{preordered set} \( (P, \leq) \) is \hyperref[def:partially_ordered_set]{partially ordered} if and only if there exist \emph{distinct} elements \( x \) and \( y \) of \( P \) such that \( x \leq y \) and \( y \leq x \).
+\end{proposition}
+\begin{proof}
+  This is a restatement of the negation of antisymmetry.
+\end{proof}
+
+\begin{example}\label{ex:def:preordered_set}
+  We list some examples of \hyperref[def:preordered_set]{preordered sets}:
+  \begin{thmenum}
+    \thmitem{def:preordered_set/integers} As shown in \cref{thm:semiring_divisibility_order}, the \hyperref[def:semiring_divisibility]{divisibility relation} in a \hyperref[def:semiring]{semiring} is a \hyperref[def:preordered_set]{preorder}.
+
+    This is trivial to verify on \hyperref[def:integers]{integers}. Every number divides itself, so reflexivity holds, and a multiple of a multiple of \( n \) is itself a multiple of \( n \), so transitivity holds.
+
+    The integers also allow us to verify \cref{thm:preordered_set_antisymmetry} because \( n \mid -n \mid n \), yet \( n \neq -n \).
+
+    This largely stultifies the concept of strict orders because, if \( {<} \) was a strict order based on \( {\mid} \), then transitivity would imply \( n < n \).
+
+    \thmitem{def:preordered_set/formulas} A \hyperref[def:consequence_relation]{consequence relation} \( {\vdash} \) on a set \( S \) is a preorder because of \eqref{eq:def:consequence_relation/reflexivity} and \eqref{eq:def:consequence_relation/transitivity}.
+
+    We will again demonstrate the lack of antisymmetry. For example, \cref{thm:syntactic_minimal_tautologies} demonstrates how, for any \hyperref[def:propositional_formula]{propositional formula} \( \varphi \), the law of non-contradiction
+    \begin{equation*}
+      \synneg (\varphi \synwedge \synneg \varphi)
+    \end{equation*}
+    can be derived without assumptions in the \hyperref[def:propositional_natural_deduction]{minimal natural deduction system}. \Cref{thm:propositional_natural_deduction_tautologies} shows that it must be \hyperref[def:interderivability]{interderivable} with \( \syntop \).
+
+    Therefore, we have
+    \begin{equation*}
+      \syntop \vdash \synneg (\varphi \synwedge \synneg \varphi) \vdash \syntop.
+    \end{equation*}
+
+    A strict entailment relation would make no sense, and other concepts like suprema would lack uniqueness.
+
+    For logical formulas, these issues are mitigated by taking the \hyperref[def:antisymmetric_quotient]{antisymmetric quotient} of \( (\op*{Form}, \vdash) \). The obtained partially ordered set is called a \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} and is studied in \fullref{sec:propositional_completeness}.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:antisymmetric_quotient}\mimprovised
+  Let \( (P, \leq) \) be a \hyperref[def:preordered_set]{preordered set}. Define the relation
+  \begin{equation}\label{eq:def:antisymmetric_quotient}
+    x \sim y \T{if and only if} x \leq y \T{and} y \leq x.
+  \end{equation}
+
+  On the \hyperref[def:equivalence_relation/quotient]{quotient set} \( Q \coloneqq P / {\sim} \), define the relation \( [x] \preceq [y] \) to hold if \( x \leq y \). The pair \( (Q, \preceq) \) is then a \hyperref[def:partially_ordered_set]{partially ordered set}, which we will call the \term{antisymmetric quotient} of \( (P, \leq) \).
+\end{definition}
+\begin{comments}
+  \item The relation \( \sim \) is the intersection of the relation \( \leq \) with its \hyperref[def:binary_relation/converse]{inverse}.
+
+  \item We may prefer, as in the case of \cref{thm:lindenbaum_tarski_theories}, to refer to the projection operator \( \pi: P \to Q \) rather than to quotient sets.
+
+  \item In the language of graph theory, this is expressed as \hyperref[def:directed_graph_condensation]{graph condensation}, where we contract each \hyperref[def:graph_cycle]{cycle} into a single vertex, at which point the graph becomes acyclic.
+\end{comments}
+\begin{defproof}
+  First, we must show that the relation \( \preceq \) is well-defined. Indeed, let \( x \sim x' \) and \( y \sim y' \). If \( x \leq y \), we have \( x' \leq x \leq y \leq y' \), hence \( x' \leq y' \) because of transitivity.
+
+  It is then clear that \( \preceq \) is a partial order because it inherits reflexivity and transitivity from \( \leq \) and antisymmetry is imposed by taking quotient sets --- equality in \( Q \) holds precisely when \( {\sim} \) holds in \( P \).
+
+  Thus, \( (Q, \preceq) \) is indeed a partially ordered set.
+\end{defproof}
+
+\paragraph{Hasse diagrams}
 
 \begin{definition}\label{def:hasse_diagram}\mcite[11]{DaveyPriestley2002LatticeTheory}
   It can be easier to define small finite partially ordered sets by drawing graphs than by enumerating all relation pairs. Let \( (P, \leq) \) be a finite partially ordered set. The relation \( \leq \) may also be regarded as the set of edges of a \hyperref[def:directed_graph]{directed graph}. We will instead consider the \hyperref[def:transitive_reduction]{transitive reduction} \( \red^T(\leq) \).
@@ -64,255 +582,150 @@
 \end{comments}
 
 \begin{example}\label{ex:def:hasse_diagram}
-  Consider the partial order over \( \set{ a, b, c, d, e } \) defined via
-  \begin{equation}\label{eq:ex:def:hasse_diagram/partially ordered set}
-    \underline{a \leq c},\quad \underline{a \leq d},\quad a \leq e,\quad \underline{b \leq d},\quad b \leq e,\quad \underline{d \leq e}.
-  \end{equation}
-
-  The corresponding Hasse diagram includes only the highlighted edges. The rest of the edges can be recovered via transitivity. In this case, the Hasse diagram has edges
-  \begin{equation}\label{eq:ex:def:hasse_diagram/hasse_graph}
-    \set{ a \to c, a \to d, b \to d, d \to e }
-  \end{equation}
-
-  \begin{figure}
-    \centering
-    \includegraphics[page=1]{output/ex__def__hasse_diagram}
-    \caption{A drawing of the Hasse diagram \eqref{eq:ex:def:hasse_diagram/hasse_graph}}
-    \label{fig:ex:def:hasse_diagram}
-  \end{figure}
-\end{example}
-
-\begin{example}\label{ex:preorder_nonuniqueness}
-  Consider the preordered set \( P \) in \cref{fig:ex:preorder_nonuniqueness} in which \( b \leq c \) and \( c \leq b \), but \( b \neq c \). We cannot properly draw a \hyperref[def:hasse_diagram]{Hasse diagram} because we have the restriction that \( c \) is drawn (strictly) higher than \( b \) if \( c > b \) and that \( c \) is drawn lower than \( b \) if \( c < b \). We face a similar problem formally, for example in the definition of \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebras}, where the preorder \( \vdash \) allows \( \varphi \vdash \psi \) and \( \psi \vdash \varphi \), but still \( \varphi \neq \psi \). Thus, we have nonuniqueness --- every tautology is a largest element with respect to \( \vdash \), while it is natural to prefer a unique largest element.
-
-  \begin{figure}
-    \hfill
-    \includegraphics[page=1]{output/ex__preorder_nonuniqueness}
-    \hfill
-    \includegraphics[page=2]{output/ex__preorder_nonuniqueness}
-    \hfill\hfill
-    \caption{A preordered set and its induced partially ordered set.}
-    \label{fig:ex:preorder_nonuniqueness}
-  \end{figure}
-
-  This leads to \cref{def:antisymmetric_quotient}, where we factor \( P \) by an equivalence relation and obtain a partially ordered set. In the language of graph theory, if we have \hyperref[def:graph_cycle]{cycles}, we can contract each directed cycle into a single vertex, at which point the graph becomes acyclic. This corresponds to \hyperref[def:directed_graph_condensation]{graph condensation}.
-\end{example}
-
-\begin{definition}\label{def:antisymmetric_quotient}\mimprovised
-  Let \( (P, \leq) \) be a preordered set. Define the relation \( x \sim y \) to hold if \( x \leq y \) and \( y \leq x \).
-
-  On the \hyperref[def:equivalence_relation/quotient]{quotient set} \( Q \coloneqq P / {\sim} \), define the relation \( [x] \preceq [y] \) to hold if \( x \leq y \).
-
-  The pair \( (Q, \preceq) \) is then a \hyperref[def:partially_ordered_set]{partially ordered set}, which we will call the \term{antisymmetric quotient} of \( (P, \leq) \).
-\end{definition}
-\begin{comments}
-  \item The relation \( \sim \) is the intersection of the relation \( \leq \) with its \hyperref[def:binary_relation/converse]{inverse}.
-  \item We may prefer, as in the case of \cref{thm:lindenbaum_tarski_theories}, to refer to the projection operator \( \pi: P \to Q \) rather than to quotient sets.
-\end{comments}
-\begin{defproof}
-  First, we must show that the relation \( \preceq \) is well-defined. Indeed, let \( x \sim x' \) and \( y \sim y' \). If \( x \leq y \), we have \( x' \leq x \leq y \leq y' \), hence \( x' \leq y' \) because of transitivity.
-
-  It is then clear that \( \preceq \) is a partial order because it inherits reflexivity and transitivity from \( \leq \) and antisymmetry is imposed by taking quotient sets --- equality in \( Q \) holds precisely when \( {\sim} \) holds in \( P \).
-
-  Thus, \( (Q, \preceq) \) is indeed a partially ordered set.
-\end{defproof}
-
-\paragraph{Intervals}
-
-\begin{definition}\label{def:order_interval}\mcite[31]{Harzheim2005OrderedSets}
-  Fix a \hyperref[def:partially_ordered_set]{partially ordered set} \( (P, \leq) \). For any two elements \( a \leq b \) we define the following related (ordered) subsets:
-
+  We list examples of \hyperref[def:hasse_diagram]{Hasse diagrams}
   \begin{thmenum}
-    \thmitem{def:order_interval/unbounded} First, we define the \term{open initial segment} and \term{open final segment} and as
-    \begin{equation*}
-      \begin{aligned}
-        P_{>a} \coloneqq \set{ x \in P \given b > a },
-        \\
-        P_{<b} \coloneqq \set{ x \in P \given x < b }.
-      \end{aligned}
-    \end{equation*}
-
-    Similarly, we define the corresponding \term{closed segments} as
-    \begin{equation*}
-      \begin{aligned}
-        P_{\geq a} \coloneqq \set{ x \in P \given x \geq a },
-        \\
-        P_{\leq b} \coloneqq \set{ x \in P \given x \leq b }.
-      \end{aligned}
-    \end{equation*}
-
-    \thmitem{def:order_interval/closed} Next, we define the \term[bg=затворен интервал (\cite[39]{Тагамлицки1971ДиференциалноСмятане}), ru=отрезок (\cite[82]{Проскуряков1951ТеоретическиеОсновыАрифметики}); отрезок/сегмент (\cite[def. 6]{Александров1977ОбщаяТопология})]{closed interval} with endpoints \( a \) and \( b \) as
-    \begin{equation*}
-      [a, b] \coloneqq \set{ x \in P \given a \leq x \leq b } = P_{\geq a} \cap P_{\leq b}.
-    \end{equation*}
-
-    \thmitem{def:order_interval/open} The \term[bg=отворен интервал (\cite[39]{Тагамлицки1971ДиференциалноСмятане}), ru=интервал (\cite[82]{Проскуряков1951ТеоретическиеОсновыАрифметики}); интервал/промежуток (\cite[def. 6]{Александров1977ОбщаяТопология})]{open interval} with endpoints \( a \) and \( b \) is
-    \begin{equation*}
-      (a, b) \coloneqq \set{ x \in P \given a < x < b } = P_{> a} \cap P_{< b}.
-    \end{equation*}
-
-    \thmitem{def:order_interval/half_open} The \term[bg=полузатворен интервал (\cite[39]{Тагамлицки1971ДиференциалноСмятане}), ru=полуинтервал (\cite[82]{Проскуряков1951ТеоретическиеОсновыАрифметики})]{half-open intervals} are
-    \begin{equation*}
-      \begin{aligned}
-        (a, b] \coloneqq \set{ x \in P \given a < x \leq b } = P_{> a} \cap P_{\leq b},
-        \\
-        [a, b) \coloneqq \set{ x \in P \given a \leq x < b } = P_{\geq a} \cap P_{< b}.
-      \end{aligned}
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item We implicitly assume that \( a \leq b \), but this is not strictly necessary --- \( [a, b] \) is an empty set otherwise.
-
-  \item In the context of \hyperref[def:extended_real_numbers]{extended real numbers}, we use \( -\infty \) and \( \infty \) as interval endpoints. If the interval is open at \( -\infty \) and \( \infty \), as in \( (-\infty, b] = \BbbR_{\leq b} \) or \( [a, \infty) = \BbbR_{\geq a} \), we obtain sets containing only real numbers.
-
-  \item Another notation for open intervals is \enquote{\( ]a, b[ \)}. It is used by
-  \textcite[147]{Bourbaki2004TheoryOfSets},
-  \textcite[def. 2.3]{EkelandTemam1976ConvexAnalysis} and
-  \textcite[51]{Зорич2019АнализЧасть1}.
-
-  We prefer \enquote{\( (a, b) \)}, which is in turn used by most of our sources ---
-  \textcite[9]{Lorentz1966ApproximationOfFunctions},
-  \textcite[31]{Rudin1976AnalysisPrinciples},
-  \textcite[10]{Engelking1989GeneralTopology},
-  \textcite[269]{Jacobson1985BasicAlgebraI},
-  \textcite[157]{Grätzer2011LatticeTheory},
-  \textcite[31]{Harzheim2005OrderedSets},
-  \textcite[\S 3.3.14]{Schechter1997AnalysisHandbook}
-  \textcite[11]{Folland1999RealAnalysis}
-  \textcite[25]{МагарилИльяевТихомиров2002ВыпуклыйАнализ},
-  \textcite[18]{ИльинСадовничийСендов1985АнализТом1},
-  \textcite[\S 22.2]{Тыртышников2007ЛинейнаяАлгебра},
-  \textcite[12]{Александров1977ОбщаяТопология},
-  \textcite[112]{Винберг2014КурсАлгебры},
-  \textcite[10]{БелоусовТкачёв2004ДискретнаяМатематика},
-  \textcite[23]{Гуров2013ТеорияРешёток},
-  \textcite[7]{Боянов2008ЧислениМетоди},
-  \textcite[225]{ГеновМиховскиМоллов1991Алгебра} and
-  \textcite[39]{Тагамлицки1971ДиференциалноСмятане}.
-
-  \textcite[36]{Knuth1997ArtVol1} uses \enquote{\( (a..b) \)}.
-\end{comments}
-
-\paragraph{Chains}
-
-\begin{definition}\label{def:partial_order_chain}
-  Fix a partially ordered set \( (P, \leq) \) and a subset \( C \) of \( P \).
-
-  \begin{thmenum}
-    \thmitem{def:partial_order_chain/chain}\mcite[4]{Grätzer2011LatticeTheory} We say that \( C \) is a \term[bg=верига (\cite[10]{Проданов1982ФункционаленАнализЧаст1}), ru=цепь (\cite[def. 3.4]{Гуров2013ТеорияРешёток})]{chain} if every two elements of \( C \) are comparable.
-
-    \thmitem{def:partial_order_chain/length}\mimprovised We define the \term[ru=длина (\cite[83]{Гуров2013ТеорияРешёток}), en=length (\cite[4]{Grätzer2011LatticeTheory})]{length} \( \len(C) \) of a \emph{nonempty} chain \( C \) as the unique \hyperref[def:cardinal]{cardinal} satisfying \( {\len(C) + 1 = \card(A)} \), that is, \( \len(C) = \card(C) - 1 \) for finite chains and \( \len(C) = \card(C) \) otherwise.
-
-    \thmitem{def:partial_order_chain/height}\mimprovised We define the \term[ru=высота (\cite[83]{Гуров2013ТеорияРешёток}), en=height (\cite[24]{Harzheim2005OrderedSets})]{height} of \( P \) as the supremum among the lengths of all nonempty chains in \( P \).
-
-    If \( P \) has no nonempty chains, the supremum is the bottom element of the natural numbers, zero.
-
-    \thmitem{def:partial_order_chain/antichain}\mcite[4]{Grätzer2011LatticeTheory} We say that \( C \) is an \term[ru=антицепь (\cite[78]{Гуров2013ТеорияРешёток})]{antichain} if no two elements of \( C \) are comparable.
-
-    \thmitem{def:partial_order_chain/width}\mcite[57]{Harzheim2005OrderedSets} We define the \term[ru=ширина (\cite[83]{Гуров2013ТеорияРешёток})]{width} of \( P \) as the supremum among the cardinalities of all antichains.
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item The definitions for length, width and height are defined for finite sets of elements in \cite[4]{Grätzer2011LatticeTheory}. We extend the definition to infinite partially ordered sets.
-  \item Unlike for the height, for the width we do not subtract \( 1 \) from the cardinality of antichains.
-  \item \Cref{thm:union_of_set_of_cardinals} implies that the height and width are well-defined cardinals.
-  \item The concepts of width and height become apparent in the context of Hasse diagrams --- see \cref{ex:def:partial_order_chain}.
-  \item \Textcite[5]{Birkhoff1967LatticeTheory} and \textcite[4]{Grätzer2011LatticeTheory} use \enquote{length} for what we call \enquote{height}, while \textcite[24]{Harzheim2005OrderedSets} and \textcite[83]{Гуров2013ТеорияРешёток} prefer our terminology.
-  \item \Textcite[19]{Harzheim2005OrderedSets} defines the length of a chain as the cardinality itself, while \textcite[5]{Birkhoff1967LatticeTheory}, \textcite[4]{Grätzer2011LatticeTheory}, \textcite[def. 2.37]{DaveyPriestley2002LatticeTheory} and \textcite[83]{Гуров2013ТеорияРешёток} subtract one. We prefer the latter convention.
-\end{comments}
-
-\begin{example}\label{ex:def:partial_order_chain}
-  We list some examples of \hyperref[def:partial_order_chain]{chains and antichains}:
-  \begin{thmenum}
-    \thmitem{ex:def:partial_order_chain/natural_numbers} The set \( \BbbN \) of \hyperref[def:natural_numbers]{natural numbers}, as well as any subset of \( \BbbN \), is a chain.
-
-    The length of the initial segment \( \BbbN_{\leq n} = \set{ 0, 1, \ldots, n } \) is \( n \) because it has \( n + 1 \) elements. The length of \( \BbbN \) itself is \( \aleph_0 \).
-
-    Hence, the height of \( \BbbN \) is \( \aleph_0 \) and the height of any individual number \( n \) is \( n \) itself.
-
-    The width of \( \BbbN \) (or, more generally, any \hyperref[def:totally_ordered_set]{totally ordered set}) is \( 1 \).
-
-    \thmitem{ex:def:partial_order_chain/binary_power_set} Consider the \hyperref[def:basic_set_operations/power_set]{power set} of the two-element set \( \set{ a, b } \) depicted in \cref{fig:ex:def:partial_order_chain/binary_power_set}.
-
-    \begin{figure}
-      \hfill
-      \includegraphics[page=1]{output/ex__def__partial_order_chain__binary_power_set}
-      \hfill\hfill
-      \caption{A Hasse diagram of the power set of a two-element set.}
-      \label{fig:ex:def:partial_order_chain/binary_power_set}
-    \end{figure}
-
-    Only the sets \( \set{ a } \) and \( \set{ b } \) are incomparable, thus the width of the power set is \( 2 \).
-
-    On the other hand, the maximal chain \( \varnothing \subseteq \set{ a } \subseteq \set{ a, b } \) has three elements, hence is of length two. Thus, the height of the power set is \( 2 \).
-
-    \thmitem{ex:def:partial_order_chain/ternary_power_set} Consider the \hyperref[def:basic_set_operations/power_set]{power set} of \( \set{ a, b, c } \) depicted in \cref{fig:ex:def:partial_order_chain/ternary_power_set}.
-
-    \begin{figure}
-      \hfill
-      \includegraphics[page=1]{output/ex__def__partial_order_chain__ternary_power_set}
-      \hfill\hfill
-      \caption{A Hasse diagram of the power set of a three-element set.}
-      \label{fig:ex:def:partial_order_chain/ternary_power_set}
-    \end{figure}
-
-    Like in \cref{ex:def:partial_order_chain/binary_power_set}, we can find several maximal antichains:
-    \begin{itemize}
-      \item The singleton sets \( \set{ a } \), \( \set{ b } \) and \( \set{ c } \).
-      \item The binary sets \( \set{ a, b } \), \( \set{ a, c } \) and \( \set{ b, c } \).
-    \end{itemize}
-
-    Both have cardinality three, hence the width of the power set is \( 3 \).
-
-    Maximal chains have four elements, so the height of the power set is \( 3 \).
-
-    \thmitem{ex:def:partial_order_chain/quad_power_set} The pattern from \cref{ex:def:partial_order_chain/binary_power_set} and \cref{ex:def:partial_order_chain/ternary_power_set} breaks when we consider four elements.
-
-    Indeed, for the power set of \( \set{ a, b, c, d } \), the following is an antichain of six elements:
-    \begin{equation}\label{eq:ex:def:partial_order_chain/quad_power_set/antichain}
-      \set{ a, b }, \set{ a, c }, \set{ a, d }, \set{ b, c }, \set{ b, d }, \set{ c, d }.
+    \thmitem{ex:def:hasse_diagram/partial_order} Consider the partial order over \( \set{ a, b, c, d, e } \) defined via
+    \begin{equation}\label{eq:ex:def:hasse_diagram/partially ordered set}
+      \underline{a \leq c},\quad \underline{a \leq d},\quad a \leq e,\quad \underline{b \leq d},\quad b \leq e,\quad \underline{d \leq e}.
     \end{equation}
+
+    The corresponding Hasse diagram includes only the highlighted edges. The rest of the edges can be recovered via transitivity. In this case, the Hasse diagram has edges
+    \begin{equation}\label{eq:ex:def:hasse_diagram/hasse_graph}
+      \set{ a \to c, a \to d, b \to d, d \to e }
+    \end{equation}
+
+    \begin{figure}
+      \centering
+      \includegraphics[page=1]{output/ex__def__hasse_diagram}
+      \caption{A drawing of the Hasse diagram \eqref{eq:ex:def:hasse_diagram/hasse_graph}}
+      \label{fig:ex:def:hasse_diagram}
+    \end{figure}
+
+    \thmitem{ex:def:hasse_diagram/preorder} Consider the preordered set \( P \) in \cref{fig:ex:hasse_diagram_nonuniqueness} in which \( b \leq c \) and \( c \leq b \), but \( b \neq c \). We cannot properly draw a \hyperref[def:hasse_diagram]{Hasse diagram} because we have the restriction that \( c \) is drawn (strictly) higher than \( b \) if \( c > b \) and that \( c \) is drawn lower than \( b \) if \( c < b \).
+
+    \begin{figure}
+      \hfill
+      \includegraphics[page=2]{output/ex__def__hasse_diagram}
+      \hfill
+      \includegraphics[page=3]{output/ex__def__hasse_diagram}
+      \hfill\hfill
+      \caption{A preordered set and its antisymmetric quotient.}
+      \label{fig:ex:hasse_diagram_nonuniqueness}
+    \end{figure}
   \end{thmenum}
 \end{example}
 
-\begin{proposition}\label{thm:def:partial_order_chain}
-  \hyperref[thm:def:partial_order_chain]{Chains and antichains} have the following basic properties:
+\paragraph{Functions between ordered sets}
+
+\begin{definition}\label{def:order_function}\mimprovised
+  Let \( (P, \leq_P) \) and \( (Q, \leq_Q) \) be \hyperref[def:partially_ordered_set]{partially order sets}. We will discuss some notions related to \hyperref[def:partially_ordered_set]{order homomorphisms}.
+
   \begin{thmenum}
-    \thmitem{thm:def:partial_order_chain/image_of_chain} Let \( f: P \to Q \) be an order-preserving map between partially ordered sets. If \( A \) is a chain in \( P \), then its image \( f[A] \) is a chain in \( Q \).
+    \thmitem{def:order_function/preserving}\mimprovised We call the function \( f: P \to Q \) \term[en=order-preserving (map) (\cite[def. 1.34]{DaveyPriestley2002LatticeTheory})]{order-preserving} if
+    \begin{equation}\label{eq:def:order_function/preserving}
+      x \leq_P y \T{implies} f(x) \leq_Q f(y).
+    \end{equation}
 
-    \thmitem{thm:def:partial_order_chain/preimage_of_antichain} Again, let \( f: P \to Q \) be an order-preserving map between partially ordered sets. If the image \( f[A] \) of a subset \( A \) of \( P \) is an antichain, then \( A \) itself is an antichain.
+    If the inequalities are strict, i.e. if
+    \begin{equation}\label{eq:def:order_function/preserving/strict}
+      x <_P y \T{implies} f(x) <_Q f(y),
+    \end{equation}
+    we call \( f \) \term{strictly order-preserving}.
 
-    \thmitem{thm:def:partial_order_chain/unbounded} A chain is \hyperref[def:extremal_points/bounds]{unbounded from above} (resp. below) if, for every element, it contains a strictly larger (resp. smaller) element.
+    Nonstrict order-preserving maps do not rely on antisymmetry and thus can be generalized to preordered sets.
 
+    It will sometimes be convenient to order-preserving maps \term[ru=возрастающая (функция) (\cite[\S 47]{Фихтенгольц1968ОсновыАнализаТом1}), en=ascending (mapping) (\cite[def. 1.9.2]{Harzheim2005OrderedSets})]{ascending} (resp. \term{nondescending}) or \term[en=increasing (mapping) (\cite[def. 1.9.2]{Harzheim2005OrderedSets})]{increasing} (resp. \term[ru=неубывающая (функция) (\cite[\S 47]{Фихтенгольц1968ОсновыАнализаТом1})]{nondecreasing}).
+
+    \thmitem{def:order_function/reversing} Dually, we call \( f: P \to Q \) \term[en=order-reversing map (\cite[\S 3.17]{Schechter1997AnalysisHandbook})]{order-reversing} if
+    \begin{equation}\label{eq:def:order_function/reversing}
+      x \leq_P y \T{implies} f(x) \geq_Q f(y).
+    \end{equation}
+    and or \term{strictly order-reversing} if
+    \begin{equation}\label{eq:def:order_function/reversing/strict}
+      x <_P y \T{implies} f(x) >_Q f(y).
+    \end{equation}
+
+    It will sometimes be convenient to order-reversing maps \term[ru=убывающая (функция) (\cite[\S 47]{Фихтенгольц1968ОсновыАнализаТом1}), en=descending (mapping) (\cite[def. 1.9.2]{Harzheim2005OrderedSets})]{descending} (resp. \term{nonascending}) or \term[en=decreasing (mapping) (\cite[def. 1.9.2]{Harzheim2005OrderedSets})]{decreasing} (resp. \term[ru=невозрастающая (функция) (\cite[\S 47]{Фихтенгольц1968ОсновыАнализаТом1})]{nonincreasing}).
+
+    \thmitem{def:order_function/monotone}\mcite[def. 1]{Bourbaki2004TheoryOfSets} In some cases like \fullref{ch:real_analysis} or \fullref{ch:measure_theory}, we will collectively refer to either order-preserving or order-reversing maps as \term{monotone}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Nonstrict order-preserving maps are used extensively in the theory of \hyperref[sec:partially_ordered_sets]{partially ordered sets}, in particular in \hyperref[sec:lattices]{lattice theory}, while strict order-preserving maps are used in the theory of \hyperref[sec:partially_ordered_sets]{totally ordered sets}, in particular for \hyperref[sec:ordinals]{ordinals}.
+
+  \item An alternative term for order-preserving maps is \enquote{isotone}; it is preferred in
+  \cite[2]{Birkhoff1967LatticeTheory},
+  \cite[30]{Grätzer2011LatticeTheory},
+  \cite[def. 1.9.2]{Harzheim2005OrderedSets},
+  \cite[def. 3.9]{Гуров2013ТеорияРешёток} (as \enquote{\textru{изотонное изображение}}).
+
+  For order-reversing maps, the equivalent is \enquote{antitone}; it is used in \cite[30]{Grätzer2011LatticeTheory}. In \cite[2]{Birkhoff1967LatticeTheory} \enquote{antitone} is instead used for order-reversing isomorphisms.
+\end{comments}
+
+\begin{remark}\label{rem:monotone_function_terminology}
+  In elementary real analysis, a \enquote{monotone function} is either an increasing or decreasing real-valued function. For example, this is defined explicitly in
+  \cite[12]{Folland1999RealAnalysis},
+  \cite[def. 9.8.1]{Tao2022AnalysisI},
+  \cite[\S 47]{Фихтенгольц1968ОсновыАнализаТом1},
+  \cite[192]{Натансон1974ВещественныйАнализ},
+  \cite[126]{Зорич2019АнализЧасть1} and
+  \cite[199]{Тагамлицки1971ДиференциалноСмятане}.
+
+  In more abstract real analysis, monotonically increasing functions are generalized to \hyperref[def:banach_space]{Banach spaces} and called simply \enquote{monotone operators}; see \cref{def:banach_space_monotone_operator}.
+
+  Other authors call arbitrary \hyperref[def:order_function/preserving]{order-preserving} (but not order-reversing) functions \enquote{monotone}. This includes
+  \cite[30]{Grätzer2011LatticeTheory},
+  \cite[def. 1.34(i)]{DaveyPriestley2002LatticeTheory},
+  \cite[6]{Aigner1997CombinatorialTheory}
+\end{remark}
+
+\begin{proposition}\label{thm:def:order_function}
+  The functions between ordered sets discussed in \cref{def:order_function} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:order_function/injective_implies_strict} Every \hyperref[def:function_invertibility/injective]{injective} order-preserving map is strict.
+
+    The converse holds for totally ordered sets --- see \cref{thm:def:totally_ordered_set/embedding_iff_strict}.
+
+    \thmitem{thm:def:partially_ordered_set/morphism_is_reflecting} An injective function between (pre)ordered sets is a \hyperref[def:fol_embedding]{first-order embedding} if and only if it is both \hyperref[def:order_function/preserving]{order-preserving} and \hyperref[def:order_function/preserving]{order-reflecting}.
+
+    \thmitem{thm:def:order_function/comparables_reflect_inequalities} For any order-preserving map \( f: P \to Q \), if \( x \) and \( y \) are comparable elements, then \( f(x) < f(y) \) implies \( x < y \).
   \end{thmenum}
 \end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:partial_order_chain/image_of_chain} Fix two elements \( x \) and \( y \) in \( f[A] \). Let \( a \) and \( b \) be elements of \( P \) such that \( f(a) = x \) and \( f(b) = y \). Then \( a \leq b \) implies \( f(a) \leq f(b) \) and \( a > b \) implies \( f(a) \geq f(b) \). Hence, \( x \) and \( y \) are comparable, and since they were arbitrary, we conclude that \( f[A] \) is a chain.
+\begin{defproof}
+  \SubProofOf{thm:def:order_function/injective_implies_strict} Let \( f: P \to Q \) be an injective order-preserving map.
 
-  \SubProofOf{thm:def:partial_order_chain/preimage_of_antichain} Follows from \cref{def:partially_ordered_set/comparables_reflect_inequalities}.
+  Let \( x <_P y \) for some \( x \) and \( y \) from \( P \). Since \( f \) is order-preserving, we have \( f(x) \leq_Q f(y) \). Since it is also injective, \( f(x) = f(y) \) implies \( x = y \), hence it remains for \( f(x) <_Q f(y) \) to hold.
 
-  \SubProofOf{thm:def:partial_order_chain/unbounded} Fix a chain \( C \) in a partially ordered set \( (P, \leq) \).
+  Generalizing on \( x \) and \( y \), we conclude that \( f \) is strict.
 
-  Expanding the definition \cref{def:extremal_points/bounds} of upper bound, we conclude that
-  \begin{displayquote}
-    \( C \) is unbounded if and only if there does not exist an element \( x \in C \) such that, for every \( y \in C \), we have \( y \leq x \).
-  \end{displayquote}
+  \SubProofOf{thm:def:partially_ordered_set/morphism_is_reflecting} Let \( f: P \to Q \) be an injective function between preordered sets.
 
-  The consequent of the above statement has a negation in front of its outermost quantifier. \Cref{thm:fol_quantifier_duality} justifies moving the negation inwards to obtain
-  \begin{displayquote}
-    \( C \) is unbounded if and only if, for every \( x \in C \), there exists some \( y \in C \) such that \( y \leq x \) does not hold.
-  \end{displayquote}
+  \SufficiencySubProof* Suppose that \( f \) is an embedding, that is, an injective order-preserving map whose inverse is order-preserving.
 
-  Taking into account that every pair of elements in \( C \) is comparable, \( y \leq x \) does not hold if and only if \( y > x \) holds. Then
-  \begin{displayquote}
-    \( C \) is unbounded if and only if, for every \( x \in C \), there exist \( y \in C \) such that \( y > x \).
-  \end{displayquote}
+  If \( f(x) \leq_Q f(y) \), then
+  \begin{equation*}
+    x = f^{-1}(f(x)) \leq_P f^{-1}(f(y)) = y.
+  \end{equation*}
 
-  The case of lower bounds is analogous.
-\end{proof}
+  We conclude that \( f \) is order-reflecting.
 
-\begin{definition}\label{def:partial_order_covering}\mcite[11]{DaveyPriestley2002LatticeTheory}
+  \NecessitySubProof* Suppose that \( f \) is both order-preserving and order-reflecting.
+
+  If \( f(x) \leq_Q f(y) \), then
+  \begin{equation*}
+    f^{-1}(f(x)) = x \leq_P y = f^{-1}(f(y)).
+  \end{equation*}
+
+  We conclude that \( f^{-1} \) is order-preserving.
+
+  \SubProofOf{thm:def:order_function/comparables_reflect_inequalities} Suppose that \( x \) and \( y \) are comparable and let \( f(x) <_Q f(y) \).
+
+  If \( x \geq y \), then \( y \leq x \) and thus \( f(y) \leq f(x) < f(y) \), which contradicts irreflexivity. It remains for \( x < y \) to hold.
+\end{defproof}
+
+\paragraph{Atoms}
+
+\begin{definition}\label{def:partial_order_covering}\mcite[\S 1.14]{DaveyPriestley2002LatticeTheory}
   In a \hyperref[def:partially_ordered_set]{partially ordered set} \( (P, \leq) \), we say that the element \( y \) \term{covers} \( x \) if \( x < y \) and there is no element \( z \) such that \( x < z < y \).
 \end{definition}
 
@@ -322,28 +735,37 @@
   Dually, if \( P \) has a top element \( \top \), we call \( x \) a \term{coatom} if \( \top \) covers \( x \).
 \end{definition}
 \begin{comments}
-  \item The definition is based on \cite[113]{DaveyPriestley2002LatticeTheory}, where atoms are defined in lattices. We additionally define coatoms.
+  \item The definition is based on \cite[113]{DaveyPriestley2002LatticeTheory}, where atoms are defined in lattices. We generalize this and additionally define coatoms.
 \end{comments}
 
 \begin{proposition}\label{thm:atoms_are_incomparable}
   Distinct \hyperref[def:partial_order_atom]{atoms} are incomparable.
 \end{proposition}
 \begin{proof}
-  If \( x \leq y \) are atoms, then in order for \( \bot \leq x \leq y \) to be a chain of length \( 1 \), \( x \) and \( y \) must be equal.
+  If \( x \) and \( y \) are distinct atoms, they are not comparable --- \( x < y \) implies that \( \bot < x < y \), which contradicts the assumption that \( y \) covers \( \bot \).
 \end{proof}
 
-\paragraph{Lexicographic order}
+\paragraph{Cartesian products of ordered sets}
+
+\begin{definition}\label{def:product_order}\mcite[def. 4.1.6]{Harzheim2005OrderedSets}
+  The \hyperref[def:fol_direct_product]{first-order direct product} of the family \( \seq{ (P_k, \leq_k) }_{k \in \mscrK} \) of \hyperref[def:partially_ordered_set]{partially ordered sets} is itself a partially ordered set whose order is
+  \begin{equation*}
+    \seq{ x_k }_{k \in \mscrK} \leq \seq{ y_k }_{k \in \mscrK} \T{if and only if} \qforall* {k \in \mscrK} {(x_k \leq_k x_k)}.
+  \end{equation*}
+
+  We call \( {\leq} \) the \term{product order} in \( \prod_{k \in \mscrK} P_k \).
+\end{definition}
 
 \begin{definition}\label{def:lexicographic_order}\mimprovised
   Let \( (P, \leq_P) \) and \( (Q, \leq_Q) \) be partially ordered sets.
 
   We define the \term[en=lexicographic order (\cite[18]{DaveyPriestley2002LatticeTheory}), ru=лексикографический (порядок) (\cite[99]{Гуров2013ТеорияРешёток})]{lexicographic order} on \( P \times Q \) as
   \begin{equation}\label{eq:def:lexicographic_order}
-    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace \parens[\big]{ a <_P c \T{or} \parens[\big]{ a = c \T{and} b <_Q d } }
+    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace (a <_P c \T{or} (a = c \T{and} b <_Q d))
   \end{equation}
   and the \term{reverse lexicographic order} as
   \begin{equation}\label{eq:def:lexicographic_order/reverse}
-    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace \parens[\big]{ b <_Q d \T{or} \parens[\big]{ b = d \T{and} a <_P c } }.
+    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace (b <_Q d \T{or} (b = d \T{and} a <_P c)).
   \end{equation}
 \end{definition}
 \begin{comments}
@@ -380,15 +802,15 @@
 
     \thmitem{ex:def:lexicographic_order/heterogenous_words} Real-world dictionaries list words with different numbers of letters. It is not clear how to compare \enquote{car} to \enquote{carboy}.
 
-    We can add a sentinel symbol \( \anon* \) to the English alphabet \( A \) to denote empty spaces. Then \enquote{car} in \( A^6 \) becomes \enquote{car\( \anon* \anon* \anon* \)}. Other situations like \cref{ex:def:lexicographic_order/natural_numbers} may require prepending \( \anon* \) rather than appending it.
+    We can add a sentinel symbol like \enquote{\( \cdot \)} to the English alphabet \( A \) to denote empty spaces. Then \enquote{car} in \( A^6 \) becomes \enquote{car\( \cdot \cdot \cdot \)}. Other situations like \cref{ex:def:lexicographic_order/natural_numbers} may require prepending \( \cdot \) rather than appending it.
 
-    Now, if we specify how \( \anon* \) should compare to the letters, we can use lexicographic ordering to compare the two words. For example, making \( \anon* \) the bottom of the alphabet will make \enquote{car} precede \enquote{carboy}, while making it the top would do the converse.
+    Now, if we specify how \( \cdot \) should compare to the letters, we can use lexicographic ordering to compare the two words. For example, making \( \cdot \) the bottom of the alphabet will make \enquote{car} precede \enquote{carboy}, while making it the top would do the converse.
 
     Note that this is only a problem if one word is a prefix of another. We can easily conclude that \enquote{apple} is smaller than \enquote{apricot} because the third letter \( p \) is smaller than \( r \).
 
     \thmitem{ex:def:lexicographic_order/natural_numbers} Consider the language of natural numbers in decimal notation from \cref{def:positional_number_system/decimal}. Ordering single-digit strings is trivial, but ordering multi-digit numeric strings requires using lexicographic ordering.
 
-    Furthermore, even though it is clear that \( \syn1 \syn0 < \syn1 \syn1 \), handling numeric strings of differing lengths requires prepending a sentinel symbol \( \anon* \) that is less than any numeral. Then we have \( \anon* \syn9 < \syn1 \syn0 \), which corresponds to the natural number ordering discussed in \cref{def:peano_arithmetic_ordering}.
+    Furthermore, even though it is clear that \( \syn1 \syn0 < \syn1 \syn1 \), handling numeric strings of differing lengths requires prepending a sentinel symbol \( \synmult \) that is less than any numeral. Then we have \( \synmult \syn9 < \syn1 \syn0 \), which corresponds to the natural number ordering discussed in \cref{def:peano_arithmetic_ordering}.
 
     \thmitem{ex:def:lexicographic_order/rectangle} A slightly more relevant example for mathematics is the lexicographic ordering
     \begin{equation*}
@@ -401,277 +823,10 @@
 
     \thmitem{ex:def:lexicographic_order/triangle} For the sides of a \hyperref[def:triangle]{triangle}, we have \( AB < AC < BC \) for both orderings.
 
-    \thmitem{ex:def:lexicographic_order/antichain} The antichain \eqref{eq:ex:def:partial_order_chain/quad_power_set/antichain} is ordered with respect to the lexicographic ordering on the Cartesian square of \( \set{ a, b, c, d } \).
+    \thmitem{ex:def:lexicographic_order/antichain} The antichain \eqref{eq:ex:def:partial_order_connectedness/quad_power_set/antichain} is ordered with respect to the lexicographic ordering on the Cartesian square of \( \set{ a, b, c, d } \).
 
     \thmitem{ex:def:lexicographic_order/graph} The edges of the graph in \eqref{eq:fig:def:directed_multigraph} are numbered in lexicographic order, which also happens to be the reverse lexicographic order.
 
-    \thmitem{ex:def:lexicographic_order/ordinals} \Cref{thm:ordinal_addition_disjoin_union} and \cref{thm:ordinal_multiplication_cartesian_product} contain more interesting applications of lexicographic orders.
+    \thmitem{ex:def:lexicographic_order/ordinals} For \hyperref[def:ordinal_arithmetic]{ordinal arithmetic}, \Cref{thm:ordinal_addition_disjoin_union} and \cref{thm:ordinal_multiplication_cartesian_product} contain more interesting applications of lexicographic orders.
   \end{thmenum}
 \end{example}
-
-\paragraph{Chain conditions}
-
-\begin{definition}\label{def:stabilizing_sequence}\mimprovised
-  Consider the \hyperref[def:order_function/preserving]{ascending sequence}
-  \begin{equation*}
-    x_1 \leq x_2 \leq x_3 \leq \cdots
-  \end{equation*}
-
-  If there exists an index \( n \) such that \( x_k = x_n \) whenever \( k > n \), we say that the chain \term[bg=стабилизира (\cite[41]{КоцевСидеров2016КомутативнаАлгебра}), ru=стабилизируется (\cite[52]{Яблонский2003ДискретнаяМатематика}), en=stabilizes (\cite[244]{Aluffi2009Algebra})]{stabilizes} at \( n \).
-\end{definition}
-\begin{comments}
-  \item Of course, descending sequences can also stabilize.
-\end{comments}
-
-\begin{definition}\label{def:chain_condition}
-  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} satisfies the \term{ascending chain condition} (resp. \term{descending chain condition}) if any of the following equivalent conditions hold:
-  \begin{thmenum}
-    \thmitem{def:chain_condition/maximal}\mcite[180]{Birkhoff1967LatticeTheory} Every nonempty subset has a \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal} (resp. minimal) element.
-
-    \thmitem{def:chain_condition/stabilization}\mcite[51]{DaveyPriestley2002LatticeTheory} Every nonstrict ascending (resp. descending) sequence \hyperref[def:stabilizing_sequence]{stabilizes}.
-
-    \thmitem{def:chain_condition/infinite} There exists no strictly ascending (resp. descending) sequence.
-
-    \thmitem{def:chain_condition/unbounded} There exists no \hyperref[def:extremal_points/bounds]{unbounded from above} (resp. from below) \hyperref[def:partial_order_chain]{chain}.
-  \end{thmenum}
-\end{definition}
-\begin{defproof}
-  We will restrict ourselves to ascending sequences, maximal elements and upper bounds.
-
-  \ImplicationSubProof{def:chain_condition/maximal}{def:chain_condition/stabilization} Suppose that every subset has a maximal element.
-
-  Suppose that there is a nonstrict ascending sequence
-  \begin{equation*}
-    x_1 \leq x_2 \leq x_3 \leq \cdots.
-  \end{equation*}
-
-  Then the set \( \set{ x_k \given k \geq 1 } \) has a maximal element, say \( x_{k_0} \). Then, since \( x_{k_0} \) is maximal, using \hyperref[con:induction/peano_arithmetic]{natural number induction} we can prove that \( x_{k_0} = x_{k_0 + i} \) for \( i \geq 0 \).
-
-  Thus, the sequence stabilizes.
-
-  \ImplicationSubProof{def:chain_condition/stabilization}{def:chain_condition/infinite} Suppose that every ascending sequence in \( P \) stabilizes.
-
-  Every strictly ascending sequence is also nonstrictly ascending, hence it stabilizes, which contradicts our assumption that it is strictly ascending. The obtained contradiction shows that there are not strictly ascending sequences in \( P \).
-
-  \ImplicationSubProof{def:chain_condition/infinite}{def:chain_condition/unbounded} Suppose that there exists no infinite strictly ascending sequence.
-
-  Suppose also that there exists an unbounded from above chain \( C \). Let \( x_1 \) be an element of \( C \). Via \fullref{thm:omega_recursion}, we can define a sequence by letting \( x_{n+1} \) be an element of \( C \) strictly larger than \( x_n \) --- \cref{thm:def:partial_order_chain/unbounded} guarantees the existence of such an element. Note that the axiom of choice is needed here.
-
-  We have thus constructed a strictly ascending sequence
-  \begin{equation*}
-    x_1 < x_2 < x_3 < \cdots
-  \end{equation*}
-
-  The existence of such a sequence contradicts our assumption, hence also the existence of \( C \).
-
-  \ImplicationSubProof{def:chain_condition/unbounded}{def:chain_condition/maximal} Suppose that there exists no unbounded from above chain.
-
-  Let \( A \) be some nonempty subset. Suppose that \( A \) has no maximal element. Then we can construct a strictly ascending sequence
-  \begin{equation*}
-    x_1 < x_2 < x_3 < \cdots
-  \end{equation*}
-
-  The set
-  \begin{equation*}
-    \set{ x_1, x_2, x_3, \cdots }
-  \end{equation*}
-  is an unbounded from above chain.
-
-  The obtained contradiction shows that \( A \) has a maximal element.
-\end{defproof}
-
-\paragraph{Cofinal sets}
-
-\begin{definition}\label{def:cofinal_set}\mcite[71]{Harzheim2005OrderedSets}
-  We say that a subset \( A \) of a \hyperref[def:preordered_set]{preordered set} \( (P, \leq) \) is \term{cofinal} if, for every \( x \in P \), there exists some \( y \in A \) such that \( x \leq y \).
-\end{definition}
-
-\begin{example}\label{ex:def:cofinal_set}
-  We list several examples of \hyperref[def:cofinal_set]{cofinal} and non-cofinal sets.
-
-  \begin{thmenum}
-    \thmitem{ex:def:cofinal_set/finite} In a finite set like \( \set{ 0, 1, 2 } \), the set \( \set{ 2 } \) containing the maximum is cofinal. This is generalized by \cref{thm:def:cofinal_set/top} and \cref{thm:def:cofinal_set/maximal}.
-
-    \thmitem{ex:def:cofinal_set/integers} Consider the set \( \BbbZ \) of integers. Clearly the set \( 2\BbbZ \) of even integers is cofinal. This is generalized by \cref{thm:def:totally_ordered_set/cofinal_iff_unbounded}.
-
-    \thmitem{ex:def:cofinal_set/net_convergence} Cofinal sets are encountered in topology when discussing convergence of nets --- see \fullref{sec:net_convergence}.
-
-    \thmitem{ex:def:cofinal_set/regular_cardinals} \hyperref[def:regular_cardinal]{Regular cardinals} are equal to their own \hyperref[def:cofinality]{cofinality}.
-  \end{thmenum}
-\end{example}
-
-\begin{proposition}\label{thm:def:cofinal_set}
-  \hyperref[def:cofinal_set]{Cofinal sets} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:cofinal_set/top} If a preordered set is bounded from above, a subset is cofinal if and only if it contains a \hyperref[def:extremal_points/top_and_bottom]{top element}.
-
-    \thmitem{thm:def:cofinal_set/maximal} A cofinal subset of a \emph{partially ordered set} contains all \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal elements}.
-
-    \thmitem{thm:def:cofinal_set/acc} In a partially ordered set satisfying the \hyperref[def:chain_condition]{ascending chain condition}, if a set contains all \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal elements}, it is cofinal.
-
-    \thmitem{thm:def:cofinal_set/transitive}\mcite[72]{Harzheim2005OrderedSets} For any preordered set \( P \), if \( A \) is cofinal in \( P \) and \( B \) --- in \( A \), then \( B \) is cofinal in \( P \).
-
-    This is a form of \hyperref[def:binary_relation/transitive]{transitivity}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:cofinal_set/top} Let \( (P, \leq) \) be a preordered set with top element \( \top \).
-
-  \SufficiencySubProof* Let \( A \) be a cofinal subset of \( P \). Then it must contain some element \( x \) such that \( \top \leq x \). By transitivity, for any element \( y \) of \( P \), we have \( y \leq \top \) and \( \top \leq x \), hence \( y \leq x \).
-
-  Then \( x \) is a top element of \( P \) that belongs to \( A \).
-
-  \NecessitySubProof* Suppose that \( \top \in A \). Fix an arbitrary element \( x \) of \( P \). Since \( \top \) is an upper bound of \( P \), it follows that \( x \leq \top \). But \( \top \) belongs to \( A \) and \( x \) is arbitrary, thus \( A \) is cofinal.
-
-  \SubProofOf{thm:def:cofinal_set/maximal} Suppose that \( A \) is cofinal in \( (P, \leq) \), where \( \leq \) is a partial order. Let \( m \) be a maximal element of \( P \).
-
-  There must exist some \( x \) in \( A \) such that \( m \leq x \). But \( m \) is maximal, thus \( x = m \). Therefore, \( m \) belongs to \( A \).
-
-  Generalizing on \( m \), we conclude that \( A \) contains all maximal elements of \( P \).
-
-  \SubProofOf{thm:def:cofinal_set/acc} Suppose that \( A \) contains all maximal elements.
-
-  Let \( x \) be an arbitrary element of \( P \). Let \( B \) be the set of all elements strictly larger than \( x \).
-  \begin{itemize}
-    \item If \( B \) is empty, then \( x \) is itself maximal, and by assumption belongs to \( A \).
-    \item Otherwise, since \( P \) satisfies the ascending chain condition, \( B \) has a maximal element \( m \). If \( y \) is any element of \( P \) such that \( m \leq y \), by transitivity \( y \) belongs to \( B \) and, since \( m \) is maximal, \( m = y \). Hence, \( m \) is also maximal for \( P \), and thus belongs to \( A \).
-
-    Therefore, \( A \) has an element \( m \) larger than \( x \).
-  \end{itemize}
-
-  Generalizing on \( x \), we conclude that \( A \) is cofinal.
-
-  \SubProofOf{thm:def:cofinal_set/transitive} Fix any \( p \in P \). Since \( A \) is cofinal in \( P \), there exists some \( a \in A \) such that \( p \leq a \), and similarly some \( b \in B \) such that \( a \leq b \). Transitivity of \( \leq \) implies that \( p \leq b \).
-
-  Hence, \( B \) is transitive in \( P \).
-\end{proof}
-
-\paragraph{Moore closure operators}
-
-\begin{definition}\label{def:extensive_function}\mcite[111]{Birkhoff1967LatticeTheory}
-  We say that an \hyperref[def:function/endofunction]{endofunction} \( f \) on a \hyperref[def:partially_ordered_set]{partially ordered set} \( (P, \leq) \) is \term[en=extensive (\cite[111]{Birkhoff1967LatticeTheory})]{extensive} if \( x \leq f(x) \) for every \( x \) in \( P \).
-\end{definition}
-\begin{comments}
-  \item \Textcite[40]{Harzheim2005OrderedSets} prefers the term \enquote{extensional operator}, \textcite[186]{DaveyPriestley2002LatticeTheory} prefer \enquote{increasing map} while \textcite[def. 2.12]{Гуров2013ТеорияРешёток} uses \enquote{рефлексивный оператор} (\enquote{reflexive operator}).
-\end{comments}
-
-\begin{definition}\label{def:idempotent_function}\mcite[40]{Harzheim2005OrderedSets}
-  We say that an \hyperref[def:function/endofunction]{endofunction} \( f \) on an arbitrary \hyperref[def:set]{set} \( A \) is \term{idempotent} if \( f(f(x)) = f(x) \) for every \( x \) in \( A \).
-\end{definition}
-\begin{comments}
-  \item Idempotent functions are \hyperref[def:monoid_idempotent]{idempotent elements} in \hyperref[def:endomorphism_monoid]{endomorphism monoids}.
-\end{comments}
-
-\begin{definition}\label{def:moore_closure_operator}\mcite[40]{Harzheim2005OrderedSets}
-  Let \( (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered set}. We say that the function \( \cl: P \to P \) is a \term[ru=оператор замыкания (\cite[def. 4.12]{Гуров2013ТеорияРешёток})]{Moore closure operator} in \( P \) if it is \hyperref[def:extensive_function]{extensive}, \hyperref[def:idempotent_function]{idempotent} and \hyperref[def:order_function/preserving]{order-preserving}.
-
-  We say that \( x \) is \term[ru=замкнутый (\cite[def. 4.12]{Гуров2013ТеорияРешёток})]{closed} with respect to \( \cl \) if \( x = \cl(x) \).
-\end{definition}
-\begin{comments}
-  \item \Cref{thm:closure_operator_minimality} gives an equivalent condition for an element to be closed while \cref{thm:moore_family_closure_operator} simplifies defining closure operators on power sets.
-
-  \item \Textcite[40]{Harzheim2005OrderedSets} and \textcite[146]{DaveyPriestley2002LatticeTheory} call such an operator simply a \enquote{closure operator}, \textcite[def. 26]{Grätzer2011LatticeTheory} uses \enquote{closure system}, \textcite[111]{Birkhoff1967LatticeTheory} uses \enquote{closure operation} but restricts the definition to lattices of subsets.
-
-  We add the prefix \enquote{Moore} because of the related Moore families discussed in \cref{def:moore_family}.
-\end{comments}
-
-\begin{proposition}\label{thm:closure_operator_minimality}
-  For a given \hyperref[def:moore_closure_operator]{Moore closure operator}, we have \( \cl(x) = c \) if and only if \( c \) is the \hyperref[def:extremal_points/greatest_and_least]{least} of all closed elements greater than or equal to \( x \).
-\end{proposition}
-\begin{proof}
-  Fix some element \( x \) and consider the set
-  \begin{equation*}
-    D \coloneqq \set{ d \geq x \given \cl(d) = d }.
-  \end{equation*}
-
-  Clearly \( \cl(x) \) belongs to \( D \) because \( \cl \) is extensive.
-
-  \SufficiencySubProof Consider the closure \( \cl(x) \). Let \( d \geq x \) be an arbitrary closed element. We have \( x \leq d \), and since \( \cl \) preserves order, \( \cl(x) \leq \cl(d) = d \).
-
-  Therefore, \( \cl(x) \) is a lower bound of \( D \) that belongs to \( D \), that is, the least element of \( D \).
-
-  \NecessitySubProof Suppose that \( c \) is the least element of \( D \). Then \( x \leq c \leq \cl(x) \). But
-  \begin{equation*}
-    \cl(x) \leq \underbrace{\cl(c)}_{c} \leq \underbrace{\cl(\cl(x))}_{\cl(x)},
-  \end{equation*}
-  hence
-  \begin{equation*}
-    \cl(x) = c.
-  \end{equation*}
-\end{proof}
-
-\begin{definition}\label{def:moore_family}\mcite[111]{Birkhoff1967LatticeTheory}
-  We say that a family of subsets of an arbitrary \hyperref[def:set]{set} is a \term{Moore family} if it is closed under arbitrary (including empty) intersections.
-\end{definition}
-
-\begin{proposition}\label{thm:moore_family_closure_operator}
-  Let \( X \) be some set and \( \mscrL \) be a \hyperref[def:moore_family]{Moore family} in \( X \). Then the following function is a \hyperref[def:moore_closure_operator]{Moore closure operator} on \( X \):
-  \begin{equation*}
-    \begin{aligned}
-      &\cl: \pow(X) \to \mscrL, \\
-      &\cl(A) \coloneqq \bigcap \set{ L \in \mscrL \given A \subseteq L }. \\
-    \end{aligned}
-  \end{equation*}
-\end{proposition}
-\begin{comments}
-  \item This proposition implies that \( \cl(A) \) is the intersection of all closed sets containing \( A \).
-  \item \Cref{thm:closure_operator_minimality} implies that \( \cl(A) \) is the smallest closed set containing \( A \).
-  \item This allows us to introduce a closure operator on arbitrary families that are closed under intersection --- including \hyperref[def:topological_space]{topological closed sets}, \hyperref[def:affine_hull]{affine hulls}, \hyperref[def:convex_hull]{convex hulls} and \hyperref[def:fol_generated_substructure]{generated first-order substructures} (groups, rings, \( R \)-modules and lattices, among others --- see \cref{ex:def:fol_theory_model_functor}).
-\end{comments}
-\begin{proof}
-  \SubProofOf[def:extensive_function]{extensiveness} The intersection \( \cl(A) \) of \( \set{ L \in \mscrL \given A \subseteq L } \) obviously contains \( A \).
-
-  \SubProofOf[def:idempotent_function]{idempotence} Note that \( \cl(A) \) itself belongs to \( \mscrL \), thus
-  \begin{equation*}
-    \cl(\cl(A)) = \bigcap \set{ L \in \mscrL \given \cl(A) \subseteq L } = \cl(A).
-  \end{equation*}
-
-  \SubProofOf[def:order_function/preserving]{monotonicity} If \( A \subseteq B \), then every set from \( \mscrL \) containing \( B \) also contains \( A \), hence \( \cl(A) \subseteq \cl(B) \).
-\end{proof}
-
-\paragraph{Zorn's lemma}
-
-\begin{lemma}[Zorn's lemma]\label{thm:zorns_lemma}
-  If every \hyperref[def:partial_order_chain]{chain} in a nonempty \hyperref[def:partially_ordered_set]{partially ordered set} has an \hyperref[def:extremal_points/bounds]{upper bound}, then the entire set has a \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal element}.
-\end{lemma}
-\begin{comments}
-  \item Within \hyperref[def:zfc]{\logic{ZF}}, this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \cref{thm:axiom_of_choice_equivalences/zorns_lemma}.
-
-  \item Zorn's lemma is sometimes stated and used only in a \hyperref[thm:boolean_algebra_of_subsets]{lattice of sets} --- for example by \textcite[117]{Grätzer2011LatticeTheory}, \textcite[thm. 6.4.34]{Hinman2005Logic}, \textcite[151]{Enderton1977SetTheory} and \textcite[16]{КанторовичАкилов1984ФункциональныйАнализ}. A statement similar to this one is used by \textcite[50]{Harzheim2005OrderedSets}, \textcite[33]{Kelley1975GeneralTopology}, \textcite[8]{Engelking1989GeneralTopology}, \textcite[lemma V.3.1]{Aluffi2009Algebra}, \textcite[880]{Lang2002Algebra}, \textcite[314]{Rotman2015AdvancedModernAlgebraPart1}, \textcite[117]{Гуров2013ТеорияРешёток}, \textcite[31]{Мальцев1970АлгебраическиеСистемы} and \textcite[13]{Проданов1982ФункционаленАнализЧаст1}. \Textcite[2]{Jacobson1989BasicAlgebraII} states both.
-\end{comments}
-\begin{proof}
-  \ImplicationSubProof[def:zfc/choice]{the axiom of choice}[thm:zorns_lemma]{Zorn's lemma} Let \( (P, \leq) \) be a partially ordered set in which every chain has an upper bound. Aiming at a contradiction, suppose that \( P \) has no maximal elements.
-
-  Let \( \mscrC \) be the set of all chains in \( P \). Define the set-valued map \( F: \mscrC \multto P \) that assigns to each set in \( P \) the family of all its strict upper bounds.
-
-  Since every chain \( C \) has an upper bound, say \( u \), and since \( P \) has no maximal element, there exists some element strictly larger than \( u \). Hence, \( F \) is a total set-valued map. By \fullref{thm:existence_of_single_valued_selections}, there exists a single-valued selection \( f: \pow(P) \to P \) of \( F \).
-
-  By \fullref{thm:hartogs_lemma}, there exists a smallest \hyperref[def:ordinal]{ordinal} \( \alpha \) such that no function from \( \alpha \) to \( P \) is injective. Using \fullref{thm:bounded_transfinite_recursion}, we can define
-  \begin{equation*}
-    \begin{aligned}
-      &g: \alpha \to P, \\
-      &g(\beta) \coloneqq f(\set{ g(\gamma) \given \gamma < \beta }) = f(g[\beta]). \\
-    \end{aligned}
-  \end{equation*}
-
-  If \( \beta_1 < \beta_2 \), then
-  \begin{equation*}
-    \set{ g(\gamma) \given \gamma < \beta_1 }
-    \subsetneq
-    \set{ g(\gamma) \given \gamma < \beta_2 },
-  \end{equation*}
-  and thus
-  \begin{equation*}
-    g(\beta_1) < g(\beta_2).
-  \end{equation*}
-
-  Then the images under \( g \) of different elements of \( \alpha \) are different, i.e. \( g \) is injective. But this contradicts our choice of \( \alpha \).
-
-  The obtained contradiction shows that \( P \) has a maximal element.
-
-  \ImplicationSubProof[thm:zorns_lemma]{Zorn's lemma}[def:zfc/choice]{axiom of choice} Let \( \mscrA \) be a family of nonempty sets. Let \( \mscrF \) be the set of all \hyperref[def:set_valued_map/partial]{partial single-valued functions} from \( \mscrA \) to \( \bigcup \mscrA \) with the subset ordering. That is, \( f \leq g \) if \( \dom(f) \subseteq \dom(g) \) for \( f, g \in \mscrF \).
-
-  Clearly every chain has a greatest element - a total single-valued function. Then \( \mscrF \) itself has a maximal element by Zorn's lemma. This maximal element is necessarily a total function because otherwise it would not be maximal.
-
-  Then this is the desired choice function for the family \( \mscrA \).
-\end{proof}

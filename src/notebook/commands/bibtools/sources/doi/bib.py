@@ -46,7 +46,6 @@ def doi_datetime_to_string(doi_datetime: DoiDateTime) -> str:
         return doi_datetime.date_time.strftime('%Y-%m-%d')
 
     first = doi_datetime.date_parts[0]
-    print(first)
 
     if first.day is None:
         if first.month is None:
