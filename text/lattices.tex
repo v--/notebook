@@ -2,198 +2,189 @@
 
 \paragraph{Lattices}
 
-\begin{definition}\label{def:lattice}\mcite[3]{Birkhoff1967LatticeTheory}
-  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} is a \term[ru=решётка (\cite[def. 4.2]{Гуров2013ТеорияРешёток})]{lattice} if every two element have both a \hyperref[def:extremal_points/supremum_and_infimum]{supremum} and an \hyperref[def:extremal_points/supremum_and_infimum]{infimum}.
+\begin{definition}\label{def:lattice}\mcite[def. 4.2]{Гуров2013ТеорияРешёток}
+  A \term[ru=решётка, en=lattice (\cite[12]{Grätzer2011LatticeTheory})]{lattice} is a nonempty set \( L \) equipped with two \hyperref[def:operation_arity_terminology]{binary} \hyperref[def:operation_on_set]{operations}\fnote{The terms \enquote{join} for \( \vee \) and \enquote{meet} for \( \wedge \) may be difficult to remember. A helpful accident is the ability to write \enquote{meet} as \enquote{\( \wedge \wedge \)eet}.} --- \term[ru=объединение, en=join (\cite[12]{Grätzer2011LatticeTheory})]{join}, denoted by \( \vee \), and \term[ru=пересечение, en=meet (\cite[12]{Grätzer2011LatticeTheory})]{meet}, denoted by \( \wedge \) --- satisfying the axioms we list in \cref{def:lattice/theory}.
 
-  By regarding suprema and infima as binary operation, we shift the focus away from the order. \Cref{thm:lattice_from_binary_operations} demonstrates how the order structure can be inferred from two operations on a plain set.
-
-  \begin{thmenum}[series=def:lattice]
-    \thmitem{def:lattice/join} We denote the supremum operation via \( \vee \) and call it a \term[ru=объединение (\cite[def. 4.2]{Гуров2013ТеорияРешёток})]{join} and rather than supremum.
-
-    In contrast to suprema, finite joins are written via \hyperref[def:fol_signature/notation]{infix} notation, e.g. \( x \vee y \vee z \) rather than \( \sup\set{ x, y, z } \).
-
-    \thmitem{def:lattice/meet} We denote the infimum operation via \( \wedge \) and call it a \term[ru=сечение (\cite[def. 4.2]{Гуров2013ТеорияРешёток})]{meet}.
-  \end{thmenum}
-
-  The terms \hyperref[def:lattice/join]{\enquote{join}} for \( \vee \) and \hyperref[def:lattice/meet]{\enquote{meet}} for \( \wedge \) are notoriously difficult to remember. A helpful accident is the ability to write \enquote{meet} as \enquote{\( \wedge \wedge \)eet}.
+  We use this algebraic definition because it allows us to formulate an \hyperref[def:fol_equational_theory]{equational theory} for lattices. Another definition is possible --- every lattice has a natural \hyperref[def:partially_ordered_set]{partial order}, which can be used as a \hyperref[con:primitive_notion]{primitive notion} instead of joins and meets --- see \cref{thm:lattice_via_order_relation}.
 
   Lattices have the following metamathematical properties:
-  \begin{thmenum}[resume=def:lattice]
-    \thmitem{def:lattice/theory}\mimprovised The language of the theory of lattices consists of the language of the \hyperref[def:partially_ordered_set]{theory of partially ordered sets} with the addition of the binary infix functional symbols \( \vee \) and \( \wedge \). This conflicts with the corresponding propositional connectives, but we will not use the two simultaneously.
+  \begin{thmenum}
+    \thmitem{def:lattice/theory}\mimprovised We can state an \hyperref[def:fol_equational_theory]{equational theory} for lattice over the signature with two symbols --- \( \latvee \) and \( \latwedge \) --- with a check on top used to distinguish them from the \hyperref[con:metalanguage]{metalingual} symbols \( \vee \) and \( \wedge \) and from the \hyperref[con:improper_symbol]{improper symbols} \( \synvee \) and \( \synwedge \).
 
-    We must add the following axioms \eqref{eq:thm:lattice_operation_characterization/compatibility/join} and \eqref{eq:thm:lattice_operation_characterization/compatibility/meet} to the theory to ensure compatibility between order, joins and meets. We prove in \cref{thm:lattice_operation_characterization/compatibility} that these axioms hold.
+    The theory itself can be axiomatized as follows:\fnote{Technically, we must take the \hyperref[def:fol_quantifier_closure]{universal closures} of the formulas here.}
+    \begin{thmenum}[series=def:lattice]
+      \thmitem{def:lattice/theory/base} For both symbols, we need the associativity axiom \eqref{eq:def:binary_operation/associative} and the commutativity axiom \eqref{eq:def:binary_operation/commutative}.
 
-    A similar axiom must be added for joins and suprema.
+      \thmitem{def:lattice/theory/absorption} Additionally, we need the following \term[ru=(законы) поглощения (\cite[6]{Гуров2013ТеорияРешёток}), en=absorption (\cite[8]{Birkhoff1967LatticeTheory})]{absorption} laws
+      \begin{align}
+        \synx \latvee (\synx \latwedge \syny) &\syneq \synx, \label{eq:def:lattice/theory/absorption/join} \\
+        \synx \latwedge (\synx \latvee \syny) &\syneq \synx. \label{eq:def:lattice/theory/absorption/meet}
+      \end{align}
+    \end{thmenum}
 
-    \thmitem{def:lattice/submodel}\mcite[7]{Birkhoff1967LatticeTheory} Unlike more general ordered sets, not every subset of a lattice is a \hyperref[def:fol_substructure/submodel]{first-order submodel} because \( \vee \) and \( \wedge \) are now regarded as functional symbols. A \term{sublattice} must be closed under joins and meets.
+    The idempotence axiom \eqref{eq:def:binary_operation/idempotent} for \( \synvee \) and \( \synwedge \) is sometimes taken as an axiom, for example in \cite[def. 4.2]{Гуров2013ТеорияРешёток} and \cite[12]{Grätzer2011LatticeTheory}, however it can be easily derived from absorption, as we shall see.
 
-    \thmitem{def:lattice/homomorphism}\mcite[def. 4.3]{Гуров2013ТеорияРешёток} \hyperref[def:fol_homomorphism]{First-order homomorphisms} between lattices are functions that preserve joins and meets. It follows from \cref{thm:def:lattice/homomorphism_preserves_order} that such a function is order-preserving.
+    This theory can be extended:
+    \begin{thmenum}[resume=def:lattice]
+      \thmitem{def:lattice/theory/leq} We can use any of the following two equivalent \hyperref[def:fol_definition/predicate]{first-order predicate definition} of \( {\synleq} \):
+      \begin{align}
+        \synx \synleq \syny &\syniff \synx \latvee \syny \syneq \syny, \label{eq:def:lattice/theory/leq/join} \\
+        \synx \synleq \syny &\syniff \synx \latwedge \syny \syneq \synx. \label{eq:def:lattice/theory/leq/meet}
+      \end{align}
+
+      This relation is a \hyperref[def:partially_ordered_set]{partial order}.
+    \end{thmenum}
+
+    \thmitem{def:lattice/morphism}\mcite[def. 4.3]{Гуров2013ТеорияРешёток} We say that a function between lattices is a \term[ru=решёточный гомоморфизм, en=homomorphism (of lattices) (\cite[30]{Grätzer2011LatticeTheory})]{lattice homomorphism} if it respects joins and meets.
+
+    These are precisely the \hyperref[def:fol_homomorphism]{first-order homomorphisms}, which makes the concepts from \fullref{sec:first_order_structures} applicable.
+
+    \Cref{thm:def:lattice/morphism_respects_order} implies that a lattice homomorphism is \hyperref[def:order_function/preserving]{order-preserving}, and \cref{thm:def:lattice/embedding} implies that an order embedding is a lattice embedding.
 
     \begin{figure}
       \centering
       \includegraphics[page=1]{output/def__lattice}
       \caption{An order homomorphism between lattices, which is not a lattice homomorphism.}
-      \label{fig:def:lattice/homomorphism/order_homomorphism_not_lattice_homomorrphism}
+      \label{fig:def:lattice/morphism/order_homomorphism_not_lattice_homomorrphism}
     \end{figure}
 
-    On the other hand, \cref{thm:def:lattice/embedding} implies that order embeddings are lattice embeddings.
+    \thmitem{def:lattice/category}\mcite[\S I.3.2]{Johnstone1982StoneSpaces} For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the first-order theory of lattices naturally gives rise to a \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models}. We denote this category by \( \ucat{Lat} \).
 
-    \thmitem{def:lattice/opposite}\mimprovised The categories of lattices have a natural \hyperref[con:opposite_object]{opposite object functor}. We define \( (L, \wedge, \vee)^{\oppos} \) as \( (L, \vee, \wedge) \).
+    We list several properties:
+    \begin{itemize}
+      \item The logical theory presented here is equational and thus has \hyperref[def:fol_free_term_model]{free term models}; \Fullref{thm:fol_free_term_model_universal_property} provides a \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:fol_theory_forgetful_functor/set]{forgetful functor} \( U: \ucat{Lat} \to \ucat{Set} \). We discuss these free lattices in \cref{def:free_lattice}.
 
-    We say that the two operations are \term[en=dual (constants) (\cite[193]{Gottschalk1953Quaternality})]{dual}. For the function symbols themselves, we define \( \wedge^{\oppos} \) as \( \vee \) and vice versa.
+      In particular, \cref{thm:concrete_category_function_invertibility/injective} implies that a lattice homomorphism is a \hyperref[def:morphism_invertibility/left_cancellative]{monomorphism} if and only if it is \hyperref[def:function_invertibility/injective]{injective}.
 
-    We show in \cref{thm:def:lattice/opposite_order} that the induced order in the opposite lattice is the \hyperref[def:partially_ordered_set/opposite]{opposite order}.
+      \item A lattice can itself be regarded as a category, where \hyperref[def:category_of_cones/limit]{categorical limits} correspond to meets and \hyperref[def:category_of_cones/colimit]{categorical colimits} correspond to joins. See \cref{ex:limits_of_partially_ordered_set}.
+    \end{itemize}
 
-    \thmitem{def:lattice/category}\mcite[\S I.3.2]{Johnstone1982StoneSpaces} We denote the \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models} for lattices via \( \ucat{Lat} \). It is clearly concrete over \hyperref[def:partially_ordered_set]{\( \ucat{Pos} \)}.
+    \thmitem{def:lattice/subobject}\mcite[def. 4.4]{Гуров2013ТеорияРешёток} A \term[ru=подрешётка, en=sublattice (\cite[31]{Grätzer2011LatticeTheory})]{sublattice} of \( L \) is a subset of \( L \) closed under joins and meets.
 
-    \Cref{ex:limits_of_partially_ordered_set} discusses how \hyperref[def:category_of_cones/limit]{categorical limits} correspond to meets and \hyperref[def:category_of_cones/colimit]{categorical colimits} correspond to joins.
+    It follows from \cref{thm:fol_equational_theory_models/substructure} that the sublattices of \( L \) are precisely its \hyperref[def:fol_substructure/submodel]{first-order submodels}, and from \cref{thm:fol_categorical_subobjects} that they are its \hyperref[def:categorical_subobject]{categorical subobjects}.
+
+    Furthermore, as a consequence of \cref{thm:fol_equational_theory_models/image}, the image of a lattice homomorphism is a sublattice of its codomain.
+
+    \thmitem{def:lattice/opposite}\mimprovised We define the \term{dual lattice} of \( (L, \vee, \wedge) \) as
+    \begin{equation*}
+      (L, \vee, \wedge)^{\oppos} \coloneqq (L, \wedge, \vee).
+    \end{equation*}
+
+    The dual lattice coincides with the \hyperref[def:partially_ordered_set/opposite]{dual ordered set}, as shown in \cref{thm:def:lattice/dual_order}.
+
+    For the function symbols themselves, we define \( {\vee}^{\oppos} \) as \( {\wedge} \) and vice versa.
+
+    For a fixed Grothendieck universe, this induces an \hyperref[con:opposite_object]{opposite object functor} in the corresponding category of lattices. Like for partially ordered sets, here we prefer the term \enquote{dual} to \enquote{opposite} because of \fullref{thm:lattice_duality}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item There is an unrelated concept also called a \enquote{lattice}, which we define in \cref{def:point_lattice} as \enquote{point lattice}. See \cref{rem:lattice_terminology} for a discussion of terminology.
 \end{comments}
+\begin{defproof}
+  \SubProof{Proof that \( \vee \) and \( \wedge \) are idempotent} For \( \latvee \), we have
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:lattice/theory/leq/join}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \qforall \syny \synx \syneq \synx \latvee (\synx \latwedge \syny) }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synx \syneq \synx \latvee (\synx \latwedge (\synx \latvee \synx)) }
 
-\begin{proposition}\label{thm:lattice_operation_characterization}
-  Let \( (P, \leq) \) be a \hyperref[def:lattice]{lattice}, that is, a partially ordered set in which every pair of elements has a supremum and an infimum. The following properties characterize joins and meets:
+      \hypo{ [\eqref{eq:def:lattice/theory/leq/meet}]^{a_2} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \qforall \syny \synx \syneq \synx \latwedge (\synx \latvee \syny) }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synx \syneq \synx \latwedge (\synx \latvee \synx) }
 
-  \begin{thmenum}
-    \thmitem{thm:lattice_operation_characterization/operations} As binary operations, \( \vee \) and \( \wedge \) are \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/commutative]{commutative}.
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \syneq \synx \latvee \synx }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \eqref{eq:def:binary_operation/idempotent} }
+    \end{prooftree}
+  \end{equation*}
 
-    \thmitem{thm:lattice_operation_characterization/absorption} The following \term[ru=(законы) поглощения (\cite[6]{Гуров2013ТеорияРешёток}), en=absorption (\cite[8]{Birkhoff1967LatticeTheory})]{absorption} laws hold:
-    \begin{align}
-      \synx \vee (\synx \wedge \syny) &\syneq \synx, \label{eq:thm:lattice_operation_characterization/absorption/join} \\
-      \synx \wedge (\synx \vee \syny) &\syneq \synx. \label{eq:thm:lattice_operation_characterization/absorption/meet}
-    \end{align}
+  For \( \latwedge \), the proof is dual.
 
-    \thmitem{thm:lattice_operation_characterization/compatibility} The following axioms for compatibility with \( \leq \) hold:
-    \begin{align}
-      \synx \leq \syny &\syniff \synx \vee \syny \syneq \syny, \label{eq:thm:lattice_operation_characterization/compatibility/join} \\
-      \synx \leq \syny &\syniff \synx \wedge \syny \syneq \synx. \label{eq:thm:lattice_operation_characterization/compatibility/meet}
-    \end{align}
-  \end{thmenum}
+  \SubProof{Proof that \( \leq \) is a partial order} We will show that \eqref{eq:def:lattice/theory/leq/join} satisfies the axioms for partially ordered sets from \cref{def:partially_ordered_set/theory}.
+
+  To avoid excessive rule applications, we will use \( \synx \latvee \syny \syneq \syny \) directly instead of \( \synx \synless \syny \).
+
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:fol_natural_deduction/forall/intro}]{ [\eqref{eq:def:binary_operation/idempotent}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synx \syneq \synx \latvee \synx }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synx \latvee \synx \syneq \synx }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf*[def:binary_relation/transitive]{transitivity}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\syny \latvee \synz \syneq \synz]^v }
+      \hypo{ [\synx \latvee \syny \syneq \syny]^u }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ (\synx \latvee \syny) \latvee \synz \syneq \synz }
+
+      \hypo{ [\eqref{eq:def:binary_operation/associative}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ (\synx \latvee \syny) \latvee \synz \syneq \synx \latvee (\syny \latvee \synz) }
+
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \latvee (\syny \latvee \synz) \syneq \synz }
+
+      \hypo{ [\syny \latvee \synz \syneq \synz]^v }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \latvee \synz \syneq \synz }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf*[def:binary_relation/antisymmetric]{antisymmetry}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synx \latvee \syny \syneq \syny]^u }
+      \hypo{ [\eqref{eq:def:binary_operation/commutative}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synx \latvee \syny \syneq \syny \latvee \synx }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \syny \latvee \synx \syneq \syny }
+
+      \hypo{ [\syny \latvee \synx \syneq \synx]^v }
+
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \syneq \syny }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof{Proof that \eqref{eq:def:lattice/theory/leq/join} and \eqref{eq:def:lattice/theory/leq/meet} are equivalent} We have
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:lattice/theory/leq/meet}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synx \syneq \synx \latwedge (\synx \latvee \syny) }
+
+      \hypo{ [\synx \latvee \syny \syneq \syny]^u }
+
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synx \latwedge \syny \syneq \synx }
+    \end{prooftree}
+  \end{equation*}
+  and similarly in the other direction.
+\end{defproof}
+
+\begin{proposition}\label{thm:lattice_via_order_relation}
+  Consider a \hyperref[def:partially_ordered_set]{partially ordered set} \( (P, \leq) \) in which every pair of elements has a supremum and an infimum.
+
+  Then \( (P, \sup, \inf) \) is a \hyperref[def:lattice]{lattice} whose \hyperref[def:lattice/theory/leq]{order} coincides with \( {\leq} \).
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:lattice_operation_characterization/operations} Suprema and infima are obviously associative and commutative as binary operations because ordering is immaterial for pure sets and \( x \vee y \) is defined as \( \sup\set{ x, y } \).
+  Suprema and infima are obviously associative and commutative as binary operations because ordering is immaterial for pure sets and \( x \vee y \) is defined as \( \sup\set{ x, y } \).
 
-  \SubProofOf{thm:lattice_operation_characterization/absorption} Let \( l \) be a lower bound of \( x \) and \( y \). Then \( l \leq x \), hence \( \sup\set{ x, l } = x \). Then
+  We will demonstrate the absorption law \eqref{eq:def:lattice/theory/absorption/join}. Let \( l \) be a lower bound of \( x \) and \( y \). Then \( l \leq x \), hence \( \sup\set{ x, l } = x \). Since \( \inf\set{ x, y } \) is itself a lower bound of \( x \) and \( y \), we can conclude that
   \begin{equation*}
-    \sup\set{ x, \inf\set{ y, x } } = x.
+    \sup\set{ x, \inf\set{ x, y } } = x.
   \end{equation*}
 
-  If we rewrite this equality using joins and meets, we obtain \eqref{eq:thm:lattice_operation_characterization/absorption/join}.
+  The dual absorption law \eqref{eq:def:lattice/theory/absorption/meet} follows by \fullref{thm:order_duality}.
 
-  This demonstrates \eqref{eq:thm:lattice_operation_characterization/absorption/join}. \Fullref{thm:order_duality} implies \eqref{eq:thm:lattice_operation_characterization/absorption/meet}.
-
-  \SubProofOf{thm:lattice_operation_characterization/compatibility} If \( x \leq y \), then \( x \vee y = \sup\set{ x, y } = y \). Conversely, if \( x \vee y = y \), then \( y \) is an upper bound of \( x \) and \( y \), and hence \( x \leq y \).
-
-  This demonstrates \eqref{eq:thm:lattice_operation_characterization/compatibility/join}. \Fullref{thm:order_duality} implies \eqref{eq:thm:lattice_operation_characterization/compatibility/meet}.
-\end{proof}
-
-\begin{proposition}\label{thm:lattice_from_binary_operations}\mcite[thm. I.8]{Birkhoff1967LatticeTheory}
-  Let \( P \) be a \hyperref[def:set]{plain set} with two binary operations \( \vee \) and \( \wedge \). Define the binary relation \( \leq \) on \( P \) via \eqref{eq:thm:lattice_operation_characterization/compatibility/join}.
-
-  Suppose that the operations satisfy the conclusions of \cref{thm:lattice_operation_characterization}, that is, suppose that both operations are \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/commutative]{commutative} and satisfy the absorption conditions \eqref{eq:thm:lattice_operation_characterization/absorption/join} and \eqref{eq:thm:lattice_operation_characterization/absorption/meet}.
-
-  Then \( (P, \leq) \) is a \hyperref[def:lattice]{lattice} in which \( \vee \) is the supremum and \( \wedge \) is the infimum.
-\end{proposition}
-\begin{comments}
-  \item We may define \( \leq \) via \eqref{eq:thm:lattice_operation_characterization/compatibility/meet} rather than \eqref{eq:thm:lattice_operation_characterization/compatibility/join}.
-\end{comments}
-\begin{proof}
-  \SubProof{Proof that \eqref{eq:thm:lattice_operation_characterization/compatibility/meet} holds}
-  \SubProof*{Proof that \( x \leq y \) implies \( x \wedge y = x \)} If \( x \leq y \), by definition we have \( x \vee y = y \) and the absorption law \eqref{eq:thm:lattice_operation_characterization/absorption/meet} implies that
+  It remains to validate \cref{def:lattice/theory/leq}, i.e. to show that
   \begin{equation*}
-    x \wedge y = x \wedge (x \vee y) = x.
+    x \leq y \T{if and only if} \sup\set{ x, y } = y
   \end{equation*}
-
-  \SubProof*{Proof that \( x \wedge y = x \) implies \( x \leq y \)} Conversely, if \( x \wedge y = x \), then
+  and
   \begin{equation*}
-    x \vee y = (x \wedge y) \vee y.
+    x \leq y \T{if and only if} \inf\set{ x, y } = x,
   \end{equation*}
-
-  Due to commutativity of both \( \vee \) and \( \wedge \), we have
-  \begin{equation*}
-    x \vee y = y \vee (y \wedge x).
-  \end{equation*}
-
-  the other absorption law \eqref{eq:thm:lattice_operation_characterization/absorption/join} then implies that \( x \vee y = y \), hence \( x \leq y \).
-
-  \SubProof{Proof that \( \leq \) is a partial order}
-
-  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} From \eqref{eq:thm:lattice_operation_characterization/absorption/meet} we have
-  \begin{equation*}
-    x \vee x = x \vee [x \wedge (x \vee x)].
-  \end{equation*}
-
-  Then \eqref{eq:thm:lattice_operation_characterization/absorption/join} with \( y = x \vee x \) implies that
-  \begin{equation*}
-    x \vee x = x.
-  \end{equation*}
-
-  Therefore,
-  \begin{equation*}
-    x \leq x.
-  \end{equation*}
-
-  \SubProofOf*[def:binary_relation/transitive]{transitivity} If \( x \leq y \) and \( y \leq z \), associativity of \( \vee \) implies
-  \begin{equation*}
-    x \vee z = x \vee (y \vee z) = (x \vee y) \vee z = y \vee z = z.
-  \end{equation*}
-
-  Thus, we obtain \( x \leq z \).
-
-  \SubProofOf*[def:binary_relation/antisymmetric]{antisymmetry} If \( x \leq y \) and \( y \leq x \), commutativity of \( \vee \) implies
-  \begin{equation*}
-    x = y \vee x = x \vee y = y.
-  \end{equation*}
-
-  \SubProof{Proof that \( x \vee y = \sup\set{ x, y } \)} The element \( x \vee y \) is an upper bound of \( x \) and \( y \).
-
-  Indeed, the absorption law \eqref{eq:thm:lattice_operation_characterization/absorption/meet} states that
-  \begin{equation*}
-    x \wedge (x \vee y) = x,
-  \end{equation*}
-  which due to \eqref{eq:thm:lattice_operation_characterization/compatibility/meet} implies
-  \begin{equation*}
-    x \leq x \vee y.
-  \end{equation*}
-
-  Similarly,
-  \begin{equation*}
-    y \wedge (y \vee x) = y.
-  \end{equation*}
-
-  Due to commutativity of \( \vee \), we have
-  \begin{equation*}
-    y \wedge (x \vee y) = y.
-  \end{equation*}
-
-  Then \eqref{eq:thm:lattice_operation_characterization/compatibility/meet} implies
-  \begin{equation*}
-    y \leq x \vee y.
-  \end{equation*}
-
-  If \( u \) is an upper bound of \( x \) and \( y \), we have
-  \begin{equation*}
-    x \vee u = u = y \vee u.
-  \end{equation*}
-
-  Then, due to associativity of \( \vee \), we have
-  \begin{equation*}
-    u = x \vee u = x \vee (y \vee u) = (x \vee y) \vee u,
-  \end{equation*}
-  hence
-  \begin{equation*}
-    x \vee y \leq u.
-  \end{equation*}
-
-  It follows that \( x \vee y \) is the least upper bound of \( x \) and \( y \).
-
-  \SubProof{Proof that \( x \wedge y = \inf\set{ x, y } \)} Completely analogous.
+  both of which are obvious.
 \end{proof}
 
 \begin{theorem}[Principle of duality for lattices]\label{thm:lattice_duality}
-  We can extend \fullref{thm:order_duality} to \hyperref[def:lattice]{lattices} by translating dual functional symbols.
+  We can extend \fullref{thm:order_duality} to \hyperref[def:lattice]{lattices} by translating dual function symbols.
 
   Namely, let \( \tau^{\oppos} \) be the \hyperref[def:fol_term]{first-order term} obtained via \fullref{alg:fol_term_signature_translation} from \( \tau \) by swapping \( \latwedge \) and \( \latvee \) and, in \hyperref[def:bounded_lattice]{bounded lattices}, by also swapping \( \lattop \) and \( \latbot \). Similarly, let \( \varphi^{\oppos} \) be the \hyperref[def:fol_formula]{first-order formula} in which we do the same exchanges via \fullref{alg:fol_formula_signature_translation}. If we extend the theory with inequality relation symbols, we must swap them also.
 
@@ -223,52 +214,53 @@
 \begin{proposition}\label{thm:def:lattice}
   \hyperref[def:lattice]{Lattices} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:lattice/idempotent} Joins and meets are \hyperref[def:binary_operation/idempotent]{idempotent}.
+    \thmitem{thm:def:lattice/dual_order} The induced order in the \hyperref[def:lattice/opposite]{dual lattice} \( L^{\oppos} \) of \( L \) is the \hyperref[def:partially_ordered_set/opposite]{dual order} of that in \( L \).
 
-    This property is not included in the characterization in \cref{thm:lattice_operation_characterization} because it follows from the absorption laws --- see our proof in \cref{thm:lattice_from_binary_operations} that the order is reflexive.
+    \thmitem{thm:def:lattice/operations_preserve_order} If \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), then \( x_1 \vee x_2 \leq y_1 \vee y_2 \) and \( x_1 \wedge x_2 \leq y_1 \wedge y_2 \).
 
-    \thmitem{thm:def:lattice/opposite_order} The induced order in the \hyperref[def:lattice/opposite]{opposite lattice} \( L^{\oppos} \) of \( L \) is the \hyperref[def:partially_ordered_set/opposite]{opposite} of the induced order of \( L \).
-
-    \thmitem{thm:def:lattice/distributive_inequality}\mcite[lemma 4]{Birkhoff1967LatticeTheory} For any elements \( x \), \( y \) and \( z \), we have
+    \thmitem{thm:def:lattice/distributive_inequality}\mcite[lemma II.5.4]{Birkhoff1967LatticeTheory} For any elements \( x \), \( y \) and \( z \), we have
     \begin{align}
-      x \vee (y \wedge z) &\geq (x \vee y) \wedge (x \vee z), \label{eq:thm:def:lattice/distributive_inequality/join_over_meet} \\
+      x \vee (y \wedge z) &\leq (x \vee y) \wedge (x \vee z), \label{eq:thm:def:lattice/distributive_inequality/join_over_meet} \\
       x \wedge (y \vee z) &\geq (x \wedge y) \vee (x \wedge z). \label{eq:thm:def:lattice/distributive_inequality/meet_over_join}
     \end{align}
 
-    \thmitem{thm:def:lattice/modular_inequality}\mcite[lemma 5]{Birkhoff1967LatticeTheory} For any elements \( x \), \( y \) and \( z \), we have
+    \thmitem{thm:def:lattice/modular_inequality}\mcite[lemma II.5.5]{Birkhoff1967LatticeTheory} For any elements \( x \), \( y \) and \( z \), we have
     \begin{equation}\label{eq:thm:def:lattice/modular_inequality}
       x \leq z \T{implies} x \vee (y \wedge z) \leq (x \vee y) \wedge z.
     \end{equation}
 
     \thmitem{thm:def:lattice/totally_ordered} Every \hyperref[def:totally_ordered_set]{totally ordered set} is a \hyperref[def:lattice]{lattice}.
 
-    \thmitem{thm:def:lattice/homomorphism_preserves_order} If a function between lattices preserves either joins or meets, it is an order homomorphism.
+    \thmitem{thm:def:lattice/morphism_respects_order} If a function between lattices preserves either joins or meets, it is an order homomorphism.
 
-    Thus, the requirement for \hyperref[def:lattice/homomorphism]{lattice homomorphisms} to be order-preserving is redundant.
-
-    \thmitem{thm:def:lattice/embedding} Every \hyperref[def:partially_ordered_set/morphism]{order embedding} between lattices is a \hyperref[def:lattice/homomorphism]{lattice embedding}.
-
-    \thmitem{thm:def:lattice/operations_preserve_order} If \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), then \( x_1 \vee x_2 \leq y_1 \vee y_2 \) and \( x_1 \wedge x_2 \leq y_1 \wedge y_2 \).
+    \thmitem{thm:def:lattice/embedding} Every \hyperref[def:partially_ordered_set/morphism]{order embedding} between lattices is a \hyperref[def:lattice/morphism]{lattice embedding}.
 
     \thmitem{thm:def:lattice/closed_interval} A \hyperref[def:order_interval/closed]{closed interval} in a lattice is a sublattice.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:lattice/idempotent} Clearly
-  \begin{equation*}
-    x \vee x = \sup\set{ x, x } = x
-  \end{equation*}
-  and similarly for meets.
+  \SubProofOf{thm:def:lattice/dual_order} Straightforward.
 
-  \SubProofOf{thm:def:lattice/distributive_inequality} Obviously \( y \wedge z \) is a lower bound of \( y \) and \( z \). Then \( x \vee (y \wedge z) \) is a lower bound of \( x \vee y \) and \( z \vee z \). Therefore,
+  \SubProofOf{thm:def:lattice/operations_preserve_order} We will first prove an auxiliary result: if \( x \leq y \), then \( x \wedge z \leq y \wedge z \) and \( z \wedge x \leq z \wedge y \) for any \( z \). This holds because every lower bound of \( x \) and \( z \) is also a lower bound of \( y \) and \( z \).
+
+  Then, if \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), we have
   \begin{equation*}
-    (x \vee y) \wedge (x \vee z) \leq x \vee (y \wedge z).
+    x_1 \wedge x_2 \leq y_1 \wedge x_2 \leq y_1 \wedge y_2.
   \end{equation*}
 
-  Similarly, we can conclude that
+  Similarly, \( x \leq y \) implies \( x \vee z \leq y \vee z \) and \( z \vee x \leq z \vee y \) for any \( z \) because every upper bound of \( y \) and \( z \) is an upper bound of \( x \) and \( z \).
+
+  Then, if \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), we have
   \begin{equation*}
-    (x \wedge y) \vee (x \wedge z) \leq x \wedge (y \vee z).
+    x_1 \vee x_2 \leq y_1 \vee x_2 \leq y_1 \vee y_2.
   \end{equation*}
+
+  \SubProofOf{thm:def:lattice/distributive_inequality} Obviously \( y \wedge z \) is a lower bound of \( y \) and \( z \). \Cref{thm:def:lattice/operations_preserve_order} implies that \( x \vee (y \wedge z) \) cannot exceed \( x \vee y \) nor \( x \vee z \). It is thus a lower bound and cannot exceed the greatest lower bound, so
+  \begin{equation*}
+    x \vee (y \wedge z) \leq (x \vee y) \wedge (x \vee z).
+  \end{equation*}
+
+  This demonstrates \eqref{eq:thm:def:lattice/distributive_inequality/join_over_meet}. \Fullref{thm:lattice_duality/tautology} then implies \eqref{eq:thm:def:lattice/distributive_inequality/meet_over_join}.
 
   \SubProofOf{thm:def:lattice/modular_inequality} Let \( x \leq z \). Then \( z \wedge x = x \). Furthermore, for any \( y \), \eqref{eq:thm:def:lattice/distributive_inequality/meet_over_join} implies that
   \begin{equation*}
@@ -279,16 +271,15 @@
 
   \SubProofOf{thm:def:lattice/totally_ordered} Trivial.
 
-  \SubProofOf{thm:def:lattice/homomorphism_preserves_order} Suppose that the function \( f: X \to Y \) preserves joins. If \( x \leq y \), \eqref{eq:thm:lattice_operation_characterization/compatibility/join} implies \( x \vee y = y \), and thus
+  \SubProofOf{thm:def:lattice/morphism_respects_order} Suppose that the function \( f: L \to M \) preserves joins. If \( x \leq y \), i.e. if \( x \vee y = y \), then
   \begin{equation*}
-    f(x) \vee f(y) = f(x \vee y) = f(y).
+    f(x) \vee f(y) = f(x \vee y) = f(y),
   \end{equation*}
-
-  Using \eqref{eq:thm:lattice_operation_characterization/compatibility/join} again, we obtain \( f(x) \leq f(y) \).
+  which is equivalent to \( f(x) \leq f(y) \).
 
   The case where \( f \) preserves meets is analogous.
 
-  \SubProofOf{thm:def:lattice/embedding} Let \( f: X \to Y \) be an order embedding between lattices, i.e. an injective function that is both order-preserving and order-reflecting.
+  \SubProofOf{thm:def:lattice/embedding} Let \( f: L \to M \) be an order embedding between lattices. By \cref{thm:def:order_function/embedding_iff_reflecting}, \( f \) is an injective function that is both order-preserving and order-reflecting.
 
   \SubProof*{Proof that \( f \) preserves joins} Since \( x \vee y \) is an upper bound of \( x \) and \( y \), \( f(x \vee y) \) is an upper bound of \( f(x) \) and \( f(y) \). We will show that it is the least upper bound.
 
@@ -311,20 +302,6 @@
 
   \SubProof*{Proof that \( f \) preserves meets} Analogous.
 
-  \SubProofOf{thm:def:lattice/operations_preserve_order} We will first prove an auxiliary result: if \( x \leq y \), then \( x \wedge z \leq y \wedge z \) for any \( z \). This holds because every lower bound of \( x \) and \( z \) is also a lower bound of \( y \) and \( z \).
-
-  Then, if \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), we have
-  \begin{equation*}
-    x_1 \wedge x_2 \leq y_1 \wedge x_2 \leq y_1 \wedge y_2.
-  \end{equation*}
-
-  Similarly, \( x \leq y \) implies \( x \vee z \leq y \vee z \) for any \( z \) because every upper bound of \( y \) and \( z \) is an upper bound of \( x \) and \( z \).
-
-  Then, if \( x_1 \leq y_1 \) and \( x_2 \leq y_2 \), we have
-  \begin{equation*}
-    x_1 \vee x_2 \leq y_1 \vee x_2 \leq y_1 \vee y_2.
-  \end{equation*}
-
   \SubProofOf{thm:def:lattice/closed_interval} Trivial.
 \end{proof}
 
@@ -339,7 +316,7 @@
 \end{remark}
 
 \begin{definition}\label{def:semilattice}\mcite[22]{Birkhoff1967LatticeTheory}
-  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} is a \term{join-semilattice} if every two element have a \hyperref[def:extremal_points/supremum_and_infimum]{supremum} and a \term{meet-semilattice} if every two elements have an \hyperref[def:extremal_points/supremum_and_infimum]{infimum}.
+  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} is a \term{join-semilattice} if every pair of elements has a \hyperref[def:extremal_points/supremum_and_infimum]{supremum} and a \term{meet-semilattice} if every two elements have an \hyperref[def:extremal_points/supremum_and_infimum]{infimum}.
 \end{definition}
 
 \begin{example}\label{ex:def:semilattice}
@@ -360,7 +337,7 @@
 
     Let \( k \) be the largest index such that \( u_k = v_k \). This is the desired ancestor --- it is the infimum of \( u \) and \( v \) with respect to the tree order.
 
-    This demonstrates that \( (T, \leq) \) is a meet semilattice, but generally not a join semilattice.
+    This demonstrates that \( (T, \leq) \) is a meet semilattice. It is generally not a join semilattice.
   \end{thmenum}
 \end{example}
 
@@ -369,33 +346,46 @@
 \begin{definition}\label{def:bounded_lattice}\mcite[def. 2.12]{DaveyPriestley2002LatticeTheory}
   A \term{bounded lattice} is a \hyperref[def:lattice]{lattice} whose partial order is \hyperref[def:extremal_points/bounds]{bounded}.
 
-  Bounded lattices have some distinctive metamathematical properties:
+  Compared to plain lattices, bounded lattices have the following metamathematical properties:
   \begin{thmenum}
-    \thmitem{def:bounded_lattice/theory}\mimprovised We extend the \hyperref[def:lattice/theory]{theory of lattices} with two additional nullary functional symbols, \( \top \) and \( \bot \), and the axioms
+    \thmitem{def:bounded_lattice/theory}\mimprovised We can formulate an \hyperref[def:fol_equational_theory]{equational theory} for bounded lattices by extending the \hyperref[def:lattice/theory]{theory of lattices} with two additional axioms for the new function symbols \( \lattop \) and \( \latbot \):
     \begin{align}
-      \top \vee \synx \syneq \top \label{eq:def:bounded_lattice/theory/top}, \\
-      \bot \wedge \synx \syneq \bot \label{eq:def:bounded_lattice/theory/bot}.
+      &\qforall \synx (\overbrace{\lattop \synvee \synx \syneq \lattop}^{\synx \synleq \lattop}), \label{eq:def:bounded_lattice/theory/top} \\
+      &\qforall \synx (\underbrace{\latbot \synwedge \synx \syneq \latbot}_{\latbot \synleq \synx}). \label{eq:def:bounded_lattice/theory/bot}
     \end{align}
 
-    \thmitem{def:bounded_lattice/submodel}\mimprovised We call a \hyperref[def:lattice/submodel]{sublattice} of a bounded lattice a \term{bounded sublattice} if it contains both \( \top \) and \( \bot \).
+    \thmitem{def:bounded_lattice/morphism}\mcite[\S 2.17]{DaveyPriestley2002LatticeTheory} We say that a function between bounded lattices is a \term[en=\( \set{0, 1} \)-homomorphism (\cite[\S 2.17]{DaveyPriestley2002LatticeTheory})]{homomorphism of bounded lattices} if it is a \hyperref[def:lattice/morphism]{lattice homomorphism} that additionally preserves \( \top \) and \( \bot \).
 
-    \thmitem{def:bounded_lattice/homomorphism}\mcite[\S 2.17]{DaveyPriestley2002LatticeTheory} A \hyperref[def:fol_homomorphism]{first-order homomorphisms} between bounded lattices is a \hyperref[def:lattice/homomorphism]{lattice homomorphism} that additionally preserves \( \top \) and \( \bot \).
+    These are precisely the \hyperref[def:fol_homomorphism]{first-order homomorphisms}, which makes the concepts from \fullref{sec:first_order_structures} applicable.
 
-    \thmitem{def:bounded_lattice/category}\mimprovised Bounded lattices and their homomorphisms form a subcategory of the category \( \cat{Lat} \) of lattices.
+    \thmitem{def:bounded_lattice/category}\mimprovised As with ordinary lattices, for a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the first-order theory of bounded lattices give rise to a \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models}.
 
-    \thmitem{def:bounded_lattice/opposite}\mimprovised The \hyperref[con:opposite_object]{opposite} \emph{bounded} lattice of \( L \) requires interchanging \( \top \) and \( \bot \) in addition to the operations \( \wedge \) and \( \vee \) that are swapped in the \hyperref[def:lattice/opposite]{opposite lattice}.
+    \thmitem{def:bounded_lattice/subobject}\mimprovised A \term{bounded sublattice} of \( L \) is a \hyperref[def:lattice/subobject]{lattice} that contains \( \top \) and \( \bot \).
 
-    We say that the two constants are \term[en=dual (constants) (\cite[193]{Gottschalk1953Quaternality})]{dual}. We define \( \bot \) as \( \top^{\oppos} \) and vice versa.
+    It follows from \cref{thm:fol_equational_theory_models/substructure} that the bounded sublattices of \( L \) are precisely its \hyperref[def:fol_substructure/submodel]{first-order submodels}, and from \cref{thm:fol_categorical_subobjects} that they are its \hyperref[def:categorical_subobject]{categorical subobjects}.
 
-    We show in \cref{thm:def:bounded_lattice/opposite_order} that the induced order in the opposite bounded lattice is the \hyperref[def:partially_ordered_set/opposite]{opposite order}.
+    Furthermore, as a consequence of \cref{thm:fol_equational_theory_models/image}, the image of a bounded lattice homomorphism is a bounded sublattice of its codomain.
+
+    \thmitem{def:bounded_lattice/trivial}\mimprovised If a bounded lattice has only two elements, these must be \( \top \) and \( \bot \). Any two such lattices are isomorphic as \hyperref[def:universal_objects/initial]{initial objects} in the corresponding category of bounded lattices.
+
+    If the lattice has only one element, then additionally \( \top = \bot \). These are instead \hyperref[def:universal_objects/terminal]{terminal objects}.
+
+    Since initial and terminal objects differ, bounded lattices have no \hyperref[def:universal_objects/zero]{zero object}, and thus there is not \enquote{trivial bounded lattice} in the sense of \cref{def:trivial_object}.
+
+    Instead, to discriminate the two cases, we call them \term{two-element} or \term{one-element} bounded lattices.
+
+    \thmitem{def:bounded_lattice/opposite}\mimprovised We define the \term{dual bounded lattice} of \( (L, \vee, \wedge, \top, \bot) \) by exchanging both the binary operations and the constants, i.e.
+    \begin{equation*}
+      (L, \vee, \wedge, \top, \bot)^{\oppos} \coloneqq (L, \wedge, \vee, \bot, \top).
+    \end{equation*}
+
+    We say that the two constants are \term[en=dual (constants) (\cite[193]{Gottschalk1953Quaternality})]{dual} and define \( \top^{\oppos} \) as \( \bot \) and vice versa.
+
+    The dual bounded lattice coincides with the \hyperref[def:partially_ordered_set/opposite]{dual ordered set}, as shown in \cref{thm:def:bounded_lattice/opposite_order}.
+
+    For a fixed Grothendieck universe, this induces an \hyperref[con:opposite_object]{opposite object functor} in the corresponding category of bounded lattices.
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item The axioms for bounded lattices correspond exactly to our familiar definition for partially ordered sets. Indeed, using commutativity of joins and meets and the compatibility equivalences from \cref{thm:lattice_operation_characterization/compatibility}, we can translate the axioms from \cref{def:bounded_lattice/theory} into
-  \begin{align*}
-    \bot \leq \synx && \synx \leq \top.
-  \end{align*}
-\end{comments}
 
 \begin{proposition}\label{thm:def:bounded_lattice}
   \hyperref[def:bounded_lattice]{Bounded lattices} have the following basic properties:
@@ -409,17 +399,20 @@
 \end{proposition}
 \begin{proof}
   \SubProofOf{thm:def:bounded_lattice/finite} Trivial.
-  \SubProofOf{thm:def:bounded_lattice/neutral} Follows from the compatibility axioms in \cref{thm:lattice_operation_characterization/compatibility} since \( \bot \leq x \leq \top \).
+  \SubProofOf{thm:def:bounded_lattice/neutral} Follows from the compatibility axioms in \cref{def:lattice/theory/leq} because
+  \begin{equation*}
+    \bot \leq x \leq \top.
+  \end{equation*}
 
-  \SubProofOf{thm:def:bounded_lattice/opposite_order} Follows from \cref{thm:def:lattice/opposite_order} by also considering that \( \top \) (resp. \( \bot \)) is the bottom (resp. top) element in the opposite order.
+  \SubProofOf{thm:def:bounded_lattice/opposite_order} Follows from \cref{thm:def:lattice/dual_order} by also considering that \( \top \) (resp. \( \bot \)) is the bottom (resp. top) element in the opposite order.
 \end{proof}
 
 \paragraph{Modular lattices}
 
 \begin{definition}\label{def:modular_lattice}\mcite[13]{Birkhoff1967LatticeTheory}
-  We say that a \hyperref[def:lattice]{lattice} is \term[ru=модулярная (решётка) (\cite[def. 4.6]{Гуров2013ТеорияРешёток})]{modular} if the following axiom holds:
+  We say that a \hyperref[def:lattice]{lattice} is \term[ru=модулярная (решётка) (\cite[def. 4.6]{Гуров2013ТеорияРешёток})]{modular} if the (\hyperref[def:fol_quantifier_closure]{universal closure} of the) following axiom holds:
   \begin{equation}\label{eq:def:modular_lattice}
-    \synx \leq \synz \synimplies \parens*{ \synx \vee (\syny \wedge \synz) \syneq (\synx \vee \syny) \wedge \synz }.
+    \synx \synleq \synz \synimplies \synx \latvee (\syny \latwedge \synz) \syneq (\synx \latvee \syny) \latwedge \synz.
   \end{equation}
 \end{definition}
 \begin{comments}
@@ -429,16 +422,20 @@
 \begin{example}\label{ex:def:modular_lattice}
   We list examples of \hyperref[def:modular_lattice]{modular lattices}:
   \begin{thmenum}
-    \thmitem{ex:def:modular_lattice/absorption} Whenever the values for \( \synx \) and \( \synz \) coincide, the modular identity \eqref{eq:def:modular_lattice} holds due to absorption. Indeed, if \( \synx \mapsto x \), \( \synz \mapsto x \) and \( \syny \mapsto y \), we have
+    \thmitem{ex:def:modular_lattice/absorption} Whenever the \hyperref[def:fol_variable_assignment]{variable assignment} has the same value for \( \synx \) and \( \synz \), the modular identity \eqref{eq:def:modular_lattice} holds due to absorption. Indeed, with \( \synx \mapsto x \), \( \synz \mapsto x \) and \( \syny \mapsto y \), we obtain
     \begin{equation*}
       x \vee (y \wedge x)
-      \reloset {\eqref{eq:thm:lattice_operation_characterization/absorption/join}} =
+      \reloset {\eqref{eq:def:binary_operation/commutative}} =
+      x \vee (x \wedge y)
+      \reloset {\eqref{eq:def:lattice/theory/absorption/join}} =
       x
-      \reloset {\eqref{eq:thm:lattice_operation_characterization/absorption/meet}} =
+      \reloset {\eqref{eq:def:lattice/theory/absorption/meet}} =
+      x \wedge (x \vee y)
+      \reloset {\eqref{eq:def:binary_operation/commutative}} =
       x \wedge (y \vee x).
     \end{equation*}
 
-    \thmitem{ex:def:modular_lattice/two_element} The two-element lattice \( \set{ \bot, \top } \) is clearly modular. Indeed, due to \cref{ex:def:modular_lattice/absorption}, it remains to consider the case where \( \synx \mapsto \bot \), \( \synz \mapsto \top \) and \( \syny \mapsto y \), where \( y \) ranges over the two possible values. Then
+    \thmitem{ex:def:modular_lattice/two_element} The \hyperref[def:bounded_lattice/trivial]{two-element bounded lattice} \( \set{ \bot, \top } \) is clearly modular. Indeed, with the assignment \( \synx \mapsto \bot \), \( \synz \mapsto \top \) and \( \syny \mapsto y \), we have
     \begin{align*}
       \bot \vee (y \wedge \top)
       =
@@ -458,24 +455,24 @@
 
     It is not modular because \( a \leq b \), yet
     \begin{equation*}
-      a \vee (\underbrace{c \wedge b}_{\bot})
+      a \vee \underbrace{(c \wedge b)}_\bot
       =
       a
       \neq
       b
       =
-      (\underbrace{a \vee c}_{\top}) \wedge b.
+      \underbrace{(a \vee c)}_\top \wedge b.
     \end{equation*}
   \end{thmenum}
 \end{example}
 
 \begin{proposition}\label{thm:modular_lattice_characterization}\mcite[thm. 102(i)]{Grätzer2011LatticeTheory}
-  A \hyperref[def:lattice]{lattice} is \hyperref[def:modular_lattice]{modular} if and only if no \hyperref[def:lattice/submodel]{sublattice} is isomorphic to the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon}.
+  A \hyperref[def:lattice]{lattice} is \hyperref[def:modular_lattice]{modular} if and only if no \hyperref[def:lattice/subobject]{sublattice} is isomorphic to the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon}.
 \end{proposition}
 \begin{proof}
-  \SufficiencySubProof If \( Y \) is a sublattice of \( X \) isomorphic to \( N_5 \), then the modular law does not hold for \( X \) with the same counterexample \cref{ex:def:modular_lattice/pentagon} as for \( N_5 \). Therefore, if \( X \) is modular, \( N_5 \) cannot be isomorphic to a sublattice of \( X \).
+  \SufficiencySubProof If \( M \) is a sublattice of \( L \) isomorphic to \( N_5 \), then the modular law does not hold for \( L \) with the same counterexample \cref{ex:def:modular_lattice/pentagon} as for \( N_5 \). Therefore, if \( L \) is modular, \( N_5 \) cannot be isomorphic to a sublattice of \( L \).
 
-  \NecessitySubProof Suppose that \( N_5 \) is not a sublattice of \( X \).
+  \NecessitySubProof Suppose that \( N_5 \) is not a sublattice of \( L \).
 
   Aiming at a contradiction, suppose that \( x \leq z \) and we have the following counterexample to the modular law:
   \begin{equation*}
@@ -503,14 +500,14 @@
     which is again a contradiction.
   \end{itemize}
 
-  Not only is \( y \) not comparable to both \( x \) and \( z \), but, as shown in \cref{ex:def:modular_lattice/absorption}, \( x \) and \( z \) cannot be equal. Therefore, \( X \) has the following pentagonal sublattice:
+  Not only is \( y \) not comparable to both \( x \) and \( z \), but, as shown in \cref{ex:def:modular_lattice/absorption}, \( x \) and \( z \) cannot be equal. Therefore, \( L \) has the following pentagonal sublattice:
   \begin{equation}\label{eq:thm:modular_lattice_characterization/pentagonal}
     \begin{aligned}
       \includegraphics[page=1]{output/thm__modular_lattice_characterization}
     \end{aligned}
   \end{equation}
 
-  But we have assumed that no sublattice of \( X \) is isomorphic to \( N_5 \). The obtained contradiction shows that the modular axiom \eqref{eq:def:modular_lattice} holds for any triple of elements in \( X \). Then \( X \) is modular.
+  But we have assumed that no sublattice of \( L \) is isomorphic to \( N_5 \). The obtained contradiction shows that the modular axiom \eqref{eq:def:modular_lattice} holds for any triple of elements in \( L \). Then \( L \) is modular.
 \end{proof}
 
 \paragraph{Distributive lattices}
@@ -518,8 +515,8 @@
 \begin{definition}\label{def:distributive_lattice}\mcite[12]{Birkhoff1967LatticeTheory}
   We say that a \hyperref[def:lattice]{lattice} is \term[ru=дистрибутивная (решётка) (\cite[def. 4.7]{Гуров2013ТеорияРешёток})]{distributive} if the following axioms hold:
   \begin{align}
-    \synx \vee (\syny \wedge \synz) &= (\synx \vee \syny) \wedge (\synx \vee \synz), \label{eq:def:distributive_lattice/join_over_meet} \\
-    \synx \wedge (\syny \vee \synz) &= (\synx \wedge \syny) \vee (\synx \wedge \synz). \label{eq:def:distributive_lattice/meet_over_join}
+    \synx \latvee (\syny \latwedge \synz) &\syneq (\synx \latvee \syny) \latwedge (\synx \latvee \synz), \label{eq:def:distributive_lattice/join_over_meet} \\
+    \synx \latwedge (\syny \latvee \synz) &\syneq (\synx \latwedge \syny) \latvee (\synx \latwedge \synz). \label{eq:def:distributive_lattice/meet_over_join}
   \end{align}
 \end{definition}
 \begin{comments}
@@ -534,7 +531,7 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:distributive_lattice/modular} Modularity follows from distributivity similarly to how \cref{thm:def:lattice/modular_inequality} follows from \cref{thm:def:lattice/distributive_inequality}.
+  \SubProofOf{thm:def:distributive_lattice/modular} Modularity follows from distributivity similarly to how its weaker form \cref{thm:def:lattice/modular_inequality} follows from the distributivity inequalities \cref{thm:def:lattice/distributive_inequality}.
 
   \SubProofOf{thm:def:distributive_lattice/totally_ordered} Let \( (P, \leq) \) be totally ordered. \Cref{thm:def:lattice/totally_ordered} implies that it is a lattice. For any three elements \( x \), \( y \) and \( z \), we have the following possibilities:
   \begin{itemize}
@@ -555,11 +552,11 @@
 \begin{example}\label{ex:def:distributive_lattice}
   We list examples of \hyperref[def:distributive_lattice]{distributive lattices}:
   \begin{thmenum}
-    \thmitem{ex:def:distributive_lattice/two_element} The two element lattice \( \set{ \top, \bot } \) is distributive because of the bounded lattice laws from \cref{def:bounded_lattice/theory}.
+    \thmitem{ex:def:distributive_lattice/two_element} The \hyperref[def:bounded_lattice/trivial]{two-element bounded lattice} \( \set{ \top, \bot } \) is distributive because of the bounded lattice laws from \cref{def:bounded_lattice/theory}.
 
     More generally, every \hyperref[def:heyting_algebra]{Heyting algebra} is distributive, as well as every \hyperref[def:totally_ordered_set]{totally ordered set}.
 
-    \thmitem{ex:def:distributive_lattice/diamond}\mcite[109]{Grätzer2011LatticeTheory} An example of a \hyperref[def:modular_lattice]{modular} but non-distributive lattice is the \term{diamond}\fnote{\textcite{Birkhoff1967LatticeTheory} uses the notation \enquote{\( M_5 \)} and \textcite[327]{PicadoPultr2012FramesAndLocales} use \enquote{\( D_3 \)}, but \textcite{Grätzer2011LatticeTheory} and \textcite{DaveyPriestley2002LatticeTheory} prefer \enquote{\( M_3 \)}}
+    \thmitem{ex:def:distributive_lattice/diamond}\mcite[109]{Grätzer2011LatticeTheory} An example of a \hyperref[def:modular_lattice]{modular} but non-distributive lattice is the \term{diamond}\fnote{\textcite{Birkhoff1967LatticeTheory} uses the notation \enquote{\( M_5 \)}, but \textcite{Grätzer2011LatticeTheory} and \textcite{DaveyPriestley2002LatticeTheory} prefer \enquote{\( M_3 \)}}
     \begin{equation}\label{eq:ex:def:distributive_lattice/diamond}\tag{\( M_3 \)}
       \begin{aligned}
         \includegraphics[page=1]{output/ex__def__distributive_lattice}
@@ -576,12 +573,12 @@
 \end{example}
 
 \begin{proposition}\label{thm:distributive_modular_lattice_characterization}\mcite[thm. 102(ii)]{Grätzer2011LatticeTheory}
-  A \hyperref[def:modular_lattice]{modular lattice} is \hyperref[def:modular_lattice]{distributive} if and only if no \hyperref[def:lattice/submodel]{sublattice} is isomorphic to the diamond lattice \eqref{eq:ex:def:distributive_lattice/diamond}.
+  A \hyperref[def:modular_lattice]{modular lattice} is \hyperref[def:modular_lattice]{distributive} if and only if no \hyperref[def:lattice/subobject]{sublattice} is isomorphic to the diamond lattice \eqref{eq:ex:def:distributive_lattice/diamond}.
 \end{proposition}
 \begin{proof}
-  \SufficiencySubProof If \( Y \) is a sublattice of \( X \) isomorphic to \( M_3 \), distributivity does not hold for \( X \) with the same counterexample \cref{ex:def:distributive_lattice/diamond} as for \( M_3 \). Therefore, if \( X \) is distributive, \( M_3 \) cannot be isomorphic to a sublattice of \( X \).
+  \SufficiencySubProof If \( M \) is a sublattice of \( L \) isomorphic to \( M_3 \), distributivity does not hold for \( L \) with the same counterexample \cref{ex:def:distributive_lattice/diamond} as for \( M_3 \). Therefore, if \( L \) is distributive, \( M_3 \) cannot be isomorphic to a sublattice of \( L \).
 
-  \NecessitySubProof Suppose that \( M_3 \) is not a sublattice of the modular lattice \( X \).
+  \NecessitySubProof Suppose that \( M_3 \) is not a sublattice of the modular lattice \( L \).
 
   Aiming at a contradiction, suppose that we have the following counterexample to distributivity:
   \begin{equation*}
@@ -592,25 +589,25 @@
   \begin{itemize}
     \item If all three are comparable, then \( \set{ x, y, z } \) is a chain, which is distributive by \cref{thm:def:distributive_lattice/totally_ordered}. This contradicts our assumption that the distributive laws fail for \( x \), \( y \) and \( z \).
 
-    \item If only two are comparable, say \( x \leq z \), then we obtain the \hyperref[ex:def:modular_lattice/pentagon]{pentagonal lattice} \eqref{eq:thm:modular_lattice_characterization/pentagonal}, which contradicts the modularity of \( X \).
+    \item If only two are comparable, say \( x \leq z \), then we obtain the \hyperref[ex:def:modular_lattice/pentagon]{pentagonal lattice} \eqref{eq:thm:modular_lattice_characterization/pentagonal}, which contradicts the modularity of \( L \).
 
-    \item It remains for \( x \), \( y \) and \( z \) not to be comparable.
+    \item It remains for \( x \), \( y \) and \( z \) not to be comparable. We thus obtain the following diamond:
+    \begin{equation}\label{eq:thm:distributive_lattice_characterization/diamond}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__distributive_lattice_characterization}
+      \end{aligned}
+    \end{equation}
+
+    But we have assumed that no sublattice of \( L \) is isomorphic to \( M_3 \) --- again a contradiction.
   \end{itemize}
 
-  We thus obtain the following diamond:
-  \begin{equation}\label{eq:thm:distributive_lattice_characterization/diamond}
-    \begin{aligned}
-      \includegraphics[page=1]{output/thm__distributive_lattice_characterization}
-    \end{aligned}
-  \end{equation}
+  The obtained contradiction show that meets always distribute over joins, that is, \eqref{eq:def:distributive_lattice/meet_over_join} holds for any triple of elements in \( L \). The dual law \eqref{eq:def:distributive_lattice/join_over_meet} follows via \fullref{thm:lattice_duality}.
 
-  But we have assumed that no sublattice of \( X \) is isomorphic to \( M_3 \). The obtained contradiction shows that meets always distribute over joins, that is, \eqref{eq:def:distributive_lattice/meet_over_join} holds for any triple of elements in \( X \). The dual law \eqref{eq:def:distributive_lattice/join_over_meet} holds.
-
-  Therefore, \( X \) is distributive.
+  Therefore, \( L \) is distributive.
 \end{proof}
 
 \begin{corollary}\label{thm:distributive_lattice_characterization}\mcite[thm. 101]{Grätzer2011LatticeTheory}
-  A \hyperref[def:lattice]{lattice} is \hyperref[def:modular_lattice]{distributive} if and only if no \hyperref[def:lattice/submodel]{sublattice} is isomorphic to either the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon} nor the diamond lattice \eqref{eq:ex:def:distributive_lattice/diamond}.
+  A \hyperref[def:lattice]{lattice} is \hyperref[def:modular_lattice]{distributive} if and only if no \hyperref[def:lattice/subobject]{sublattice} is isomorphic to either the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon} nor the diamond lattice \eqref{eq:ex:def:distributive_lattice/diamond}.
 \end{corollary}
 \begin{proof}
   Follows from \cref{thm:modular_lattice_characterization} and \cref{thm:distributive_modular_lattice_characterization}.
@@ -636,19 +633,19 @@
 \end{comments}
 
 \begin{remark}\label{rem:algebraic_and_lattice_polynomials}
-  Let \( L \) be the two-element \hyperref[def:extremal_points/bounds]{bounded lattice} \( \set{ \top, \bot } \). As discussed in \cref{ex:def:distributive_lattice/two_element}, it is \hyperref[def:distributive_lattice]{distributive}.
+  Consider the \hyperref[def:bounded_lattice/trivial]{two-element bounded lattice} \( L = \set{ \top, \bot } \). As discussed in \cref{ex:def:distributive_lattice/two_element}, it is \hyperref[def:distributive_lattice]{distributive}.
 
   We can regard \( L \) as a \hyperref[def:lattice_as_semiring]{join-meet semiring} \( (L, \vee, \wedge) \), which allows us to form the \hyperref[def:polynomial_algebra]{polynomial semiring} \( L[\mscrX] \).
 
-  \hyperref[def:polynomial_algebra/monomials]{Monomials} are simply finite meets, for example \( XY = X \wedge Y \) and \( XZ = X \wedge Z \). These are also \hyperref[def:free_lattice/polynomial]{lattice polynomials}. The monomial \( X^3 = X \wedge X \wedge X \) is not a lattice polynomial (or rather, it is congruent to the lattice polynomial \( X \)).
+  \hyperref[def:polynomial_algebra/monomials]{Monomials} are simply finite meets, for example \( XY = X \wedge Y \) and \( XZ = X \wedge Z \). These are also \hyperref[def:free_lattice/polynomial]{lattice polynomials}. The monomial \( X^3 = X \wedge X \wedge X \) is not a lattice polynomial (or rather, it is congruent to the lattice polynomial \( L \)).
 
   On the other hand, the lattice polynomial \( (X \vee Y) \wedge Z \) corresponds to the algebraic polynomial \( (X + Y)Z = XZ + YZ \). Distributivity is essential. If we regard \( L \) as the \hyperref[def:lattice_as_semiring]{meet-join semiring} instead, \( (X \vee Y) \wedge Z \) becomes \( XY + Z \).
 
   So, while lattice polynomials are equivalent to algebraic polynomials over \( L \), they are qualitatively different.
 \end{remark}
 
-\begin{definition}\label{def:opposite_lattice_polynomial}\mimprovised
-  To every \hyperref[def:free_lattice/polynomial]{lattice polynomial} \( f \), there corresponds an \term{opposite polynomial}
+\begin{definition}\label{def:dual_lattice_polynomial}\mimprovised
+  To every \hyperref[def:free_lattice/polynomial]{lattice polynomial} \( f \), there corresponds an \term{dual polynomial}
   \begin{equation*}
     f^{\oppos} \coloneqq \begin{cases}
       \latbot                         &f = \lattop, \\
@@ -660,11 +657,11 @@
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item Opposite polynomials are closely related to \fullref{alg:propositional_formula_dualization} via \fullref{alg:propositional_formula_to_boolean_term}.
+  \item Dual polynomials are closely related to \fullref{alg:propositional_formula_dualization} via \fullref{alg:propositional_formula_to_boolean_term}.
 \end{comments}
 
 \begin{proposition}\label{thm:free_lattice_opposite}
-  The \hyperref[def:opposite_lattice_polynomial]{opposite polynomial map} \( (\anon*)^{\oppos} \) is an isomorphism between a \hyperref[def:free_lattice]{free lattice} and its \hyperref[def:lattice/opposite]{opposite}.
+  The \hyperref[def:dual_lattice_polynomial]{dual polynomial map} \( (\anon*)^{\oppos} \) is an isomorphism between a \hyperref[def:free_lattice]{free lattice} and its \hyperref[def:lattice/opposite]{dual lattice}.
 \end{proposition}
 \begin{proof}
   The definition of opposite polynomial is adjusted so that joins and meets, as well as bottom and top elements, are exchanged.
@@ -673,21 +670,63 @@
 \paragraph{Complete lattices}
 
 \begin{definition}\label{def:complete_lattice}\mcite[6]{Birkhoff1967LatticeTheory}
-  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} is a \term[ru=полная (решётка) (\cite[133]{Гуров2013ТеорияРешёток})]{complete lattice} if an \emph{arbitrary} subset has a supremum and an infimum.
+  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} is a \term[ru=полная (решётка) (\cite[133]{Гуров2013ТеорияРешёток})]{complete lattice} if every (possibly empty) subset has a supremum and an infimum. We call these operations \term{join} and \term{meet}, as in lattices, and we use the more general notation \( \bigvee A \) and \( \bigwedge A \) (where \( A \) is a subset). A complete lattice is in particular a \hyperref[def:bounded_lattice]{bounded lattice}.
 
-  Complete lattices cannot be described via first-order logic without emulating some kind of membership relation. We will describe some metamathematical properties of complete lattices via analogy with \cref{def:lattice}.
+  As shown in \cref{thm:complete_semilattice}, it the existence of arbitrary joins implies the existence of arbitrary meets.
+
+  Complete lattices can be described in \hyperref[def:second_order_logic]{monadic second order logic} --- see \cref{rem:logical_theory_of_complete_lattices}. We list some metamathematical properties without logical formalities:
   \begin{thmenum}
-    \thmitem{def:complete_lattice/submodel}\mcite[250]{Grätzer2011LatticeTheory} We call a subset of a complete lattice a \term{complete sublattice} if it is closed under arbitrary suprema and infima.
+    \thmitem{def:complete_lattice/morphism}\mimprovised We say that a function between complete lattices is a \term{homomorphism of complete lattices} if it preserves arbitrary joins and meets.
 
-    \thmitem{def:complete_lattice/homomorphism}\mimprovised We say that a function between complete lattices is a \term{homomorphism of \emph{complete} lattices} if it preserves arbitrary joins and meets.
+    Every homomorphism of complete lattices is obviously a \hyperref[def:bounded_lattice/morphism]{homomorphism of bounded lattices} and, by \cref{thm:def:lattice/morphism_respects_order}, also an \hyperref[def:partially_ordered_set/morphism]{order homomorphism}.
 
-    Every homomorphism of complete lattices is obviously a lattice homomorphism and, by \cref{thm:def:lattice/homomorphism_preserves_order}, also an order homomorphism.
+    \thmitem{def:complete_lattice/category} For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we can define a category of \( \mscrU \)-small complete lattices and their homomorphisms.
 
-    \thmitem{def:complete_lattice/opposite}\mcite[7]{Birkhoff1967LatticeTheory} The \hyperref[def:partially_ordered_set/opposite]{dual} \( X^\oppos \) of a complete lattice \( X \) is again a complete lattice.
+    \thmitem{def:complete_lattice/subobject}\mcite[250]{Grätzer2011LatticeTheory} A \term{complete sublattice} of \( L \) is a subset of \( L \) that closed under arbitrary joins and meets.
 
-    \thmitem{def:complete_lattice/category} Complete lattices and their homomorphisms form a subcategory of the category \( \cat{Lat} \) of lattices.
+    As we will show in \cref{thm:complete_sublattice}, subgraphs correspond to \hyperref[def:categorical_subobject]{categorical subobjects}.
+
+    \thmitem{def:complete_lattice/opposite} The \hyperref[def:partially_ordered_set/opposite]{dual} \( X^\oppos \) of a complete lattice \( L \) is again a complete lattice.
+
+    Naturally, we will call it the \term{dual complete lattice}.
   \end{thmenum}
 \end{definition}
+
+\begin{proposition}\label{thm:complete_sublattice}
+  The \hyperref[def:categorical_subobject]{categorical subobjects} in category of \( \mscrU \)-small complete lattices correspond exactly to the subgraphs we have defined in \cref{def:complete_lattice/subobject}:
+  \begin{displayquote}
+    If \( M \) and \( N \) are complete sublattices of \( L \), the corresponding inclusions \( \iota_M: M \to L \) and \( \iota_N: N \to L \) induce the same categorical subobject of \( L \) if and only if \( M = N \).
+  \end{displayquote}
+\end{proposition}
+\begin{proof}
+  Both \( \iota_M \) and \( \iota_N \) induce categorical subobjects because they are monomorphisms --- \( \varphi \bincirc \iota_M = \psi \bincirc \iota_N \) is equivalent to
+  \begin{equation*}
+    \varphi(x) = \varphi(\iota_M(x)) = \psi(\iota_N(x)) = \psi(x).
+  \end{equation*}
+
+  \SufficiencySubProof Suppose that \( \iota_M \) and \( \iota_N \) induce the same subobjects. Then by definition there exists some isomorphism \( \varphi: M \to N \) such that \( \iota_M = \iota_N \bincirc \varphi \). Thus, for every point \( x \) in \( M \),
+  \begin{equation*}
+    x = \iota_M(x) = \iota_N(\varphi(x)) = \varphi(x),
+  \end{equation*}
+  so \( \varphi \) is the inclusion of \( M \) into \( N \). Since \( \varphi \) is bijective, we conclude that \( M = N \).
+
+  We conclude that \( M \) and \( N \) coincide.
+
+  \NecessitySubProof Conversely, if \( M = N \), then \( \iota_M = \iota_N \), so the induced subobjects obviously coincide.
+\end{proof}
+
+\begin{remark}\label{rem:logical_theory_of_complete_lattices}
+  \hyperref[def:second_order_logic]{Monadic second order logic} allows us to formalize \hyperref[def:complete_lattice]{complete lattices}. We start with a translation via \fullref{alg:fol_to_hol} of the \hyperref[def:partially_ordered_set/theory]{theory of partially ordered sets}.
+
+  We additionally need two constants --- \( \latvee \) and \( \latwedge \), both inhabiting \( (\syn\iota \synimplies \syn\omicron) \synimplies \syn\iota \). For any \hyperref[def:hol_expression/predicate]{predicate} \( a: \syn\iota \synimplies \syn\omicron \), interpreted as a set, \( {\latvee} a \) is its supremum and \( {\latwedge} a \) is its infimum.
+
+  Constructing a \hyperref[def:hol_theory]{theory} requires encoding these requirements. For example, the statement that \( {\latvee} \syna \) is the least upper bound of \( \syna \) can be encoded via the axiom
+  \begin{equation*}
+    \qforall {\syna^{\syn\iota \synimplies \syn\omicron}} \parens[\big]{ \underbrace{\qforall {\synx^{\syn\iota}} (\syna \synx \synimplies \synx \synleq {\latvee} \syna)}_{{\latvee} \syna \T*{is an upper bound of} \syna} } \synwedge \parens[\big]{ \qforall {\synb^{\syn\iota}} \parens[\big]{ \underbrace{\qforall {\synx^{\syn\iota}} (\syna \synx \synimplies \synx \synleq \synb) }_{\synb \T*{is an upper bound of} \syna} } \synimplies {\latvee} \syna \leq \synb }.
+  \end{equation*}
+
+  For \( {\latwedge} \syna \), we can add a dual axiom.
+\end{remark}
 
 \begin{proposition}\label{thm:complete_semilattice}\mcite[lemma 34]{Grätzer2011LatticeTheory}
   If a partially ordered set has arbitrary joins (resp. meets), then it also has arbitrary meets (resp. joins).
@@ -729,9 +768,7 @@
 
     \thmitem{thm:def:complete_lattice/finite} Every finite \hyperref[def:lattice]{lattice} is complete.
 
-    \thmitem{thm:def:complete_lattice/bounded} Every complete lattice a \hyperref[def:bounded_lattice]{bounded lattice}.
-
-    \thmitem{thm:def:complete_lattice/embedding} Every \hyperref[def:partially_ordered_set/morphism]{order embedding} between complete lattices is an \hyperref[def:lattice/homomorphism]{embedding of complete lattices}.
+    \thmitem{thm:def:complete_lattice/embedding} Every \hyperref[def:partially_ordered_set/morphism]{order embedding} between complete lattices is an \hyperref[def:lattice/morphism]{embedding of complete lattices}.
 
     \thmitem{thm:def:complete_lattice/closed_interval} A \hyperref[def:order_interval/closed]{closed interval} in a complete lattice is a complete sublattice.
   \end{thmenum}
@@ -741,8 +778,6 @@
 
   \SubProofOf{thm:def:complete_lattice/finite} We can use induction to define joins and meets for arbitrary non-zero subsets of a finite lattice. It remains to note that the join of the empty set is the meet of the entire lattice, and similarly for the meet of the empty set.
 
-  \SubProofOf{thm:def:complete_lattice/bounded} Trivial.
-
   \SubProofOf{thm:def:complete_lattice/embedding} Our proof of \cref{thm:def:lattice/embedding} can be adapted straightforwardly.
 
   \SubProofOf{thm:def:complete_lattice/closed_interval} Trivial.
@@ -750,54 +785,44 @@
 
 \paragraph{Ideals and filters in lattices}
 
-\begin{definition}\label{def:lattice_ideal}\mcite[25]{Birkhoff1967LatticeTheory}
-  Fix some \hyperref[def:lattice]{lattice} \( X \). We will define concepts analogous to those from \fullref{sec:semiring_ideals}. In some cases the notions coincide --- see \cref{thm:lattice_ideal_as_semiring_ideal}.
+\begin{definition}\label{def:lattice_ideal}\mcite[32; 34]{Grätzer2011LatticeTheory}
+  Fix some \hyperref[def:lattice]{lattice} \( L \). We will define concepts analogous to those from \fullref{sec:semiring_ideals}. In some cases the notions coincide --- see \cref{thm:lattice_ideal_as_semiring_ideal}.
 
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      We call the nonempty subset \( I \) a \term[ru=решёточный идеал (\cite[def. 4.5]{Гуров2013ТеорияРешёток})]{lattice ideal} if it is closed under joins with elements of itself and under arbitrary meets:
-      \small
-      \begin{align}
-        &i \in I \T{and} j \in I \T{imply} i \vee j \in I, \label{eq:def:lattice_ideal/lattice_join} \\
-        &i \in I \T{and} x \in X \T{imply} i \wedge x \in I. \label{eq:def:lattice_ideal/lattice_meet}
-      \end{align}
-      \normalsize
-    \end{leftcolumn}
+  We call the nonempty subset \( I \) a \term[ru=решёточный идеал (\cite[def. 4.5]{Гуров2013ТеорияРешёток})]{lattice ideal} if it is closed under joins with elements of itself and under arbitrary meets:
+  \begin{align}
+    &i \in I \T{and} j \in I \T{imply} i \vee j \in I, \label{eq:def:lattice_ideal/lattice_join} \\
+    &i \in I \T{and} x \in L \T{imply} i \wedge x \in I. \label{eq:def:lattice_ideal/lattice_meet}
+  \end{align}
 
-    \begin{rightcolumn}
-      \hyperref[con:duality]{Dually}, we call the nonempty subset \( F \) a \term[ru=решёточный фильтр (\cite[def. 4.5]{Гуров2013ТеорияРешёток})]{lattice filter} if it is closed under joins with elements of itself and under arbitrary meets:
-      \small
-      \begin{align}
-        &i \in I \T{and} x \in X \T{imply} i \vee x \in I, \label{eq:def:lattice_ideal/filter_join} \\
-        &i \in I \T{and} j \in I \T{imply} i \wedge j \in I. \label{eq:def:lattice_ideal/filter_meet}
-      \end{align}
-      \normalsize
-    \end{rightcolumn}
-  \end{paracol}
+  Dually, we call the nonempty subset \( F \) a \term[ru=решёточный фильтр (\cite[def. 4.5]{Гуров2013ТеорияРешёток})]{lattice filter} if it is closed under joins with elements of itself and under arbitrary meets:
+  \begin{align}
+    &i \in I \T{and} x \in L \T{imply} i \vee x \in I, \label{eq:def:lattice_ideal/filter_join} \\
+    &i \in I \T{and} j \in I \T{imply} i \wedge j \in I. \label{eq:def:lattice_ideal/filter_meet}
+  \end{align}
 
-  Both ideals and filters are clearly \hyperref[def:lattice/submodel]{sublattices}. Equivalent conditions are given in \cref{thm:def:lattice_ideal/directed_and_closed}.
+  Both ideals and filters are clearly \hyperref[def:lattice/subobject]{sublattices}. Equivalent conditions are given in \cref{thm:def:lattice_ideal/directed_and_closed}.
 
   \begin{thmenum}
     \thmitem{def:lattice_ideal/principal}
     \begin{paracol}{2}
-      \begin{leftcolumn}\mcite[32]{Grätzer2011LatticeTheory}
+      \begin{leftcolumn}
         We define the \term[ru=главный (идеал) (\cite[140]{Гуров2013ТеорияРешёток})]{principal ideal} of \( x \) as the \hyperref[def:order_interval/unbounded]{closed initial segment}
         \begin{equation*}
-          \set{ y \in X \given y \leq x }.
+          L_{\geq x} = \set{ y \in L \given y \leq x }.
         \end{equation*}
       \end{leftcolumn}
 
       \begin{rightcolumn}
         Dually, we define the \term{principal filter} of \( x \) as the \hyperref[def:order_interval/unbounded]{closed final segment}
         \begin{equation*}
-          \set{ y \in X \given y \geq x }.
+          L_{\leq x} = \set{ y \in L \given y \geq x }.
         \end{equation*}
       \end{rightcolumn}
     \end{paracol}
 
     \thmitem{def:lattice_ideal/prime}
     \begin{paracol}{2}
-      \begin{leftcolumn}\mcite[28]{Birkhoff1967LatticeTheory}
+      \begin{leftcolumn}
         We say that a proper ideal \( I \) is \term{prime} if \( {x \wedge y \in I} \) implies \( {x \in I} \) or \( {y \in I} \) (or both).
       \end{leftcolumn}
 
@@ -808,7 +833,7 @@
 
     \thmitem{def:lattice_ideal/completely_prime}
     \begin{paracol}{2}
-      \begin{leftcolumn}\mcite[3]{PicadoPultr2012FramesAndLocales}
+      \begin{leftcolumn}\mimprovised
         A stronger condition is for the ideal to be \term{completely prime}, meaning that \( \bigwedge_{k \in \mscrK} x_k \in I \) implies that \( x_k \in I \) for at least one \( k \in \mscrK \).
       \end{leftcolumn}
 
@@ -819,7 +844,7 @@
 
     \thmitem{def:lattice_ideal/maximal}
     \begin{paracol}{2}
-      \begin{leftcolumn}\mcite[28]{Birkhoff1967LatticeTheory}
+      \begin{leftcolumn}\mcite[def. 10.10]{DaveyPriestley2002LatticeTheory}
         We call a proper ideal \term{maximal} if it is \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal} with respect to set inclusion.
       \end{leftcolumn}
 
@@ -829,6 +854,9 @@
     \end{paracol}
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Completely prime filters are defined inline in \cite[41]{Johnstone1982StoneSpaces}. We dualize this definition for ideals.
+\end{comments}
 
 \begin{definition}\label{def:directed_set}\mcite[def. III.1.7]{Bourbaki2004TheoryOfSets}
   We say that a nonempty subset \( A \) of a \hyperref[def:preordered_set]{preordered set} is \term[bg=насочено надясно (множество) (\cite[10]{Проданов1982ФункционаленАнализЧаст1})]{right directed} or simply \term{directed} if every pair of elements of \( A \) has an \hyperref[def:extremal_points/bounds]{upper bound}. Right directed sets are also called \term[en=upward directed (\cite[25]{Johnstone1982StoneSpaces})]{upward directed}.
@@ -846,17 +874,17 @@
 
     Dually, a set is a filter if it is \hyperref[def:directed_set]{downward directed} and \hyperref[def:closed_ordered_subset]{upward closed}.
 
-    \thmitem{thm:def:lattice_ideal/greatest} An ideal is principal if and only if it has a greatest element. Furthermore, the greatest element is the generator.
+    \thmitem{thm:def:lattice_ideal/greatest} An ideal (resp. filter) is \hyperref[def:lattice_ideal/principal]{principal} if and only if it has a greatest element (resp. least element). This element is the generator.
 
-    \thmitem{thm:def:lattice_ideal/prime_complement} The complement of a \hyperref[def:lattice_ideal/prime]{prime ideal} (resp. \hyperref[def:lattice_ideal/prime]{prime filter}) is a prime filter (resp. ideal).
+    \thmitem{thm:def:lattice_ideal/prime_complement} The complement of a \hyperref[def:lattice_ideal/prime]{prime ideal} (resp. filter) is a prime filter (resp. ideal).
 
-    \thmitem{thm:def:lattice_ideal/completely_prime_complement} A set is a prime \hyperref[def:lattice_ideal/principal]{principal} ideal (resp. filter) if and only if its complement is \hyperref[def:lattice_ideal/completely_prime]{completely prime} filter (resp. ideal).
+    \thmitem{thm:def:lattice_ideal/completely_prime_complement} A set is a prime principal ideal (resp. filter) if and only if its complement is \hyperref[def:lattice_ideal/completely_prime]{completely prime} filter (resp. ideal).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
   We will prove the statements only for ideals and complements of ideals. The statements for complements of filters will follow via \fullref{thm:lattice_duality}.
 
-  \SubProofOf{thm:def:lattice_ideal/directed_and_closed} Fix a lattice \( X \) and a subset \( I \).
+  \SubProofOf{thm:def:lattice_ideal/directed_and_closed} Fix a lattice \( L \) and a subset \( I \).
 
   \SufficiencySubProof* Suppose that \( I \) is an ideal.
 
@@ -873,7 +901,7 @@
     \item It is closed under meets with arbitrary elements of the lattice because if \( i \in I \), then \( x \wedge i \leq i \) and downward closedness implies \( x \wedge i \in I \).
   \end{itemize}
 
-  \SubProofOf{thm:def:lattice_ideal/greatest} Fix a lattice \( X \).
+  \SubProofOf{thm:def:lattice_ideal/greatest} Fix a lattice \( L \).
 
   \SufficiencySubProof* Consider the principal ideal \( X_{\leq a} \). Then \( a \) is an upper bound of \( X_{\leq a} \) contained in \( X_{\leq a} \), that is, the greatest element of \( X_{\leq a} \).
 
@@ -881,18 +909,18 @@
 
   We conclude that \( I = X_{\leq a} \).
 
-  \SubProofOf{thm:def:lattice_ideal/prime_complement} Let \( I \) be a prime ideal of the lattice \( X \). Define \( I \coloneqq X \setminus F \). Then \( F \) is a filter:
+  \SubProofOf{thm:def:lattice_ideal/prime_complement} Let \( I \) be a prime ideal of the lattice \( L \). Define \( I \coloneqq L \setminus F \). Then \( F \) is a filter:
   \begin{itemize}
     \item For any two elements \( i \) and \( j \) of \( F \), either \( i \wedge j \) is in \( I \) or in \( F \). If we suppose that \( i \wedge j \) is in \( I \), since \( I \) is prime, then either \( i \) or \( j \) must be in \( I \) --- a contradiction. Thus, \( i \wedge j \) is in \( F \).
 
-    \item For any element \( x \) of \( X \) and \( i \) in \( F \), either \( i \vee x \) is in \( I \) or in \( F \). If we suppose that \( i \vee x \) is in \( I \), then, since \( I \) is an ideal, we would obtain that \( i = i \wedge (i \vee x) \) belongs to \( I \) --- again, a contradiction. Thus, \( i \vee x \) is in \( F \).
+    \item For any element \( x \) of \( L \) and \( i \) in \( F \), either \( i \vee x \) is in \( I \) or in \( F \). If we suppose that \( i \vee x \) is in \( I \), then, since \( I \) is an ideal, we would obtain that \( i = i \wedge (i \vee x) \) belongs to \( I \) --- again, a contradiction. Thus, \( i \vee x \) is in \( F \).
   \end{itemize}
 
   Furthermore, let \( i \vee j \) be in \( F \). If both \( i \) and \( j \) are in \( I \), since \( I \) is an ideal, the join \( i \vee j \) must be in \( I \) --- a contradiction. Thus, either \( i \) or \( j \) or both must be in \( F \).
 
   Generalizing, we conclude that \( F \) is a prime filter.
 
-  \SubProofOf{thm:def:lattice_ideal/completely_prime_complement} Consider a subset \( I \) of \( X \) and denote its complement by \( F \).
+  \SubProofOf{thm:def:lattice_ideal/completely_prime_complement} Consider a subset \( I \) of \( L \) and denote its complement by \( F \).
 
   \SufficiencySubProof* Suppose that \( I \) be a principal prime ideal with generator \( p \). \Cref{thm:def:lattice_ideal/prime_complement} implies that \( F \) is a filter. We will show that it is completely prime.
 
@@ -937,7 +965,7 @@
       \label{fig:ex:def:lattice_ideal/lattice}
     \end{figure}
 
-    We can thoroughly verify that \( D_n \) is a lattice ideal:
+    We can verify that \( D_n \) is a lattice ideal:
     \begin{itemize}
       \item If \( n \) is a common multiple of \( k \) and \( m \), their least common multiple \( \lcm(k, m) \) divides \( n \), thus \( D_n \) is closed under joins.
       \item If \( k \) divides \( n \), then, for any \( m \), the meet \( \gcd(k, m) \) is a divisor of \( k \), hence also a divisor of \( n \) --- thus \( D_n \) is closed under arbitrary meets.
@@ -965,18 +993,16 @@
 
     By \fullref{thm:lattice_duality}, the sublattice of subgroups containing \( N \) (rather than contained in \( N \)) is a filter (rather than an ideal).
 
-    \thmitem{ex:def:lattice_ideal/maximal_not_prime}\mcite{MathSE:non_prime_maximal_ideal} For non-distributive lattices, maximal ideals may fail to be prime. For example, consider the diamond \eqref{eq:ex:def:distributive_lattice/diamond}.
+    \thmitem{ex:def:lattice_ideal/maximal_not_prime}\mcite{MathSE:non_prime_maximal_ideal} For non-distributive lattices, maximal ideals may fail to be prime. For example, consider the ideal \( \set{ \bot, a } \) in the diamond \eqref{eq:ex:def:distributive_lattice/diamond}.
 
-    Consider the ideal \( \set{ \bot, a } \). If we add \( b \) or \( c \), we would also need to add \( \top = a \vee b = a \vee c \), and if we add \( \top \), we would need to add \( b = \top \wedge b \) and \( c = \top \wedge c \). Therefore, \( \set{ \bot, a } \) is maximal.
+    If we add \( b \) or \( c \), we would also need to add \( \top = a \vee b = a \vee c \), and if we add \( \top \), we would need to add \( b = \top \wedge b \) and \( c = \top \wedge c \). Therefore, \( \set{ \bot, a } \) is maximal.
 
     But it is not prime because it contains \( b \wedge c = \bot \), but neither \( b \) nor \( c \).
   \end{thmenum}
 \end{example}
 
 \begin{proposition}\label{thm:lattice_divisibility}
-  Identify a \hyperref[def:extremal_points/bounds]{bounded} \hyperref[def:distributive_lattice]{distributive lattice} with its \hyperref[def:lattice_as_semiring]{join-meet semiring}.
-
-  Then the \hyperref[thm:semiring_divisibility_order]{divisibility (pre)order} \( \mid \) coincides with the dual order \( \geq \).
+  If we identify a \hyperref[def:extremal_points/bounds]{bounded} \hyperref[def:distributive_lattice]{distributive lattice} with its \hyperref[def:lattice_as_semiring]{join-meet semiring}, the \hyperref[thm:semiring_divisibility_order]{divisibility (pre)order} \( \mid \) coincides with the dual order \( \geq \).
 \end{proposition}
 \begin{comments}
   \item We can instead identify the lattice with its meet-join semiring, but then the notions of semiring ideal and lattice ideal would not coincide.
@@ -1009,7 +1035,8 @@
 \begin{definition}\label{def:lattice_prime_element}
   We say that the lattice element \( p \) is \term{prime} if any of the following equivalent conditions hold:
   \begin{thmenum}
-    \thmitem{def:lattice_prime_element/direct}\mcite[13]{PicadoPultr2012FramesAndLocales} If \( x \wedge y \leq p \), then \( x \leq p \) or \( y \leq p \) (or both).
-    \thmitem{def:lattice_prime_element/ideals}\mcite[13]{PicadoPultr2012FramesAndLocales} The \hyperref[def:lattice_ideal/principal]{principal ideal} of \( p \) is \hyperref[def:lattice_ideal/prime]{prime}.
+    \thmitem{def:lattice_prime_element/ideals}\mcite[41]{Johnstone1982StoneSpaces} The \hyperref[def:lattice_ideal/principal]{principal ideal} of \( p \) is \hyperref[def:lattice_ideal/prime]{prime}.
+
+    \thmitem{def:lattice_prime_element/direct}\mimprovised If \( x \wedge y \leq p \), then \( x \leq p \) or \( y \leq p \) (or both).
   \end{thmenum}
 \end{definition}
