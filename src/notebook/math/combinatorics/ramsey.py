@@ -1,6 +1,6 @@
 import itertools
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 lazy from collections.abc import Collection, Iterable, Mapping
 
 from notebook.exceptions import UnreachableException
@@ -94,7 +94,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
 
         return
 
-    start = datetime.now()
+    start = datetime.now(tz=UTC)
     checkpoint = 0
     subgraphs_traversed = 0
     colorings_traversed = 0
@@ -113,7 +113,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
                         sizes=sizes,
                         colorings_traversed=colorings_traversed,
                         subgraphs_traversed=subgraphs_traversed,
-                        run_time=datetime.now() - start,
+                        run_time=datetime.now(tz=UTC) - start,
                         result=None,
                     )
 
@@ -124,7 +124,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
                     sizes=sizes,
                     colorings_traversed=colorings_traversed,
                     subgraphs_traversed=subgraphs_traversed,
-                    run_time=datetime.now() - start,
+                    run_time=datetime.now(tz=UTC) - start,
                     result=n + 1,
                 )
 

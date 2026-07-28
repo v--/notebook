@@ -1,5 +1,5 @@
 import abc
-from datetime import datetime
+from datetime import UTC, datetime
 
 lazy from notebook.commands.watcher.trigger import TaskTrigger
 
@@ -14,7 +14,7 @@ class Task(abc.ABC):
     def __init__(self, trigger: TaskTrigger, reason: str) -> None:
         self.trigger = trigger
         self.reason = reason
-        self.created = datetime.now()
+        self.created = datetime.now(tz=UTC)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Task):
