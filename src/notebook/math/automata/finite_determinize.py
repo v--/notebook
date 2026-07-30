@@ -1,3 +1,4 @@
+from notebook.support.coderefs import collector
 from collections.abc import Collection
 
 from notebook.support.collections import SequentialMapping, SequentialSet
@@ -46,6 +47,7 @@ def _determinize_recurse[StateT, SymbolT](
             _determinize_recurse(nondet, det, new_visited, dest_set)
 
 
+@collector.ref('automata.finite.determinize')
 def determinize[StateT, SymbolT](nondet: FiniteAutomaton[StateT, SymbolT]) -> FiniteAutomaton[Collection[StateT], SymbolT]:
     det = FiniteAutomaton[Collection[StateT], SymbolT]()
     det.initial.add(nondet.initial)

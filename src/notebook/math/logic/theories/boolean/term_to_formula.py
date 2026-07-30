@@ -16,7 +16,7 @@ from .signature import (
 )
 
 
-@collector.ref('alg:propositional_formula_to_boolean_term')
+@collector.ref('alg:boolean_term_to_propositional_formulas')
 def boolean_term_to_prop_formula(term: Term) -> PropFormula:
     match term:
         case Variable():

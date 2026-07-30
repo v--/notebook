@@ -2,9 +2,25 @@
 
 \paragraph{Boolean algebra}
 
-\begin{definition}\label{def:bounded_lattice_complement}\mcite[16]{Birkhoff1967LatticeTheory}
-  In a \hyperref[def:bounded_lattice]{bounded lattice}, a \term[ru=дополнение (\cite[def. 1.1]{Гуров2013ТеорияРешёток})]{complement} of an element \( x \) is another element \( y \) such that \( x \wedge y = \bot \) and \( x \vee y = \top \).
+\begin{definition}\label{def:bounded_lattice_complement}\mcite[def. 4.13]{DaveyPriestley2002LatticeTheory}
+  In a \hyperref[def:bounded_lattice]{bounded lattice}, if \( x \wedge y = \bot \) and \( x \vee y = \top \), we say that \( y \) is a \term[ru=дополнение (\cite[def. 1.1]{Гуров2013ТеорияРешёток})]{complement} of \( x \).
 \end{definition}
+\begin{comments}
+  \item This complement is unique in \hyperref[def:distributive_lattice]{distributive lattices}, as shown in \cref{thm:distributive_bounded_lattice_unique_complement}, but may fail more generally --- see \cref{ex:pentagon_lattice_complement}.
+\end{comments}
+
+\begin{example}\label{ex:pentagon_lattice_complement}
+  In the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon}, we have
+  \begin{equation*}
+    a \wedge b = a \wedge c = b \wedge c = \bot
+  \end{equation*}
+  and
+  \begin{equation*}
+    a \vee b = a \vee c = b \vee c = \top.
+  \end{equation*}
+
+  So \( a \), \( b \) and \( c \) are \hyperref[def:bounded_lattice_complement]{complements} of each other.
+\end{example}
 
 \begin{proposition}\label{thm:distributive_bounded_lattice_unique_complement}
   In a \hyperref[def:extremal_points/bounds]{bounded} \hyperref[def:distributive_lattice]{distributive lattice}, each element has at most one complement.
@@ -17,55 +33,109 @@
     y \wedge \top
     = \\ &=
     y \wedge (z \vee x)
-    = \\ &\reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} =
+    \reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} = \\ &=
     (y \wedge z) \vee (y \wedge x)
-    = \\ & =
-    y \wedge z
-    = \\ & =
-    (x \wedge z) \vee (y \wedge z)
-    = \\ &\reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} =
-    (x \vee y) \wedge z
-    = \\ & =
+    = \\ &=
+    (y \wedge z) \vee \bot
+    \reloset {\eqref{eq:def:bounded_lattice/theory/top}} = \\ &=
+    (y \wedge z)
+    = \\ &\vdots \\ &=
     z.
   \end{balign*}
 \end{proof}
 
-\begin{definition}\label{def:boolean_algebra}\mcite[18]{Birkhoff1967LatticeTheory}
+\begin{definition}\label{def:boolean_algebra}\mcite[def. 4.16]{DaveyPriestley2002LatticeTheory}
   A \term[ru=булева алгебра (\cite[def. 1.1]{Гуров2013ТеорияРешёток})]{Boolean algebra} is a \hyperref[def:extremal_points/bounds]{bounded} \hyperref[def:distributive_lattice]{distributive lattice} with an additional unary operation \( {\oline \anon} \), such that \( {\oline x} \) is a \hyperref[def:bounded_lattice_complement]{complement} of \( x \).
 
   Existence of the complement is provided by the operation itself, while uniqueness follows from \cref{thm:distributive_bounded_lattice_unique_complement}.
 
   Boolean algebras have the following metamathematical properties:
   \begin{thmenum}
-    \thmitem{def:boolean_algebra/theory}\mimprovised We extend the \hyperref[def:lattice/theory]{first-order theory of lattices} by adding:
-    \begin{itemize}
-      \item The nullary functional symbols \( \top \) and \( \bot \) along with the axioms \eqref{eq:def:bounded_lattice/theory/top} and \eqref{eq:def:bounded_lattice/theory/bot}.
+    \thmitem{def:boolean_algebra/theory}\mimprovised We will state an \hyperref[def:fol_equational_theory]{equational theory} for Boolean algebras based on the \hyperref[def:bounded_lattice/theory]{theory of bounded lattices} extended with the distributivity axioms \eqref{eq:def:distributive_lattice/join_over_meet} and \eqref{eq:def:distributive_lattice/meet_over_join}.
 
-      \item The unary functional symbol \( {\oline {\anon}} \) along with the axioms
+    \begin{thmenum}[series=def:boolean_algebra/theory]
+      \thmitem{def:boolean_algebra/theory/complement} We add a \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\latneg} \) governed by the following axioms:
       \begin{align}
-        \xi \vee \oline \xi \syneq \top, \label{eq:def:boolean_algebra/join} \\
-        \xi \wedge \oline \xi \syneq \bot. \label{eq:def:boolean_algebra/meet}
+        \qforall \synx (\synx \latvee \latneg \synx   &\syneq \lattop), \label{eq:def:boolean_algebra/theory/complement/join} \\
+        \qforall \synx (\synx \latwedge \latneg \synx &\syneq \latbot). \label{eq:def:boolean_algebra/theory/complement/meet}
       \end{align}
-    \end{itemize}
+    \end{thmenum}
 
-    \thmitem{def:boolean_algebra/submodel}\mcite[18]{Birkhoff1967LatticeTheory} In addition to containing the joins and meets of all its members, a \hyperref[def:fol_substructure/submodel]{first-order submodel} of a Boolean algebra must also contain the complement of each of its members. We call such submodels \term{Boolean subalgebras}.
+    This theory can be extended:
+    \begin{thmenum}[resume=def:boolean_algebra/theory]
+      \thmitem{def:boolean_algebra/theory/relative} To make the connection with \hyperref[def:heyting_algebra]{Heyting algebras} explicit, we can introduce the symbol \( {\latimplies} \) via a \hyperref[def:fol_definition/function]{first-order function definition}, as per \cref{thm:fol_definitional_extension_equation}:
+      \begin{equation}\label{eq:def:boolean_algebra/theory/relative}
+        (\synx \latimplies \syny) \syneq (\latneg \synx \latvee \syny).
+      \end{equation}
 
-    See \cref{thm:boolean_subalgebra} for simplified equivalent conditions.
+      As we shall show in the proof of correctness, this relation is indeed a relative pseudocomplement, and so the theory of Boolean algebras extends that of \hyperref[def:heyting_algebra]{Heyting algebras}.
+    \end{thmenum}
 
-    \thmitem{def:boolean_algebra/homomorphism}\mcite[89]{HalmosGivant2009BooleanAlgebras} A \hyperref[def:fol_homomorphism]{first-order homomorphism} between Boolean algebras is a bounded lattice homomorphism that preserves complements.
+    \thmitem{def:boolean_algebra/morphism} We say that a function between Boolean algebras is a \term{Boolean homomorphism} if it is a \hyperref[def:bounded_lattice]{homomorphism of bounded lattices}, i.e. if it preserves joins, meets, as well as the top and bottom elements.
 
-    \thmitem{def:boolean_algebra/category}\mcite[\S I.3.2]{Johnstone1982StoneSpaces} We denote the \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models} for Boolean algebras via \( \cat{Bool} \).
+    We will show in \cref{thm:def:boolean_algebra/morphisms_preserve_complements} that Boolean homomorphisms are \hyperref[def:fol_homomorphism]{first-order homomorphism} in the theory of Boolean algebras.
 
-    \thmitem{def:boolean_algebra/opposite}\mimprovised The categories of Boolean algebras have a natural \hyperref[con:opposite_object]{opposite object functor}. We define \( (X, \wedge, \vee, \top, \bot, \oline \anon)^{\oppos} \) as \( (X, \vee, \wedge, \bot, \top, \oline \anon) \) --- the \hyperref[def:bounded_lattice/opposite]{opposite bounded lattice}, but with the same complementation operation. We say that complementation is \term[en=self-dual (\cite[193]{Gottschalk1953Quaternality})]{self-dual}.
+    \thmitem{def:boolean_algebra/category}\mcite[\S I.3.2]{Johnstone1982StoneSpaces} Naturally, for a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the first-order theory of bounded lattices give rise to a \hyperref[def:fol_theory_model_functor/obj]{category of \( \mscrU \)-small models}. We denote this category by \( \ucat{Bool} \).
 
-    We show in \cref{thm:def:boolean_algebra/opposite_order} that the induced order in the opposite Boolean algebra is the \hyperref[def:partially_ordered_set/opposite]{opposite order}.
+    \thmitem{def:boolean_algebra/subobject}\mcite[18]{Birkhoff1967LatticeTheory} A \term{Boolean subalgebra} of \( X \) is a \hyperref[def:bounded_lattice/subobject]{bounded sublattice} that is closed under complements. See \cref{thm:boolean_subalgebra} for simplified equivalent conditions.
 
-    \thmitem{def:boolean_algebra/complete}\mimprovised If \( X \) is simultaneously a Boolean algebra and a \hyperref[def:complete_lattice]{complete lattice}, we call it a \term{complete Boolean algebra}.
+    It follows from \cref{thm:fol_equational_theory_models/substructure} that the Boolean subalgebras of \( X \) are precisely its \hyperref[def:fol_substructure/submodel]{first-order submodels}, and from \cref{thm:fol_categorical_subobjects} that they are its \hyperref[def:categorical_subobject]{categorical subobjects}.
+
+    Furthermore, as a consequence of \cref{thm:fol_equational_theory_models/image}, the image of a homomorphism of Heyting algebras is a Heyting subalgebra of its codomain.
+
+    \thmitem{def:boolean_algebra/trivial}\mimprovised The one-element and two-element \hyperref[def:bounded_lattice/trivial]{bounded lattices} are vacuously Boolean algebras, so we call them such.
+
+    Two-element Boolean algebras give rise to classical semantics --- see \cref{def:truth_value_algebra/classical}. A particularly important two-element Boolean algebra is the \hyperref[def:finite_field]{finite field} \( \BbbF_2 = \set{ 0, 1 } \).
+
+    \thmitem{def:boolean_algebra/opposite}\mimprovised We say that complementation is \term[en=self-dual (\cite[193]{Gottschalk1953Quaternality})]{self-dual} because, as shown in \cref{thm:def:boolean_algebra/involution}, it is an \hyperref[def:involution]{involutive function}.
+
+    We thus define the \term{dual Boolean lattice} of \( (X, \vee, \wedge, \top, \bot, \oline{\anon}) \) by exchanging both the binary operations and the constants, like for \hyperref[def:bounded_lattice/opposite]{dual bounded lattices}, but preserving complementation:
+    \begin{equation*}
+      (X, \vee, \wedge, \top, \bot, \oline{\anon})^{\oppos} \coloneqq (X, \wedge, \vee, \bot, \top, \oline{\anon}).
+    \end{equation*}
+
+    For a fixed Grothendieck universe, this induces an \hyperref[con:opposite_object]{opposite object functor} in the corresponding category of Boolean algebras.
+
+    \thmitem{def:boolean_algebra/complete}\mcite[45]{HalmosGivant2009BooleanAlgebras} If \( X \) is simultaneously a Boolean algebra and a \hyperref[def:complete_lattice]{complete lattice}, we call it a \term{complete Boolean algebra}.
   \end{thmenum}
 \end{definition}
+\begin{defproof}
+  \SubProof{Proof that Boolean algebras are Heyting algebras} We must show that the axioms for Heyting algebras from \cref{def:heyting_algebra/theory} can be derived from those for Boolean algebras from \cref{def:boolean_algebra/theory}.
 
-\begin{algorithm}\label{alg:propositional_formula_to_boolean_term}
-\end{algorithm}
+  The proof trees are just sequences of applications of \ref{inf:def:fol_natural_deduction/equality/elim} to axioms, so we will present the proofs linearly.
+
+  \SubProofOf*{eq:def:heyting_algebra/theory/self} Using commutativity on \( {\latvee} \) in \eqref{eq:def:boolean_algebra/theory/complement/join}, we obtain
+  \begin{equation*}
+    \underbrace{\latneg \synx \latvee \synx}_{\synx \latimplies \synx} \syneq \lattop.
+  \end{equation*}
+
+  \SubProofOf*{eq:def:heyting_algebra/theory/modus_ponens}
+  \begin{align*}
+    \synx \latwedge (\overbrace{\latneg \synx \latvee \syny}^{\synx \latimplies \syny})
+    &\reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} \vdash
+    (\synx \latwedge \latneg \synx) \latvee (\synx \latwedge \syny)
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/meet}} \vdash \\ &\vdash
+    \synbot \latvee (\synx \latwedge \syny)
+    \reloset {\eqref{eq:def:bounded_lattice/theory/bot}} \vdash \\ &\vdash
+    \synx \latwedge \syny.
+  \end{align*}
+
+  \SubProofOf*{eq:def:heyting_algebra/theory/modular}
+  \begin{equation*}
+    \syny \latwedge (\underbrace{\latneg \synx \latvee \syny}_{\synx \latimplies \syny})
+    \reloset {\eqref{eq:def:binary_operation/commutative}} \vdash
+    \syny \latwedge (\syny \latvee \latneg \synx)
+    \reloset {\eqref{eq:def:lattice/theory/absorption/meet}} \vdash
+    \syny.
+  \end{equation*}
+
+  \SubProofOf*{eq:def:heyting_algebra/theory/distributive}
+  \begin{equation*}
+    \underbrace{\latneg \synx \latvee (\syny \latwedge \synz)}_{\synx \latimplies (\syny \latwedge \synz)}
+    \reloset {\eqref{eq:def:distributive_lattice/join_over_meet}} \vdash
+    (\underbrace{\latneg \synx \latvee \syny}_{\synx \latimplies \syny}) \latvee (\underbrace{\latneg \synx \latvee \synz}_{\synx \latimplies \synz}).
+  \end{equation*}
+\end{defproof}
 
 \begin{example}\label{ex:def:boolean_algebra}
   We list examples of \hyperref[def:boolean_algebra]{Boolean algebras}:
@@ -73,17 +143,7 @@
   \begin{thmenum}
     \thmitem{ex:def:boolean_algebra/lindenbaum_tarski} As shown in \cref{thm:lindenbaum_tarski_algebras/classical}, every \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} for the \hyperref[def:propositional_natural_deduction]{classical natural deduction system} is a Boolean algebra.
 
-    \thmitem{ex:def:boolean_algebra/f2} The \hyperref[def:finite_field]{finite field} \( \BbbF_2 = \set{ 0, 1 } \) is a Boolean algebra. Indeed, it is clearly a bounded lattice, and since it doesn't contain neither the pentagon lattice \eqref{eq:ex:def:modular_lattice/pentagon} nor the diamond lattice \eqref{eq:ex:def:distributive_lattice/diamond}, \cref{thm:distributive_lattice_characterization} implies that \( \BbbF_2 \) is distributive. Finally, the complement operation can be defined in the obvious way --- by exchanging the two elements.
-
-    Every two-element lattice is obviously isomorphic to \( \BbbF_2 \).
-
     \thmitem{ex:def:boolean_algebra/power_set} The power set of any set is a \hyperref[def:complete_lattice]{complete} Boolean algebra --- see \cref{thm:boolean_algebra_of_subsets}.
-
-    \thmitem{ex:def:boolean_algebra/interval} For every \hyperref[def:real_numbers]{real number} \( b \), the \hyperref[def:order_interval/closed]{closed interval} \( [0, b] \) is a Boolean algebra.
-
-    \Cref{thm:def:lattice/closed_interval} implies that \( [0, b] \) is a sublattice of \( \BbbR \). We can define the complement of \( x \) in \( [0, b] \) as \( b - x \).
-
-    This is indeed a complement in the sense of \cref{def:bounded_lattice_complement} because \( \min\set{ x, a + (b - x) } \).
   \end{thmenum}
 \end{example}
 
@@ -92,14 +152,11 @@
   \begin{thmenum}
     \thmitem{thm:def:boolean_algebra/involution} As a function, complementation is \hyperref[def:morphism_invertibility/involution]{involutive}, i.e. its own inverse.
 
+    \thmitem{thm:def:boolean_algebra/morphisms_preserve_complements} \hyperref[def:boolean_algebra/morphism]{Boolean homomorphisms} respect complements.
+
     \thmitem{thm:def:boolean_algebra/opposite_order} The induced order in the \hyperref[def:boolean_algebra/opposite]{opposite Boolean algebra} \( X^{\oppos} \) of \( X \) is the \hyperref[def:partially_ordered_set/opposite]{opposite} of the induced order of \( X \).
 
-    \thmitem{thm:def:boolean_algebra/heyting} Every Boolean algebra is a \hyperref[def:heyting_algebra]{Heyting algebra}. Furthermore, we have the following variation of \eqref{eq:thm:classical_equivalences/conditional_as_disjunction}:
-    \begin{equation}\label{eq:thm:def:boolean_algebra/heyting}
-      (x \rightarrow y) \coloneqq \oline {x} \vee y.
-    \end{equation}
-
-    \thmitem{thm:def:boolean_algebra/complement_contravariant} The complement is contravariant:
+    \thmitem{thm:def:boolean_algebra/complement_contravariant} Complementation is \hyperref[def:order_function/reversing]{order-reversing}:
     \begin{equation}\label{eq:thm:def:boolean_algebra/complement_contravariant}
       x \leq y \T{if and only if} \oline x \geq \oline y
     \end{equation}
@@ -117,11 +174,11 @@
     x
     \reloset {\eqref{eq:def:lattice/theory/leq/meet}} =
     x \wedge \top
-    \reloset {\eqref{eq:def:boolean_algebra/join}} =
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/join}} =
     x \wedge (\oline x \vee \doline x)
     \reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} =
     (x \wedge \oline x) \vee (x \wedge \doline x)
-    \reloset {\eqref{eq:def:boolean_algebra/meet}} =
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/meet}} =
     \bot \vee (x \wedge \doline x)
     \reloset {\eqref{eq:def:lattice/theory/leq/join}} =
     x \wedge \doline x
@@ -134,11 +191,11 @@
     \doline x
     \reloset {\eqref{eq:def:lattice/theory/leq/meet}} =
     \doline x \wedge \top
-    \reloset {\eqref{eq:def:boolean_algebra/join}} =
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/join}} =
     \doline x \wedge (x \vee \oline x)
     \reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} =
     (\doline x \wedge x) \vee (\doline x \wedge \oline x)
-    \reloset {\eqref{eq:def:boolean_algebra/meet}} =
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/meet}} =
     (\doline x \wedge x) \vee \bot
     \reloset {\eqref{eq:def:lattice/theory/leq/join}} =
     \doline x \wedge x
@@ -151,38 +208,30 @@
     x = \doline x
   \end{equation*}
 
-  \SubProofOf{thm:def:boolean_algebra/opposite_order} Follows from \cref{thm:def:bounded_lattice/opposite_order}.
-
-  \SubProofOf{thm:def:boolean_algebra/heyting} We will show that
+  \SubProofOf{thm:def:boolean_algebra/morphisms_preserve_complements} If \( X \) and \( Y \) are Boolean algebras and \( \varphi: X \to Y \) is a homomorphism of bounded lattices, then
   \begin{equation*}
-    c \leq \oline {x} \vee y \T{if and only if} x \wedge c \leq y.
-  \end{equation*}
-
-  First, if \( c \leq \oline x \vee y \), we have
-  \begin{equation*}
-    x \wedge c
-    \leq
-    x \wedge (\oline x \vee y)
-    \reloset {\eqref{eq:def:distributive_lattice/meet_over_join}} =
-    (\underbrace{x \wedge \oline x}_{\bot}) \vee (x \wedge y)
+    \varphi(x) \wedge_Y \varphi(\oline x)
     =
-    x \wedge y
-    \leq
-    y.
+    \varphi(x \wedge_X \oline x)
+    =
+    \varphi(\synbot_X)
+    =
+    \synbot_Y.
+  \end{equation*}
+  and similarly
+  \begin{equation*}
+    \varphi(x) \vee_Y \varphi(\oline x)
+    =
+    \varphi(x \vee_X \oline x)
+    =
+    \varphi(\syntop_X)
+    =
+    \syntop_Y.
   \end{equation*}
 
-  Conversely, if \( x \wedge c \leq y \), we have
-  \begin{equation*}
-    \oline x \vee (x \wedge c) \leq \oline x \vee y,
-  \end{equation*}
-  which again due to distributivity implies
-  \begin{equation*}
-    (\underbrace{\oline x \vee x}_{\top}) \wedge (\oline x \vee c) \leq \oline x \vee y
-  \end{equation*}
-  and
-  \begin{equation*}
-    c \leq \oline x \vee c \leq \oline x \vee y.
-  \end{equation*}
+  Therefore, \( \varphi(\oline x) \) is the complement of \( \varphi(x) \).
+
+  \SubProofOf{thm:def:boolean_algebra/opposite_order} Follows from \cref{thm:def:bounded_lattice/opposite_order}.
 
   \SubProofOf{thm:def:boolean_algebra/complement_contravariant}
   \SufficiencySubProof* Suppose that \( x \leq y \). Then
@@ -190,19 +239,19 @@
     x \wedge \oline y
     \reloset {\ref{thm:def:lattice/operations_preserve_order}} \leq
     y \wedge \oline y
-    \reloset {\eqref{eq:def:boolean_algebra/meet}} =
+    \reloset {\eqref{eq:def:boolean_algebra/theory/complement/meet}} =
     \bot,
   \end{equation}
   hence
   \begin{equation*}
     \oline x \vee \oline y
-    \reloset {\ref{thm:def:bounded_lattice/neutral}} =
+    \reloset {\eqref{eq:def:bounded_lattice/theory/top}} =
     \underbrace{(\oline x \vee x)}_\top \wedge (\oline x \vee \oline y)
     \reloset {\eqref{eq:thm:def:lattice/distributive_inequality/join_over_meet}} =
     \oline x \vee (x \wedge \oline y)
     \reloset {\eqref{eq:thm:def:boolean_algebra/complement_contravariant/proof/ineq}} =
-    \bot \vee \oline x
-    \reloset {\ref{thm:def:bounded_lattice/neutral}} =
+    \oline x \vee \bot
+    \reloset {\eqref{eq:def:bounded_lattice/theory/bot}} =
     \oline x.
   \end{equation*}
 
@@ -210,9 +259,44 @@
 
   \NecessitySubProof* Conversely, if \( \oline x \geq \oline y \), then \( \doline x \leq \doline y \), and \cref{thm:def:boolean_algebra/involution} implies that \( x \leq y \).
 
-  \SubProofOf{thm:def:boolean_algebra/distributive} \Cref{thm:def:boolean_algebra/heyting} implies that every Boolean algebra is a Heyting algebra, hence \eqref{eq:thm:def:boolean_algebra/distributive/meet_over_join} holds as a restatement of \eqref{eq:thm:complete_heyting_algebra/infinite_distributive}.
+  \SubProofOf{thm:def:boolean_algebra/distributive} Every Boolean algebra is a Heyting algebra, hence \eqref{eq:thm:def:boolean_algebra/distributive/meet_over_join} holds as a restatement of \eqref{eq:thm:complete_heyting_algebra/infinite_distributive}.
 
   Via \fullref{thm:lattice_duality/tautology} we conclude that \eqref{eq:thm:def:boolean_algebra/distributive/join_over_meet} also holds.
+\end{proof}
+
+\begin{proposition}\label{thm:boolean_algebra_heyting_characterization}
+  A \hyperref[def:heyting_algebra]{Heyting algebra} is a \hyperref[def:boolean_algebra]{Boolean algebra} if and only if \( \doline{x} = x \) for any element \( x \).
+\end{proposition}
+\begin{comments}
+  \item \Cref{thm:def:heyting_algebra/dni} implies that \( x \leq \doline{x} \) in any Heyting algebra, so, when using this characterization, there is only one inequality to show.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof \Cref{thm:def:boolean_algebra/involution} implies that, in a Boolean algebra, we have \( \doline{x} = x \) for every \( x \).
+
+  \NecessitySubProof Suppose that \( \doline{x} = x \) for any element in a Heyting algebra. It is a bounded lattice by definition, and \cref{thm:def:heyting_algebra/distributive} implies that it is distributive. We must only show that \( \oline{x} \) is a \hyperref[def:bounded_lattice_complement]{complement} of \( x \).
+
+  \Cref{thm:def:heyting_algebra/semicomplement} implies that \( x \wedge \oline{x} = \bot \) for any Heyting algebra. On the other hand,
+  \begin{equation*}
+    \oline{x \vee \oline{x}}
+    \reloset {\eqref{eq:thm:de_morgans_laws_for_heyting_algebras/complement_of_meet}} \geq
+    \oline{x} \wedge \doline{x}
+    =
+    \oline{x} \wedge x
+    =
+    \bot
+  \end{equation*}
+  and
+  \begin{equation*}
+    x \vee \oline{x}
+    =
+    \doline{x \vee \oline{x}}
+    =
+    \oline{\bot}
+    \reloset {\ref{thm:def:heyting_algebra/extrema_pseudocomplement}} =
+    \top.
+  \end{equation*}
+
+  Then \( \oline{x} \) is the complement of \( x \).
 \end{proof}
 
 \begin{theorem}[De Morgan's laws]\label{thm:de_morgans_laws}
@@ -254,12 +338,12 @@
 \end{proof}
 
 \begin{theorem}[Principle of duality for Boolean algebras]\label{thm:boolean_algebra_duality}
-  There are multiple ways to extend \fullref{thm:order_duality} to \hyperref[def:boolean_algebra]{Boolean algebras}. We list two of them that can be stated easily for \hyperref[def:fol_formula]{first-order formulas}, and we will discuss more in \cref{def:opposite_boolean_polynomial} and \fullref{alg:propositional_formula_dualization}.
+  There are multiple ways to extend \fullref{thm:order_duality} to \hyperref[def:boolean_algebra]{Boolean algebras}. We list two of them that can be stated easily for \hyperref[def:fol_formula]{first-order formulas}, and we will discuss more in \cref{def:dual_boolean_polynomial} and \fullref{alg:propositional_formula_dualization}.
 
   \begin{thmenum}
-    \thmitem{thm:boolean_algebra_duality/identity} The opposite of a Boolean algebra is precisely its \hyperref[def:bounded_lattice/opposite]{opposite bounded lattice}, hence the identity map relates a Boolean algebra with its opposite via \fullref{thm:lattice_duality}.
+    \thmitem{thm:boolean_algebra_duality/identity} The identity map relates a Boolean algebra with its \hyperref[def:boolean_algebra/opposite]{dual} via \fullref{thm:lattice_duality}.
 
-    \thmitem{thm:boolean_algebra_duality/complement} The complement \( \oline{\anon} \) is an isomorphism between a Boolean algebra and its opposite; in particular, the two are \hyperref[def:elementary_equivalence]{elementarily equivalent}.
+    \thmitem{thm:boolean_algebra_duality/complement} The complementation operation \( \oline{\anon} \) is an isomorphism between a Boolean algebra and its opposite; in particular, the two are \hyperref[def:elementary_equivalence]{elementarily equivalent}.
   \end{thmenum}
 \end{theorem}
 \begin{proof}
@@ -276,47 +360,33 @@
   Therefore, \( \oline{\anon} \) is an isomorphism.
 \end{proof}
 
-\begin{proposition}\label{thm:boolean_algebra_heyting_characterization}
-  A \hyperref[def:heyting_algebra]{Heyting algebra} is a \hyperref[def:boolean_algebra]{Boolean algebra} if and only if \( \doline{x} = x \) for any element.
-\end{proposition}
+\begin{algorithm}[Propositional formulas to Boolean terms]\label{alg:propositional_formula_to_boolean_term}
+  For every \hyperref[def:propositional_formula]{propositional formula}, if we replace each \hyperref[con:improper_symbol]{improper symbol} with its counterpart from the \hyperref[def:boolean_algebra/theory]{signature of Boolean algebras}, we obtain a \hyperref[def:fol_term]{first-order term} over this signature.
+\end{algorithm}
 \begin{comments}
-  \item \Cref{thm:def:heyting_algebra/dni} implies that \( x \leq \doline{x} \) in any Heyting algebra, so, when using this characterization, there is only one inequality to show.
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \ManualCodeRef{alg:propositional_formula_to_boolean_term}
+  \end{CodeRefDisplay}
 \end{comments}
-\begin{proof}
-  \SufficiencySubProof Follows from the definition of a Boolean algebra, considering \cref{thm:def:boolean_algebra/heyting}.
-  \NecessitySubProof Suppose that \( \doline{x} = x \) for any element in a Heyting algebra. It is a bounded lattice by definition, and \cref{thm:def:heyting_algebra/distributive} implies that it is distributive. We must only show that \( \oline{x} \) is a \hyperref[def:bounded_lattice_complement]{complement} of \( x \).
 
-  \Cref{thm:def:heyting_algebra/semicomplement} implies that \( x \wedge \oline{x} = \bot \) for any Heyting algebra. On the other hand,
-  \begin{equation*}
-    \oline{x \vee \oline{x}}
-    \reloset {\eqref{eq:thm:de_morgans_laws_for_heyting_algebras/complement_of_meet}} \geq
-    \oline{x} \wedge \doline{x}
-    =
-    \oline{x} \wedge x
-    =
-    \bot
-  \end{equation*}
-  and
-  \begin{equation*}
-    x \vee \oline{x}
-    =
-    \doline{x \vee \oline{x}}
-    =
-    \oline{\bot}
-    \reloset {\ref{thm:def:heyting_algebra/extrema_pseudocomplement}} =
-    \top.
-  \end{equation*}
-
-  Then \( \oline{x} \) is the complement of \( x \).
-\end{proof}
+\begin{algorithm}[Boolean terms to propositional formulas]\label{alg:boolean_term_to_propositional_formula}
+  Dually to \fullref{alg:propositional_formula_to_boolean_term}, for every \hyperref[def:fol_term]{first-order term} over the \hyperref[def:boolean_algebra/theory]{signature of Boolean algebras}, if we substitute each signature symbol with the corresponding \hyperref[con:improper_symbol]{improper symbol} from the \hyperref[def:propositional_alphabet]{propositional alphabet}, we obtain a \hyperref[def:propositional_formula]{propositional formula}.
+\end{algorithm}
+\begin{comments}
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \ManualCodeRef{alg:boolean_term_to_propositional_formula}
+  \end{CodeRefDisplay}
+\end{comments}
 
 \paragraph{Boolean algebra polynomials}
 
 \begin{definition}\label{def:free_boolean_algebra}\mcite[257]{HalmosGivant2009BooleanAlgebras}
-  We refer to the \hyperref[def:fol_free_term_model]{free term model} \( F(\mscrX) \) of the \hyperref[def:boolean_algebra/theory]{theory of Boolean algebras} in the set of indeterminates \( \mscrX \) as the \term[en=free lattice (\cite[36]{Birkhoff1967LatticeTheory})]{free Boolean algebra} on \( \mscrX \).
+  We refer to the \hyperref[def:fol_free_term_model]{free term model} \( F(\mscrX) \) of the \hyperref[def:boolean_algebra/theory]{theory of Boolean algebras} in the set of indeterminates \( \mscrX \) as the \term{free Boolean algebra} on \( \mscrX \).
 
   \begin{thmenum}
-    \thmitem{def:free_boolean_algebra/polynomial}\mcite[61]{HalmosGivant2009BooleanAlgebras} We call the elements of the term model \term[en=Boolean polynomial (\cite[29]{Birkhoff1967LatticeTheory})]{Boolean polynomials}, in analogy with \hyperref[def:polynomial_algebra/polynomials]{algebraic polynomials} and \hyperref[def:free_lattice/polynomial]{lattice polynomials}.
+    \thmitem{def:free_boolean_algebra/polynomial}\mimprovised We call the elements of the term model \term[en=Boolean polynomial (\cite[20]{HalmosGivant2009BooleanAlgebras})]{Boolean polynomials}, in analogy with \hyperref[def:polynomial_algebra/polynomials]{algebraic polynomials} and \hyperref[def:free_lattice/polynomial]{lattice polynomials}.
 
     We will use the familiar functional notation like \( f(X_1, \ldots, X_n) \) to make explicit the indeterminates on which the polynomial \( f \) depends.
   \end{thmenum}
@@ -383,23 +453,23 @@
   \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:opposite_boolean_polynomial}\mcite[ch. 4]{HalmosGivant2009BooleanAlgebras}
+\begin{definition}\label{def:dual_boolean_polynomial}\mcite[ch. 4]{HalmosGivant2009BooleanAlgebras}
   To every \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomial} \( f(X_1, \ldots, X_n) \) in \( F(\mscrX) \), there correspond several polynomials that can be considered \hyperref[con:opposite_object]{opposite}.
 
   \begin{thmenum}
-    \thmitem{def:opposite_boolean_polynomial/contradual} We define the \term{contradual} as \( f(\oline{X_1}, \ldots, \oline{X_n}) \), by negating all indeterminates.
+    \thmitem{def:dual_boolean_polynomial/contradual} We define the \term{contradual} as \( f(\oline{X_1}, \ldots, \oline{X_n}) \), by negating all indeterminates.
 
     The map sending a polynomial to its contradual is an automorphism of \( F(\mscrX) \).
 
-    \thmitem{def:opposite_boolean_polynomial/complement} At the other extreme, we can simply consider the complement \( \oline{f(X_1, \ldots, X_n)} \).
+    \thmitem{def:dual_boolean_polynomial/complement} At the other extreme, we can simply consider the complement \( \oline{f(X_1, \ldots, X_n)} \).
 
     \Cref{thm:boolean_polynomial_complement} shows that \( \oline{f(X_1, \ldots, X_n)} \) can be defined recursively via \eqref{eq:thm:boolean_polynomial_complement}; this is utilized in \fullref{alg:propositional_formula_dualization}.
 
     The map sending a polynomial to its complement is an isomorphism between \( F(\mscrX) \) and its opposite.
 
-    \thmitem{def:opposite_boolean_polynomial/dual} Combining the two, we obtain the \term{dual} \( \oline{f(\oline{X_1}, \ldots, \oline{X_n})} \).
+    \thmitem{def:dual_boolean_polynomial/dual} Combining the two, we obtain the \term{dual} \( \oline{f(\oline{X_1}, \ldots, \oline{X_n})} \).
 
-    The dual extends the \hyperref[def:dual_lattice_polynomial]{opposite lattice polynomial} by preserving complements.
+    The dual extends the \hyperref[def:dual_lattice_polynomial]{dual lattice polynomial} by preserving complements.
 
     The map sending a polynomial to its dual is also an isomorphism between \( F(\mscrX) \) and its opposite.
   \end{thmenum}
@@ -412,9 +482,9 @@
 \end{comments}
 
 \begin{proposition}\label{thm:klein_four_group_action_on_boolean_polynomials}
-  The \hyperref[def:klein_four_group]{Klein four group} \( V_4 = \set{ e, a, b, ab } \) \hyperref[def:group_action]{acts} on \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomials} via the opposites defined in \cref{def:opposite_boolean_polynomial}.
+  The \hyperref[def:klein_four_group]{Klein four group} \( V_4 = \set{ e, a, b, ab } \) \hyperref[def:group_action]{acts} on \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomials} via the opposites defined in \cref{def:dual_boolean_polynomial}.
 
-  Namely, \( e \) preserves the polynomial \( f \), \( a \) sends \( f \) to its contradual and \( b \) sends \( f \) to its dual. Then it remains for \( ab \) to send \( f \) to its complement.
+  Namely, \( e \) preserves the polynomial \( f \), \( a \) sends \( f \) to its contradual and \( b \) sends \( f \) to its complement. Then it remains for \( ab \) to send \( f \) to its dual.
 \end{proposition}
 \begin{comments}
   \item \Textcite{Gottschalk1953Quaternality} calls this result the \enquote{theory of quaternality}, alluding to \hyperref[con:duality]{duality}.
@@ -454,9 +524,9 @@
 \end{proof}
 
 \begin{definition}\label{def:ultrafilter}
-  We say that a proper \hyperref[def:lattice_ideal]{filter} \( F \) in a \hyperref[def:boolean_algebra]{Boolean algebra} is an \term[bg=ултрафилтер (\cite[18]{Проданов1982ФункционаленАнализЧаст1}), ru=ультрафильтр (\cite[182]{Гуров2013ТеорияРешёток})]{ultrafilter} if any of the following equivalent conditions hold:
+  We say that a \emph{proper} \hyperref[def:lattice_ideal]{filter} \( F \) in a \hyperref[def:boolean_algebra]{Boolean algebra} is an \term[bg=ултрафилтер (\cite[18]{Проданов1982ФункционаленАнализЧаст1}), ru=ультрафильтр (\cite[182]{Гуров2013ТеорияРешёток})]{ultrafilter} if any of the following equivalent conditions hold:
   \begin{thmenum}
-    \thmitem{def:ultrafilter/direct}\mcite[182]{Гуров2013ТеорияРешёток} For every algebra element \( x \), either\fnote{Both \( x \in F \) and \( \oline x \in F \) cannot hold because of \cref{thm:improper_boolean_ideal}.} \( x \in F \) or \( \oline x \in F \).
+    \thmitem{def:ultrafilter/direct}\mcite[182]{Гуров2013ТеорияРешёток} For every algebra element \( x \), either\fnote{Both \( x \) and \( \oline x \) cannot belongs to \( F \) because of \cref{thm:improper_boolean_ideal}.} \( x \) or \( \oline x \) belongs to \( F \).
 
     \thmitem{def:ultrafilter/prime} \( F \) is a \hyperref[def:lattice_ideal/prime]{prime filter}.
 
@@ -464,9 +534,9 @@
   \end{thmenum}
 \end{definition}
 \begin{proof}
-  \ImplicationSubProof{def:ultrafilter/direct}{def:ultrafilter/prime} Suppose that, for every algebra element \( x \), either \( x \in F \) or \( \oline x \in F \).
+  \ImplicationSubProof{def:ultrafilter/direct}{def:ultrafilter/prime} Suppose that, for every algebra element \( x \), either \( x \) or \( \oline x \) belongs to \( F \)
 
-  Let \( x \vee y \in F \). If \( x \notin F \), then \( \oline x \in F \) and hence the following is also a member of \( F \):
+  Fix some \( x \vee y \) from \( F \). If \( x \) is not in \( F \), then \( \oline x \) is, and hence the following is also a member of \( F \):
   \begin{equation*}
     \oline x \vee (x \vee y)
     =
@@ -477,7 +547,7 @@
     y.
   \end{equation*}
 
-  Hence, if \( x \notin F \), then \( y \in F \).
+  Hence, if \( x \notin F \) entails \( y \in F \).
 
   Since \( x \) was chosen arbitrarily, we conclude that \( F \) is a prime filter.
 
@@ -486,19 +556,49 @@
   \EquivalenceSubProof{def:ultrafilter/maximal}{def:ultrafilter/direct} Let \( F \) be a maximal ideal. Fix an arbitrary algebra element \( x \). Either \( x \) is in \( F \), or is in the complement of \( F \), in which case \cref{thm:improper_boolean_ideal} implies that \( \oline x \) is in \( F \).
 \end{proof}
 
-\begin{definition}\label{def:principal_ultrafilter}\mcite[example 1.6.11]{Hinman2005Logic}
+\begin{proposition}\label{thm:principal_ultrafilter}
   Fix an arbitrary \hyperref[def:set]{set} \( A \) and consider its \hyperref[thm:boolean_algebra_of_subsets]{power set Boolean algebra} \( \pow(A) \).
 
-  For every element \( x \) of \( A \), the following family is an \hyperref[def:ultrafilter]{ultrafilter} in \( \pow(A) \):
+  A family \( \mscrU \) in \( \pow(A) \) is a \hyperref[def:lattice_ideal/principal]{principal} \hyperref[def:ultrafilter]{ultrafilter} if and only if there exists some element \( x \) in \( A \) such that
+  \begin{equation*}
+    \mscrU = \set{ B \subseteq A \given x \in B }.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \mscrU \) is a principal ultrafilter.
+
+  Fix some subset \( B \) of the intersection \( \bigcap \mscrU \). If \( B \) is not in \( \mscrU \), then \( A \setminus B \) is, and so
+  \begin{equation*}
+    B \subseteq \bigcap \mscrU \subseteq A \setminus B,
+  \end{equation*}
+  which is a contradiction.
+
+  So, every subset of \( \bigcap \mscrU \) is container in \( \mscrU \). In particular, fix \( x \) and \( y \) from \( \bigcap \mscrU \). The set \( \set{ y } \) belongs to \( \mscrU \), so
+  \begin{equation*}
+    x \in \bigcap \mscrU \subseteq \set{ y }.
+  \end{equation*}
+
+  This implies that \( x = y \). Therefore, all elements of \( \bigcap \mscrU \) are equal, i.e.
+  \begin{equation*}
+    \mscrU = \set{ B \subseteq A \given x \in B }.
+  \end{equation*}
+
+  \NecessitySubProof Conversely, suppose that, for some \( x \) in \( A \), we have
+  \begin{equation*}
+    \mscrU = \set{ B \subseteq A \given x \in B }.
+  \end{equation*}
+
+  It is obviously an ultrafilter. Furthermore, \( \mscrU \) is principal because \( A \setminus \set{ x } \) does not belong to it.
+\end{proof}
+
+\begin{definition}\label{def:principal_ultrafilter}\cite[def. III.1.30]{Kunen2013SetTheory}
+  \Cref{thm:principal_ultrafilter} implies that, in a \hyperref[thm:boolean_algebra_of_subsets]{power set Boolean algebra} \( \pow(A) \), the \hyperref[def:lattice_ideal/principal]{principal} \hyperref[def:ultrafilter]{ultrafilters} are exactly those which, for some element \( x \) of \( A \), equal
   \begin{equation*}
     \mscrF_x \coloneqq \set{ B \subseteq A \given x \in B }.
   \end{equation*}
 
-  We call \( \mscrF_x \) the \term{principal ultrafilter} of \( x \).
+  We call \( \mscrF_x \) the principal ultrafilter \emph{of} \( x \).
 \end{definition}
-\begin{comments}
-  \item \Textcite[234]{DaveyPriestley2002LatticeTheory} define \enquote{principal ultrafilters} to be maximal \hyperref[def:lattice_ideal/principal]{principal filters}, which notion differs from our definition.
-\end{comments}
 
 \begin{lemma}[Ultrafilter lemma]\label{thm:ultrafilter_lemma}
   Every proper \hyperref[def:lattice_ideal]{filter} in a \hyperref[def:boolean_algebra]{Boolean algebra} is contained in an \hyperref[def:ultrafilter]{ultrafilter}.
