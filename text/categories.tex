@@ -37,8 +37,65 @@
   \end{thmenum}
 \end{definition}
 
-\begin{remark}\label{rem:categorical_morphism_notation}
+\begin{definition}\label{def:category_size}
+  As can be seen from \cref{ex:def:category}, some of the categories we are working with, like \( \cat{Set} \), contain as objects all \hyperref[def:large_and_small_sets]{small sets}. As mentioned in \cref{def:large_and_small_sets}, the concept of a small set is defined relative to the smallest Grothendieck universe that suits our needs.
 
+  \Fullref{thm:russels_paradox} demonstrates that the set of all sets easily leads to a paradox, which is the reason we restrict our attention only to sets within some Grothendieck universe. This universe is implicit by default, however we will occasionally need to make it explicit.
+
+  We will say that the category \( \cat{C} \) is \term{locally \( \mscrU \)-small} if the morphism set \( \cat{C}(A, B) \) is \( \mscrU \)-small for every pair of objects \( A \) and \( B \). If, in addition, the set \( \obj(\cat{C}) \) of objects is also \( \mscrU \)-small, we will say that the category \( \cat{C} \) is \term{\( \mscrU \)-small}. If a category is not \( \mscrU \)-small, we say that it is \term{\( \mscrU \)-large}.
+
+  In particular, \term{finite} and \term{locally finite} categories are ones who are \( V_\omega \)-small and \( V_\omega \)-locally small for the universe of hereditarily finite sets \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)}. This notion of local finiteness is unrelated to local finiteness of graphs defined in \cref{def:graph_cardinality/local}.
+
+  Universes are crucial to be able to do a lot of categorical constructions within set theory, most importantly \( \mscrU \)-large \hyperref[def:functor_category]{functor categories} but also \hyperref[def:product_category]{product categories} and, as discussed in \cref{rem:functor_size}, even the \hyperref[def:functor]{functors} themselves.
+
+  Note that, even if a category is \( \mscrU \)-small, the category itself as the tuple \( (Q, \bincirc, \id) \) from \cref{def:category} may not be a \( \mscrU \)-small set.
+
+  Also note that, in a locally small category, it is possible for the set of all morphisms to be \( \mscrU \)-large. This is impossible for small categories due to \ref{def:grothendieck_universe/union}.
+
+  We sometimes skip the prefix \enquote{\( \mscrU \)-} if it is unimportant, and simply speak of \enquote{large categories} or \enquote{locally small categories}.
+\end{definition}
+
+\begin{remark}\label{rem:category_size}
+  In \cref{def:category}, we chose a convenient for us approach of treating categories as \hyperref[def:directed_multigraph]{directed multigraphs}. This has the appeal of allowing us to work in the familiar setting of \fullref{ch:mathematical_logic} and \fullref{ch:set_theory}. But we quickly encounter a drawback --- we want to study \enquote{the} category of all sets, but set theory cannot describe such a construct.
+
+  \begin{thmenum}
+    \thmitem{rem:category_size/grothendieck} One preferred solution to this conundrum, attributed by \textcite[234]{MacLane1971CategoricalAlgebraFoundations} to \enquote{Grothendieck and his followers}, is to stratify the \hyperref[def:cumulative_hierarchy]{cumulative hierarchy} of sets into universes, where each universe by itself acts as a model of set theory. The formalization of this idea in \hyperref[def:zfc]{\logic{ZFC}} leads to its extension with the \enquote{axiom of universes}, stating that each set belongs to some universe. Details are delegated to \fullref{sec:grothendieck_universes}.
+
+    Thus, instead of a category \( \cat{Set} \) of all sets, we have a category \( \ucat{Set} \) of \( \mscrU \)-small sets, one for each \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \). The sets in \( \ucat{Set} \) are \enquote{\( \mscrU \)-small}, i.e. members of \( \mscrU \).
+
+    From a practical perspective, one obvious drawback is what \textcite[22]{Shulman2008SetTheoryForCategoryTheory} calls \enquote{universe-juggling}. From a foundational perspective, one drawback is the necessity to extend \logic{ZFC}.
+
+    \thmitem{rem:category_size/classes} An alternative is to work in an extension of \( \logic{ZFC} \) that supports classes, such as \hyperref[def:godel_bernays_set_theory]{G\"odel-Bernays set theory}. This approach is used in \textcite[def. I.1.1]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}.
+
+    Given a class \( O \) of objects and a class \( M \) of morphisms, \cref{thm:ordered_tuple_via_disjoint_union} suggests that the set \( (\set{ 0 } \times O) \cup (\set{ 1 } \times M)) \) can be used to emulate an \hyperref[def:ordered_tuple]{ordered tuple}, and thus to define a category.
+
+    Such a category is inherently more powerful than a directed multigraph of sets. We call the category \enquote{small} if \( O \) and \( M \) are sets, i.e. when the category itself is a set.
+
+    We can form the category \( \cat{Set} \) of sets and the category \( \cat{Cat} \) of small categories. Both categories are \enquote{large}, and belong to the large category \( \cat{CAT} \) of large categories.
+
+    This approach requires us to be very careful with our formalisms because important constructs like the \hyperref[def:functor_category]{functor category} can only be properly defined for small categories. This is questionably better than \enquote{universe-juggling}.
+
+    With only an informal distinction between sets and classes, this definition is popular in introductory literature, for example in
+    \cite[def. I.3.1]{Aluffi2009Algebra},
+    \cite[def. 1.1.1]{Riehl2016CategoryTheory},
+    \cite[def. 1.1.1]{Perrone2024StartingCategoryTheory} and
+    \cite[def. 1.1.1]{Leinster2014BasicCategoryTheory}.
+
+    \thmitem{rem:category_size/reflection} Another approach attributed by \textcite[25]{Shulman2008SetTheoryForCategoryTheory} to Solomon Feferman is the use of a \enquote{reflection} principle.
+
+    The point is to add to a model \( \mscrV = (V, I) \) of \logic{ZFC} a universe \( \mscrU \) and, for every formula \( \varphi \) in \logic{ZFC}, to add the axiom
+    \begin{equation*}
+      \qforall* {x_1 \in \mscrU} \ldots \qforall* {x_n \in \mscrU} (\varphi \syniff \varphi^\mscrU),
+    \end{equation*}
+    where \( \varphi^\mscrU \) \hyperref[rem:fol_formula_conventions/relativization]{relativizes} every quantifier in \( \varphi \) to \( \mscrU \).
+
+    When carefully formulated, this extension of \logic{ZFC} is \hyperref[def:fol_theory/conservative]{conservative}. The \enquote{small} sets are the members of \( \mscrU \). The \enquote{small} categories are those that are themselves members of \( \mscrU \).
+
+    But every statement about small sets is reflected onto all sets, so we do not lose anything by only studying category of small objects.
+  \end{thmenum}
+\end{remark}
+
+\begin{remark}\label{rem:categorical_morphism_notation}
 \end{remark}
 
 \begin{example}\label{ex:def:category}
@@ -62,24 +119,6 @@
     \item For every \hyperref[def:preordered_set]{preordered set}, the induced category defined in \fullref{thm:order_category_isomorphism}.
   \end{itemize}
 \end{example}
-
-\begin{definition}\label{def:category_size}
-  As can be seen from \cref{ex:def:category}, some of the categories we are working with, like \( \cat{Set} \), contain as objects all \hyperref[def:large_and_small_sets]{small sets}. As mentioned in \cref{def:large_and_small_sets}, the concept of a small set is defined relative to the smallest Grothendieck universe that suits our needs.
-
-  \Fullref{thm:russels_paradox} demonstrates that the set of all sets easily leads to a paradox, which is the reason we restrict our attention only to sets within some Grothendieck universe. This universe is implicit by default, however we will occasionally need to make it explicit.
-
-  We will say that the category \( \cat{C} \) is \term{locally \( \mscrU \)-small} if the morphism set \( \cat{C}(A, B) \) is \( \mscrU \)-small for every pair of objects \( A \) and \( B \). If, in addition, the set \( \obj(\cat{C}) \) of objects is also \( \mscrU \)-small, we will say that the category \( \cat{C} \) is \term{\( \mscrU \)-small}. If a category is not \( \mscrU \)-small, we say that it is \term{\( \mscrU \)-large}.
-
-  In particular, \term{finite} and \term{locally finite} categories are ones who are \( V_\omega \)-small and \( V_\omega \)-locally small for the universe of hereditarily finite sets \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)}. This notion of local finiteness is unrelated to local finiteness of graphs defined in \cref{def:graph_cardinality/local}.
-
-  Universes are crucial to be able to do a lot of categorical constructions within set theory, most importantly \( \mscrU \)-large \hyperref[def:functor_category]{functor categories} but also \hyperref[def:product_category]{product categories} and, as discussed in \cref{rem:functor_size}, even the \hyperref[def:functor]{functors} themselves.
-
-  Note that, even if a category is \( \mscrU \)-small, the category itself as the tuple \( (Q, \bincirc, \id) \) from \cref{def:category} may not be a \( \mscrU \)-small set.
-
-  Also note that, in a locally small category, it is possible for the set of all morphisms to be \( \mscrU \)-large. This is impossible for small categories due to \ref{def:grothendieck_universe/union}.
-
-  We sometimes skip the prefix \enquote{\( \mscrU \)-} if it is unimportant, and simply speak of \enquote{large categories} or \enquote{locally small categories}.
-\end{definition}
 
 \begin{definition}\label{def:category_of_small_sets}
   Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \cref{def:large_and_small_sets}.
