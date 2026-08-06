@@ -7,7 +7,7 @@ import stdnum.isbn
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
-from notebook.commands.common.logging import NotebookLoggerHandler
+from notebook.commands.common.logging import NotebookLoggerHandler, setup_logging
 from notebook.exceptions import NotebookError
 
 from .file import read_entries, write_entries
@@ -28,8 +28,7 @@ def bibtools(ctx: click.Context) -> None:
 @bibtools.command('format')
 @click.argument('paths', nargs=-1, type=click.Path(readable=True, dir_okay=False, path_type=pathlib.Path))
 def format_(paths: Sequence[pathlib.Path]) -> None:
-    base_logger = logging.getLogger('notebook.commands')
-    base_logger.addHandler(NotebookLoggerHandler(log_subject=True))
+    setup_logging(verbose=False, log_subject=True)
 
     for path in paths:
         with FormatterContextManager(path) as context:

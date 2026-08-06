@@ -4,7 +4,7 @@ from typing import Any
 
 from stdnum import isbn, issn
 
-from notebook.bibtex import BibAuthor, BibEntry, BibString
+from notebook.bibtex import ENTRY_KEYS, BibAuthor, BibEntry, BibString, stringify_property
 from notebook.commands.common.names import latinize_cyrillic_name
 
 from . import url_templates
@@ -37,16 +37,20 @@ class BibEntryAdjuster:
         else:
             self.merged = self.adjusted
 
-    def log_update[T](self, what: str, old_value: T, new_value: T) -> None:
-        if new_value == old_value:
-            return
+    def log_update[T](self, field_name: str, old_value: T, new_value: T) -> None:
+        for key, fname in ENTRY_KEYS.field_name_map.items():
+            if fname != field_name:
+                continue
 
-        if new_value is None:
-            self.bound_logger.info(f'Removing {what}')
-        elif old_value is None:
-            self.bound_logger.info(f'Setting {what} to {new_value!r}')
-        else:
-            self.bound_logger.info(f'Updating {what} from {old_value!r} to {new_value!r}')
+            old_string = stringify_property(key, old_value)
+            new_string = stringify_property(key, new_value)
+
+            if new_string is None:
+                self.bound_logger.info(f'Removing field {key}.')
+            elif old_string is None:
+                self.bound_logger.info(f'Setting field {key} to {new_string!r}')
+            else:
+                self.bound_logger.info(f'Updating field {key} from {old_string!r} to {new_string!r}')
 
     # ruff: ignore[any-type]
     def update(self, **kwargs: Any) -> None:
@@ -54,7 +58,7 @@ class BibEntryAdjuster:
             old_value = getattr(self.adjusted, field_name)
 
             if old_value != new_value:
-                self.log_update(f'the {field_name} field', old_value, new_value)
+                self.log_update(field_name, old_value, new_value)
                 setattr(self.adjusted, field_name, new_value)
                 setattr(self.merged, field_name, new_value)
 

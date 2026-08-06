@@ -1,6 +1,6 @@
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
-from typing import Annotated, Literal, get_args, get_type_hints
+from typing import Annotated, Any, Literal, get_args, get_type_hints
 
 from notebook.support.iteration import string_accumulator
 
@@ -122,7 +122,7 @@ class BibEntry:
     mathscinet:    Annotated[BibString | None, BibFieldAnnotation()] = None
     numdam:        Annotated[BibString | None, BibFieldAnnotation()] = None
     scopus:        Annotated[BibString | None, BibFieldAnnotation()] = None
-    ssrn:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    ssrn:          Annotated[BibString | None, BibFieldAnnotation()] = None
     zbmath:        Annotated[BibString | None, BibFieldAnnotation()] = None
     # eprints
     eprinttype:    Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -136,31 +136,15 @@ class BibEntry:
     def __or__(self, other: BibEntry) -> BibEntry:
         return BibEntry(**asdict(self) | asdict(other))
 
-    def _string_properties(self) -> Iterable[tuple[str, BibString]]:
+    def _stringify_properties(self) -> Iterable[tuple[str, BibString]]:
         for key in sorted(ENTRY_KEYS.known):
-            if key in ENTRY_KEYS.meta:
-                continue
-
-            value = getattr(self, ENTRY_KEYS.field_name_map[key])
-
-            if key in ENTRY_KEYS.author:
-                if key.startswith('short'):
-                    author_string = ' and '.join(str(author.short_name) for author in value if author.short_name)
-
-                    if author_string:
-                        yield key, author_string
-                elif len(value) > 0:
-                    yield key, ' and '.join(str(author.full_name) for author in value)
-            elif isinstance(value, list):
-                if len(value) > 0:
-                    yield key, ' and '.join(value)
-            elif value is not None:
+            if value := stringify_property(key, getattr(self, ENTRY_KEYS.field_name_map[key])):
                 yield key, value
 
     @string_accumulator('')
     # ruff: ignore[invalid-str-return-type]
     def __str__(self) -> Iterable[str]:
-        properties = dict(self._string_properties())
+        properties = dict(self._stringify_properties())
         total = len(properties)
 
         yield f'@{self.entry_type}{{{self.entry_name},\n'
@@ -234,3 +218,25 @@ def infer_key_configuration(cls: type) -> KeyConfiguration:
 
 
 ENTRY_KEYS = infer_key_configuration(BibEntry)
+
+
+# ruff: ignore[any-type]
+def stringify_property[T](key: str, value: Any) -> BibString | None:
+    if key in ENTRY_KEYS.meta:
+        return None
+
+    if key in ENTRY_KEYS.author:
+        if key.startswith('short'):
+            author_string = ' and '.join(str(author.short_name) for author in value if author.short_name)
+
+            if author_string:
+                return author_string
+        elif len(value) > 0:
+            return ' and '.join(str(author.full_name) for author in value)
+    elif isinstance(value, list):
+        if len(value) > 0:
+            return ' and '.join(value)
+    elif value is not None:
+        return value
+
+    return None
