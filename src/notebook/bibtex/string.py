@@ -48,7 +48,17 @@ class CompositeString:
         return self.segments == other.segments
 
     def strip(self) -> CompositeString:
-        return self
+        if len(self.segments) == 0:
+            return self
+
+        if len(self.segments) == 1:
+            return CompositeString([self.segments[0].strip()])
+
+        return CompositeString([
+            self.segments[0].lstrip(),
+            *self.segments[1:-1],
+            self.segments[-1].rstrip(),
+        ])
 
     lstrip = rstrip = strip
 

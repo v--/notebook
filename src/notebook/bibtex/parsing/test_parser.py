@@ -471,6 +471,31 @@ def test_mixed_verbatim_author() -> None:
     )
 
 
+# This test grew out of a bug I encountered with Saunders {Mac Lane} as a second author
+def test_verbatim_author_last_name() -> None:
+    string = dedent(r"""
+        @book{test,
+          title = {Test},
+          author = {A B and C {D}},
+          language = {english}
+        }
+        """[1:],
+    )
+
+    entries = parse_bibtex(string)
+    assert len(entries) == 1
+    assert entries[0] == BibEntry(
+        entry_type='book',
+        entry_name='test',
+        title='Test',
+        languages=['english'],
+        authors=[
+            BibAuthor(full_name='A B'),
+            BibAuthor(full_name=CompositeString(['C ', VerbatimString('D')])),
+        ],
+    )
+
+
 def test_one_verbatim_authors_with_and() -> None:
     string = dedent(r"""
         @book{test,
