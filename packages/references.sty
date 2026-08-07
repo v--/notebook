@@ -2,15 +2,22 @@
 
 \tl_new:N \l_nb_thmitem_name_buffer_tl
 
+% Based mostly on https://tex.stackexchange.com/a/160035
+\NewDocumentCommand \taglabel {O{}m}
+  {
+    \phantomsection
+    \protected@write \@auxout {}
+      {
+        \string \newlabel {#2} { {#1} {\thepage} {\@currentlabelname} {\@currentHref} {} }
+      }
+  }
+
 % Items
 \NewDocumentCommand \thmitem {om}
   {
     \IfValueTF {#1}
       {
-        \tl_set:No \l_nb_thmitem_name_buffer_tl \@currentlabelname
-        \tl_set:Nx \@currentlabelname {#2}
-        \item[\logic{#2}]\label{#1}
-        \tl_set:No \@currentlabelname \l_nb_thmitem_name_buffer_tl
+        \item[\logic{#2}]\taglabel[#2]{#1}
       }
       {
         \item\label{#2}
@@ -108,16 +115,6 @@
 \NewDocumentCommand \todo {m}
   {
     \textbf{TODO}:~#1
-  }
-
-% Based mostly on https://tex.stackexchange.com/a/160035
-\NewDocumentCommand \taglabel {O{}m}
-  {
-    \phantomsection
-    \protected@write \@auxout {}
-      {
-        \string \newlabel {#2} { {#1} {\thepage} {\@currentlabelname} {\@currentHref} {} }
-      }
   }
 
 \ExplSyntaxOff
