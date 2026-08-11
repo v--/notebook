@@ -1,3 +1,6 @@
+%  There is generally a cultural licensing problem with LaTeX packages, where it is unclear how the document itself should be licensed.
+%   See https://tex.stackexchange.com/questions/69007/the-gpl-and-latex-packages
+
 \ExplSyntaxOn
 
 \NeedsTeXFormat{LaTeX2e}
@@ -41,9 +44,6 @@
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 
-% Fonts
-\RequirePackage{packages/fonts}
-
 % Internationalization
 \RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
@@ -53,7 +53,7 @@
     de=german,
     en=english,
     fr=french,
-    gr=greek,
+    el=greek,
     la=latin,
     ru=russian
   }
@@ -61,6 +61,9 @@
 \useshorthands*{"}
 \defineshorthand{"-}{\babelhyphen{soft}}
 \defineshorthand{"=}{-\babelhyphen{soft}}
+
+% Fonts
+\RequirePackage{packages/fonts}
 
 % Citations
 \RequirePackage
