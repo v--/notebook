@@ -72,7 +72,6 @@ class OLBookDetails(OLBaseModel):
     key: str
     last_modified: OLBookDate
     latest_revision: int
-    number_of_pages: int
     publish_date: str
     publishers: Sequence[str]
     revision: int
@@ -80,6 +79,7 @@ class OLBookDetails(OLBaseModel):
     title: str
     type: OLBookType
     works: Sequence[OLBookWork]
+    number_of_pages: int | None = None
     authors: Sequence[OLBookAuthor] | None = None
     by_statement: str | None = None
     classifications: OLBookClassifications | None = None

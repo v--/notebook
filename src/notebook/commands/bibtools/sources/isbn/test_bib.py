@@ -196,3 +196,24 @@ def test_parse_9780198833871_bad_unicode(isbn: str = '978-0-19-883387-1') -> Non
       date='Aug 03, 2021',
       isbn=isbn,
     )
+
+
+def test_parse_9781470450557_missing_number_of_pages(isbn: str = '978-1-4704-5055-7') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+      entry_type='book',
+      entry_name='Knospe2019Cryptography',
+      title='Course in Cryptography',
+      authors=[
+          BibAuthor(full_name='Heiko Knospe', short_name=None),
+      ],
+      languages=['english'],
+      publishers=['American Mathematical Society'],
+      date='2019',
+      isbn=isbn,
+    )
