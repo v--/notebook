@@ -48,6 +48,6 @@ class FormulaToTermVisitor(PropFormulaVisitor[Term]):
         )
 
 
-@collector.ref('alg:propositional_formula_to_boolean_term')
+@collector.ref('alg:propositional_formula_to_heyting_term')
 def prop_formula_to_boolean_term(formula: PropFormula) -> Term:
     return FormulaToTermVisitor().visit(formula)
