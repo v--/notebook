@@ -45,6 +45,11 @@ class BibEntryAdjuster:
             old_string = stringify_property(key, old_value)
             new_string = stringify_property(key, new_value)
 
+            # Although old_value and new_value may differ, for a particular key their stringification can coincide.
+            # For example, short_author may get updated without the author field getting an update.
+            if old_string == new_string:
+                continue
+
             if new_string is None:
                 self.bound_logger.info(f'Removing field {key}.')
             elif old_string is None:
