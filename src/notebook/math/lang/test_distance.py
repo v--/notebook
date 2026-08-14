@@ -1,7 +1,7 @@
 from notebook.support.coderefs import collector
 from notebook.support.pytest import pytest_parametrize_kwargs
 
-from .distance import hamming, wagner_fisher
+from .distance import hamming_distance, wagner_fisher_distance
 
 
 @pytest_parametrize_kwargs(
@@ -13,8 +13,8 @@ from .distance import hamming, wagner_fisher
         dict(a='abbbc', b='bbbca', dist=3),
     ),
 )
-def test_hamming(a: str, b: str, dist: int) -> None:
-    assert hamming(a, b) == dist
+def test_hamming_distance(a: str, b: str, dist: int) -> None:
+    assert hamming_distance(a, b) == dist
 
 
 @pytest_parametrize_kwargs(
@@ -35,5 +35,5 @@ def test_hamming(a: str, b: str, dist: int) -> None:
         dict(a='subjunction', b='disjunction', dist=3),
     ),
 )
-def test_wagner_fisher(a: str, b: str, dist: int) -> None:
-    assert wagner_fisher(a, b) == dist
+def test_wagner_fisher_distance_distance(a: str, b: str, dist: int) -> None:
+    assert wagner_fisher_distance(a, b) == dist

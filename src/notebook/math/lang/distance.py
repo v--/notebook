@@ -1,10 +1,12 @@
+from collections.abc import Sequence
+
 from notebook.math.matrices.matrix import IntMatrix
 from notebook.support.coderefs import collector
 
 from .exceptions import FormalLanguageError
 
 
-def hamming(v: str, w: str) -> int:
+def hamming_distance[SeqT: Sequence = str](v: SeqT, w: SeqT) -> int:
     if len(v) != len(w):
         raise FormalLanguageError(f'Expected equal strings, but got {v!r} and {w!r}')
 
@@ -12,7 +14,7 @@ def hamming(v: str, w: str) -> int:
 
 
 @collector.ref('alg:wagner_fisher')
-def wagner_fisher(v: str, w: str) -> int:
+def wagner_fisher_distance[SeqT: Sequence = str](v: SeqT, w: SeqT) -> int:
     mat = IntMatrix.zeros(len(v) + 1, len(w) + 1)
 
     for i in range(len(v) + 1):

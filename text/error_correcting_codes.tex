@@ -1,0 +1,157 @@
+\section{Error correcting codes}\label{sec:error_correcting_codes}
+
+\begin{definition}\label{def:error_correcting_code}\mcite[75]{ConwaySloane1998SpherePackings}
+  An \term[ru=самокорректирующейся код (\cite[289]{Яблонский2003ДискретнаяМатематика}), en=error-correcting code (\cite[def. 19.9]{AroraBarak2009ComputationalComplexity})]{error-correcting code} of \term{length} \( n > 0 \) over the \hyperref[def:finite_field]{finite field} \( \BbbF_q \) is simply a subset of \( \BbbF_q^n \)
+
+  \begin{thmenum}
+    \thmitem{def:error_correcting_code/codeword} We call the elements of a code \term[ru=коды (\cite[258]{Яблонский2003ДискретнаяМатематика})]{codewords}.
+
+    \thmitem{def:error_correcting_code/distance} We define the \term{minimal distance} of a code as the smallest \hyperref[def:hamming_distance]{Hamming distance} between (distinct) codewords.
+
+    \thmitem{def:error_correcting_code/linear}\mcite[75]{ConwaySloane1998SpherePackings} If the code is a \hyperref[def:vector_space/subobject]{vector subspace} of \( \BbbF_q^n \), we say that it is \term{linear}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We will use prefixes like \enquote{binary} or \enquote{ternary} for the code itself, based on how we call the corresponding \hyperref[def:positional_number_system]{positional number systems}.
+
+  \item Some authors like \textcite[75]{ConwaySloane1998SpherePackings} and \textcite[2]{Berlekamp2015AlgebraicCodingTheory} shorten \enquote{error-correcting code} to \enquote{code}. We avoid doing so due to ambiguity.
+
+  \item \Textcite[def. 19.9]{AroraBarak2009ComputationalComplexity} instead define an error-correcting code as a function \( f: \Sigma^m \to \Sigma^n \) for some alphabet \( \Sigma \). This approach has its appeal since codes are implicitly connected with their encoding algorithms, however we follow the more established practice of treating a code as a set.
+\end{comments}
+
+\paragraph{Parity check}
+
+\begin{algorithm}[Parity check code]\label{alg:parity_check_code}\mcite[example 9.3]{LidlNiederreiter1997FiniteFields}
+  A simple binary \hyperref[def:error_correcting_code]{error-correcting code} is the \term{parity check code}, which extends the message \( w = w_n \cdots w_m \) with a single bit
+  \begin{equation*}
+    w_{m+1} \coloneqq \bigoplus_{k=1}^m w_k.
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:parity_check_code}
+  \end{CodeRefDisplay}
+\end{comments}
+
+\begin{proposition}\label{thm:parity_check_codeword_characterization}
+  A \hyperref[def:bit_string]{bit string} of length at least \( 2 \) is a codeword for \fullref{alg:parity_check_code} if and only if it has an even number of ones.
+\end{proposition}
+\begin{comments}
+  \item If the string is a \hyperref[def:ring_of_unsigned_integers]{binary encoding} of some number, the condition is equivalent for the number to be even.
+\end{comments}
+\begin{proof}
+  Denote the number of occurrence of \( 1 \) in a bit string \( s \) by \( N(s) \). Clearly \( N(s) \) is even if and only if the sum of its digits is \( 0 \).
+
+  Fix some string \( c = w w_{m+1} \), where \( w = w_1 \ldots w_m \). It is a codeword if and only if
+  \begin{equation*}
+    w_{m+1} = \bigoplus_{k=1}^m w_k.
+  \end{equation*}
+
+  We have two cases:
+  \begin{itemize}
+    \item In case \( N(w) \) is even, \( w_{m+1} = 0 \) if and only if \( N(w w_{m+1}) = N(w) \) is even.
+    \item In case \( N(w) \) is odd, \( w_{m+1} = 1 \) if and only if \( N(w w_{m+1}) = N(w) + 1 \) is even.
+  \end{itemize}
+
+  Therefore, \( w_{m+1} \) is a valid parity check digit if and only if \( N(w w_{m+1}) \) is even.
+\end{proof}
+
+\begin{corollary}\label{thm:parity_check_distance}
+  \Fullref{alg:parity_check_code} has \hyperref[def:error_correcting_code/distance]{minimal distance} \( 2 \).
+\end{corollary}
+\begin{proof}
+  \Cref{thm:parity_check_codeword_characterization} characterizes the codewords as those with an even number of ones. Therefore, two codewords must differ in at least two positions.
+\end{proof}
+
+\begin{proposition}\label{thm:parity_check_linearity}
+  \Fullref{alg:parity_check_code} is \hyperref[def:error_correcting_code/linear]{linear}.
+\end{proposition}
+\begin{proof}
+  \begin{equation*}
+    \begin{pmatrix}
+      w_1 \\
+      w_2 \\
+      \vdots \\
+      w_m \\
+      w_{m+1}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      1      & 0      & \cdots & 0 \\
+      0      & 1      & \ddots & 0 \\
+      \vdots & \vdots & \ddots & 0 \\
+      0      & 0      & \cdots & 1 \\
+      1      & 1      & \cdots & 1
+    \end{pmatrix}
+    \cdot
+    \begin{pmatrix}
+      w_1 \\
+      w_2 \\
+      \vdots \\
+      w_m
+    \end{pmatrix}
+  \end{equation*}
+\end{proof}
+
+\paragraph{Reed-Solomon codes}
+
+\begin{algorithm}[Reed-Solomon code]\label{alg:reed_solomon_code}
+  We will now describe the \hyperref[def:error_correcting_code]{error-correcting} \term{Reed-Solomon code} over the \hyperref[def:finite_field]{finite field} \( \BbbF_q \).
+
+  Fix positive integers \( m \leq n \leq q \) and \( n \) distinct elements \( \alpha_1, \ldots, \alpha_n \) of \( \BbbF_q \).
+
+  For a given message \( w = w_1 \cdots w_m \), we first define the polynomial
+  \begin{equation*}
+    f(X) \coloneqq \sum_{k=0}^m w_k X^k
+  \end{equation*}
+  and then the codeword as the string
+  \begin{equation*}
+    f(\alpha_1) \cdots f(\alpha_n).
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:reed_solomon_code}
+  \end{CodeRefDisplay}
+\end{comments}
+
+\begin{proposition}\label{thm:reed_solomon_distance}
+  The \hyperref[alg:reed_solomon_code]{Reed-Solomon code} has \hyperref[def:error_correcting_code/distance]{minimal distance} \( n - m \).
+\end{proposition}
+\begin{proof}
+  For the codewords, \( v \neq w \) consider the difference of their polynomials
+  \begin{equation*}
+    \sum_{k=0}^n (v_k - w_k) X^k.
+  \end{equation*}
+
+  It has degree at most \( n \), so it has at most \( n \) roots according to \cref{thm:polynomial_degree_bounds_root_count}. Therefore, the codewords for \( v \) and \( w \) differ in at least \( m - n \) positions.
+\end{proof}
+
+\begin{proposition}\label{thm:reed_solomon_linearity}
+  The \hyperref[alg:reed_solomon_code]{Reed-Solomon code} is \hyperref[def:error_correcting_code/linear]{linear}.
+\end{proposition}
+\begin{proof}
+  \begin{equation*}
+    \begin{pmatrix}
+      f(\alpha_1) \\
+      f(\alpha_2) \\
+      \vdots \\
+      f(\alpha_n)
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      1      & \alpha_1 & \cdots & \alpha_1^m \\
+      \vdots & \vdots   & \ddots & \vdots \\
+      1      & \alpha_n & \cdots & \alpha_n^m
+    \end{pmatrix}
+    \cdot
+    \begin{pmatrix}
+      w_1 \\
+      w_2 \\
+      \vdots \\
+      w_m
+    \end{pmatrix}
+  \end{equation*}
+\end{proof}
