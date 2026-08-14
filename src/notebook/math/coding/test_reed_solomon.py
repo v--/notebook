@@ -1,38 +1,39 @@
-from collections.abc import Sequence
+from collections.abc import Mapping
 
-from notebook.math.rings.modular import Z5
+from notebook.math.rings.modular import Z5, IntModuloMeta, BaseIntModulo
 from notebook.support.pytest import pytest_parametrize_kwargs
 
-from .reed_solomon import naive_reed_solomon_decode, reed_solomon_encode
+from .reed_solomon import naive_reed_solomon_list_decode, reed_solomon_encode
 
 
 @pytest_parametrize_kwargs(
-    dict(field=Z5, message=[3], points=[3, 4], expected=[3, 3]),
-    dict(field=Z5, message=[0, 1, 2], points=[0, 1, 2, 3, 4], expected=[0, 3, 0, 1, 1]),
+    dict(field=Z5, message='3', points='34', expected='33'),
+    dict(field=Z5, message='012', points='01234', expected='03011'),
 )
-def test_reed_solomon_encode(field: type, message: Sequence[int], points: Sequence[int], expected: Sequence[int]) -> None:
-    string_ = [field(n) for n in message]
-    points_ = [field(n) for n in points]
-    expected_ = [field(n) for n in expected]
+def test_reed_solomon_encode(field: type, message: str, points: str, expected: str) -> None:
+    string_ = [field(int(n)) for n in message]
+    points_ = [field(int(n)) for n in points]
+    expected_ = [field(int(n)) for n in expected]
 
     encoded = reed_solomon_encode(string_, points_)
     assert encoded == expected_
 
 
 @pytest_parametrize_kwargs(
-    # We start with the real codeword and replace a digit
-    dict(field=Z5, codeword=[3, 3], expected=[3]),
-    dict(field=Z5, codeword=[3, 4], expected=[3]),
-    dict(field=Z5, codeword=[4, 3], expected=[3]),
+    # The correct code of '3' is '33'; changing one digit introduces other viable candidates
+    dict(field=Z5, codeword='33', expected={'3'}),
+    dict(field=Z5, codeword='34', expected={'3', '4'}),
+    dict(field=Z5, codeword='43', expected={'3', '4'}),
 
-    # We start with the real codeword and replace up to 2 digits
-    dict(field=Z5, codeword=[0, 3, 0, 1, 1], expected=[0, 1, 2]),
-    dict(field=Z5, codeword=[4, 3, 0, 1, 1], expected=[0, 1, 2]),
-    dict(field=Z5, codeword=[4, 4, 0, 1, 1], expected=[0, 1, 2]),
+    # The correct code of '012' is '03011'; changing one digit is safe, but two digits introduce other candidates
+    dict(field=Z5, codeword='03011', expected={'012'}),
+    dict(field=Z5, codeword='43011', expected={'012'}),
+    dict(field=Z5, codeword='04011', expected={'012'}),
+    dict(field=Z5, codeword='44011', expected={'012', '144', '243', '310', '411', '423', '424', '430', '432', '441'}),
 )
-def test_naive_reed_solomon_decode(field: type, codeword: Sequence[int], expected: Sequence[int]) -> None:
-    codeword_ = [field(n) for n in codeword]
-    expected_ = [field(n) for n in expected]
-
-    decoded = naive_reed_solomon_decode(codeword_, len(expected_))
-    assert decoded == expected_
+def test_naive_reed_solomon_list_decode(field: IntModuloMeta, codeword: str, expected: Mapping[str, float]) -> None:
+    codeword_ = [field(int(n)) for n in codeword]
+    message_length = len(next(iter(expected)))
+    decoded_iter = naive_reed_solomon_list_decode(codeword=codeword_, message_length=message_length)
+    decoded_as_set = {''.join(str(n.value) for n in message) for message in decoded_iter}
+    assert decoded_as_set == expected
