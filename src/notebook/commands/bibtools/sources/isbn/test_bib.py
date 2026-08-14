@@ -217,3 +217,25 @@ def test_parse_9781470450557_missing_number_of_pages(isbn: str = '978-1-4704-505
       date='2019',
       isbn=isbn,
     )
+
+
+def test_parse_9780444818164_other_titles(isbn: str = '978-0-444-81816-4') -> None:
+    with get_isbn_fixture_path(stdnum.isbn.compact(isbn)).open() as file:
+        book_json = json.load(file)
+
+    book = parse_isbn_json(book_json)
+    entry = isbn_book_to_bib(book, isbn)
+
+    assert entry == BibEntry(
+      entry_type='book',
+      entry_name='Deliĭska1995ElsevierSDictionary',
+      title="Elsevier's dictionary of computer science and mathematics",
+      subtitle='in English, German, French, and Russian',
+      authors=[
+          BibAuthor(full_name='Bori͡ana Deliĭska', short_name=None),
+      ],
+      languages=['english'],
+      publishers=['Elsevier'],
+      date='1995',
+      isbn=isbn,
+    )

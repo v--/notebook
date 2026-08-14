@@ -114,7 +114,9 @@ class OLBookDetails(OLBaseModel):
     uris: Sequence[str] | None = None
     url: Sequence[str] | None = None
     weight: str | None = None
+    work_title: Sequence[str] | None = None
     work_titles: Sequence[str] | None = None
+    other_titles: Sequence[str] | None = None
 
 
 class OLBook(OLBaseModel):
