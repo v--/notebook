@@ -1,6 +1,6 @@
-from notebook.support.coderefs import collector
 from collections.abc import Collection
 
+from notebook.support.coderefs import collector
 from notebook.support.collections import SequentialMapping, SequentialSet
 
 from .finite import FiniteAutomaton

@@ -1,4 +1,3 @@
-import logging
 import pathlib
 lazy from collections.abc import Sequence
 
@@ -7,7 +6,7 @@ import stdnum.isbn
 
 from notebook.commands.common.exception_handling import with_cli_exception_handler
 from notebook.commands.common.formatting import FormatterContextManager
-from notebook.commands.common.logging import NotebookLoggerHandler, setup_logging
+from notebook.commands.common.logging import setup_logging
 from notebook.exceptions import NotebookError
 
 from .file import read_entries, write_entries
