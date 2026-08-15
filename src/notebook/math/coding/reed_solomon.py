@@ -21,6 +21,9 @@ def reed_solomon_encode[T: BaseIntModulo](message: Sequence[T], points: Sequence
     if len(set(points)) < len(points):
         raise EncodingError('The points must be unique')
 
+    if any(n.value == 0 for n in points):
+        raise EncodingError('Cannot use zero as a point')
+
     return [
         functools.reduce(operator.add, (digit * p ** k for k, digit in enumerate(message)))
         for p in points
@@ -32,7 +35,7 @@ def iter_reed_solomon_matches[T: BaseIntModulo](codeword: Sequence[T], message_l
     cls = type(codeword[0])
 
     for message in itertools.product(map(cls, range(cls.modulus)), repeat=message_length):
-        for points in itertools.combinations(map(cls, range(cls.modulus)), len(codeword)):
+        for points in itertools.combinations(map(cls, range(1, cls.modulus)), len(codeword)):
             distance = hamming_distance(codeword, reed_solomon_encode(message, points))
 
             if distance <= max_distance:
