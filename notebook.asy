@@ -1,4 +1,4 @@
-access 'asymptote/blobs.asy' as blobs;
+access 'asymptote/assets.asy' as assets;
 access 'asymptote/geom.asy' as geom;
 access 'asymptote/lab.asy' as lab;
 access 'asymptote/num.asy' as num;

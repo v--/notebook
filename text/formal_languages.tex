@@ -158,8 +158,37 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \paragraph{String distance}
 
 \begin{definition}\label{def:hamming_distance}\mcite[24]{Golan1999Semirings}
-  The \term[ru=расстояние Хэмминга (\cite[\S 6.3.3]{Новиков2013ДискретнаяМатематика}), en=Hamming distance]{Hamming distance} between two \hyperref[def:formal_language/string]{strings} \( a_1 \cdots a_n \) and \( b_1 \cdots b_n \) of the same length is simply the number of indices for which \( a_k \neq b_k \).
+  We define the \term[ru=расстояние Хэмминга (\cite[\S 6.3.3]{Новиков2013ДискретнаяМатематика}), en=Hamming distance]{Hamming distance} between two \hyperref[def:formal_language/string]{strings} \( v = v_1 \cdots v_n \) and  \( w = w_1 \cdots w_n \) of the same length is simply the number of positions for which \( v_k \neq w_k \).
 \end{definition}
+
+\begin{proposition}\label{thm:hamming_distance_metric}
+  As an operator on \( \Sigma^n \) for some alphabet \( \Sigma \), the \hyperref[def:hamming_distance]{Hamming distance} is a \hyperref[def:metric_space]{metric}.
+
+  \begin{figure}
+    \hfill
+    \begin{subcaptionblock}{0.45\textwidth}
+      \centering
+      \includegraphics[page=1]{output/thm__hamming_distance_metric}
+      \caption{The \hyperref[def:p_norm]{\( 1 \)-norm}.}
+    \end{subcaptionblock}
+    \hfill
+    \begin{subcaptionblock}{0.45\textwidth}
+      \centering
+      \includegraphics[page=2]{output/thm__hamming_distance_metric}
+      \caption{The \hyperref[def:hamming_distance]{Hamming distance}.}
+    \end{subcaptionblock}
+    \hfill
+    \caption{The \hyperref[def:metric_space/ball]{unit circles} under different metrics in a plane over a \hyperref[def:finite_field]{finite field}.}
+    \label{fig:thm:hamming_distance_metric}
+  \end{figure}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{def:metric_space/M1} The Hamming distance is zero if and only if \( v = w \).
+
+  \SubProofOf{def:metric_space/M2} Trivial.
+
+  \SubProofOf{def:metric_space/M3} For any three strings \( u = u_1 \ldots u_n \), \( v = v_1 \ldots v_n \) and \( w = w_1 \ldots w_n \), if \( u_i \neq w_i \), then either \( u_i \neq v_i \) or \( v_i \neq w_i \).
+\end{proof}
 
 \begin{definition}\label{def:levenshtein_distance}\mcite[4]{Левенштейн1965ДвоичныеКоды}
   The \term{Levenshtein distance} from the \hyperref[def:formal_language/string]{string} \( v \) to \( w \) is the minimum number of single-symbol insertions, deletions and substitutions needed to obtain \( w \) from \( v \).
@@ -167,7 +196,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   In this context, following \textcite[168]{WagnerFischer1974LevenshteinDistance}, we will refer to these operations as \enquote{edit operations}.
 \end{definition}
 \begin{comments}
-  \item We give here Levenshtein's definition, but we will conflate it with the recursively-defined function from \cref{thm:levenshtein_distance_characterization}.
+  \item We state Levenshtein's definition, but we will conflate it with the recursively-defined function from \cref{thm:levenshtein_distance_characterization}.
 
   \item It will follow from \cref{thm:levenshtein_distance_characterization}, but even here we can easily deduce that the distance from \( v \) to \( w \) coincides with the distance from \( w \) to \( v \) because every edit operation is invertible.
 
@@ -267,16 +296,16 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{algorithm}[Wagner-Fisher algorithm for Levenshtein distance]\label{alg:wagner_fisher}\mcite[171; 172]{WagnerFischer1974LevenshteinDistance}
   Fix two strings
   \begin{align*}
-    v = a_1 \cdots a_n && w = b_1 \cdots b_m.
+    v = v_1 \cdots v_n && w = w_1 \cdots w_m.
   \end{align*}
 
-  The \hyperref[def:levenshtein_distance]{Levenshtein distance} from the prefix \( a_1 \cdots a_j \) to the prefix \( b_1 \cdots b_i \) can be computed recursively as follows:
+  The \hyperref[def:levenshtein_distance]{Levenshtein distance} from the prefix \( v_1 \cdots v_j \) to the prefix \( w_1 \cdots w_i \) can be computed recursively as follows:
   \begin{equation*}
     d_{i,j} = \begin{cases}
       j,                                                         &i = 0, \\
       i,                                                         &j = 0, \\
-      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 0 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} a_i = b_i, \\
-      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 1 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} a_i \neq b_i.
+      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 0 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} v_i = w_i, \\
+      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 1 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} v_i \neq w_i.
     \end{cases}
   \end{equation*}
 
