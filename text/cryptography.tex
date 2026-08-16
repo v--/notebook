@@ -1,0 +1,290 @@
+\chapter{Cryptography}\label{sec:cryptography}
+
+\begin{concept}\label{con:privacy}
+  \term[en=privacy (\cite{Solove2006Privacy})]{Privacy} is a loose concept which, like freedom in general, is characterized by its violations. In the words of \textcite[484]{Solove2006Privacy}, \enquote{Privacy is the relief from a range of kinds of social friction}.
+
+  To acknowledge the inherent ambiguity, Solove starts the abstract of the aforementioned paper as follows:
+  \begin{displayquote}
+    Privacy is a concept in disarray. Nobody can articulate what it means. As one commentator has observed, privacy suffers from \enquote{an embarrassment of meanings.}
+  \end{displayquote}
+
+  On the technical side, privacy amounts to protecting information, primarily by way of \hyperref[con:cryptography]{encryption}. \textcite[644]{DiffieHellman1976NewDirectionsInCryptography} write
+  \begin{displayquote}
+    The best known cryptographic problem is that of privacy: preventing the unauthorized extraction of information over an insecure channel.
+  \end{displayquote}
+
+  Information that is qualified as \term{sensitive} should only be transferred over \term[ru=защищённый канал (\cite[52]{АлферовИПр2002ОсновыКриптографии}), en=secure communication (\cite[295]{Merkle1978SecureCommunications})]{secure} \hyperref[con:communication_channel]{communication channels}. Concerning what qualifies as secure communication, \textcite{Merkle1978SecureCommunications} writes
+  \begin{displayquote}
+    Secure communication takes place between two individuals when they communicate privately in spite of efforts by a third person to learn what is being communicated.
+  \end{displayquote}
+
+  Sensitive information is also called \term[ru=частная информация (\cite[57]{АлферовИПр2002ОсновыКриптографии}), en=private messages (\cite[120]{RivestShamirAdleman1978RSA})]{private} or \term[en=secret message (\cite[335]{Strogatz1994NonlinearDynamics})]{secret}, the latter term also being used as a noun. Information whose possession does not violate author's privacy is called \term[ru=открытая информация (\cite[56]{АлферовИПр2002ОсновыКриптографии}), en=public information (\cite[650]{DiffieHellman1976NewDirectionsInCryptography})]{public}.
+\end{concept}
+
+\begin{concept}\label{con:cryptography}
+  \term[ru=криптография (\cite[52]{АлферовИПр2002ОсновыКриптографии})]{Cryptography} is a broad area dedicated to concealing information. The term is constructed from the Greek words \enquote{\textel{κρυπτός}} (\enquote{concealed}) and \enquote{\textel{γράφω}} (\enquote{depict}). \Textcite[52]{АлферовИПр2002ОсновыКриптографии} offer the literal Russian translation \enquote{\textru{тайнопись}}.
+
+  \Textcite[54]{Koblitz1994NumberTheoryAndCryptography} describes the area as follows:
+  \begin{displayquote}
+    Cryptography is the study of methods of sending messages in disguised form so that only the intended recipients can remove the disguise and read the message.
+  \end{displayquote}
+
+  We show in \cref{rem:securing_communication_channels} how cryptography allows implementing a \hyperref[con:privacy]{secure communication channel} over an insecure one.
+\end{concept}
+\begin{comments}
+  \item It will be convenient for us to regard these messages as encoded unsigned integers, as per \cref{def:ring_of_unsigned_integers}.
+\end{comments}
+
+\paragraph{Cryptosystems}
+
+\begin{definition}\label{def:cryptosystem}\mimprovised
+  A \term[ru=криптосистема / шифрсистема (\cite[58]{Koblitz1994NumberTheoryAndCryptography}), en=cryptosystem (\cite[55]{Koblitz1994NumberTheoryAndCryptography})]{cryptosystem} over the \hyperref[def:formal_language/alphabet]{alphabet} \( \Sigma \) is a pair of functions \( (E, D) \), both with signature \( \Sigma^* \times \Sigma^* \to \Sigma^* \):
+
+  \begin{thmenum}[series=def:cryptosystem]
+    \thmitem{def:cryptosystem/encryption} We call the application of \( E \) \term[en=шифрование (\cite[56]{АлферовИПр2002ОсновыКриптографии}), en=encryption (\cite[54]{Koblitz1994NumberTheoryAndCryptography})]{encryption}, and the application result \( E(p, w) \) the \term[ru=шифрованое сообщениe (\cite[56]{АлферовИПр2002ОсновыКриптографии}), en=ciphertext (\cite[54]{Koblitz1994NumberTheoryAndCryptography})]{ciphertext}\fnote{\Textcite[44]{Schwartzman1996WordsOfMathematics} explains that the word \enquote{cipher} came through a series of transformations from Arabic and used to mean \enquote{zero} before being used for cryptographic secrets.} obtained from the \term[en=plaintext (\cite[54]{Koblitz1994NumberTheoryAndCryptography})]{plaintext} message \( w \) and the \term[en=encryption key (\cite[120]{RivestShamirAdleman1978RSA}), ru=ключ зашифрования (\cite[59]{АлферовИПр2002ОсновыКриптографии})]{encryption key} \( p \).
+
+    In \hyperref[def:symmetric_cryptosystem]{public key cryptosystems}, the encryption key is considered \hyperref[con:privacy]{public information}, and is thus also called the \term[en=public key (\cite[602]{GowersEtAl2008PrincetonCompanion})]{public key}.
+
+    \thmitem{def:cryptosystem/decryption} We call the application of \( D \) \term[ru=расшифрование (\cite[56]{АлферовИПр2002ОсновыКриптографии}), en=decryption (\cite[54]{Koblitz1994NumberTheoryAndCryptography})]{decryption} since \( D(s, w) \) is an attempt to decode the encrypted message \( w \) based on the \term[en=decryption key (\cite[122]{RivestShamirAdleman1978RSA}), ru=ключ расшифрования (\cite[59]{АлферовИПр2002ОсновыКриптографии})]{decryption key} \( s \).
+
+    We assume that the decryption key is \hyperref[con:privacy]{secret}, hence it is also called the \term[en=private key (\cite[174]{AroraBarak2009ComputationalComplexity})]{secret key} or \term[en=private key (\cite[652]{RivestShamirAdleman1978RSA})]{private key}.
+
+    \thmitem{def:cryptosystem/pair} We require that every encryption key \( p \) should have a corresponding decryption key \( s \) so that, for every plaintext message \( w \),
+    \begin{equation*}
+      D(s, E(p, w)) = w.
+    \end{equation*}
+
+    We call \( (p, s) \) a \term{key pair}.
+  \end{thmenum}
+
+  Encryption is assumed to be a \hyperref[def:trapdoor_function]{trapdoor function}, which requires decryption to be computationally infeasible unless given the appropriate secret key. Since the existence of trapdoor functions is only hypothesized, we use this assumption merely as a guidance.
+\end{definition}
+\begin{comments}
+  \item This definition is loosely based on the one given in \cite[648]{DiffieHellman1976NewDirectionsInCryptography}, where Diffie and Hellman introduce the concept of public key cryptography, as well as \fullref{alg:diffie_hellman_key_exchange}.
+\end{comments}
+
+\begin{definition}\label{def:symmetric_cryptosystem}\mimprovised
+  We call a \hyperref[def:cryptosystem]{cryptosystem} \term[ru=симметричная (шифрсистема) (\cite[52]{АлферовИПр2002ОсновыКриптографии}), en=symmetrical (cryptosystem) (\cite[88]{Koblitz1994NumberTheoryAndCryptography})]{symmetric} if, for each key pair \( (p, s) \), the keys \( p \) and \( s \) coincide.
+
+  Symmetric cryptosystems are also called \term[en=private key cryptosystem (\cite[88]{Koblitz1994NumberTheoryAndCryptography})]{private key cryptosystems} since keys are inherently private, as opposed to \term[en=public key cryptosystem (\cite[88]{Koblitz1994NumberTheoryAndCryptography})]{public key cryptosystems} in which the two keys are always distinct and the encryption key is considered public information.
+\end{definition}
+
+\begin{remark}\label{rem:securing_communication_channels}
+  We will show how a \hyperref[def:cryptosystem]{cryptosystem} allows securing a \hyperref[con:privacy]{insecure} \hyperref[con:communication_channel]{communication channel}.
+
+  Let \( U \) be a set of users. Communication over a channel can be formalized by a function \( c: U^2 \times \Sigma^* \to \Sigma^* \), where \( c(a, b, w) \) is the publicly visible message transferred when user \( a \) sends \( w \) to user \( b \).
+
+  \begin{thmenum}
+    \thmitem{rem:securing_communication_channels/symmetric} If, in a \hyperref[def:symmetric_cryptosystem]{symmetric cryptosystem}, every pair of users \( a \) and \( b \) have exchanged a key \( k_{a,b} = k_{b,a} \), we can implement \( c \) as
+    \begin{equation*}
+      c(a, b, w) \coloneqq E(k_{a,b}, w).
+    \end{equation*}
+
+    Because of the assumption that decryption is difficult without a key, sharing this ciphertext message is considered secure, yet the user \( b \) can decode the ciphertext using the shared key because
+    \begin{equation*}
+      D(k_{b,a}, E(k_{a,b}, w)) = w.
+    \end{equation*}
+
+    Although the resulting communication is secure, exchanging keys between all pairs of users is inefficient and error-prone.
+
+    \thmitem{rem:securing_communication_channels/dh} In 1976, \textcite{DiffieHellman1976NewDirectionsInCryptography}, based on earlier work by \textcite{Merkle1978SecureCommunications}\fnote{Diffie and Hellman cite Merkle's paper even though it is formally published earlier.}, propose a public key cryptosystem, where every user \( u \) has their own key pair \( (p_u, s_u) \). The public key \( p_u \) is assumed to be publicly shared on some key server.
+
+    When \( a \) wishes to send a message to \( b \), \fullref{alg:diffie_hellman_key_exchange} allows generating a shared secret \( k_{a,b} \). This secret is generated over an \emph{insecure} channel and then used as in symmetric cryptosystems to secure the channel.
+
+    \thmitem{rem:securing_communication_channels/rsa} In 1977, \textcite{RivestShamirAdleman1978RSA} propose another cryptosystem which does not rely on shared secrets. This allows implementing \( c \) as
+    \begin{equation*}
+      c(a, b, w) \coloneqq E(p_b, w).
+    \end{equation*}
+
+    Encryption only depends on the public key of user \( b \), who can decode it because
+    \begin{equation*}
+      D(s_b, E(p_b, w)) = w.
+    \end{equation*}
+  \end{thmenum}
+\end{remark}
+
+\paragraph{One-way functions}
+
+\begin{definition}\label{def:negligible_function}\mcite[def. 9.3]{AroraBarak2009ComputationalComplexity}
+  We say that the function \( e: \BbbZ_{\geq 0} \to [0, 1] \) is \term{negligible} if, for every \( c > 0 \), there exists some \( n_0 \) such that \( e(n) < c^{-n} \) whenever \( n \geq n_0 \).
+\end{definition}
+
+\begin{definition}\label{def:one_way_function}\mcite[def. 9.4]{AroraBarak2009ComputationalComplexity}
+  We say that a polynomial-time computable function \( f: \Sigma^* \to \Sigma^* \) is a \term{one-way function} if it is computationally infeasible to invert in he following sense: for every probabilistic polynomial-time algorithm \( A: \Sigma^* \to \Sigma^* \) and every input \( w \in \Sigma^* \), the probability
+  \begin{equation*}
+    \prob\parens[\big]{ f(A(f(w))) = f(w) }
+  \end{equation*}
+  is a \hyperref[def:negligible_function]{negligible function} of \( \len(w) \).
+
+  In case \( f \) is injective, the expression above simplifies to
+  \begin{equation*}
+    \prob\parens[\big]{ A(f(w)) = w }.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item We generalize the definition from \cite[def. 9.4]{AroraBarak2009ComputationalComplexity} by allowing arbitrary alphabets rather than only \hyperref[def:positional_number_system/binary]{bits}.
+\end{comments}
+
+\begin{conjecture}[One-way function existence]\label{hyp:one_way_function_existence}\mcite[conj. 9.5]{AroraBarak2009ComputationalComplexity}
+  There exists a \hyperref[def:one_way_function]{one-way function}.
+\end{conjecture}
+
+\begin{definition}\label{def:trapdoor_function}\mimprovised
+  For the purposes of \hyperref[con:cryptography]{public-key cryptosystems}, \hyperref[def:one_way_function]{one-way functions} are too restrictive since they allow encryption but not decryption. Instead, we are interested in functions that depend on additional parameters --- a \term{public key} should allow efficient encryption, while a \term{secret key} should allow efficient decryption. We will use the same \hyperref[def:formal_language/alphabet]{alphabet} \( \Sigma \) for both the message and the keys.
+
+  We say that the polynomial-time computable function \( f: \Sigma^* \times \Sigma^* \to \Sigma^* \) is a \term[en=trapdoor function (\cite[def. 10.47]{Sipser2013TheoryOfComputation})]{trapdoor function} if there exist a polynomial-time computable function \( h: \Sigma^* \times \Sigma^* \to \Sigma^* \), acting as a generalized inverse of \( f \), and a probabilistic polynomial-time algorithm \( G: \set{ \bnfves } \to \Sigma^* \times \Sigma^* \) for generating key pairs, subject to the following conditions:
+  \begin{thmenum}
+    \thmitem{def:trapdoor_function/secret} For every key pair \( (p, s) \) that \( G \) generates with positive probability, we must have
+    \begin{equation*}
+      f(p, h(s, f(p, w))) = f(p, w).
+    \end{equation*}
+
+    In case \( f(p, \anon) \) is injective, this simplifies to
+    \begin{equation*}
+      h(s, f(p, w)) = w.
+    \end{equation*}
+
+    \thmitem{def:trapdoor_function/public} With the key pair \( (p, s) \) as above, for every probabilistic polynomial-time algorithm \( A: \Sigma^* \times \Sigma^* \to \Sigma^* \) that depends only on the public key \( p \), the probability
+    \begin{equation*}
+      \prob\parens[\big]{ f(p, A(p, f(p, w))) = f(p, w) }
+    \end{equation*}
+    should be a \hyperref[def:negligible_function]{negligible function} of \( \len(w) \).
+
+    In case \( f(p, \anon) \) is injective, the expression above simplifies to
+    \begin{equation*}
+      \prob\parens[\big]{ A(p, f(p, w)) = w }.
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is based on \cite[def. 10.47]{Sipser2013TheoryOfComputation}, but requires \( f \) and \( h \) to polynomial-time computable while lifting the requirement
+  \begin{equation*}
+    \len(f(p, w)) = \len(f(s, w)) = \len(w).
+  \end{equation*}
+
+  This makes our definition a generalization of one-way functions, whose definition we base on \cite[def. 9.4]{AroraBarak2009ComputationalComplexity}.
+
+  \item Even though this definition is not bound with cryptography, there is little use of trapdoor functions in other areas.
+\end{comments}
+
+\begin{proposition}\label{thm:trapdoor_to_one_way_function}
+  For a fixed key pair, without the secret key, a \hyperref[def:trapdoor_function]{trapdoor function} becomes a \hyperref[def:one_way_function]{one-way function}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\paragraph{Discrete logarithms}
+
+\begin{definition}\label{def:discrete_logarithm}\mcite[98]{Koblitz1994NumberTheoryAndCryptography}
+  In a finite \hyperref[def:group]{group}, we say that the nonnegative integer \( n \) is the \term{discrete logarithm} of \( x \) to the \term{base} \( b \) if \( b^n = x \).
+\end{definition}
+\begin{comments}
+  \item This is not strictly necessary, but it is reasonable to assume that the group is \hyperref[def:cyclic_group]{cyclic} with generator \( b \), since in that case every element has a discrete logarithm.
+
+  In fact, in \hyperref[def:finite_field]{finite fields}, from where this more general definition arose, the multiplicative group is generated by \hyperref[def:finite_field_primitive_element]{primitive elements} and hence discrete logarithms are well-defined. See \cref{def:finite_field_index}.
+\end{comments}
+
+\begin{problem}[Discrete logarithm problem]\label{prob:discrete_logarithm}\mcite[97]{Koblitz1994NumberTheoryAndCryptography}
+  In a given finite \hyperref[def:group]{group}, the \term[ru=задача дискретного логарифморования (в конечном поле) (\cite[52]{АлферовИПр2002ОсновыКриптографии})]{discrete logarithm problem} for \( x \) to the base \( b \) is to find the corresponding \hyperref[def:discrete_logarithm]{discrete logarithm}, i.e. a nonnegative integer \( n \) such that \( b^n = x \).
+\end{problem}
+
+\begin{definition}\label{def:finite_field_index}\mcite[541]{LidlNiederreiter1997FiniteFields}
+  Let \( b \) be a \hyperref[def:finite_field_primitive_element]{primitive element} in the \hyperref[def:finite_field]{finite field} \( \BbbF_q \). By definition, \( b \) generates the multiplicative group \( \BbbF_q^* \).
+
+  We define the \term{index} of a \emph{nonzero} element \( x \) as the smallest nonnegative integer \( n \) such that \( b^n = x \). Since it provides a solution to \fullref{prob:discrete_logarithm}, the index is also called \enquote{the} \term[en=discrete logarithm (\cite[def. 4.4.4]{Rosen2019DiscreteMathematics})]{discrete logarithm} of \( x \).
+
+  If \( q = p \) is prime, then \( n \) is itself an element of \( \BbbF_p \), and
+  \begin{equation}\label{eq:def:finite_field_index}
+    x = b^n \pmod p.
+  \end{equation}
+\end{definition}
+
+\begin{example}\label{ex:def:def_discrete_logarithm}
+  We list examples of \hyperref[def:discrete_logarithm]{discrete logarithms}.
+  \begin{thmenum}
+    \thmitem{ex:def:def_discrete_logarithm/mod2} Modulo \( 2 \), where the only square root of unity is \( 1 \), only \( 1 \) has an index.
+
+    \thmitem{ex:def:def_discrete_logarithm/mod5} Modulo \( 5 \), the powers of \( 2 \) and \( 3 \) are shown in \cref{tab:ex:def:def_discrete_logarithm/mod5}.
+
+    \begin{table}
+      \begin{equation*}
+        \begin{array}{*{3}c}
+          \toprule
+          x & y & 2^y \\
+          \midrule
+          1 & 0 & 2^0 = 1 \\
+          2 & 1 & 2^1 = 2 \\
+          3 & 3 & 2^3 = 8 \\
+          4 & 2 & 2^2 = 4 \\
+          \bottomrule
+        \end{array}
+        \qquad
+        \begin{array}{*{3}c}
+          \toprule
+          x & y & 3^y \\
+          \midrule
+          1 & 0 & 3^0 = 1 \\
+          2 & 3 & 3^3 = 27 \\
+          3 & 1 & 3^1 = 3 \\
+          4 & 2 & 3^2 = 9 \\
+          \bottomrule
+        \end{array}
+      \end{equation*}
+      \caption{The \hyperref[def:finite_field_index]{discrete logarithms} with bases \( 2 \) and \( 3 \) modulo \( 5 \).}\label{tab:ex:def:def_discrete_logarithm/mod5}
+    \end{table}
+
+    Thus, both \( 2 \) and \( 3 \) are primitive roots, and every positive integer less than \( 5 \) has a discrete logarithm with base \( 2 \) or \( 3 \) modulo \( 5 \). Furthermore, \cref{thm:primitive_element_cardinality} implies that there are \( \varphi(4) = 2 \) primitive roots modulo \( 5 \), so there are no others.
+
+    We will show explicitly that the rest are not primitive roots. Obviously \( 1 \) is not, while \( 4 \) has order \( 2 \) in the group of fourth roots of unity. However, \( 4 \) not being primitive can be verified directly as follows:
+    \begin{equation*}
+      4^{2k} = 16^k = 1^k = 1 \pmod 5,
+    \end{equation*}
+    hence \( 4^{2k} = 1 \pmod 5 \) for even exponents and \( 4^{2k + 1} = 4 \) for odd exponents.
+
+    \thmitem{ex:def:def_discrete_logarithm/mod7} \Cref{thm:primitive_element_cardinality} implies that there are only \( \varphi(6) = 2 \) roots of unity modulo \( 7 \).
+
+    We can rule out most candidates since they have multiplicative order smaller than \( 6 \):
+    \begin{itemize}
+      \item \( 1^1 = 1 \pmod 7 \)
+      \item \( 2^3 = 8 = 1 \pmod 7 \)
+      \item \( 4^3 = 64 = 1 \pmod 7 \)
+      \item \( 6^2 = 36 = 1 \pmod 7 \)
+    \end{itemize}
+
+    Therefore, the primitive roots modulo \( 7 \) are \( 3 \) and \( 5 \).
+  \end{thmenum}
+\end{example}
+
+\begin{algorithm}[Diffie-Hellman key exchange]\label{alg:diffie_hellman_key_exchange}\mcite[99]{Koblitz1994NumberTheoryAndCryptography}
+  We present a method for creating a shared \hyperref[con:privacy]{secret} over an \hyperref[con:privacy]{insecure} \hyperref[con:communication_channel]{communication channel}.
+
+  We assume the formalisms of \cref{rem:securing_communication_channels/dh} --- we are given a set \( U \) of users, where every user \( u \) has a secret key \( s_u \), and user \( a \) wishes to securely send a message to user \( b \). For this, a shared secret key \( k_{a,b} = k_{b,a} \) will be created.
+
+  The keys are assumed to be members of some finite \hyperref[def:cyclic_group]{cyclic group} \( G \). Fix a generator \( g \) of \( G \), assumed to be public.
+
+  We define the public key of user \( u \) as \( p_u \coloneqq g^{s_u} \). The limited communication needed for the key exchange is performed by
+  \begin{equation*}
+    c(a, b, w) \coloneqq p_b^{s_a}
+  \end{equation*}
+
+  This is considered secure because obtaining \( y \) from \( x^y \) requires solving \fullref{prob:discrete_logarithm}, which is considered computationally infeasible.
+
+  The shared key is then
+  \begin{equation*}
+    k_{a,b} \coloneqq c(a, b, \bnfves) = p_b^{s_a}.
+  \end{equation*}
+
+  Both users now have access to the same secret because \cref{thm:semigroup_exponentiation_properties/repeated} implies that
+  \begin{equation*}
+    k_{a,b} = p_b^{s_a} = (g^{s_b})^{s_a} = (g^{p_s})^{s_b} = p_b^{s_a} = k_{b,a}.
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item As explained in \cref{rem:securing_communication_channels/dh}, the algorithm is due to \textcite{Merkle1978SecureCommunications} and \textcite{DiffieHellman1976NewDirectionsInCryptography}. It was initially formulated for the multiplicative group \( G = \BbbF_q^* \) of the \hyperref[def:finite_field]{finite field} \( \BbbF_q \), but is readily generalized to cyclic groups. This generalization can be found, for example, in \cite[99]{Koblitz1994NumberTheoryAndCryptography}.
+
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:diffie_hellman_key_exchange}
+  \end{CodeRefDisplay}
+\end{comments}

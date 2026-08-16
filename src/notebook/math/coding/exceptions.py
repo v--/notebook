@@ -1,7 +1,7 @@
-from notebook.exceptions import NotebookError
+from notebook.math.exceptions import NotebookMathError
 
 
-class CodingError(NotebookError):
+class CodingError(NotebookMathError):
     pass
 
 

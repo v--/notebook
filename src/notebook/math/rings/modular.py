@@ -67,7 +67,10 @@ class BaseIntModulo(metaclass=IntModuloMeta):
 
         return self.new(self.value * other)
 
-    def __pow__(self, power: int) -> Self:
+    def __pow__(self, power: Self | int) -> Self:
+        if isinstance(power, BaseIntModulo):
+            return self.new(self.value ** power.value)
+
         return self.new(self.value ** power)
 
     def __int__(self) -> int:
