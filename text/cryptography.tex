@@ -1,4 +1,4 @@
-\chapter{Cryptography}\label{sec:cryptography}
+\section{Cryptography}\label{sec:cryptography}
 
 \begin{concept}\label{con:privacy}
   \term[en=privacy (\cite{Solove2006Privacy})]{Privacy} is a loose concept which, like freedom in general, is characterized by its violations. In the words of \textcite[484]{Solove2006Privacy}, \enquote{Privacy is the relief from a range of kinds of social friction}.
@@ -261,21 +261,16 @@
 
   We assume the formalisms of \cref{rem:securing_communication_channels/dh} --- we are given a set \( U \) of users, where every user \( u \) has a secret key \( s_u \), and user \( a \) wishes to securely send a message to user \( b \). For this, a shared secret key \( k_{a,b} = k_{b,a} \) will be created.
 
-  The keys are assumed to be members of some finite \hyperref[def:cyclic_group]{cyclic group} \( G \). Fix a generator \( g \) of \( G \), assumed to be public.
+  The keys are assumed to be members of some finite \hyperref[def:cyclic_group]{cyclic group} \( G \). Fix a generator \( g \) of \( G \), assumed to be public. Technically we need to encode the elements of \( G \) in some \hyperref[def:formal_language]{formal language}.
 
   We define the public key of user \( u \) as \( p_u \coloneqq g^{s_u} \). The limited communication needed for the key exchange is performed by
   \begin{equation*}
-    c(a, b, w) \coloneqq p_b^{s_a}
+    c(a, b) \coloneqq p_b^{s_a}.
   \end{equation*}
 
   This is considered secure because obtaining \( y \) from \( x^y \) requires solving \fullref{prob:discrete_logarithm}, which is considered computationally infeasible.
 
-  The shared key is then
-  \begin{equation*}
-    k_{a,b} \coloneqq c(a, b, \bnfves) = p_b^{s_a}.
-  \end{equation*}
-
-  Both users now have access to the same secret because \cref{thm:semigroup_exponentiation_properties/repeated} implies that
+  The shared key is then \( k_{a,b} \coloneqq c(a, b) \). Both users have access to the same secret because \cref{thm:semigroup_exponentiation_properties/repeated} implies that
   \begin{equation*}
     k_{a,b} = p_b^{s_a} = (g^{s_b})^{s_a} = (g^{p_s})^{s_b} = p_b^{s_a} = k_{b,a}.
   \end{equation*}
@@ -288,3 +283,108 @@
     \GetCodeRef{alg:diffie_hellman_key_exchange}
   \end{CodeRefDisplay}
 \end{comments}
+
+\paragraph{Integer factorization}
+
+\begin{problem}[Integer factorization problem]\label{prob:integer_factorization}\mcite[177]{AroraBarak2009ComputationalComplexity}
+  Given product \( ab \) of positive integers encoded in some \hyperref[def:positional_number_system]{positional number system}, the \term{factorization problem} is to recover \( a \) and \( b \) from \( ab \).
+\end{problem}
+
+\begin{algorithm}[RSA cryptosystem]\label{alg:rsa}\mcite{RivestShamirAdleman1978RSA}
+  We will describe a \hyperref[def:symmetric_cryptosystem]{public key} \hyperref[def:cryptosystem]{cryptosystem} \( (E, D) \) based on \hyperref[con:modular_arithmetic]{modular arithmetic}. Both keys and messages are numbers and there is a restriction on the size of the messages; formally, this can be solved by chunking, as described in \cref{rem:digit_string_chunking}.
+
+  \begin{thmenum}
+    \thmitem{alg:rsa/keys} Three choices are needed to generate a key pair --- two prime numbers \( p \) and \( q \), whose product we denote by \( n \), and a positive integer \( e \) \hyperref[def:coprime_numbers]{coprime} with \( \varphi(n) = (p - 1) (q - 1) \), where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
+
+    By \cref{thm:bezout_lemma}, there exist integer \( c \) and \( d \) such that
+    \begin{equation*}
+      1 = c \cdot \varphi(n) + d \cdot e,
+    \end{equation*}
+    hence
+    \begin{equation*}
+      de - 1 = c \cdot \varphi(n).
+    \end{equation*}
+
+    In the notation of modular arithmetic, this means that
+    \begin{equation*}
+      de \equiv 1 \pmod \varphi(n).
+    \end{equation*}
+
+    The secret key is \( (n, d) \) and the public key is \( (n, e) \). Obtaining the secret key from the public key, without knowing \( p \) and \( q \), requires solving \fullref{prob:integer_factorization}, which is considered computationally infeasible.
+
+    \thmitem{alg:rsa/encryption} With the public key \( (n, e) \), we allow encrypting the message \( m < n \) via
+    \begin{equation*}
+      E(n, e, m) \coloneqq \rem(m^e, n).
+    \end{equation*}
+
+    \thmitem{alg:rsa/decryption} With the secret key \( (n, d) \), we can attempt decrypting the message \( k < n \) via
+    \begin{equation*}
+      D(n, d, k) \coloneqq \rem(k^d, n).
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item As explained in \cref{rem:securing_communication_channels/rsa}, the algorithm is due to \textcite{RivestShamirAdleman1978RSA} and is the first true public key cryptosystem.
+
+  \item This algorithm is implemented in \cite{notebook:code} in three parts:
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:rsa/keys} \\
+    \GetCodeRef{alg:rsa/encryption} \\
+    \GetCodeRef{alg:rsa/decryption}
+  \end{CodeRefDisplay}
+\end{comments}
+\begin{defproof}
+  We must show that \( D \) indeed decrypts ciphertext given the correct key. If \( k = E(n, e, m) \), where \( m < n \), then
+  \begin{equation*}
+    D(n, d, E(n, e, m))
+    =
+    \rem(\rem(m^e, n)^d, n)
+    \reloset {\ref{thm:def:ring_of_integers_modulo/power_of_congruent}} =
+    \rem(m^{ed}, n).
+  \end{equation*}
+
+  \begin{itemize}
+    \item If \( m \) and \( n \) are coprime, since \( ed - 1 = c \cdot \varphi(n) \), \fullref{thm:eulers_totient_theorem} implies that
+    \begin{equation*}
+      m^{ed} = m \cdot (m^{\varphi(n)})^c \equiv m \cdot 1^c = m \pmod n.
+    \end{equation*}
+
+    \item If \( m = xp \) for some positive integer \( x \). Then
+    \begin{equation*}
+      m^{ed} = p (xm^{ed - 1}),
+    \end{equation*}
+    so
+    \begin{equation*}
+      m^{ed} \equiv 0 \equiv m \pmod p.
+    \end{equation*}
+
+    Furthermore, we have \( x < q \) since \( m = xp < qp = n \), so \( q \) does not divide \( m \). They are thus coprime, and \fullref{thm:eulers_totient_theorem} implies that
+    \begin{align*}
+      m^{ed} = m \cdot (m^{q - 1})^{(p - 1) c} \equiv m \cdot 1^{(p - 1) c} = m \pmod q.
+    \end{align*}
+
+    \Fullref{thm:modular_chinese_remainder_theorem} implies that
+    \begin{equation*}
+      m^{ed} \equiv m \pmod {\underbrace{pq}_n}.
+    \end{equation*}
+  \end{itemize}
+
+  Therefore,
+  \begin{equation*}
+    D(n, d, E(n, e, m)) = \rem(m^{ed}, n) = \rem(m, n) = m.
+  \end{equation*}
+\end{defproof}
+
+\begin{remark}\label{rem:digit_string_chunking}
+  In \fullref{alg:rsa}, messages are restricted by the key. More specifically, if \( n = pq \) we only allow encrypting the message \( m \) when \( m < n \) because otherwise it would be greater than the remainder.
+
+  Suppose we are working in a \hyperref[def:positional_number_system]{positional number system} with base \( b \). When \( m \) is encoded as a digit string, this string is then split into chunks of \( l \) digits. Each chunk is regarded as an \hyperref[def:ring_of_unsigned_integers]{unsigned integers} of length \( l \). We can choose \( l \) so that \( b^l < n \).
+
+  This allows us to encrypt, transfer and decrypt each chunk separately. Note that, for plaintext, we use \( l \) as the chunk size since this bound the numerical value of every chunk to \( b^l < n \), however, for ciphertext, the we must use \( l + 1 \) as the chunk size since proper ciphertext cannot exceed \( n \), but may equal \( n - 1 \) and \( n - 1 \) may be larger than \( b^l \).
+
+  Encryption and decryption with chunking is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:rsa/encryption} \\
+    \GetCodeRef{alg:rsa/decryption}
+  \end{CodeRefDisplay}
+\end{remark}

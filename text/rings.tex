@@ -223,9 +223,9 @@
 \begin{proposition}\label{thm:def:ring_of_integers_modulo}
   The ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:ring_of_integers_modulo/power_of_congruent} If \( x \equiv y \pmod n \) and \( a \equiv b \pmod n \), we have
+    \thmitem{thm:def:ring_of_integers_modulo/power_of_congruent} If \( x \equiv y \pmod n \), for any integer \( a \) we have
     \begin{equation}\label{eq:thm:def:ring_of_integers_modulo/power_of_congruent}
-      x^a \equiv y^b \pmod n.
+      x^a \equiv y^a \pmod n.
     \end{equation}
   \end{thmenum}
 \end{proposition}
@@ -400,6 +400,116 @@
   \begin{equation*}
     \Phi([1_R]) = \varphi(1_R) = 1_S.
   \end{equation*}
+\end{proof}
+
+\begin{lemma}\label{thm:chinese_remainder_theorem_reductions}
+  Fix a \hyperref[def:ring]{ring} \( R \). We list several properties we will need when proving \fullref{thm:chinese_remainder_theorem}.
+
+  \begin{thmenum}
+    \thmitem{thm:chinese_remainder_theorem_reductions/product_is_coprime} For any \( n \) pairwise \hyperref[def:semiring_ideal/coprime]{coprime} ideals \( I_1, \ldots, I_n \) and \( J \), the product ideal \( I_1 \ldots I_{n-1} \) is coprime with \( I_n \).
+
+    \thmitem{thm:chinese_remainder_theorem_reductions/product_is_intersection} If \( R \) is commutative, for any \( n \) pairwise coprime ideals \( I_1, \ldots, I_n \), the product ideal \( I_1 \ldots I_n \) coincides with the intersection \( I_1 \cap \ldots \cap I_n \).
+
+    \thmitem{thm:chinese_remainder_theorem_reductions/quotient} If \( I \) and \( J \) are coprime, then the map
+    \begin{equation*}
+      \begin{aligned}
+        &\Phi: R / (I \cap J) \to R / I \times R / J, \\
+        &\Phi(x + I \cap J) \coloneqq (x + I, x + J)
+      \end{aligned}
+    \end{equation*}
+    is a well-defined \hyperref[def:ring/morphism]{ring isomorphism}.
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  \SubProofOf{thm:chinese_remainder_theorem_reductions/product_is_coprime} We will use induction on \( n \). The case \( n = 1 \) is vacuous, so suppose that the statement holds for \( n - 1 \). Then the product ideal \( I_1 \ldots I_{n-1} \) and \( I_n \) and \( J \) are pairwise coprime, and thus \cref{thm:def:semiring_ideal/product_is_coprime} implies that \( I_1 \ldots I_n \) and \( J \) are coprime.
+
+  \SubProofOf{thm:chinese_remainder_theorem_reductions/product_is_intersection} Again, we proceed by induction on \( n \) with a vacuous base case. \Cref{thm:def:semiring_ideal/coprime_product} implies that
+  \begin{equation*}
+    (I_1 \ldots I_{n-1}) I_n = (I_1 \cap \ldots \cap I_{n-1}) \cap I_n.
+  \end{equation*}
+
+  \SubProofOf{thm:chinese_remainder_theorem_reductions/quotient}
+  \SubProof*{\( \Phi \) is well-defined} Suppose that \( x + I \cap J = y + I \cap J \). \Cref{thm:subgroup_cosets/translation_congruence} implies that \( y - x \) belongs to \( I \cap J \), hence to both \( I \) and \( J \). Using \cref{thm:subgroup_cosets/translation_congruence} again, we conclude that \( x + I = y + I \) and \( x + J = y + J \).
+
+  Therefore,
+  \begin{equation*}
+    \Phi(x + I \cap J)
+    =
+    (x + I, x + J)
+    =
+    (y + I, y + J)
+    =
+    \Phi(y + I \cap J).
+  \end{equation*}
+
+  \SubProof*{\( \Phi \) is a homomorphism} Since both \( x \mapsto x + I \) and \( y \mapsto y + J \) are ring homomorphisms, so is \( \Phi \).
+
+  \SubProof*{\( \Phi \) is a injective} If \( \Phi(x + I \cap J) = (I, J) \), then \( x \) belongs to both \( I \) and \( J \), and hence to \( I \cap J \). Since this is the zero element in \( R / (I \cap J) \), we conclude that the kernel of \( \Phi \) is trivial, and \cref{thm:group_homomorphism_trivial_kernel} implies that \( \Phi \) is injective.
+
+  \SubProof*{\( \Phi \) is a surjective} Fix some \( (x + I, y + J) \) from \( R / I \times R / J \). Since \( I \) and \( J \) are assumed to be coprime, \( I + J = R \), we have \( i + j = 1_R \) for some \( i \in I \) and \( j \in J \).
+
+  Define \( z \coloneqq iy + jx \). We have
+  \begin{equation*}
+    z = (1_R - j)y + jx = y + j(x - y),
+  \end{equation*}
+  so \( z \) belongs to \( y + J \). Similarly,
+  \begin{equation*}
+    z = iy + (1_R - i)x = x + i(y - x),
+  \end{equation*}
+  so \( z \) belongs to \( x + I \).
+
+  Therefore,
+  \begin{equation*}
+    \Phi(z + I \cap J) = (z + I, z + J) = (x + I, y + J).
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Chinese remainder theorem]\label{thm:chinese_remainder_theorem}
+  Fix a \hyperref[def:ring]{ring} \( R \) and \( n > 1 \) pairwise \hyperref[def:semiring_ideal/coprime]{coprime} ideals \( I_1, \ldots, I_n \) and let \( I \) be their intersection. Then the following map is a \hyperref[def:ring/morphism]{ring isomorphism}:
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: R / I \to R / I_1 \times \cdots \times R / I_n, \\
+      &\Phi(x + I) \coloneqq (x + I_1, \ldots, x + I_n).
+    \end{aligned}
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item If \( R \) is commutative, \cref{thm:chinese_remainder_theorem_reductions/product_is_intersection} shows that \( I = I_1 \cap \ldots \cap I_n \) coincides with the \hyperref[def:semiring_ideal/product]{product ideal} \( I_1 \ldots I_n \). This is especially handy in \hyperref[def:principal_ideal_domain]{principal ideal domains} like the \hyperref[def:integers]{integers} --- see \fullref{thm:modular_chinese_remainder_theorem}.
+
+  \item According to \textcite[\S 5.2]{Stillwell2010MathHistory}, for \hyperref[con:modular_arithmetic]{modular arithmetic}, this theorem was known to Sun Zi in the third century AD. Hence the name of the theorem.
+\end{comments}
+\begin{proof}
+  First, note that \( \Phi \) is indeed a homomorphism because the projection maps \( \pi_1, \ldots, \pi_n \) are homomorphisms. We will use induction on \( n \) to show that \( \Phi \) is an isomorphism.
+
+  The base case \( n = 2 \) follows from \fullref{thm:chinese_remainder_theorem_reductions/quotient}. Suppose that the theorem holds for \( n - 1 \).
+
+  Denote the intersection \( I_2 \cap \ldots \cap I_n \) by \( J \). By the inductive hypothesis, the map
+  \begin{equation*}
+    \begin{aligned}
+      &\Psi: R / J \to R / I_2 \times \cdots \times R / I_n, \\
+      &\Psi(x + J) \coloneqq (x + I_2, \ldots, x + I_n)
+    \end{aligned}
+  \end{equation*}
+  is an isomorphism.
+
+  \Cref{thm:chinese_remainder_theorem_reductions/product_is_coprime} implies that \( I_1 \) and \( J \) are coprime, so, since \( I = I_1 \cap J \), \cref{thm:chinese_remainder_theorem_reductions/quotient} implies that
+  \begin{equation*}
+    \begin{aligned}
+      &\Theta: R / I \to R / I_1 \times R / J, \\
+      &\Theta(x + I) \coloneqq (x + I_1, x + J)
+    \end{aligned}
+  \end{equation*}
+  is also an isomorphism.
+
+  We can compose them as follows:
+  \begin{equation*}
+    \begin{aligned}
+      &\Lambda: R / I_1 \times R / I_2 \times \cdots \times R / I_n \to R / I, \\
+      &\Lambda(x + I_1, \ldots, x + I_n) \coloneqq \underbrace{\Theta^{-1}(x + I_1, \Psi^{-1}(x + I_2, \ldots, x + I_n))}_{\Theta^{-1}(x + I_1, x + J) = x + I}.
+    \end{aligned}
+  \end{equation*}
+
+  It is straightforward to verify that \( \Lambda \) is both a left and right inverse of \( \Phi \), so \( \Phi \) is an isomorphism.
 \end{proof}
 
 \paragraph{Ring characteristic}
