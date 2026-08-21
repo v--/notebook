@@ -1,52 +1,43 @@
 \section{Functors}\label{sec:functors}
 
-\begin{definition}\label{def:functor}\mcite[def. 1.2.1; def. 1.2.10]{Leinster2014BasicCategoryTheory}
-  Fix some \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \). A \term{functor} \( F: \cat{C} \to \cat{D} \) is a \hyperref[def:directed_multigraph/morphism]{directed multigraph homomorphism} between the underlying multigraphs that is compatible with composition and identities.
-
-  Explicitly, a functor is a family of functions
+\begin{definition}\label{def:functor}\mcite[13]{MacLane1998CategoryTheory}
+  A \term[ru=функтор (\cite[def. III.1.1]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий})]{functor} \( F: \cat{C} \to \cat{D} \) between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a pair of functions
   \begin{equation}\label{eq:def:functor_as_family_of_function}
     \begin{aligned}
-      F_{\obj}:       &\obj(\cat{C}) \to \obj(\cat{D}) \\
-      F_{\hom(A, B)}: &\cat{C}(A, B) \to \cat{D}(F_{\obj}(A), F_{\obj}(B)),
+      F_{\obj}: &\obj(\cat{C}) \to \obj(\cat{D}) \\
+      F_{\mor}: &\mor(\cat{C}) \to \mor(\cat{D}),
     \end{aligned}
   \end{equation}
-  where \( F_{\hom(A, B)} \) is a distinct function for every pair of objects \( A \) and \( B \).
+  such that
+  \begin{equation*}
+    F_{\mor}(f: A \to B): F_{\obj}(A) \to F_{\obj}(B)
+  \end{equation*}
+  and with compatibility conditions for identities and composition.
 
-  In practice, we usually define the functor as the set
-  \begin{equation}\label{eq:def:functor_as_single_function}
-    F \coloneqq F_{\obj} \cup \bigcup\set{ F_{\hom(A, B)} \given A, B \in \obj(\cat{C}) }
-  \end{equation}
+  We will use the same notation for both functions, i.e. we write \( F(A) \) for an object \( A \) and \( F(f) \) for a morphism \( f \). This is imprecise because, as per \cref{rem:disjoint_graph_vertices_and_arcs}, we have not assumed that \( F_{\obj} \) and \( F_{\mor} \) are disjoint, and thus \( F(A) \) and \( F(f) \) would differ even if \( A = f \). Nevertheless, this notation reflects popular convention, so we stick to it.
 
-  Since the domains of all constituent functions are disjoint, \( F \) is again a total single-valued function. This allows us to justify the notation \( F(A) \) for objects and \( F(f) \) for morphisms.
-
-  \begin{thmenum}[series=def:functor]
-    \thmitem{def:functor/obj}
-    \thmitem{def:functor/hom}
-  \end{thmenum}
-
+  It remains to state the compatibility conditions, which are collectively called \term[en=functoriality axioms (\cite[def. 1.3.1]{Perrone2024StartingCategoryTheory})]{functoriality}:
   \begin{thmenum}[resume=def:functor]
-    \thmitem{def:functor/domain_and_codomain} We say that the category \( \cat{C} \) is the \term{domain} and \( \cat{D} \) --- the \term{codomain} of the functor \( F \). These are technically not the domain and codomain of \( F \) when regarded as a function, however it is consistent with \cref{def:category_of_small_categories}.
-
-    \thmitem{def:functor/endofunctor} Similarly to \cref{def:function/endofunction} for functions, if the domain \( \cat{C} \) and codomain \( \cat{D} \) of a functor coincide, we say that it is an \term{endofunctor}.
-  \end{thmenum}
-
-  The definition of a functor additionally requires the following compatibility conditions to hold:
-  \begin{thmenum}[resume=def:functor]
-    \thmitem[def:functor/CF1]{CF1} Functors must preserve identities, meaning that for any object \( A \in \cat{C} \) the following equality must hold:
+    \thmitem[def:functor/CF1]{CF1} Functors must preserve identities: for any object \( A \) in \( \cat{C} \), the following equality must hold:
     \begin{equation}\label{eq:def:functor/CF1}\tag{\logic{CF1}}
       F(\id_A) = \id_{F(A)}.
     \end{equation}
 
-    \thmitem[def:functor/CF2]{CF2} Functors must preserve composition, meaning that for any pair of morphism \( f: A \to B \) and \( g: B \to C \) in \( \cat{C} \),
+    \thmitem[def:functor/CF2]{CF2} Functors must preserve composition: for any pair of morphism \( f: A \to B \) and \( g: B \to C \) in \( \cat{C} \), the following equality must hold:
     \begin{equation}\label{eq:def:functor/CF2}\tag{\logic{CF2}}
       F(g \bincirc f) = F(g) \bincirc F(f).
     \end{equation}
   \end{thmenum}
 \end{definition}
-\begin{defproof}
-  The definition \eqref{eq:def:functor_as_family_of_function} ensures that the directed multigraph homomorphism conditions \eqref{eq:def:directed_multigraph/morphism/head} and \eqref{eq:def:directed_multigraph/morphism/tail} hold.
+\begin{comments}
+  \item As mentioned in \cref{rem:category_as_graph}, the notion of functor precedes that of category, and is attributed to \cite{EilenbergMacLane1942NaturalIsomorphisms}. The paper establishes \ref{eq:def:functor/CF1} and \ref{eq:def:functor/CF2}, as well as using the same symbol for both the object and arrow mapping.
+\end{comments}
 
-  Indeed, for any morphism \( f: A \to B \) in \( \cat{C} \) we have
+\begin{proposition}\label{thm:functor_is_graph_homomorphism}
+  If, as per \cref{def:category}, we regard categories as \hyperref[def:directed_multigraph]{directed multigraphs}, the \hyperref[def:functor]{functors} are \hyperref[def:directed_multigraph/morphism]{graph homomorphism} (but not vice versa).
+\end{proposition}
+\begin{proof}
+  Given a functor \( F: \cat{C} \to \cat{D} \), for any morphism \( f: A \to B \) in \( \cat{C} \), we have
   \begin{equation*}
     F(\dom(f)) = F(A) = \dom(F(f)),
   \end{equation*}
@@ -55,17 +46,40 @@
     F(\co\dom(f)) = F(B) = \co\dom(F(f)),
   \end{equation*}
   which implies \eqref{eq:def:directed_multigraph/morphism/tail}.
-\end{defproof}
+\end{proof}
 
-\begin{remark}\label{rem:functor_size}
-  It is possible that \( \cat{C} \) is \hyperref[def:small_set]{small} in the sense of \cref{def:small_category}, but the \hyperref[def:functor]{functor} \( F \), as the set \eqref{eq:def:functor_as_single_function}, is not \hyperref[def:small_set]{small} in the sense of \cref{def:small_set}. Without using universes, we cannot prove the existence of any functor from the category of smalls sets to itself, for example.
-\end{remark}
+\begin{remark}\label{rem:small_functors}
+  Depending on how we encode the \hyperref[def:functor]{functor} \( F: \cat{C} \to \cat{D} \) as a set, there are incompatible ways in which it can be a \hyperref[def:small_set]{small set}, i.e. a member of the \hyperref[def:smallest_grothendieck_universe]{smallest Grothendieck universe} \( \mscrU_0 \). This is an extension of our discussion of small functions from \cref{rem:small_functions}.
 
-\begin{example}\label{ex:unary_functors_in_set}
-  In \cref{def:basic_set_operations}, we defined some operations on the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of small sets.
+  Due to the ambiguity, we will generally avoid speaking about \enquote{small functors}. We do, however, need to consider small \hyperref[def:categorical_diagram]{diagrams}; we adjust their definition in \cref{def:small_diagram} specifically so that they can be true small sets. There are many examples where the size of a diagram is essential. For example, a \hyperref[def:complete_category]{complete category} is defined as one in which all limits of small diagrams exist.
 
   \begin{thmenum}
-    \thmitem{ex:unary_functors_in_set/power} The \hyperref[def:basic_set_operations/power_set]{power set} \( \pow: \cat{Set} \to \cat{Set} \) is a canonical example of an \hyperref[def:functor/endofunctor]{endofunctor}. Explicitly:
+    \thmitem{rem:small_functors/triple} One options is to regard \( F: \cat{C} \to \cat{D} \) as a pair \( F = (F_{\obj}, F_{\mor}) \) of functions, and, as per \cref{rem:function_definition}, then regard these functions as the triples
+    \begin{align*}
+      \parens[\big]{ \gph F_{\obj}, \obj(\cat{C}), \obj(\cat{D}) }, && \parens[\big]{ \gph F_{\mor}, \mor(\cat{C}), \mor(\cat{D}) }.
+    \end{align*}
+
+    Then \cref{thm:small_set_closure/function} implies that \( F \) is a small set if and only if both \( \cat{C} \) and \( \cat{D} \) are \hyperref[def:small_category]{small categories}.
+
+    Unfortunately, this makes it impossible to define a small functor into a large category like \( \cat{Set} \). This is the reason we do not treat diagrams as functors in \cref{def:categorical_diagram} --- we want to have a notion of \enquote{small diagram} even though the more general \enquote{small functor} is generally ambiguous.
+
+    \thmitem{rem:small_functors/graph} Alternatively, we can define \( F \) as the pair \( (\gph F_{\obj}, \gph F_{\mor}) \) so that \( F \) is a small set if and only if \( \cat{C} \) and its image in \( \cat{D} \) are small categories.
+
+    This makes it possible for a functor into \( \cat{Set} \) to itself be small. Since a diagram can be regarded as a functor, small diagrams simply becomes small functors.
+
+    As noted in \cref{rem:small_category/reflection}, \textcite[26]{Shulman2008SetTheoryForCategoryTheory} discusses how in the axiomatization \logic{ZFC/S}, where a weaker notion of universe is used instead of Grothendieck universes, a functor from a small category to \( \cat{Set} \) may fail to be a small set, and so in some cases it makes sense to have a dedicated notion of small functors.
+  \end{thmenum}
+\end{remark}
+
+\begin{definition}\label{def:endofunctor}\mimprovised
+  We call a \hyperref[def:functor]{functor} from a category to itself an \term{endomorphism}.
+\end{definition}
+
+\begin{example}\label{ex:def:functor}
+  We list examples of \hyperref[def:functor]{functors}.
+
+  \begin{thmenum}
+    \thmitem{ex:def:functor/power_set} The \hyperref[def:basic_set_operations/power_set]{power set} \( \pow: \cat{Set} \to \cat{Set} \) is a canonical example of an \hyperref[def:endofunctor]{endofunctor}. Explicitly:
     \begin{equation*}
       \begin{aligned}
         &\pow: \cat{Set} \to \cat{Set}, \\
@@ -74,18 +88,18 @@
       \end{aligned}
     \end{equation*}
 
+    The nuance here is that the functor sends every function \( f: A \to B \) to another function, which takes a subset \( S \) of \( A \) to its \hyperref[def:set_valued_map/image]{set value} \( f[S] \).
+
     We must verify that it is indeed a functor. \ref{def:functor/CF2} is satisfied because
     \begin{equation*}
       \pow(g) \bincirc \pow(f) = (S \mapsto g[f[S]]) = \pow(g \bincirc f).
     \end{equation*}
 
-    The condition \ref{def:functor/CF2} is also obviously satisfied.
-
-    The nuance here is that we send every function \( f: A \to B \) to its \hyperref[def:set_valued_map/image]{set value} \( f[S] \) of some subset \( S \) of \( A \).
-
-    \thmitem{ex:unary_functors_in_set/union} The \hyperref[def:basic_set_operations/union]{union} \( \bigcup \) and \hyperref[def:basic_set_operations/intersection]{intersection} \( \bigcap \) may seem to be good examples of endofunctors in \( \cat{Set} \). Unfortunately, there is no natural way to extend a morphism (function) \( f: A \to B \) to a morphism from \( \bigcup A \) to \( \bigcup B \) or \( \bigcap A \) to \( \bigcap B \).
+    The condition \ref{def:functor/CF1} is also obviously satisfied.
   \end{thmenum}
 \end{example}
+
+\paragraph{Subcategories}
 
 \begin{definition}\label{def:subcategory}\mcite[def. 1.2.18]{Leinster2014BasicCategoryTheory}
   We call the category \( \cat{D} \) a \term{subcategory} of \( \cat{C} \) if the following hold:
@@ -338,6 +352,10 @@
   The requirement that the one of the paths is nontrivial, however, is crucial in \cref{def:equalizers}.
 \end{definition}
 
+\begin{definition}\label{def:small_diagram}
+
+\end{definition}
+
 \begin{remark}\label{rem:inverting_isomorphisms_may_preserve_commutativity}
   Inverting isomorphisms in a \hyperref[def:categorical_diagram]{commutative diagram} may or may not preserve commutativity.
 
@@ -574,7 +592,7 @@
 \begin{example}\label{ex:def:functor_invertibility}
   \hfill
   \begin{thmenum}
-    \thmitem{ex:def:functor_invertibility/power} The power set functor described in \cref{ex:unary_functors_in_set} is clearly \hyperref[def:functor_invertibility/injective_on_morphisms]{injective on morphisms}, hence by \cref{thm:def:functor_invertibility/injective}, it is also \hyperref[def:functor_invertibility/injective_on_objects]{injective on objects} and \hyperref[def:functor_invertibility/faithful]{faithful}.
+    \thmitem{ex:def:functor_invertibility/power} The power set functor described in \cref{ex:def:functor} is clearly \hyperref[def:functor_invertibility/injective_on_morphisms]{injective on morphisms}, hence by \cref{thm:def:functor_invertibility/injective}, it is also \hyperref[def:functor_invertibility/injective_on_objects]{injective on objects} and \hyperref[def:functor_invertibility/faithful]{faithful}.
 
     It is not full, nor surjective on objects.
 
@@ -654,7 +672,7 @@
 
   An advantage of this is that we can define a natural transformation to be a function on a general enough set and then prove that its restrictions satisfy \eqref{eq:def:natural_transformation/diagram}.
 
-  For example, consider the power set functor \( \pow: \cat{Set} \to \cat{Set} \) discussed in \cref{ex:unary_functors_in_set}. The \hyperref[def:set_valued_map/identity]{identity function} \( \id_{\mscrU_0} \) is then a natural transformation from the identity functor \( \id_{\cat{Set}} \) to \( \pow \).
+  For example, consider the power set functor \( \pow: \cat{Set} \to \cat{Set} \) discussed in \cref{ex:def:functor}. The \hyperref[def:set_valued_map/identity]{identity function} \( \id_{\mscrU_0} \) is then a natural transformation from the identity functor \( \id_{\cat{Set}} \) to \( \pow \).
 
   Another natural transformation between the same functors is the singleton set operation \( \Sigma \) on sets defined as \( A \mapsto \set{ A } \). Note that, in this context, \( \Sigma \) operates not on the sets \( \id_{\cat{Set}}(A) \) and \( \pow(A) \), but on their members. The diagram \eqref{eq:def:natural_transformation/diagram} becomes
   \begin{equation}\label{eq:rem:natural_transformations_into_set}
