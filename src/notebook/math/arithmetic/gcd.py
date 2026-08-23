@@ -1,8 +1,11 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from notebook.math.matrices.matrix import IntMatrix
 from notebook.support.coderefs import collector
 
+from .divisibility import rem
+from .exceptions import InvalidArgumentError, NotCoprimeError
 from .support import sgn
 
 
@@ -51,4 +54,31 @@ def extended_gcd(n: int, m: int) -> ExtendedGcdResult:
 
     return ExtendedGcdResult(
         n, m, sgn(gcd) * a, sgn(gcd) * b,
+    )
+
+
+@dataclass(frozen=True)
+class ModularEquation:
+    value: int
+    modulus: int
+
+
+@collector.ref('alg:chinese_remainder_theorem_iteration')
+def chinese_remainder_theorem_iteration(equations: Sequence[ModularEquation]) -> int:
+    if len(equations) == 0:
+        raise InvalidArgumentError('No equations given')
+
+    if len(equations) == 1:
+        eq = equations[0]
+        return rem(eq.value, eq.modulus)
+
+    *rest, eq_pen, eq_last = equations
+    egcd = extended_gcd(eq_pen.modulus, eq_last.modulus)
+
+    if egcd.a * eq_pen.modulus + egcd.b * eq_last.modulus != 1:
+        raise NotCoprimeError(eq_pen.modulus, eq_last.modulus)
+
+    x = egcd.a * eq_pen.modulus * eq_last.value + egcd.b * eq_last.modulus * eq_pen.value
+    return chinese_remainder_theorem_iteration(
+        [*rest, ModularEquation(x, eq_pen.modulus * eq_last.modulus)],
     )

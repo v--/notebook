@@ -511,13 +511,13 @@
 
 \begin{theorem}[Modular Chinese remainder theorem]\label{thm:modular_chinese_remainder_theorem}
   Fix pairwise \hyperref[def:coprime_numbers]{coprime} integers \( m_1, \ldots, m_n \) and let \( m \coloneqq m_1 \cdots m_n \) be their product. Then any system of \hyperref[con:modular_arithmetic]{modular} equations
-  \begin{align}\label{eq:thm:modular_chinese_remainder_theorem}
+  \begin{equation}\label{eq:thm:modular_chinese_remainder_theorem}
     \begin{aligned}
       x &\equiv a_1 \pmod {m_1}, \\
         &\vdots \\
       x &\equiv a_n \pmod {m_n}.
     \end{aligned}
-  \end{align}
+  \end{equation}
   has a unique solution modulo \( m \).
 
   In particular, when \( a_1 = \cdots = a_n \), if \( x \) is a solution modulo \( m_k \) for every \( k = 1, \ldots, n \), it is a solution modulo \( m \).
@@ -545,6 +545,79 @@
 
   This coset has a unique representative modulo \( m \), which is the solution we seek.
 \end{proof}
+
+\begin{algorithm}[Chinese remainder theorem iteration]\label{alg:chinese_remainder_theorem_iteration}
+  \Fullref{thm:modular_chinese_remainder_theorem} guarantees the existence of a solution, but only gives a hint at how to find it. The proof hints at how to find it, but in our more abstract presentation, the details are obscured away.
+
+  We present a simple recursive algorithm for solving the system \eqref{eq:thm:modular_chinese_remainder_theorem}.
+
+  \begin{thmenum}
+    \thmitem{alg:chinese_remainder_theorem_iteration/bottom} If \( n = 1 \), the equation \( x \equiv a_1 \pmod {m_1} \) has a trivial solution --- \( \rem(a_1, m_1) \).
+
+    \thmitem{alg:chinese_remainder_theorem_iteration/reduction} If \( n > 1 \), we solve the last two equations
+    \begin{alignat*}{2}
+      x &\equiv a_{n-1} &&\pmod {m_{n-1}}, \\
+      x &\equiv a_n     &&\pmod {m_n}.
+    \end{alignat*}
+
+    \Fullref{alg:extended_euclidean_algorithm} gives us coefficients \( k_{n-1} \) and \( k_n \) such that
+    \begin{equation*}
+      k_{n-1} m_{n-1} + k_n m_n = \gcd(m_{n-1}, m_n) = 1.
+    \end{equation*}
+
+    We claim that \( b \coloneqq (k_{n-1} m_{n-1}) a_n + (k_n m_n) a_{n-1} \) is a solution since
+    \begin{equation*}
+      b = (1 - k_n m_n) a_n + (k_n a_n) a_{n-1} = a_n + (k_n m_n) (a_{n-1} - a_n),
+    \end{equation*}
+    so \( b \equiv a_n \pmod {m_n} \), and similarly \( b \equiv a_{n-1} \pmod {m_{n-1}} \).
+
+    Note that, since \( m_{n-1} \) and \( m_n \) are both coprime with \( m_i \) for \( i < n - 1 \), their product is also coprime. Thus, we obtain a smaller system of equations
+    \begin{alignat*}{2}
+      x &\equiv a_1     &&\pmod {m_1}, \\
+        &\vdots \\
+      x &\equiv a_{n-2} &&\pmod {m_{n-2}}, \\
+      x &\equiv b       &&\pmod {m_{n-1} m_n}
+    \end{alignat*}
+    that we can apply the algorithm recursively to.
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm is implemented in \cite{notebook:code} as
+  \begin{CodeRefDisplay}
+    \GetCodeRef{alg:chinese_remainder_theorem_iteration}
+  \end{CodeRefDisplay}
+\end{comments}
+
+\begin{example}\label{ex:thm:modular_chinese_remainder_theorem}
+  We list examples of how \fullref{thm:modular_chinese_remainder_theorem} can be used:
+  \begin{thmenum}
+    \thmitem{ex:thm:modular_chinese_remainder_theorem/pirates} A popular problem goes as follows.
+
+    A group of \( n \) pirates, where \( n \) is odd, finds a treasure. They split the coins among themselves evenly, with \( a \) coins left.
+
+    While arguing how split these coins, one of the pirates is killed in the turmoil. The rest split the coins evenly, only to find that there are \( b \) coins left.
+
+    After another pirate gets killed, the rest are able to split the treasure evenly.
+
+    The total number of coins, \( x \), is then a solution to the following system of equations:
+    \begin{align*}
+      x &\equiv a \pmod n, \\
+      x &\equiv b \pmod {n - 1}, \\
+      x &\equiv 0 \pmod {n - 2}.
+    \end{align*}
+
+    \Fullref{thm:modular_chinese_remainder_theorem} implies that a unique solution modulo \( n(n-1)(n-2) \) exists. To find a solution, we can use \fullref{alg:chinese_remainder_theorem_iteration}.
+
+    For example, with \( n = 7 \), \( a = 3 \) and \( b = 4 \), the unique solution modulo \( 210 \) is \( 10 \). Indeed,
+    \begin{align*}
+      10 &\equiv 3 \pmod 7, \\
+      10 &\equiv 4 \pmod 6, \\
+      10 &\equiv 0 \pmod 5.
+    \end{align*}
+
+    \thmitem{ex:thm:modular_chinese_remainder_theorem/proof} It is important in the proof of correctness of \fullref{alg:rsa}.
+  \end{thmenum}
+\end{example}
 
 \paragraph{Euler's totient theorem}
 
