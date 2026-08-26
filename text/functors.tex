@@ -16,7 +16,7 @@
   \end{equation*}
   and with compatibility conditions for identities and composition.
 
-  We will use the same notation for both functions, i.e. we write \( F(A) \) for an object \( A \) and \( F(f) \) for a morphism \( f \). This is imprecise because, as per \cref{rem:disjoint_graph_vertices_and_arcs}, we have not assumed that \( F_{\obj} \) and \( F_{\mor} \) are disjoint, and thus \( F(A) \) and \( F(f) \) would differ even if \( A = f \). Nevertheless, this notation reflects popular convention, so we stick to it.
+  We will use the same notation for both functions, i.e. we write \( F(A) \) for an object \( A \) and \( F(f) \) for a morphism \( f \). This is imprecise because, as per \cref{rem:disjoint_graph_vertices_and_arcs}, we have not assumed that \( \obj(\cat{C}) \) and \( \mor(\cat{C}) \) are disjoint, and thus \( F(A) \) and \( F(f) \) would differ even if \( A = f \). Nevertheless, this notation reflects popular convention, so we stick to it.
 
   It remains to state the compatibility conditions, which are collectively called \term[en=functoriality axioms (\cite[def. 1.3.1]{Perrone2024StartingCategoryTheory})]{functoriality}:
   \begin{thmenum}[resume=def:functor]
@@ -199,7 +199,7 @@
 \begin{remark}\label{rem:small_functors}
   Depending on how we encode the \hyperref[def:functor]{functor} \( F: \cat{C} \to \cat{D} \) as a set, there are incompatible ways in which it can be a \hyperref[def:small_set]{small set}, i.e. a member of the \hyperref[def:smallest_grothendieck_universe]{smallest Grothendieck universe} \( \mscrU_0 \). This is an extension of our discussion of small functions from \cref{rem:small_functions}.
 
-  Due to the ambiguity, we will generally avoid speaking about \enquote{small functors}. We do, however, need to consider small \hyperref[def:categorical_diagram]{diagrams}, so we adjust their definition in \cref{def:small_diagram} specifically so that they can be true small sets. There are many examples where the size of a diagram is essential. For example, a \hyperref[def:complete_category]{complete category} is defined as one in which all limits of small diagrams exist.
+  Due to the ambiguity, we will generally avoid speaking about \enquote{small functors}. We do, however, need to consider small \hyperref[def:categorical_diagram]{diagrams}, so we adjust their definition in \cref{def:categorical_diagram/small} specifically so that they can be true small sets. There are many examples where the size of a diagram is essential. For example, a \hyperref[def:complete_category]{complete category} is defined as one in which all limits of small diagrams exist.
 
   \begin{thmenum}
     \thmitem{rem:small_functors/triple} One options is to regard \( F: \cat{C} \to \cat{D} \) as a pair \( F = (F_{\obj}, F_{\mor}) \) of functions, and, as per \cref{rem:function_definition}, then regard these functions as the triples
@@ -209,7 +209,7 @@
 
     Then \cref{thm:small_set_closure/function} implies that \( F \) is a small set if and only if both \( \cat{C} \) and \( \cat{D} \) are \hyperref[def:small_category]{small categories}.
 
-    Unfortunately, this makes it impossible to define a small functor into a large category like \( \cat{Set} \). This is the reason we do not treat diagrams as functors in \cref{def:categorical_diagram} --- we want to have a notion of \enquote{small diagram} even though the more general \enquote{small functor} is generally ambiguous.
+    Unfortunately, this makes it impossible to define a small functor into a large category like \( \cat{Set} \). This is the reason we adjust our definition of diagram in \cref{def:categorical_diagram} so that the phrase \enquote{small diagram} is unambiguous.
 
     \thmitem{rem:small_functors/graph} Alternatively, we can define \( F \) as the pair \( (\gr F_{\obj}, \gr F_{\mor}) \) so that \( F \) is a small set if and only if \( \cat{C} \) and its image in \( \cat{D} \) are small categories.
 
@@ -293,22 +293,10 @@
 \begin{comments}
   \item Clearly to any set there corresponds exactly one discrete category and vice versa.
 
+  \item The discrete category is \hyperref[con:free_construction]{free construction}; see \fullref{thm:discrete_category_universal_property}.
+
   \item The concept is based on \hyperref[def:discrete_topology]{discrete topologies} and is unrelated to Aristotelian discrete variables in the sense of \cref{con:discrete_and_continuous_variables}.
 \end{comments}
-
-\begin{example}\label{ex:discrete_category_adjunction}
-  Denote by
-  \begin{equation*}
-    U: \cat{Cat} \to \cat{Set}
-  \end{equation*}
-  the functor that for any small category \( \cat{C} \) gives us its set of objects \( \obj(\cat{C}) \). There is also a functor
-  \begin{equation*}
-    D: \cat{Set} \to \cat{Cat}
-  \end{equation*}
-  that for any small set \( A \) gives us the \hyperref[def:discrete_category]{discrete category} whose set of objects is \( A \).
-
-  This is actually an \hyperref[def:category_adjunction]{adjunction} --- see \cref{ex:def:category_adjunction/set_cat}.
-\end{example}
 
 \begin{definition}\label{def:singleton_category}\mimprovised
   We refer to the \hyperref[def:discrete_category]{discrete category} of a \hyperref[def:singleton_set]{singleton set} \( \set{ A } \) as a \term{singleton category}.
@@ -327,63 +315,187 @@
 
 \paragraph{Categorical diagrams}
 
-\begin{definition}\label{def:categorical_diagram}
-  Fix a category \( \cat{I} \), called an \term{index category}. A \term{diagram} in \( \cat{C} \) of shape \( \cat{I} \) is simply a functor \( D: \cat{I} \to \cat{C} \), whose domain is \( \cat{I} \). We sometimes identify a diagram functor with its image \( D(\cat{I}) \).
-
-  It is often convenient to draw graphically the \hyperref[def:graph_geometric_realization]{geometric realizations} of the \hyperref[def:directed_multigraph]{multigraph} \( D(\cat{I}) \). An established convention is to allow multiple vertices representing the same object, which can be achieved formally by actually adjoining new vertices to the graph and labeling them as in \cref{def:labeled_set}. Other established conventions for drawing diagrams include not drawing identity morphisms and adding various visual aids. In this regard, categorical diagrams correspond to the everyday sense of the word \enquote{diagram}.
-
-  We say that the diagram is \term{small} if its index category is \hyperref[def:small_category]{small}.
-
-  We say that the diagram \( D \) over \( \cat{C} \) \term{commutes} if, whenever
-  \begin{equation*}
-    A \reloset {f_1} \to \anon \reloset {f_2} \to \cdots \reloset {f_{n-1}} \to \anon \reloset {f_n} \to B
-  \end{equation*}
-  and
-  \begin{equation*}
-    A \reloset {g_1} \to \anon \reloset {g_2} \to \cdots \reloset {g_{n-1}} \to \anon \reloset {g_m} \to B
-  \end{equation*}
-  are two \hyperref[def:graph_walk/directed]{directed walks} in the graph \( D(\cat{I}) \) with identical endpoints and either \( n > 1 \) or \( m > 1 \), then
-  \begin{equation*}
-    f_n \bincirc f_{n-1} \bincirc \cdots \bincirc f_2 \bincirc f_1
-    =
-    g_m \bincirc g_{m-1} \bincirc \cdots \bincirc g_2 \bincirc g_1.
-  \end{equation*}
-
-  We do not really care about how the objects and morphisms in \( \cat{I} \) are labeled, hence we often use placeholder dots like in \eqref{eq:ex:directed_multigraphs_as_functors/index/dots}.
-
-  The requirement that the one of the paths is nontrivial, however, is crucial in \cref{def:equalizers}.
+\begin{definition}\label{def:graph_source_and_sink}\mimprovised
+  In a \hyperref[def:directed_multigraph]{directed (multi)graph}, we call nodes with \hyperref[def:graph_cardinality/directed_degree]{in-degree} \( 0 \) \term[en=source (\cite[201]{Harary1969GraphTheory})]{sources} and nodes with out-degree \( 0 \) a \term[en=sink (\cite[201]{Harary1969GraphTheory})]{sinks}.
 \end{definition}
+\begin{comments}
+  \item Using these notions in a \hyperref[def:category]{category} may require ignoring the identity morphisms when determining the in-degree and out-degree --- see \cref{rem:categorical_diagram_definition/functor}.
 
-\begin{definition}\label{def:small_diagram}
+  \item This definition is given for \hyperref[def:acyclic_graph]{directed acyclic graphs} in \cite[201]{Harary1969GraphTheory} and \cite[231]{Erickson2019Algorithms}.
+\end{comments}
 
-\end{definition}
-
-\begin{remark}\label{rem:inverting_isomorphisms_may_preserve_commutativity}
-  Inverting isomorphisms in a \hyperref[def:categorical_diagram]{commutative diagram} may or may not preserve commutativity.
-
-  If \( p = (f_1, \ldots, f_n) \) and \( q = (g_1, \ldots, g_m) \) are two paths in a commutative diagram, and if \( f_1 \) is invertible, then obviously
+\begin{remark}\label{rem:categorical_diagram_definition}
+  Diagrams in category theory are tricky to define formally. As an example, fix a category \( \cat{C} \) and morphisms \( f: A \to B \) and \( g_1, g_2: B \to C \) such that
   \begin{equation*}
-    f_n \bincirc \cdots \bincirc f_1 = g_m \bincirc \cdots \bincirc g_1
+    g_1 \bincirc f = g_2 \bincirc f.
   \end{equation*}
-  if and only if
-  \begin{equation*}
-    f_n \bincirc \cdots \bincirc f_2 = g_m \bincirc \cdots \bincirc g_1 \bincirc f_1
-  \end{equation*}
-  and similarly if \( f_n \) is invertible.
 
-  On the other hand, consider \hyperref[def:ordinal]{ordinals} in \( \cat{Set} \). Denote by \( \iota \) the inclusion maps and by \( f: \omega^2 \to \omega \) the bijective map from \cref{thm:omega_equinumerous_with_omega_squared}. Then the following diagram commutes:
-  \begin{equation}\label{eq:rem:inverting_isomorphisms_may_preserve_commutativity/ordinals_commuting}
+  This condition can be expressed by saying that the following diagram \enquote{commutes}:
+  \begin{equation}\label{eq:rem:categorical_diagram_definition/example}
     \begin{aligned}
-      \includegraphics[page=1]{output/rem__inverting_isomorphisms_may_preserve_commutativity}
+      \includegraphics[page=1]{output/rem__categorical_diagrams}
     \end{aligned}
   \end{equation}
-  but the following does not:
-  \begin{equation}\label{eq:rem:inverting_isomorphisms_may_preserve_commutativity/ordinals_not_commuting}
-    \begin{aligned}
-      \includegraphics[page=2]{output/rem__inverting_isomorphisms_may_preserve_commutativity}
-    \end{aligned}
-  \end{equation}
+
+  \begin{thmenum}
+    \thmitem{rem:categorical_diagram_definition/subgraph} The obvious thing to do is to regard a diagram as a \hyperref[def:directed_multigraph/subobject]{directed multigraph} of \( \cat{C} \). This approach is taken by \textcite[50]{Хелемский2014ФункциональныйАнализ}, who defines a diagram as a collection of objects and morphisms. A similar definition is given by \textcite[21]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}, who additionally require a diagram to contain the identity morphisms of its objects.
+
+    This has the downside of making it difficult to reason about the \enquote{shape} of \eqref{eq:rem:categorical_diagram_definition/example} in cases like \( A = B \) or \( g_1 = g_2 \).
+
+    \thmitem{rem:categorical_diagram_definition/homomorphism} So, instead, we can take the \hyperref[def:directed_multigraph]{directed multigraph}
+    \begin{equation}\label{eq:rem:categorical_diagram_definition/shape}
+      \begin{aligned}
+        \includegraphics[page=2]{output/rem__categorical_diagrams}
+      \end{aligned}
+    \end{equation}
+    and define a diagram in \( \cat{C} \) as a \hyperref[def:directed_multigraph/morphism]{homomorphism} from \( G \) to \( U(\cat{C}) \), the underlying graph of \( \cat{C} \). Thus, a diagram is a \hyperref[def:labeled_set]{labeling} of \( G \) with objects and morphisms from \( \cat{C} \).
+
+    \Textcite[10; 41]{MacLane1998CategoryTheory} and \textcite[def. 6.1.1]{Schubert1972Categories} calls directed multigraphs \enquote{diagram schemes} and define a diagram \enquote{of type \( G \)} as a homomorphism of \( G \) into \( U(\cat{C}) \).
+
+    \thmitem{rem:categorical_diagram_definition/commutativity} Expressing that the diagram \eqref{eq:rem:categorical_diagram_definition/example} commutes then amounts to evaluating paths. All aforementioned authors call a diagram \( D \) \enquote{commutative} if every pair of \hyperref[def:graph_walk/path]{paths}
+    \begin{equation*}
+      A \reloset {f_1} \to \anon \reloset {f_2} \to \cdots \reloset {f_{n-1}} \to \anon \reloset {f_n} \to B
+    \end{equation*}
+    and
+    \begin{equation*}
+      A \reloset {g_1} \to \anon \reloset {g_2} \to \cdots \reloset {g_{n-1}} \to \anon \reloset {g_m} \to B
+    \end{equation*}
+    with the same endpoints evaluate to the same morphism in \( \cat{C} \):
+    \begin{equation*}
+      D(f_n) \bincirc \cdots \bincirc D(f_1) = D(g_m) \bincirc \cdots \bincirc D(g_1).
+    \end{equation*}
+
+    For our diagram \eqref{eq:rem:categorical_diagram_definition/example}, this suggests that
+    \begin{equation*}
+      g_1 \bincirc f = D(b_1) \bincirc D(a) = D(b_2) \bincirc D(a) = g_2 \bincirc f,
+    \end{equation*}
+    as desired, but also that
+    \begin{equation*}
+      g_1 = D(b_1) = D(b_2) = g_2.
+    \end{equation*}
+
+    The undesired second equality is overlooked by the authors mentioned earlier. A simple fix is to only consider the paths from \hyperref[def:graph_source_and_sink]{sources} to sinks, which in this case precludes paths from \( v \) to \( w \).
+
+    In this case it is important for \( G \) not to contain loops at sources and sinks.
+
+    \thmitem{rem:categorical_diagram_definition/functor} \Textcite[def. 1.4.21]{Perrone2024StartingCategoryTheory} defines a diagram in \( \cat{C} \) as a \hyperref[def:functor]{functor} \( D: \cat{I} \to \cat{C} \) from some \hyperref[def:small_category]{small category} \( \cat{I} \).
+
+    For our example \eqref{eq:rem:categorical_diagram_definition/example}, we can take \( \cat{I} \) to be the \hyperref[def:directed_multigraph_free_category]{free category} \( F(G) \) (i.e. the category whose morphisms are \hyperref[def:graph_walk/directed]{directed walks} in \( G \)).
+
+    The objects in \( \cat{I} \) are the nodes \( u \), \( v \) and \( w \) of \( G \), while the morphisms in \( \cat{I} \) are the empty walks
+    \begin{align*}
+      &\id_u,                                   && \id_v,                                   && \id_w, \\
+    \intertext{as well as}
+      &u \reloset a \to v,                      && v \reloset {b_1} \to w,                  && v \reloset {b_2} \to w, \\
+      &                                         && u \reloset a \to v \reloset {b_1} \to w, && u \reloset a \to v \reloset {b_2} \to w.
+    \end{align*}
+
+    Commutativity requires that
+    \begin{equation*}
+      g_1 \bincirc f
+      =
+      D(b_1) \bincirc D(a)
+      \reloset {\ref{def:functor/CF2}} =
+      D(b_1 \bincirc a)
+      =
+      D(b_2 \bincirc a)
+      \reloset {\ref{def:functor/CF2}} =
+      D(b_2) \bincirc D(a)
+      =
+      g_2 \bincirc f.
+    \end{equation*}
+
+    Thus, the condition for commutativity becomes simpler --- for every source \( u \) and every sink \( w \) \emph{in \( G \)}, all morphisms between them \emph{in \( \cat{I} = F(G) \)} must coincide.
+
+    Note that \( F(G) \) contains a loop at \( u \), so it is important to ignore it when determining whether \( u \) is a source. Thus, we still need the particular structure of \( G \). Instead of trying to recover \( G \) from \( \cat{I} \), it makes sense to define diagrams in \( \cat{C} \) as functors from the free category of \( G \) to \( \cat{C} \).
+
+    Alternatively, we could ignore the identity morphisms when determining the in-degree of \( u \) or out-degree of \( v \).
+
+    \thmitem{rem:categorical_diagram_definition/small} We discuss in \cref{rem:small_functors} how there are multiple interpretations under which a functor can be a \hyperref[def:small_set]{small set}.
+
+    This shows that the definition of a diagram as a functor \( D: F(G) \to \cat{C} \) also has some drawbacks.
+
+    Thus, in \cref{def:categorical_diagram}, we define a diagram in \( \cat{C} \) of shape \( G = (V, A, h, t) \) as a pair
+    \begin{equation*}
+      D = \parens[\big]{ \seq{ D_v^{\obj} }_{v \in V}, \seq{ D_a^{\mor} }_{a \in A} }
+    \end{equation*}
+    of indexed families that act as the \hyperref[def:set_valued_map/graph]{function graphs} of the corresponding \hyperref[def:function]{functions}, i.e. they must satisfy
+    \begin{align*}
+      \dom D_a^{\mor} = D_{h(a)}^{\obj} && \co\dom D_a^{\mor} = D_{t(a)}^{\obj}.
+    \end{align*}
+
+    Then \cref{thm:small_set_closure} implies that \( D \) is a small set if and only if both its shape \( G \) and each object \( D_v^{\obj} \) and morphism \( D_f^{\mor} \) are small.
+
+    The structure of a diagram as a graph homomorphism, as a functor, and as a subgraph can easily be recovered from this construction.
+  \end{thmenum}
 \end{remark}
+
+\begin{definition}\label{def:categorical_diagram}\mimprovised
+  In accordance with all considerations from \cref{rem:categorical_diagram_definition}, in the \hyperref[def:category]{category} \( \cat{C} \), we define a \term[ru=диаграмма (\cite[50]{Хелемский2014ФункциональныйАнализ}), en=diagram (\cite[51]{MacLane1998CategoryTheory})]{diagram} of \term[en=shape (\cite[51]{MacLane1998CategoryTheory})]{shape} \( G \), where \( G = (V, A, h, t) \) is a \hyperref[def:directed_multigraph]{directed multigraph}, as a pair
+  \begin{equation*}
+    D = \parens[\big]{ \seq{ D_v^{\obj} }_{v \in V}, \seq{ D_a^{\mor} }_{a \in A} }
+  \end{equation*}
+  of indexed families such that
+  \begin{align*}
+    \dom D_a^{\mor} = D_{h(a)}^{\obj} && \co\dom D_a^{\mor} = D_{t(a)}^{\obj}.
+  \end{align*}
+
+  We call the graph \( G \) a \term[en=diagram scheme (\cite[48]{MacLane1998CategoryTheory})]{diagram scheme}.
+
+  \begin{thmenum}
+    \thmitem{def:categorical_diagram/functor} \Fullref{thm:free_category_universal_property} allows us to lift \( D \) to a \hyperref[def:functor]{functor}
+    \begin{equation*}
+      F(D): F(G) \to \cat{C}
+    \end{equation*}
+    from the \hyperref[def:directed_multigraph_free_category]{free category} \( F(G) \) to \( \cat{C} \).
+
+    In analogy with indexed families of sets, we we call \( F(G) \) the \term{index category} of \( F(D) \). If we need to recover \( G \) from an abstract index category \( \cat{I} \), we can take the smallest subgraph of \( U(\cat{I}) \) such that \( F(G) = \cat{I} \).
+
+    When the distinction is not important, we will conflate \( D \) and \( F(D) \), just like we conflate indexed families and the functions they induce.
+
+    \thmitem{def:categorical_diagram/commutative} We say that the diagram \( D \) is \term[ru=коммутативная диаграмма (\cite[50]{Хелемский2014ФункциональныйАнализ}), en=commutative diagram (\cite[def. 6.2.5]{Schubert1972Categories})]{commutative} if, for any \hyperref[def:graph_source_and_sink]{source} \( u \) and sink \( v \), all \hyperref[def:graph_walk/path]{paths} from \( u \) to \( v \) in \( G \) evaluate to the same morphism in \( \cat{C} \), i.e. have the same image under \( F(D) \).
+
+    We discuss this condition in more detail in \cref{rem:categorical_diagram_definition/commutativity}.
+
+    \thmitem{def:categorical_diagram/small} In particular, we call the diagram \( D \) \term[en=small diagram (\cite[109]{MacLane1998CategoryTheory})]{small} if \( G \) (or, equivalently, \( F(G) \)) is a small set, and if the relevant objects and morphisms in \( \cat{C} \) are small.
+
+    The latter condition is usually implicit since most categories we deal with, as as \( \cat{Set} \), \( \cat{Grp} \), \( \cat{Top} \) or \( \cat{Cat} \), consist of small objects.
+
+    As per our discussion in \cref{rem:categorical_diagram_definition/small}, because of our choice to define a diagram as a pair of indexed families, this condition coincides with \( D \) being a small set.
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:def:categorical_diagram}
+  We list some examples of \hyperref[def:categorical_diagram]{categorical diagrams}:
+  \begin{thmenum}
+    \thmitem{ex:def:categorical_diagram/inverting_isomorphisms} Inverting isomorphisms in a \hyperref[def:categorical_diagram]{commutative diagram} may or may not preserve commutativity.
+
+    If \( p = (f_1, \ldots, f_n) \) and \( q = (g_1, \ldots, g_m) \) are two paths in a commutative diagram, and if \( f_1 \) is invertible, then obviously
+    \begin{equation*}
+      f_n \bincirc \cdots \bincirc f_1 = g_m \bincirc \cdots \bincirc g_1
+    \end{equation*}
+    if and only if
+    \begin{equation*}
+      f_n \bincirc \cdots \bincirc f_2 = g_m \bincirc \cdots \bincirc g_1 \bincirc f_1^{-1}.
+    \end{equation*}
+
+    However, inverting \( f_1^{-1} \) may introduce additional paths. Consider \hyperref[def:ordinal]{ordinals} in \( \cat{Set} \). Let \( f: \omega^2 \to \omega \) be the bijective map from \cref{thm:omega_equinumerous_with_omega_squared}. Then the following diagram commutes vacuously (the unlabeled morphisms are inclusions):
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__categorical_diagram}
+      \end{aligned}
+    \end{equation*}
+
+    But, since \( f^{-1}(2) = \omega \), the following diagram does not commute:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__categorical_diagram}
+      \end{aligned}
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\paragraph{Functor invertibility}
 
 \begin{definition}\label{def:functor_invertibility}
   In connection with \cref{def:morphism_invertibility} and \cref{def:function_invertibility}, we introduce the following terminology:
@@ -459,9 +571,9 @@
   Conversely, if \( F \) is faithful, then \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} implies \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/source}.
 \end{proposition}
 \begin{proof}
-  Functors preserve composition by \ref{eq:def:functor/CF2}, hence \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} follows from \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/source} directly.
+  Functors preserve composition by \ref{def:functor/CF2}, hence \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} follows from \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/source} directly.
 
-  Now suppose that \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} holds for a faithful functor \( F \). \ref{eq:def:functor/CF2} allows us to reduce \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} to
+  Now suppose that \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} holds for a faithful functor \( F \). \ref{def:functor/CF2} allows us to reduce \eqref{eq:thm:commutative_diagrams_preserved_and_reflected/image} to
   \begin{equation*}
     F(f_n \bincirc \cdots \bincirc \bincirc f_1) = F(g_m \bincirc \cdots \bincirc \bincirc g_1).
   \end{equation*}
@@ -928,7 +1040,7 @@
       \end{aligned}
     \end{equation}
 
-    We can now define the following \term{binary hom-functor}:
+    We can now define the following \term{binary \( \hom \)-functor}:
     \begin{equation}\label{eq:def:hom_functor/binary}
       \begin{aligned}
         &\cat{C}(\anon*, \anon*): \cat{C}^\oppos \times \cat{C} \to \cat{Set} \\
