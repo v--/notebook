@@ -1,0 +1,420 @@
+\section{Functor categories}\label{sec:functor_categories}
+
+\begin{definition}\label{def:natural_transformation}\mcite[def. 1.3.1]{Leinster2014BasicCategoryTheory}
+  Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from the category \( \cat{C} \) to \( \cat{D} \).
+
+  A \term{natural transformation} \( \alpha \) from \( F \) to \( G \) is an \hyperref[def:indexed_family]{indexed family} of
+  \begin{equation}\label{eq:def:natural_transformation/family}
+    \seq{ \alpha_A: F(A) \to G(A) }_{A \in \cat{C}}
+  \end{equation}
+  of morphisms in \( \cat{D} \) such that, for every morphism \( f: A \to B \) in \( \cat{C} \), the following \hyperref[def:categorical_diagram]{diagram commutes}:
+  \begin{equation}\label{eq:def:natural_transformation/diagram}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__natural_transformation}
+    \end{aligned}
+  \end{equation}
+
+  The morphisms \( \alpha_A \) are called the components of \( \alpha \). We denote natural transformations by \( \alpha: F \Rightarrow G \) and, when used in diagrams, by
+  \begin{equation}\label{eq:def:natural_transformation/notation}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__natural_transformation}
+    \end{aligned}
+  \end{equation}
+\end{definition}
+
+\begin{example}\label{ex:directed_multigraphs_as_functors}\mcite[example 1.3.46]{Perrone2024StartingCategoryTheory}
+  In \cref{def:directed_multigraph}, we have defined a directed multigraph as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the initial \( i: A \to V \) and terminal \( t: A \to V \) vertices of an arc.
+
+  Now consider the following \hyperref[def:categorical_diagram]{index category} \( \cat{I}: \)
+  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/dots}
+    \begin{aligned}
+      \includegraphics[page=1]{output/ex__directed_multigraphs_as_functors}
+    \end{aligned}
+  \end{equation}
+
+  For the sake of readability, we will give the following explicit labels in this category:
+  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/annotated}
+    \begin{aligned}
+      \includegraphics[page=2]{output/ex__directed_multigraphs_as_functors}
+    \end{aligned}
+  \end{equation}
+
+  A directed multigraph can then be defined as a functor \( G: \cat{I} \to \cat{Set} \) to the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of \hyperref[def:small_set]{small} sets.
+
+  A \hyperref[def:natural_transformation]{natural transformation} from the directed multigraph \( G: \cat{I} \to \cat{Set} \) to \( H: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: G(V) \to H(V) \) and \( f_A: G(A) \to H(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
+  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/diagram}
+    \begin{aligned}
+      \includegraphics[page=3]{output/ex__directed_multigraphs_as_functors}
+      \quad\quad\quad\quad
+      \includegraphics[page=4]{output/ex__directed_multigraphs_as_functors}
+    \end{aligned}
+  \end{equation}
+
+  See \cref{ex:isomorphism_of_directed_multigraph_categories} for how these functors related to directed multigraphs as defined in \cref{def:directed_multigraph}.
+\end{example}
+
+\begin{remark}\label{rem:natural_transformations_into_set}
+  Let \( \cat{C} \) be an arbitrary \hyperref[def:small_set]{small} category. A \hyperref[def:natural_transformation]{natural transformation} \( \alpha \) from \( F: \cat{C} \to \cat{Set} \) to \( G: \cat{C} \to \cat{Set} \) is then a family of functions
+  \begin{equation*}
+    \seq{ \alpha_A: F(A) \to G(A) }_{A \in \cat{C}}.
+  \end{equation*}
+
+  Suppose that for every two objects \( A \) and \( B \) in \( \cat{C} \), the functions \( \alpha_A \) and \( \alpha_B \) agree on \( F(A) \cap F(B) \). This is automatically satisfied in \( F(A) \) and \( F(B) \) are disjoint whenever \( A \neq B \).
+
+  We can then take the set-theoretic union of \( \alpha \) to obtain the function
+  \begin{equation*}
+    \bigcup_{A \in \cat{C}} \alpha_A: \bigcup\set{ F(A) \given A \in \cat{C} } \to \bigcup\set{ G(A) \given A \in \cat{C} }.
+  \end{equation*}
+
+  Both the domain and codomain are sets as a consequence of \ref{def:grothendieck_universe/union}, therefore the function is well-defined in the \hyperref[def:smallest_grothendieck_universe]{smallest Grothendieck universe} \( \mscrU_0 \). Denote it on \( \Alpha \) for brevity.
+
+  An advantage of this is that we can define a natural transformation to be a function on a general enough set and then prove that its restrictions satisfy \eqref{eq:def:natural_transformation/diagram}.
+
+  For example, consider the power set functor \( \pow: \cat{Set} \to \cat{Set} \) discussed in \cref{ex:def:functor}. The \hyperref[def:set_valued_map/identity]{identity function} \( \id_{\mscrU_0} \) is then a natural transformation from the identity functor \( \id_{\cat{Set}} \) to \( \pow \).
+
+  Another natural transformation between the same functors is the singleton set operation \( \Sigma \) on sets defined as \( A \mapsto \set{ A } \). Note that, in this context, \( \Sigma \) operates not on the sets \( \id_{\cat{Set}}(A) \) and \( \pow(A) \), but on their members. The diagram \eqref{eq:def:natural_transformation/diagram} becomes
+  \begin{equation}\label{eq:rem:natural_transformations_into_set}
+    \begin{aligned}
+      \includegraphics[page=1]{output/rem__natural_transformations_into_set}
+    \end{aligned}
+  \end{equation}
+
+  This diagram commutes because, for every function \( f: A \to B \) and every \( x \in A \), we have
+  \begin{equation*}
+    f[\set{ x }] = \set{ f(x) }.
+  \end{equation*}
+\end{remark}
+
+\begin{definition}\label{def:functor_category}
+  Let \( \cat{C} \) and \( \cat{D} \) be arbitrary \hyperref[def:category]{categories}. The \term{functor category} \( [\cat{C}, \cat{D}] \), also denoted as \( \cat{D}^{\cat{C}} \), is defined as follows:
+
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} \( \obj([\cat{C}, \cat{D}]) \) is the set of all functors from \( \cat{C} \) to \( \cat{D} \).
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} \( [\cat{C}, \cat{D}](F, G) \) from \( F \) to \( G \) is the set of all \hyperref[def:natural_transformation]{natural transformations} from \( F \) to \( G \).
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms} \( \alpha: F \Rightarrow G \) and \( \beta: G \Rightarrow H \) is the natural transformation \( \beta \bincirc \alpha: F \Rightarrow H \) defined in terms of componentwise morphism composition, i.e.
+    \begin{equation}\label{eq:def:functor_category/composition}
+      (\beta \bincirc \alpha)_A \coloneqq \beta_A \bincirc \alpha_A.
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} on the functor \( F: \cat{C} \to \cat{D} \) is the \term{identity natural transformation} \( \id_F: F \Rightarrow F \) with components
+    \begin{equation}\label{eq:def:functor_category/identity}
+      (\id_F)_A \coloneqq \underbrace{\id_{F(A)}}_{F(\id_A)}
+    \end{equation}
+  \end{itemize}
+\end{definition}
+\begin{defproof}
+  Just to verify that the composition \( \beta \bincirc \alpha \) defined in \eqref{eq:def:functor_category/composition} is indeed a natural transformation from \( F \) to \( H \), note that the following diagram trivially commutes:
+  \begin{equation}\label{def:functor_category/composition}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__functor_category}
+    \end{aligned}
+  \end{equation}
+
+  Now, to see that \( [\cat{C}, \cat{D}] \) is indeed a category, we verify the conditions \ref{def:category/C1} and \ref{def:category/C2}, which are in turn inherited from the same conditions on the categories \( \cat{C} \) and \( \cat{D} \).
+
+  \SubProofOf{def:category/C1} For every two functors \( F, G: \cat{C} \to \cat{D} \) and natural transformation \( \alpha: F \Rightarrow G \), for every object \( A \in \cat{C} \) we have
+  \begin{equation*}
+    \id_{G(A)} \bincirc \alpha_A
+    \reloset{\eqref{def:category/C1}} =
+    \alpha_A
+    \reloset{\eqref{def:category/C1}} =
+    \alpha_A \bincirc \id_{F(A)}
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    \id_G \bincirc \alpha = \alpha = \alpha \bincirc \id_F
+  \end{equation*}
+  and, after generalizing, we obtain that \ref{def:category/C1} holds in \( [\cat{C}, \cat{D}] \).
+
+  \SubProofOf{def:category/C2} For any quadruple \( F \), \( G \), \( H \) and \( T \) of functors from \( \cat{C} \) to \( \cat{D} \) and every combination of natural transformations \( \alpha: F \Rightarrow G \), \( \beta: G \Rightarrow H \) and \( \gamma: H \Rightarrow T \), for every object \( A \in \cat{C} \) we have
+  \begin{equation*}
+    (\gamma_A \bincirc \beta_A) \bincirc \alpha_A
+    \reloset{\eqref{def:category/C2}} =
+    \gamma_A \bincirc (\beta_A \bincirc \alpha_A).
+  \end{equation*}
+
+  Therefore, after generalizing, we obtain that \ref{def:category/C2} holds in \( [\cat{C}, \cat{D}] \).
+\end{defproof}
+
+\begin{example}\label{ex:isomorphism_of_directed_multigraph_categories}
+  In \cref{ex:directed_multigraphs_as_functors}, we defined \hyperref[def:directed_multigraph]{directed multigraphs} as functors from a certain index category \( \cat{I} \) to \( \cat{Set} \) (for a \hyperref[def:small_category]{fixed Grothendieck universe} \( \mscrU \)).
+
+  There is then an obvious correspondence between directed multigraphs as objects of the category \( \cat{DM} \) defined in \cref{def:directed_multigraph/category}, and directed multigraphs as objects in the \hyperref[def:functor_category]{functor category} \( [\cat{I}, \cat{Set}] \), defined in \cref{ex:directed_multigraphs_as_functors}. Indeed, given any functor \( G: \cat{I} \to \cat{Set} \), the quadruple
+  \begin{equation*}
+    \parens[\big]{ G(V), G(A), G(h), G(t) }
+  \end{equation*}
+  is a directed multigraph in the sense of \cref{def:directed_multigraph}.
+
+  No object in \( \cat{DM} \) is formally equal to any object in \( [\cat{I}, \cat{Set}] \) in the sense of \hyperref[def:zfc]{\logic{ZFC}}. They are, however, equivalent, as shown above, and this can be formalized by stating that the two categories are isomorphic, in the sense of \cref{def:morphism_invertibility/isomorphism}, as objects of the category \( \cat[\mscrV]{Cat} \), where \( \mscrV \) is a Grothendieck universe that strictly contains \( \mscrU \). We have already defined this isomorphism explicitly.
+
+  This is an example of \term{isomorphism of categories}. In practice, if two categories are not so obviously identical, we are usually better served by \term{equivalences of categories} defined in \cref{def:category_equivalence}.
+\end{example}
+
+\begin{definition}\label{def:opposite_natural_transformation}\mimprovised
+  The \term{opposite} natural transformation of \( \alpha: F \Rightarrow G \), where \( F \) and \( G \) are functors from \( \cat{C} \) to \( \cat{D} \), is the natural transformation \( \alpha^\oppos: G^\oppos \Rightarrow F^\oppos \), in which we take the opposite of each component in \( \alpha \).
+
+  Dual natural transformation arise naturally in \cref{thm:opposite_of_functor_category}.
+\end{definition}
+\begin{defproof}
+  The naturality diagram \eqref{eq:def:natural_transformation/diagram} commutes for \( \alpha^\oppos \) because all morphisms are simply reversed.
+\end{defproof}
+
+\begin{definition}\label{def:opposite_functor}\mcite[33]{MacLane1998CategoryTheory}
+  The \term{opposite} functor of \( F: \cat{C} \to \cat{D} \) is the functor
+  \begin{equation*}
+    \begin{aligned}
+      &F^\oppos: \cat{C}^\oppos \to \cat{D}^\oppos \\
+      &F^\oppos(A) \coloneqq A \\
+      &F^\oppos(f^\oppos: B \to A) \coloneqq [F(f: A \to B)]^\oppos.
+    \end{aligned}
+  \end{equation*}
+
+  For the composition of functors, we then have
+  \begin{equation}\label{eq:def:opposite_functor/composition}
+    [G \bincirc F]^\oppos = G^\oppos \bincirc F^\oppos.
+  \end{equation}
+
+  This is somewhat in contrast to the general practice of inverting morphisms when taking opposites. Thus, we have the \hyperref[def:contravariant_functor]{contravariant} \term{oppositization functor}
+  \begin{equation*}
+    (\anon*)^\oppos: \cat{Cat}^\oppos \to \cat{Cat}.
+  \end{equation*}
+
+  As an \hyperref[def:function/endofunction]{endofunction} on \( \obj(\cat{Cat}) \), the oppositization functor is clearly an \hyperref[def:categorical_involution]{involution}.
+
+  Dual functors also arise naturally in \cref{thm:opposite_of_functor_category}.
+\end{definition}
+
+\begin{proposition}\label{thm:opposite_of_functor_category}
+  For the \hyperref[def:opposite_category]{opposite} of the \hyperref[def:functor_category]{functor category} \( [\cat{C}, \cat{D}] \) we have
+  \begin{equation*}
+    [\cat{C}, \cat{D}]^\oppos = [\cat{C}^\oppos, \cat{D}^\oppos].
+  \end{equation*}
+
+  This is part of the duality principles listed in \fullref{thm:category_duality}.
+\end{proposition}
+\begin{proof}
+  In \cref{def:opposite_functor}, we have defined the opposite functor \( F^\oppos: \cat{C}^\oppos \to \cat{D}^\oppos \) of \( F: \cat{C} \to \cat{D} \) in a way that allows us to regard it as an object of \( [\cat{C}^\oppos, \cat{D}^\oppos] \).
+
+  In \cref{def:opposite_natural_transformation}, we have defined the opposite natural transformation \( \alpha^\oppos: G^\oppos \to F^\oppos \) of \( \alpha: F \Rightarrow G \) in a way that allows us to regard it as a morphism of \( [\cat{C}^\oppos, \cat{D}^\oppos] \).
+
+  Furthermore, \( \alpha^\oppos: G^\oppos \to F^\oppos \) reverses the direction of its morphisms, and hence it is the dual to \( \alpha \) in the category \( [\cat{C}, \cat{D}]^\oppos \).
+\end{proof}
+
+\begin{definition}\label{def:diagonal_functor}\mcite[exerc. 3.1.1]{Leinster2014BasicCategoryTheory}
+  Given an \term{index category} \( \cat{I} \) and an arbitrary category \( \cat{C} \), for any object \( A \) in \( \cat{C} \), we can define the \term{constant functor}
+  \begin{equation*}
+    \begin{aligned}
+      &\Delta_A^{\cat{I}}: \cat{I} \to \cat{C}, \\
+      &\Delta_A^{\cat{I}}(X) \coloneqq X, \\
+      &\Delta_A^{\cat{I}}(g: X \to Y) \coloneqq \id_A.
+    \end{aligned}
+  \end{equation*}
+
+  Given two objects \( A \) and \( B \) in \( \cat{C} \), a natural transformation \( \alpha: \Delta_A^{\cat{I}} \Rightarrow \Delta_B^{\cat{I}} \) is an \hyperref[def:indexed_family]{indexed family} that gives the same morphism for every object of the index category \( \cat{I} \).
+
+  Indeed, the diagram \eqref{eq:def:natural_transformation/diagram} in this case becomes
+  \begin{equation}\label{eq:def:diagonal_functor/nat}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__diagonal_functor}
+    \end{aligned}
+  \end{equation}
+
+  This diagram implies that \( \alpha_A = \alpha_B \) for any two objects \( A \) and \( B \) in \( \cat{I} \). Therefore, all components of \( \alpha \) are equal to some morphism in \( \cat{C}(A, B) \).
+
+  We can now define the \( \cat{I} \)-shaped \term{diagonal functor} on \( \cat{C} \)
+  \begin{equation*}
+    \begin{aligned}
+      &\Delta^{\cat{I}}: \cat{C} \to [\cat{I}, \cat{C}], \\
+      &\Delta^{\cat{I}}(A) \coloneqq \Delta_A^{\cat{I}}, \\
+      &\Delta^{\cat{I}}(f: A \to B) \coloneqq \seq{ f: A \to B }_{k \in \cat{I}}.
+    \end{aligned}
+  \end{equation*}
+
+  It is called a diagonal functor because, if \( \cat{I} \) is a discrete category of small two objects, then \( \Delta_{\cat{I}} \) gives the diagonal of the \hyperref[def:product_category]{product category} \( \cat{C}^2 \) by providing, for each object \( A \) of \( \cat{C} \), the ordered pair \( (A, A) \) (and similarly for morphisms).
+\end{definition}
+
+\begin{proposition}\label{thm:natural_isomorphism}\mcite{math3ma:natural_transformations}
+  Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from the category \( \cat{C} \) to \( \cat{D} \). The family \eqref{eq:def:natural_transformation/family} is an isomorphism in the corresponding \hyperref[def:functor_category]{functor category} \( [\cat{C}, \cat{D}] \) if and only if all of its components are isomorphisms and, for any morphism \( f: A \to B \) in \( \cat{C} \), the following diagram commutes:
+  \begin{equation}\label{eq:thm:natural_isomorphism/diagram}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__natural_isomorphism}
+    \end{aligned}
+  \end{equation}
+
+  We say that \( \alpha \) is a \term{natural isomorphism}.
+\end{proposition}
+\begin{proof}
+  If all components of \( \alpha \) are isomorphisms, the condition
+  \begin{equation*}
+    \alpha_B \bincirc F(f) = G(f) \bincirc \alpha_A
+  \end{equation*}
+  is equivalent to
+  \begin{equation*}
+    F(f) = \alpha_B^{-1} \bincirc G(f) \bincirc \alpha_A.
+  \end{equation*}
+
+  We must now show that, if \( \alpha \) is an isomorphism in \( [\cat{C}, \cat{D}] \), all of its components are isomorphisms.
+
+  If \( \alpha: F \Rightarrow G \) is an isomorphism in \( [\cat{C}, \cat{D}] \). Then there exists some natural transformation \( \beta: G \Rightarrow F \) such that
+  \begin{equation*}
+    \beta \bincirc \alpha = \id_F \quad\T{and}\quad \alpha \bincirc \beta = \id_G.
+  \end{equation*}
+
+  For every object \( A \) in \( \cat{C} \), the morphism \( \alpha_A: F(A) \to G(A) \) composed with \( \beta_A: G(A) \to F(A) \) is
+  \begin{equation*}
+    \beta_A \bincirc \alpha_A = \id_{F(A)}.
+  \end{equation*}
+
+  Therefore, \( \alpha_A \) is left invertible. Analogously,
+  \begin{equation*}
+    \alpha_A \bincirc \beta_A = \id_{F(A)}
+  \end{equation*}
+  and hence \( \alpha_A \) is right invertible.
+
+  Therefore, for every object \( A \) in \( \cat{C} \), the morphism \( \alpha_A \) is fully invertible, i.e. an isomorphism.
+\end{proof}
+
+\begin{definition}\label{def:product_category}\mcite[const. 1.1.11]{Leinster2014BasicCategoryTheory}
+  We define the \term{product category} \( \cat{C} \times \cat{D} \) of \( \cat{C} \) and \( \cat{D} \) as follows:
+
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} is the \hyperref[def:cartesian_product]{Cartesian product}
+    \begin{equation}\label{eq:def:product_category/objects}
+      \obj(\cat{C} \times \cat{D}) \coloneqq \obj(\cat{C}) \times \obj(\cat{D}).
+    \end{equation}
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} from the pair of objects \( (A, X) \) to \( (B, Y) \) is the product
+    \begin{equation}\label{eq:def:product_category/morphisms}
+      (\cat{C} \times \cat{D})\parens[\big]{ (A, X), (B, Y) } \coloneqq \cat{C}(A, B) \times \cat{D}(X, Y).
+    \end{equation}
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms}
+    \begin{align*}
+      (f, r)&: (A, X) \to (B, Y) \\
+      (g, s)&: (B, Y) \to (C, Z)
+    \end{align*}
+    is the pairwise composition
+    \begin{equation}\label{eq:def:product_category/composition}
+      (g, s) \bincirc (f, r) \coloneqq \underbrace{(g \bincirc f, s \bincirc r)}_{(A, X) \to (C, Z)}.
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} of the pair \( (A, X) \) is simply the pair of identity morphisms \( (\id_A, \id_X) \).
+  \end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:hom_functor}
+  Let \( \cat{C} \) be a \hyperref[def:small_category]{locally \hyperref[def:small_set]{small}} category. We can regard the \( \hom \)-sets \( \cat{C}(A, B) \) as a functor parameterized by objects of \( \cat{C} \).
+
+  \begin{thmenum}
+    \thmitem{def:hom_functor/binary} For any pair of morphisms \( f: B \to A \) and \( g: X \to Y \) in \( \cat{C} \), define the operator
+    \begin{equation}\label{eq:def:hom_functor/t}
+      \begin{aligned}
+        &T_{f,g}: \cat{C}(A, X) \to \cat{C}(B, Y) \\
+        &T_{f,g}(s) \mapsto g \bincirc s \bincirc f.
+      \end{aligned}
+    \end{equation}
+
+    The action of \( T_{f,g} \) can be expressed graphically as
+    \begin{equation}\label{eq:def:hom_functor/t_diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__hom_functor}
+      \end{aligned}
+    \end{equation}
+
+    We can now define the following \term{binary \( \hom \)-functor}:
+    \begin{equation}\label{eq:def:hom_functor/binary}
+      \begin{aligned}
+        &\cat{C}(\anon*, \anon*): \cat{C}^\oppos \times \cat{C} \to \cat{Set} \\
+        &\cat{C}(A, X) \coloneqq \set{ s: A \to X } \\
+        &\cat{C}(f, g) \coloneqq T_{f,g}
+      \end{aligned}
+    \end{equation}
+
+    \thmitem{def:hom_functor/unary} Fixing the first argument \( A \) in \eqref{eq:def:hom_functor/binary}, we instead obtain a covariant unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/covariant}
+      \cat{C}(A, \anon*): \cat{C} \to \cat{Set}
+    \end{equation}
+
+    Analogously, fixing the second argument \( X \), we obtain a \hyperref[def:hom_functor/unary]{contravariant} unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/contravariant}
+      \cat{C}(\anon*, X): \cat{C}^\oppos \to \cat{Set}
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  It is sufficient to verify that \eqref{eq:def:hom_functor/binary} defines a functor. \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
+  \begin{equation}\label{eq:def:hom_functor/inv_composition}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__hom_functor}
+    \end{aligned}
+  \end{equation}
+
+  The other functor condition \ref{def:functor/CF1} is straightforward to prove.
+\end{defproof}
+
+\begin{definition}\label{def:function_currying}\mcite[259]{TroelstraSchwichtenberg2000BasicProofTheory}
+  Given the \hyperref[con:function_arguments]{binary} function \( f: A \times B \to C \), we can define another function \( g: A \to \fun(B, C) \) as
+  \begin{equation*}
+    g(x) \coloneqq (y \mapsto f(x, y)).
+  \end{equation*}
+
+  We call this process \term{currying} after Haskell Curry. Obtaining \( f \) from \( g \) can be called \term{uncurrying}.
+\end{definition}
+\begin{comments}
+  \item Currying is useful if we have somehow fixed a value \( x_0 \in A \), in which case we can \enquote{get rid} of one argument by introducing some shortcut for the function \( g(x_0): B \to C \) for the sake of reducing notational clutter. See \cref{def:differentiability/first_variation} and our proof of \cref{thm:countably_infinite_union_of_countably_infinite_sets} for example of how this is useful in the wild.
+\end{comments}
+
+\begin{proposition}\label{thm:currying_is_natural_isomorphism}
+  \hyperref[def:function_currying]{Function currying} is a natural isomorphism between the functors
+  \begin{align*}
+    &\cat{Set}(A \times B, C)
+    &\cat{Set}(A, \cat{Set}(B, C))
+  \end{align*}
+
+  More concretely, consider the following functors, which are loosely based on \cref{def:hom_functor}:
+  \begin{equation*}
+    \begin{aligned}
+      &V: \cat{Set}^3 \to \cat{Set} \\
+      &V(A, B, C) \coloneqq \cat{Set}(A \times B, C) \\
+      \Big[& V(f: X \to A, g: Y \to B, h: C \to Z) \Big](s: A \times B \to C) \coloneqq \smash{ \overbrace{ (x, y) \mapsto h\parens[\Bigg]{ s\parens[\big]{ \underbrace{ f(x), g(y) }_{A \times B} } } }^{X \times Y \to Z} } \\
+    \end{aligned}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{aligned}
+      &W: \cat{Set}^3 \to \cat{Set} \\
+      &W(A, B, C) \coloneqq \cat{Set}(A, \cat{Set}(B, C)) \\
+      \Big[& W(f: X \to A, g: Y \to B, h: C \to Z) \Big](t: A \to \cat{Set}(B, C)) \coloneqq \smash{ \underbrace{ x \mapsto \overbrace{y \mapsto h\parens[\Bigg]{ \overbrace{t(f(x))}^{B \to C}\parens[\big]{ g(y) } } }^{Y \to Z} }_{X \to \cat{Set}(Y, Z)} } \\
+    \end{aligned}
+  \end{equation*}
+
+  Then the family of functions
+  \begin{equation*}
+    \begin{aligned}
+      &\alpha: V \Rightarrow W \\
+      &\alpha_{A,B,C}(s: A \times B \to C) \coloneqq a \mapsto b \mapsto s(a, b)
+    \end{aligned}
+  \end{equation*}
+  is a \hyperref[thm:natural_isomorphism]{natural isomorphism}.
+\end{proposition}
+\begin{proof}
+  The function \( \varphi \) is clearly invertible. Fix a triple of functions \( f: X \to A \), \( g: Y \to B \) and \( h: C \to Z \). For every \( s: A \times B \to C \) we have
+  \begin{align*}
+    [W(f, g, h)](\alpha_{A,B,C}(s))
+    &=
+    x \mapsto y \mapsto \parens[\big]{ h\parens[\big]{ [a \mapsto b \mapsto s(a, b)](f(x))(g(y)) } }
+    = \\ &=
+    x \mapsto y \mapsto h\parens[\big]{ s(f(x), g(y)) }
+    = \\ &=
+    \alpha_{X,Y,Z}(V(f, g, h)),
+  \end{align*}
+  which proves that the following diagram commutes:
+  \begin{equation}\label{eq:thm:currying_is_natural_isomorphism/diagram}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__currying_is_natural_isomorphism}
+    \end{aligned}
+  \end{equation}
+\end{proof}
