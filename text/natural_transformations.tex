@@ -1,89 +1,256 @@
-\section{Functor categories}\label{sec:functor_categories}
+\section{Natural transformations}\label{sec:natural_transformations}
 
-\begin{definition}\label{def:natural_transformation}\mcite[def. 1.3.1]{Leinster2014BasicCategoryTheory}
-  Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from the category \( \cat{C} \) to \( \cat{D} \).
+\paragraph{Natural transformations}
 
-  A \term{natural transformation} \( \alpha \) from \( F \) to \( G \) is an \hyperref[def:indexed_family]{indexed family} of
+\begin{definition}\label{def:natural_transformation}\mcite[def. 7.6; def. 7.10]{Awodey2010CategoryTheory}
+  Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from \( \cat{C} \) to \( \cat{D} \).
+
+  A \term[ru=естественное преобразование (\cite[def. 3.1]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий})]{natural transformation} \( \alpha: F \to G \) is an \hyperref[def:indexed_family]{indexed family}
   \begin{equation}\label{eq:def:natural_transformation/family}
     \seq{ \alpha_A: F(A) \to G(A) }_{A \in \cat{C}}
   \end{equation}
-  of morphisms in \( \cat{D} \) such that, for every morphism \( f: A \to B \) in \( \cat{C} \), the following \hyperref[def:categorical_diagram]{diagram commutes}:
+  of morphisms in \( \cat{D} \) such that, for every morphism \( f: A \to B \) in \( \cat{C} \), the following diagram, called the \term[en=naturality condition (\cite[def. 1.4.1]{Perrone2024StartingCategoryTheory})]{naturality condition}, \hyperref[def:categorical_diagram/commutative]{commutes}:
   \begin{equation}\label{eq:def:natural_transformation/diagram}
     \begin{aligned}
       \includegraphics[page=1]{output/def__natural_transformation}
     \end{aligned}
   \end{equation}
 
-  The morphisms \( \alpha_A \) are called the components of \( \alpha \). We denote natural transformations by \( \alpha: F \Rightarrow G \) and, when used in diagrams, by
+  The morphisms \( \alpha_A \) are called the \term{components} of \( \alpha \). We denote natural transformations by \( \alpha: F \Rightarrow G \) and, when used in diagrams, by
   \begin{equation}\label{eq:def:natural_transformation/notation}
     \begin{aligned}
       \includegraphics[page=2]{output/def__natural_transformation}
     \end{aligned}
   \end{equation}
+
+  We say that \( \alpha \) is a \term{natural isomorphism} if all its components are \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms}, and similarly for left/right cancellable/invertible morphisms. This will be justified in \cref{thm:natural_transformation_invertibility}.
 \end{definition}
 
-\begin{example}\label{ex:directed_multigraphs_as_functors}\mcite[example 1.3.46]{Perrone2024StartingCategoryTheory}
-  In \cref{def:directed_multigraph}, we have defined a directed multigraph as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the initial \( i: A \to V \) and terminal \( t: A \to V \) vertices of an arc.
+\begin{example}\label{ex:def:natural_transformation}
+  We list examples of \hyperref[def:natural_transformation]{natural transformations}:
+  \begin{thmenum}
+    \thmitem{ex:def:natural_transformation/cartesian_product} We largely ignore the distinction between the  \hyperref[def:cartesian_product]{Cartesian products} \( (A \times B) \times C \) and \( A \times (B \times C) \). A precise sense in which this distinction really is irrelevant is the existence of a natural isomorphism.
 
-  Now consider the following \hyperref[def:categorical_diagram]{index category} \( \cat{I}: \)
-  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/dots}
-    \begin{aligned}
-      \includegraphics[page=1]{output/ex__directed_multigraphs_as_functors}
-    \end{aligned}
-  \end{equation}
+    We can consider them as functors from the \hyperref[def:product_category]{product category} \( \cat{Set}^3 \) to \( \cat{Set} \), namely
+    \begin{equation*}
+      \begin{aligned}
+        &L: \cat{Set}^3 \to \cat{Set}, \\
+        &L(A, B, C) \coloneqq (A \times B) \times C, \\
+        &L(f: A \to X, g: B \to Y, h: C \to Z) \coloneqq \smash{\overbrace{\parens[\big]{ \parens[\big]{ (a, b), c } \mapsto \parens[\big]{ (f(a), g(b)), h(c) } }}^{(A \times B) \times C \to (X \times Y) \times Z}},
+      \end{aligned}
+    \end{equation*}
+    and
+    \begin{equation*}
+      \begin{aligned}
+        &R: \cat{Set}^3 \to \cat{Set}, \\
+        &R(A, B, C) \coloneqq A \times (B \times C), \\
+        &R(f: A \to X, g: B \to Y, h: C \to Z) \coloneqq \smash{\overbrace{\parens[\big]{ \parens[\big]{ a, (b, c) } \mapsto \parens[\big]{ f(a), (g(b), h(c)) } }}^{A \times (B \times C) \to X \times (Y \times Z)}}.
+      \end{aligned}
+    \end{equation*}
 
-  For the sake of readability, we will give the following explicit labels in this category:
-  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/annotated}
-    \begin{aligned}
-      \includegraphics[page=2]{output/ex__directed_multigraphs_as_functors}
-    \end{aligned}
-  \end{equation}
+    We can define the natural transformation
+    \begin{equation*}
+      \begin{aligned}
+        &\alpha: L \Rightarrow R, \\
+        &\alpha_{(A, B, C)}\parens[\big]{ (a, b), c } \coloneqq \parens[\big]{ a, (b, c) }.
+      \end{aligned}
+    \end{equation*}
 
-  A directed multigraph can then be defined as a functor \( G: \cat{I} \to \cat{Set} \) to the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of \hyperref[def:small_set]{small} sets.
+    For every object \( (A, B, C) \) in \( \cat{Set}^3 \), the function \( \alpha_{(A, B, C)} \) translates a tuple from \( (A \times B) \times C \) to \( A \times (B \times C) \).
 
-  A \hyperref[def:natural_transformation]{natural transformation} from the directed multigraph \( G: \cat{I} \to \cat{Set} \) to \( H: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: G(V) \to H(V) \) and \( f_A: G(A) \to H(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
-  \begin{equation}\label{eq:ex:directed_multigraphs_as_functors/index/diagram}
-    \begin{aligned}
-      \includegraphics[page=3]{output/ex__directed_multigraphs_as_functors}
-      \quad\quad\quad\quad
-      \includegraphics[page=4]{output/ex__directed_multigraphs_as_functors}
-    \end{aligned}
-  \end{equation}
+    The naturality condition is simple to verify. For any triple of functions \( f: A \to X \), \( g: B \to Y \) and \( h: C \to Z \), we want to show that
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__natural_transformation}
+      \end{aligned}
+    \end{equation*}
 
-  See \cref{ex:isomorphism_of_directed_multigraph_categories} for how these functors related to directed multigraphs as defined in \cref{def:directed_multigraph}.
+    Fortunately, this is trivial. Going through the top-right corner gives us
+    \begin{equation*}
+      \alpha_{(X, Y, Z)}\parens[\big]{ L(f, g, h)\parens[\big]{ (a, b), c } }
+      =
+      \alpha_{(X, Y, Z)}\parens[\big]{ (f(a), g(b)), h(c) }
+      =
+      \parens[\big]{ f(a), (g(b), h(c)) },
+    \end{equation*}
+    while going through the bottom-left corner gives us
+    \begin{equation*}
+      R(f, g, h)\parens[\big]{ \alpha_{(A, B, C)}\parens[\big]{ (a, b), c } }
+      =
+      R(f, g, h)\parens[\big]{ a, (b, c) }
+      =
+      \parens[\big]{ f(a), (g(b), h(c)) }.
+    \end{equation*}
+
+    \thmitem{ex:def:natural_transformation/global_elements} For a fixed (small) \hyperref[def:singleton_set]{singleton set}, say \( 1 = \set{ 0 } = \set{ \varnothing } \), the identity functor in \( \cat{Set} \) is naturally isomorphic to the functor \( \hom(1, \anon*) \).
+
+    Indeed, we can define the (obviously bijective) natural transformation
+    \begin{equation*}
+      \alpha_A(a) \coloneqq (0 \mapsto a).
+    \end{equation*}
+
+    Note that \( \alpha_A: A \to \hom(1, A) \) is defined in the same way for every \( A \), but formally these are different functions.\fnote{Although it is possible to define \( \alpha \) over the \hyperref[def:smallest_grothendieck_universe]{smallest Grothendieck universe} \( \mscrU_0 \)}
+
+    We must verify that the following diagram commutes:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__natural_transformation}
+      \end{aligned}
+    \end{equation*}
+
+    Indeed,
+    \begin{equation*}
+      \alpha_B(f(a))
+      =
+      \parens[\big]{ 0 \mapsto f(a) }
+      =
+      f \bincirc \alpha_A(a).
+    \end{equation*}
+
+    This holds more generally in many other categories with a \hyperref[def:universal_objects/terminal]{terminal object}, such as \( \hyperref[def:group/category]{\cat{Grp}} \).
+
+    The \hyperref[def:directed_multigraph/category]{category of small directed multigraphs} is more subtle. As discussed in \cref{ex:def:universal_objects/directed_multigraphs}, any graph with one vertices and a loop is terminal. A homomorphism from such a graph is a vertex with a loop.
+
+    As a special case that somewhat reconciles the two cases above, in \( \hyperref[def:category_of_small_categories]{\cat{Cat}} \), a functor from the \hyperref[def:singleton_category]{terminal category} chooses a vertex and, due to \ref{def:functor/CF1}, its identity morphism.
+
+    All this is generalized in \cref{def:global_element}.
+
+    \thmitem{ex:def:natural_transformation/boolean} There is similarly a natural isomorphism between the power set functor \( \pow \) in \( \cat{Set} \) (see \cref{ex:def:functor/power_set}) and the functor \( \hom(2, \anon*) \).
+
+    A generalization of this isomorphism formalizes the connection between \( n \)-ary \hyperref[def:relation]{relations} \hyperref[def:boolean_function]{Boolean-valued functions}, which we discuss in \cref{rem:boolean_valued_functions_and_relations}. In this case the functors become
+    \small
+    \begin{equation*}
+      \begin{aligned}
+        &P: \cat{Set}^n \to \cat{Set}, \\
+        &P(A_1, \ldots, A_n) \coloneqq \pow(A_1 \times \cdots \times A_n), \\
+        &P(f_1: A_1 \to B_1, \ldots, f_n: A_n \to B_n) \coloneqq \parens[\big]{ S \mapsto \set[\big]{ \parens[\big]{ f_1(a_1), \ldots, f_n(a_n) } \given (a_1, \ldots, a_n) \in S } }
+      \end{aligned}
+    \end{equation*}
+    \normalsize
+    and
+    \small
+    \begin{equation*}
+      \begin{aligned}
+        &B: \cat{Set}^n \to \cat{Set}, \\
+        &B(A_1, \ldots, A_n) \coloneqq \hom(A_1 \times \ldots \times A_n, \set{ \semtop, \sembot }), \\
+        &B(f_1: A_1 \to B_1, \ldots, f_n: A_n \to B_n) \coloneqq \parens*
+          {
+            s \mapsto \parens*
+            {
+              (b_1, \ldots, b_n) \mapsto
+                \begin{rcases}
+                  \begin{cases}
+                    \semtop, &s(a_1, \ldots, a_n) = \semtop \\
+                             &\T{and} f_k(a_k) = b_k, \\
+                    \sembot, &\T{otherwise}
+                  \end{cases}
+                \end{rcases}
+              }
+          }
+      \end{aligned}
+    \end{equation*}
+    \normalsize
+
+    A natural isomorphism from \( P \) to \( B \) is then
+    \begin{equation*}
+      \alpha_{(A_1, \ldots, A_n)}(S) \coloneqq \parens*
+        {
+          (a_1, \ldots, a_n) \mapsto \begin{rcases}
+            \begin{cases}
+              \semtop, &(a_1, \ldots, a_n) \in S, \\
+              \sembot, &\T{otherwise}
+            \end{cases}
+          \end{rcases}
+        }.
+    \end{equation*}
+
+    We need to verify that the following diagram commutes:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=3]{output/ex__def__natural_transformation}
+      \end{aligned}
+    \end{equation*}
+
+    Going through the top-right corner gives us
+    \begin{align*}
+      &\phantom{{}={}}
+      \parens[\Big]{ \alpha_{(B_1, \ldots, B_n)} \parens[\big]{ P(f_1, \ldots, f_n)(S) } } (b_1, \ldots, b_n)
+      = \\ &=
+      \parens[\Big]{ \alpha_{(B_1, \ldots, B_n)} \parens[\big]{ \set[\big]{ \parens[\big]{ f_1(a_1), \ldots, f_n(a_n) } \given (a_1, \ldots, a_n) \in S } } } (b_1, \ldots, b_n)
+      = \\ &=
+      \begin{cases}
+        \semtop, &(a_1, \ldots, a_n) \in S \T{and} f_k(a_k) = b_k \T{for} k = 1, \ldots n, \\
+        \sembot, &\T{otherwise},
+      \end{cases}
+    \end{align*}
+    while going through the bottom-left corner gives us
+    \begin{align*}
+      &\phantom{{}={}}
+      \parens[\Big]{ B(f_1, \ldots, f_n) \parens[\big]{ \alpha_{(A_1, \ldots, A_n)}(S) } } (b_1, \ldots, b_n)
+      = \\ &=
+      \parens*
+        {
+          (b_1, \ldots, b_n) \mapsto
+          \begin{rcases}
+            \begin{cases}
+              \semtop, &(a_1, \ldots, a_n) \in S \\
+                       &\T{and} f_k(a_k) = b_k, \\
+              \sembot, &\T{otherwise}
+            \end{cases}
+          \end{rcases}
+        }
+      (b_1, \ldots, b_n)
+      = \\ &=
+      \begin{cases}
+        \semtop, &(a_1, \ldots, a_n) \in S \T{and} f_k(a_k) = b_k \T{for} k = 1, \ldots n, \\
+        \sembot, &\T{otherwise}.
+      \end{cases}
+    \end{align*}
+
+    The results coincide, so we conclude that \( \alpha \) is a natural transformation.
+
+    \thmitem{ex:def:natural_transformation/directed_multigraphs}\mcite[example 1.3.46]{Perrone2024StartingCategoryTheory} In \cref{def:directed_multigraph}, we have defined a directed multigraph as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the head \( h: A \to V \) and tail \( t: A \to V \).
+
+    We can regard it as a functor \( G: \cat{I} \to \cat{Set} \), where \( \cat{I} \) is
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=4]{output/ex__def__natural_transformation}
+      \end{aligned}
+    \end{equation*}
+
+    Since the index has two objects, a \hyperref[def:natural_transformation]{natural transformation} from the directed multigraph \( G: \cat{I} \to \cat{Set} \) to \( H: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: G(V) \to H(V) \) and \( f_A: G(A) \to H(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=5]{output/ex__def__natural_transformation}
+        \qquad\qquad
+        \includegraphics[page=6]{output/ex__def__natural_transformation}
+      \end{aligned}
+    \end{equation*}
+
+    See \cref{ex:isomorphism_of_directed_multigraph_categories} for how these functors related to directed multigraphs as defined in \cref{def:directed_multigraph}.
+  \end{thmenum}
 \end{example}
 
-\begin{remark}\label{rem:natural_transformations_into_set}
-  Let \( \cat{C} \) be an arbitrary \hyperref[def:small_set]{small} category. A \hyperref[def:natural_transformation]{natural transformation} \( \alpha \) from \( F: \cat{C} \to \cat{Set} \) to \( G: \cat{C} \to \cat{Set} \) is then a family of functions
-  \begin{equation*}
-    \seq{ \alpha_A: F(A) \to G(A) }_{A \in \cat{C}}.
-  \end{equation*}
+\begin{definition}\label{def:global_element}\mcite[36]{Awodey2010CategoryTheory}
+  In a \hyperref[def:category]{category} with a \hyperref[def:universal_objects/terminal]{terminal object} \( 1 \), we call morphisms \emph{from} \( 1 \) \term{global elements}.
+\end{definition}
+\begin{comments}
+  \item As shown in \cref{ex:def:natural_transformation/global_elements}, global elements generalize elements in concrete categories.
+\end{comments}
 
-  Suppose that for every two objects \( A \) and \( B \) in \( \cat{C} \), the functions \( \alpha_A \) and \( \alpha_B \) agree on \( F(A) \cap F(B) \). This is automatically satisfied in \( F(A) \) and \( F(B) \) are disjoint whenever \( A \neq B \).
+\begin{proposition}\label{thm:small_natural_transformations}
+  A \hyperref[def:natural_transformation]{natural transformation} \( \alpha: F \to G \) is a \hyperref[def:small_set]{small set} if and only if each of its components is a small set.
+\end{proposition}
+\begin{comments}
+  \item In case the components are function, this holds for both interpretation of function smallness from \cref{rem:small_functions}.
 
-  We can then take the set-theoretic union of \( \alpha \) to obtain the function
-  \begin{equation*}
-    \bigcup_{A \in \cat{C}} \alpha_A: \bigcup\set{ F(A) \given A \in \cat{C} } \to \bigcup\set{ G(A) \given A \in \cat{C} }.
-  \end{equation*}
+  Similarly, if the components are functors, this holds for both interpretations of functor smallness from \cref{rem:small_functors}.
+\end{comments}
+\begin{proof}
+  Follows from \cref{thm:small_set_closure/indexed_family}.
+\end{proof}
 
-  Both the domain and codomain are sets as a consequence of \ref{def:grothendieck_universe/union}, therefore the function is well-defined in the \hyperref[def:smallest_grothendieck_universe]{smallest Grothendieck universe} \( \mscrU_0 \). Denote it on \( \Alpha \) for brevity.
-
-  An advantage of this is that we can define a natural transformation to be a function on a general enough set and then prove that its restrictions satisfy \eqref{eq:def:natural_transformation/diagram}.
-
-  For example, consider the power set functor \( \pow: \cat{Set} \to \cat{Set} \) discussed in \cref{ex:def:functor}. The \hyperref[def:set_valued_map/identity]{identity function} \( \id_{\mscrU_0} \) is then a natural transformation from the identity functor \( \id_{\cat{Set}} \) to \( \pow \).
-
-  Another natural transformation between the same functors is the singleton set operation \( \Sigma \) on sets defined as \( A \mapsto \set{ A } \). Note that, in this context, \( \Sigma \) operates not on the sets \( \id_{\cat{Set}}(A) \) and \( \pow(A) \), but on their members. The diagram \eqref{eq:def:natural_transformation/diagram} becomes
-  \begin{equation}\label{eq:rem:natural_transformations_into_set}
-    \begin{aligned}
-      \includegraphics[page=1]{output/rem__natural_transformations_into_set}
-    \end{aligned}
-  \end{equation}
-
-  This diagram commutes because, for every function \( f: A \to B \) and every \( x \in A \), we have
-  \begin{equation*}
-    f[\set{ x }] = \set{ f(x) }.
-  \end{equation*}
-\end{remark}
+\paragraph{Functor categories}
 
 \begin{definition}\label{def:functor_category}
   Let \( \cat{C} \) and \( \cat{D} \) be arbitrary \hyperref[def:category]{categories}. The \term{functor category} \( [\cat{C}, \cat{D}] \), also denoted as \( \cat{D}^{\cat{C}} \), is defined as follows:
@@ -139,10 +306,13 @@
   Therefore, after generalizing, we obtain that \ref{def:category/C2} holds in \( [\cat{C}, \cat{D}] \).
 \end{defproof}
 
-\begin{example}\label{ex:isomorphism_of_directed_multigraph_categories}
-  In \cref{ex:directed_multigraphs_as_functors}, we defined \hyperref[def:directed_multigraph]{directed multigraphs} as functors from a certain index category \( \cat{I} \) to \( \cat{Set} \) (for a \hyperref[def:small_category]{fixed Grothendieck universe} \( \mscrU \)).
+\begin{proposition}\label{thm:natural_transformation_invertibility}
+\end{proposition}
 
-  There is then an obvious correspondence between directed multigraphs as objects of the category \( \cat{DM} \) defined in \cref{def:directed_multigraph/category}, and directed multigraphs as objects in the \hyperref[def:functor_category]{functor category} \( [\cat{I}, \cat{Set}] \), defined in \cref{ex:directed_multigraphs_as_functors}. Indeed, given any functor \( G: \cat{I} \to \cat{Set} \), the quadruple
+\begin{example}\label{ex:isomorphism_of_directed_multigraph_categories}
+  In \cref{ex:def:natural_transformation/directed_multigraphs}, we defined \hyperref[def:directed_multigraph]{directed multigraphs} as functors from a certain index category \( \cat{I} \) to \( \cat{Set} \) (for a \hyperref[def:small_category]{fixed Grothendieck universe} \( \mscrU \)).
+
+  There is then an obvious correspondence between directed multigraphs as objects of the category \( \cat{DM} \) defined in \cref{def:directed_multigraph/category}, and directed multigraphs as objects in the \hyperref[def:functor_category]{functor category} \( [\cat{I}, \cat{Set}] \), defined in \cref{ex:def:natural_transformation/directed_multigraphs}. Indeed, given any functor \( G: \cat{I} \to \cat{Set} \), the quadruple
   \begin{equation*}
     \parens[\big]{ G(V), G(A), G(h), G(t) }
   \end{equation*}
