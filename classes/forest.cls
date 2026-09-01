@@ -13,6 +13,8 @@
 
 \usetikzlibrary{shapes.geometric}
 
+\RequirePackage{packages/stix2_arrows}
+
 \forestset{
   SubTree/.style={
     font=\scriptsize,
