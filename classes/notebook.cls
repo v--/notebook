@@ -44,25 +44,13 @@
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 
-% Internationalization
-\RequirePackage[english]{babel}
-\RequirePackage[autostyle]{csquotes}
-\babeltags
-  {
-    bg=bulgarian,
-    de=german,
-    en=english,
-    fr=french,
-    el=greek,
-    la=latin,
-    ru=russian
-  }
+% Internationalization and fonts
+\RequirePackage{packages/internationalization}
 
 \useshorthands*{"}
 \defineshorthand{"-}{\babelhyphen{soft}}
 \defineshorthand{"=}{-\babelhyphen{soft}}
 
-% Fonts
 \RequirePackage{packages/fonts}
 
 % Citations
