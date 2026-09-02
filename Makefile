@@ -53,7 +53,7 @@ aux/metadata: .git/refs/heads/master | aux
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:',pdfdate={%cd}' --date='format:D:%Y%m%d%H%M%S' HEAD >> aux/metadata
 
 aux/corderef.aux: $(PYTHON_SOURCE) | aux
-	uv run coderefs collect
+	uv run nb-coderefs collect
 
 clean-text:
 	rm --recursive --force aux/text aux/notebook.* output/notebook.pdf

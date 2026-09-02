@@ -26,7 +26,7 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 
 ### References
 
-There are hundreds of connections between the text and the code - every algorithm has an implementation, as do many examples. To help maintain them, I created a code reference ("coderef") system, which allows attaching LaTeX labels to Python objects. The "collection" process is implemented in [`coderefs.py`](./src/notebook/support/coderefs.py). An auxiliary file is created by running `uv run coderefs collect` and then read in the monograph using the [`ProcessCodeRefs`](./packages/coderefs.sty) macro.
+There are hundreds of connections between the text and the code - every algorithm has an implementation, as do many examples. To help maintain them, I created a code reference ("coderef") system, which allows attaching LaTeX labels to Python objects. The "collection" process is implemented in [`coderefs.py`](./src/notebook/support/coderefs.py). An auxiliary file is created by running `uv run nb-coderefs collect` and then read in the monograph using the [`ProcessCodeRefs`](./packages/coderefs.sty) macro.
 
 In the average case, we directly attach a reference using the Python code
 
@@ -52,7 +52,7 @@ We use the following kinds of figures:
 
 ### Build system
 
-There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `uv run watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
+There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `uv run nb-watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
 
 The figures are built using `pdflatex` for speed (saving a second of build time for hundreds of files is worth it), while the monograph is built using `lualatex`. We have implemented some macros in the [`fonts.sty`](./packages/fonts.sty) file to bridge the gap.
 
@@ -74,11 +74,11 @@ Two additional parsers are included:
 
 ### LaTeX tools
 
-There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/format_matrices) (Usage: `uv run format-matrices figures/*.tex`), made specifically for formatting LaTeX arrays and similar environments.
+There is a tool, [`notebook.commands.format_matrices`](./src/notebook/commands/format_matrices) (Usage: `uv run nb-format-matrices figures/*.tex`), made specifically for formatting LaTeX arrays and similar environments.
 
 ### Bib(La)TeX tools
 
-There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/bibtools) (Usage: `uv run bibtools`), consisting of:
+There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/bibtools) (Usage: `uv run nb-bibtools`), consisting of:
 
 * A "formatter" (`... format bibliography bibliography/*.bib`) that handles name and ISBN/ISSN normalization, reference translation (e.g. DOI, mathnet, zbMATH and other URLs to fields) and other mundane tasks. It also emits warnings when it detects mistakes, e.g. an `@article` entry without a `journal` or an `@inbook` entry without a `booktitle`.
 
