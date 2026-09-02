@@ -1,4 +1,3 @@
-
 import pytest
 
 from notebook.math.rings.modular import Z2
