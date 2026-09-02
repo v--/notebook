@@ -1,6 +1,5 @@
 lazy from collections.abc import Iterable, Sequence
 
-from nameparser import HumanName
 from stdnum import isbn, issn
 
 from notebook.bibtex import BibAuthor, BibEntry, BibEntryType
@@ -15,10 +14,12 @@ lazy from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
 def doi_authors_to_bib(authors: Sequence[DoiAuthor]) -> Iterable[BibAuthor]:
     for author in authors:
-        names = HumanName(first=author.given, last=author.family)
-
-        if len(str(names)) > 0:
-            yield BibAuthor(full_name=str(names))
+        if author.given and author.family:
+            yield BibAuthor(full_name=f'{author.given} {author.family}')
+        elif author.given:
+            yield BibAuthor(full_name=author.given)
+        elif author.family:
+            yield BibAuthor(full_name=author.family)
 
 
 def choose_doi_datetime(data: DoiData, *, print_edition: bool) -> DoiDateTime | None:

@@ -1,11 +1,11 @@
-from nameparser import HumanName
+import nameparser
 
 from notebook.bibtex import BibAuthor, BibString, parse_value
 
 
 def normalize_human_name(full_name: BibString) -> BibString:
     if isinstance(full_name, str):
-        return str(HumanName(full_name))
+        return str(nameparser.parse(full_name))
 
     return full_name
 
@@ -16,8 +16,8 @@ def is_name_normalized(full_name: BibString) -> bool:
 
 def get_main_human_name(full_name: BibString) -> BibString:
     if isinstance(full_name, str):
-        names = HumanName(full_name)
-        return names.last or names.first
+        names = nameparser.parse(full_name)
+        return names.family or names.given
 
     return full_name
 
