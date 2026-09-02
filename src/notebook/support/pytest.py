@@ -10,7 +10,7 @@ from .iteration import repeat
 def pytest_parametrize_lists[**P](**kwargs: Iterable[Any]) -> Callable[[Callable[P, None]], Callable[[], None]]:
     return pytest.mark.parametrize(
         tuple(kwargs.keys()),
-        zip(*kwargs.values(), strict=True),
+        list(zip(*kwargs.values(), strict=True)),
     )
 
 

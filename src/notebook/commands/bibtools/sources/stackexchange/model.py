@@ -39,7 +39,7 @@ def parse_stackexchange_html(html: str) -> StackExchangeEntry:
     if not isinstance(site_tag, bs4.Tag):
         raise BibToolsParsingError('No site tag found')
 
-    signup_json_tag = soup.find('script', **{'data-module-name': 'islands/signup-modal/index.mod'})  # type: ignore[arg-type]
+    signup_json_tag = soup.find('script', attrs={'data-module-name': 'islands/signup-modal/index.mod'})
 
     if not isinstance(signup_json_tag, bs4.Tag):
         raise BibToolsParsingError('No signup metainformation tag found')
