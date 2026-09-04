@@ -3,9 +3,10 @@ import math
 import random
 from dataclasses import dataclass
 
+from notebook.math.arithmetic.divisibility import rem
 from notebook.math.arithmetic.gcd import extended_gcd
 from notebook.math.arithmetic.primes import are_coprime, is_prime_naive
-from notebook.math.crypto.exceptions import DecryptionError, EncryptionError
+from notebook.math.crypto.exceptions import DecryptionError
 from notebook.support.coderefs import collector
 
 
@@ -32,61 +33,68 @@ def rsa_generate_prime(min_value: int = 300, max_value: int = 600) -> int:
 @collector.ref('alg:rsa/keys')
 def generate_rsa_key_pair() -> RsaKeyPair:
     p = rsa_generate_prime()
-    q = rsa_generate_prime()
+    q = p
+
+    while q == p:
+        q = rsa_generate_prime()
+
     n = p * q
     phi_n = (p - 1) * (q - 1)
 
     e = 2
 
     while not are_coprime(e, phi_n):
-        e = random.randint(2, phi_n)
+        e = random.randint(2, phi_n - 1)
 
     egcd = extended_gcd(e, phi_n)
-    return RsaKeyPair(n, e, d=egcd.a)
+    return RsaKeyPair(n, e, d=rem(egcd.a, phi_n))
+
+
+@dataclass
+class RsaChunkSize:
+    plain: int
+    cipher: int
+
+
+def determine_rsa_chunk_size(keys: RsaKeyPair) -> RsaChunkSize:
+    """Determine a chunk size for longer messages.
+
+    We cautiously choose a chunk size so that the numeric values of all plaintext chunks are bounded by n.
+    The numeric values of ciphertext chunks are bounded by n, but the chunks may be wider than the plaintext chunks.
+    """
+    plaintext_chunk_size = math.ceil(math.log2(keys.n) / 8) - 1
+
+    return RsaChunkSize(
+        plain=plaintext_chunk_size,
+        cipher=plaintext_chunk_size + 1,
+    )
 
 
 @collector.ref('alg:rsa/encryption')
 def rsa_encrypt(keys: RsaKeyPair, message: bytes) -> bytes:
-    """Encrypt a message given an RSA key pair.
-
-    We cautiously choose a chunk size so that the numeric values of all plaintext chunks are bounded by n.
-    The numeric values of ciphertext chunks are bounded by n, but may be wider than the chunk size, so we use a wider
-    chunk size for ciphertext.
-    """
-    chunk_size = math.ceil(math.log2(keys.n) / 8) - 1
+    chunk_sizes = determine_rsa_chunk_size(keys)
     result = b''
 
-    if chunk_size == 0:
-        raise EncryptionError('Expected chunk size is tool small')
-
-    for chunk in itertools.batched(message, chunk_size, strict=False):
+    for chunk in itertools.batched(message, chunk_sizes.plain, strict=False):
         m = int.from_bytes(chunk)
         encrypted = pow(m, keys.e, mod=keys.n)
-        # The numeric value of ciphertext chunks is bounded by n, but may not fit the cautiously chosen chunk_size
-        result += encrypted.to_bytes(length=chunk_size + 1)
+        result += encrypted.to_bytes(length=chunk_sizes.cipher)
 
     return result
 
 
 @collector.ref('alg:rsa/decryption')
 def rsa_decrypt(keys: RsaKeyPair, message: bytes) -> bytes:
-    """Decrypt a message given an RSA key pair.
-
-    See the notes about chunk size in the encryption function.
-    """
-    chunk_size = math.ceil(math.log2(keys.n) / 8) - 1
+    chunk_sizes = determine_rsa_chunk_size(keys)
     result = b''
 
-    if chunk_size == 0:
-        raise EncryptionError('Expected chunk size cannot be zero')
-
-    for chunk in itertools.batched(message, chunk_size + 1, strict=False):
+    for chunk in itertools.batched(message, chunk_sizes.cipher, strict=False):
         k = int.from_bytes(chunk)
 
         if k >= keys.n:
             raise DecryptionError(f'Chunk value {k} is too large to decrypt')
 
         decrypted = pow(k, keys.d, mod=keys.n)
-        result += decrypted.to_bytes(length=chunk_size).lstrip(b'\x00')
+        result += decrypted.to_bytes(length=chunk_sizes.plain).lstrip(b'\x00')
 
     return result
