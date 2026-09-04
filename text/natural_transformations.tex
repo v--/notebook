@@ -212,21 +212,128 @@
 
     The results coincide, so we conclude that \( \alpha \) is a natural transformation.
 
-    \thmitem{ex:def:natural_transformation/directed_multigraphs}\mcite[example 1.3.46]{Perrone2024StartingCategoryTheory} In \cref{def:directed_multigraph}, we have defined a directed multigraph as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the head \( h: A \to V \) and tail \( t: A \to V \).
+    \thmitem{ex:def:natural_transformation/uncurrying_in_set} Another natural isomorphism of sets is \hyperref[con:currying]{function currying} --- the identification of a two-argument function \( s(a, b) \) with its partial application \( a \mapsto (b \mapsto s(a, b)) \).
 
-    We can regard it as a functor \( G: \cat{I} \to \cat{Set} \), where \( \cat{I} \) is
+    More formally, we will construct a natural transformation between the functors
+    \begin{equation*}
+      \begin{aligned}
+        &L: \cat{Set}^\oppos \times \cat{Set}^\oppos \times \cat{Set} \to \cat{Set}, \\
+        &L(A, B, C) \coloneqq \fun(A \times B, C), \\
+        &L(f^\oppos: A \to X, g^\oppos: B \to Y, h: C \to Z) \coloneqq \parens[\big]{ \underbrace{s}_{\mathclap{A \times B \to C}} \mapsto \underbrace{\parens[\big]{ (x, y) \mapsto h(s(f(x), g(y))) }}_{X \times Y \to Z} }
+      \end{aligned}
+    \end{equation*}
+    and
+    \begin{equation*}
+      \begin{aligned}
+        &R: \cat{Set}^\oppos \times \cat{Set}^\oppos \times \cat{Set} \to \cat{Set}, \\
+        &R(A, B, C) \coloneqq \fun(A, \fun(B, C)), \\
+        &R(f^\oppos: A \to X, g^\oppos: B \to Y, h: C \to Z) \coloneqq \parens[\big]{ \underbrace{s}_{\mathclap{A \to \fun(B, C)}} \mapsto \underbrace{\parens[\big]{ x \mapsto \parens[\big]{ y \mapsto h\parens[\big]{ \smash{ \overbrace{s(f(x))}^{B \to C}(f(y)) } } } }}_{X \to \fun(Y, Z)} }.
+      \end{aligned}
+    \end{equation*}
+
+    The natural transformation is the obvious one with components
+    \begin{equation*}
+      \alpha_{(A, B, C)}(s: A \times B \to C) \coloneqq \parens[\big]{ a \mapsto \parens[\big]{ b \mapsto s(a, b) } }.
+    \end{equation*}
+
+    Each component is invertible with inverse
+    \begin{equation*}
+      \alpha_{(A, B, C)}^{-1}(s: A \to \fun(B, C)) \coloneqq \parens[\big]{ (a, b) \mapsto s(a)(b) }.
+    \end{equation*}
+
+    It remains to verify the naturality condition
     \begin{equation*}
       \begin{aligned}
         \includegraphics[page=4]{output/ex__def__natural_transformation}
       \end{aligned}
     \end{equation*}
 
-    Since the index has two objects, a \hyperref[def:natural_transformation]{natural transformation} from the directed multigraph \( G: \cat{I} \to \cat{Set} \) to \( H: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: G(V) \to H(V) \) and \( f_A: G(A) \to H(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
+    Indeed, for fixed \( f^\oppos: A \to X \), \( g^\oppos: B \to Y \) and \( h: C \to Z \), for any function \( s: A \times B \to C \), going through the top-right corner gives us
+    \begin{align*}
+      \alpha_{X,Y,Z}\parens[\big]{ L(f, g, h)(s) }
+      &=
+      \alpha_{X,Y,Z}\parens[\big]{ (x, y) \mapsto h(s(f(x), g(y))) }
+      = \\ &=
+      \parens[\big]{ x \mapsto y \mapsto h(s(f(x), g(y))) }
+    \end{align*}
+    while going through the bottom-left corner gives us
+    \begin{align*}
+      R(f, g, h)\parens[\big]{ \alpha_{A,B,C}(s) }
+      &=
+      R(f, g, h)\parens[\big]{ a \mapsto b \mapsto s(a, b) }
+      = \\ &=
+      \parens[\big]{ x \mapsto y \mapsto h(s(f(x), g(y))) }.
+    \end{align*}
+
+    This example shows that \( \fun(A, B) \) is an \hyperref[def:exponential_object]{exponential object} in \( \cat{Set} \).
+
+    \thmitem{ex:def:natural_transformation/uncurrying_in_cat} The above uncurrying example extends to the \hyperref[def:category_of_small_categories]{category of small categories} \( \cat{Cat} \), where instead of the set \( \fun(A, B) \) of functions from \( A \) to \( B \) we consider the \hyperref[def:functor]{functor category} \( [\cat{C}, \cat{D}] \) (which we will define soon).
+
+    The functors \( L \) and \( R \) become much more convoluted since they must now act on categories. For example,
+    \begin{equation*}
+      L(F^\oppos: \cat{A} \to \cat{X}, G^\oppos: \cat{B} \to \cat{Y}, H: \cat{C} \to \cat{Z})
+    \end{equation*}
+    must now itself be a functor, and even
+    \begin{equation*}
+      L(F^\oppos, G^\oppos, H)(S: \cat{A} \times \cat{B} \to \cat{C})
+    \end{equation*}
+    must be a functor, acting as follows:
+    \begin{equation*}
+      \begin{aligned}
+        &L(F^\oppos, G^\oppos, H)(S): \cat{X} \times \cat{Y} \to \cat{Z}, \\
+        &L(F^\oppos, G^\oppos, H)(S)(X, Y) \coloneqq H(S(F(X), G(Y))), \\
+        &L(F^\oppos, G^\oppos, H)(S)(f: X \to X', g: Y \to Y') \coloneqq \underbrace{H(S(F(f), G(g)))}_{\mathclap{H(S(F(X), G(Y))) \to H(S(F(X'), G(Y')))}}.
+      \end{aligned}
+    \end{equation*}
+
+    The functor \( L(F^\oppos, G^\oppos, H) \) must also act on natural transformations:
+    \begin{equation*}
+      L(F^\oppos, G^\oppos, H)(\varphi: S \to T) \coloneqq \seq[\big]{ \underbrace{H(\varphi_{(F(X), G(Y))})}_{\mathclap{H(S(F(X), G(Y))) \to H(T(F(X), G(Y)))}} }_{(X, Y) \in \obj(\cat{X} \times \cat{Y}) }.
+    \end{equation*}
+
+    The definition of \( R \) is similarly affected. The components of \( \alpha \) must also be functors:
+    \begin{equation*}
+      \begin{aligned}
+        &\alpha_{(\cat{A}, \cat{B}, \cat{C})}: [\cat{A} \times \cat{B}, \cat{C}] \to [\cat{A}, [\cat{B}, \cat{C}]], \\
+        &\alpha_{(\cat{A}, \cat{B}, \cat{C})}(S: \cat{A} \times \cat{B} \to \cat{C}) \coloneqq \parens[\big]{ A \mapsto \parens[\big]{ B \mapsto S(A, B) } }, \\
+        &\alpha_{(\cat{A}, \cat{B}, \cat{C})}(\varphi: S \to T) \coloneqq \seq{ \underbrace{\seq{ \varphi_{(A, B)} }_{B \in \obj(\cat{B}) }}_{S(A, \anon*) \to T(A, \anon*)} }_{A \in \obj(\cat{A})}
+      \end{aligned}
+    \end{equation*}
+
+    We can verify the naturality conditions for a natural transformation \( \varphi: S \to T \) in \( [\cat{A} \times \cat{B}, \cat{C}] \): going through the top-right corner gives us
+    \begin{align*}
+      \alpha_{\cat{X},\cat{Y},\cat{Z}}\parens[\big]{ L(F, G, H)(\varphi) }
+      &=
+      \alpha_{\cat{X},\cat{Y},\cat{Z}}\parens[\bigg]{ \seq[\big]{ H(\varphi_{(F(X), G(Y))}) }_{(X, Y) \in \obj(\cat{X} \times \cat{Y})} }
+      = \\ &=
+      \seq{ \seq{ \varphi_{(F(X), G(Y))} }_{Y \in \obj(\cat{Y}) } }_{X \in \obj(\cat{X})}
+    \end{align*}
+    while going through the bottom-left corner gives us
+    \begin{align*}
+      R(F, G, H)\parens[\big]{ \alpha_{\cat{A},\cat{B},\cat{C}}(\varphi) }
+      &=
+      R(F, G, H)\parens[\big]{ \seq{ \seq{ \varphi_{(A, B)} }_{B \in \obj(\cat{B}) } }_{A \in \obj(\cat{A})} }
+      = \\ &=
+      \seq{ \seq{ \varphi_{(F(X), G(Y))} }_{Y \in \obj(\cat{Y}) } }_{X \in \obj(\cat{X})}.
+    \end{align*}
+
+    This example shows that \( [\cat{C}, \cat{D}] \) is an \hyperref[def:exponential_object]{exponential object} in \( \cat{Cat} \).
+
+    \thmitem{ex:def:natural_transformation/directed_multigraphs}\mcite[example 1.3.46]{Perrone2024StartingCategoryTheory} In \cref{def:directed_multigraph}, we have defined a directed multigraph as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the head \( h: A \to V \) and tail \( t: A \to V \).
+
+    We can regard it as a functor \( G: \cat{I} \to \cat{Set} \), where \( \cat{I} \) is
     \begin{equation*}
       \begin{aligned}
         \includegraphics[page=5]{output/ex__def__natural_transformation}
-        \qquad\qquad
+      \end{aligned}
+    \end{equation*}
+
+    Since the index has two objects, a \hyperref[def:natural_transformation]{natural transformation} from the directed multigraph \( G: \cat{I} \to \cat{Set} \) to \( H: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: G(V) \to H(V) \) and \( f_A: G(A) \to H(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
+    \begin{equation*}
+      \begin{aligned}
         \includegraphics[page=6]{output/ex__def__natural_transformation}
+        \qquad\qquad
+        \includegraphics[page=7]{output/ex__def__natural_transformation}
       \end{aligned}
     \end{equation*}
   \end{thmenum}
@@ -464,3 +571,79 @@
 
   For disambiguation, we have introduced the notation \( F^* \) and \( \alpha^* \).
 \end{remark}
+
+\paragraph{Yoneda embedding}
+
+\begin{definition}\label{def:presheaf}\mcite[def. 1.3.44]{Perrone2024StartingCategoryTheory}
+  A \term{presheaf} on the \hyperref[def:category]{category} \( \cat{C} \) is a \hyperref[def:functor]{functor} from \( \cat{C}^\oppos \) to \hyperref[def:category_of_small_sets]{\( \cat{Set} \)}.
+\end{definition}
+
+\begin{proposition}\label{thm:yoneda_embedding}
+  As shown in \cref{thm:hom_functor}, in any \hyperref[def:category]{category} \( \cat{C} \), for a fixed object \( A \), \( \hom(\anon*, A) \) is a contravariant functor from \( \cat{C} \) to \( \cat{Set} \), i.e. a \hyperref[def:presheaf]{presheaf}.
+
+  We can parametrize this on the second argument to obtain a functor from \( \cat{C} \) to the category of presheaves over \( \cat{C} \):
+  \begin{equation*}
+    \begin{aligned}
+      &Y: \cat{C} \to [\cat{C}^\oppos, \cat{Set}], \\
+      &Y(A) \coloneqq \hom(\anon*, A), \\
+      &Y(f: A \to B) \coloneqq \seq{ \underbrace{s}_{\mathclap{C \to A}} \mapsto \underbrace{f \bincirc s}_{\mathclap{C \to B}} }_{C \in \obj(\cat{C}^\oppos)}.
+    \end{aligned}
+  \end{equation*}
+
+  We claim that \( Y \) is a well-defined functor and, furthermore, is an \hyperref[def:functor_invertibility/injective]{embedding} (i.e. injective on objects).
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof of naturality of \( Y(f) \)} Naturality of \( Y(f): \hom(\anon*, A) \to \hom(\anon*, B) \) is expressed by the following diagram, where \( p^\oppos: C \to D \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__yoneda_embedding}
+    \end{aligned}
+  \end{equation*}
+
+  If \( s: C \to A \), going through the top-right corner gives us
+  \begin{equation*}
+    Y(f)_D(s \bincirc p) = f \bincirc (s \bincirc p),
+  \end{equation*}
+  while going through the bottom-left corner gives us
+  \begin{equation*}
+    Y(f)_C(s) \bincirc p = (f \bincirc s) \bincirc p.
+  \end{equation*}
+
+  Since composition must be associative, we conclude that the diagram commutes.
+
+  \SubProof{Proof of functoriality of \( Y \)}
+
+  \SubProofOf*{def:functor/CF1} For any object \( A \) in \( \cat{C} \), \( Y(\id_A) \) is the identity natural transformation on \( \hom(\anon*, A) \).
+
+  \SubProofOf*{def:functor/CF2} Given morphisms \( f: A \to B \) and \( g: B \to C \) in \( \cat{C} \), for every \( s: C \to A \) we have
+  \begin{equation*}
+    Y(g \bincirc f)_C(s)
+    =
+    (g \bincirc f) \bincirc s
+    =
+    Y(g)_C(f \bincirc s)
+    =
+    \parens[\big]{ Y(g)_C \bincirc Y(f)_C } \bincirc s.
+  \end{equation*}
+
+  \SubProof{Proof that \( Y \) is injective on morphisms} Suppose that \( Y(f) = Y(g) \) for two morphisms \( f: A \to B \) and \( g: E \to F \) in \( \cat{C} \).
+
+  Then \( Y(A) = \hom(\anon*, A) = \hom(\anon*, E) = Y(E) \), which is only possible if \( A = E \) since \( \hom(C, A) \) and \( \hom(C, E) \) would otherwise be disjoint, and similarly \( B = F \).
+
+  Thus, we have parallel morphisms \( f: A \to B \) and \( g: A \to B \). For every morphism \( s: C \to A \), we have
+  \begin{equation*}
+    Y(f)_C(s)
+    =
+    f \bincirc s
+    =
+    g \bincirc s
+    =
+    Y(g)_C(s).
+  \end{equation*}
+
+  In particular, for \( s = \id_A \), we have \( f = g \).
+\end{proof}
+
+\begin{definition}\label{def:yoneda_embedding}\mcite[def. 8.1]{Awodey2010CategoryTheory}
+  We call the functor \( Y: \cat{C} \to [\cat{C}^\oppos, \cat{Set}] \) from \cref{thm:yoneda_embedding} the \term{Yoneda embedding} in \( \cat{C} \).
+\end{definition}
