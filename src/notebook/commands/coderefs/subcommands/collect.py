@@ -14,12 +14,7 @@ def recursively_load_modules(module_path: pathlib.Path, module_name: str) -> Non
     importlib.import_module(module_name)
 
     for submodule_info in pkgutil.walk_packages([module_path]):
-        if (
-            isinstance(submodule_info.module_finder, importlib.machinery.FileFinder) and
-            # I started getting mismatches here; It may be a Python bug.
-            # TODO: Revise  # ruff: ignore[line-contains-todo]
-            pathlib.Path(submodule_info.module_finder.path).is_relative_to(module_path)
-        ):
+        if isinstance(submodule_info.module_finder, importlib.machinery.FileFinder):
             recursively_load_modules(
                 module_path / submodule_info.name,
                 module_name + '.' + submodule_info.name,
