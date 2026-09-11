@@ -3,7 +3,7 @@
 \paragraph{Functors}
 
 \begin{definition}\label{def:functor}\mcite[13]{MacLane1998CategoryTheory}
-  A \term[ru=функтор (\cite[def. III.1.1]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий})]{functor} \( F: \cat{C} \to \cat{D} \) between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a pair of functions
+  A (covariant\fnote{There is a closely related notion called a \enquote{contravariant functor} --- see \cref{def:contravariant_functor}.}) \term[ru=функтор (\cite[def. III.1.1]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий})]{functor} \( F: \cat{C} \to \cat{D} \) between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a pair of functions
   \begin{equation*}
     \begin{aligned}
       F_{\obj}: &\obj(\cat{C}) \to \obj(\cat{D}), \\
@@ -33,8 +33,6 @@
 \end{definition}
 \begin{comments}
   \item As mentioned in \cref{rem:category_as_graph}, the notion of functor precedes that of category, and is attributed to \cite{EilenbergMacLane1942NaturalIsomorphisms}. The paper establishes \ref{def:functor/CF1} and \ref{def:functor/CF2}, as well as using the same symbol for both the object and arrow mapping.
-
-  \item There is a closely related notion called a \enquote{contravariant functor} --- see \cref{def:contravariant_functor}.
 \end{comments}
 
 \begin{proposition}\label{thm:functor_is_graph_homomorphism}
@@ -151,6 +149,19 @@
 \begin{example}\label{ex:def:contravariant_functor}
   We list examples of \hyperref[def:contravariant_functor]{contravariant functors}:
   \begin{thmenum}
+    \thmitem{ex:def:contravariant_functor/opposite} For any category \( \cat{C} \), consider the functor
+    \begin{equation*}
+      \begin{aligned}
+        &O: \cat{C} \to \cat{C}^{\oppos}, \\
+        &O(A) \coloneqq A
+        &O(f: A \to B) \coloneqq f^\oppos. \\
+      \end{aligned}
+    \end{equation*}
+
+    By substituting \( \cat{C} \) with \( \cat{C}^\oppos \), we can regard the functor as \( O: \cat{C}^\oppos \to \cat{C} \).
+
+    We have thus obtained a simple example of a contravariant functor.
+
     \thmitem{ex:def:contravariant_functor/dual_space}\mcite[33]{MacLane1998CategoryTheory} We can try to na\"ively define a functor that assigns to a \hyperref[def:vector_space]{vector space} its \hyperref[def:dual_vector_space]{algebraic dual}:
     \begin{equation*}
       \begin{aligned}
@@ -304,7 +315,7 @@
     \begin{aligned}
       &F^*: \cat{C}^\oppos \to \cat{D}^\oppos, \\
       &F^*(A) \coloneqq A, \\
-      &F^*(f^\oppos: A \to B) \coloneqq F(f)^\oppos.
+      &F^*(f: B \to A) \coloneqq F(f)^\oppos.
     \end{aligned}
   \end{equation*}
 \end{definition}
@@ -314,17 +325,17 @@
   \item Opposite functors enable defining an endofunctor on the \hyperref[def:category_of_small_categories]{category of small categories} --- see \cref{thm:opposite_category_functor}.
 \end{comments}
 \begin{defproof}
-  The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds because, for any pair \( f^\oppos: A \to B \) and \( g^\oppos: B \to C \) of composable morphisms, we have
+  The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds because, for any pair \( f: A \to B \) and \( g: B \to C \) of composable morphisms, we have
   \begin{equation*}
-    F^*(g^\oppos \bincirc f^\oppos)
-    \reloset {\eqref{eq:def:opposite_category/composition}} =
-    F^*((f \bincirc g)^\oppos)
+    F^*(g \bincirc f)
     =
-    F(f \bincirc g)^\oppos
+    F(g \bincirc f)^\oppos
     \reloset{\ref{def:functor/CF2}} =
-    (F(f) \bincirc F(g))^\oppos
+    (F(g) \bincirc F(f))^\oppos
     \reloset {\eqref{eq:def:opposite_category/composition}} =
-    F(g)^\oppos \bincirc F(f)^\oppos.
+    F(f)^\oppos \bincirc F(g)^\oppos
+    =
+    F^*(f) \bincirc F^*(g)
   \end{equation*}
 \end{defproof}
 
@@ -937,7 +948,7 @@
     \begin{aligned}
       &\hom: \cat{C}^\oppos \times \cat{C} \to \cat{Set}, \\
       &\hom(A, Y) \coloneqq \set{ f \in \mor(\cat{C}) \given \dom(f) = A \T{and} \co\dom(f) = Y }, \\
-      &\hom(\underbrace{f^\oppos: A \to B}_{f: B \to A}, g: X \to Y) \coloneqq (s \mapsto g \bincirc s \bincirc f).
+      &\hom(f: B \to A, g: X \to Y) \coloneqq (s \mapsto g \bincirc s \bincirc f).
     \end{aligned}
   \end{equation*}
 
@@ -957,6 +968,9 @@
     \hom(\anon*, Y): \cat{C}^\oppos \to \cat{Set}.
   \end{equation*}
 \end{proposition}
+\begin{comments}
+  \item \hyperref[con:currying]{Uncurrying} the \( \hom \)-bifunctor leads to the Yoneda embeddings we describe in \cref{def:yoneda_embeddings}.
+\end{comments}
 \begin{proof}
   For the bifunctor, \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
   \begin{equation}\label{eq:thm:hom_functor/inv_composition}
