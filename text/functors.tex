@@ -152,9 +152,9 @@
     \thmitem{ex:def:contravariant_functor/opposite} For any category \( \cat{C} \), consider the functor
     \begin{equation*}
       \begin{aligned}
-        &O: \cat{C} \to \cat{C}^{\oppos}, \\
+        &O: \cat{C} \to \cat{C}^\oppos, \\
         &O(A) \coloneqq A
-        &O(f: A \to B) \coloneqq f^\oppos. \\
+        &O(f: A \to B) \coloneqq f^*. \\
       \end{aligned}
     \end{equation*}
 
@@ -316,31 +316,52 @@
   We define the \term[ru=двойственный (функтор)]{opposite} of the \hyperref[def:functor]{functor} \( F: \cat{C} \to \cat{D} \) as
   \begin{equation*}
     \begin{aligned}
-      &F^*: \cat{C}^\oppos \to \cat{D}^\oppos, \\
-      &F^*(A) \coloneqq A, \\
-      &F^*(f: B \to A) \coloneqq F(f)^\oppos.
+      &F^\oppos: \cat{C}^\oppos \to \cat{D}^\oppos, \\
+      &F^\oppos(A) \coloneqq A, \\
+      &F^\oppos(f^*: A \to B) \coloneqq F(f)^*.
     \end{aligned}
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item We use the notation \( F^* \) rather than \( F^\oppos \) to prevent confusion with general morphisms in \hyperref[def:opposite_category]{opposite categories} --- see \cref{rem:opposite_functors_and_transformations}.
-
   \item Opposite functors enable defining an endofunctor on the \hyperref[def:category_of_small_categories]{category of small categories} --- see \cref{thm:opposite_category_functor}.
 \end{comments}
 \begin{defproof}
-  The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds because, for any pair \( f: A \to B \) and \( g: B \to C \) of composable morphisms, we have
-  \begin{equation*}
-    F^*(g \bincirc f)
-    =
-    F(g \bincirc f)^\oppos
-    \reloset{\ref{def:functor/CF2}} =
-    (F(g) \bincirc F(f))^\oppos
-    \reloset {\eqref{eq:def:opposite_category/composition}} =
-    F(f)^\oppos \bincirc F(g)^\oppos
-    =
-    F^*(f) \bincirc F^*(g)
-  \end{equation*}
+  The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds because, for any pair \( f^*: A \to B \) and \( g^*: B \to C \) of composable morphisms in \( \cat{C}^\oppos \), we have
+  \begin{align*}
+    F^\oppos(g^* \bincirc f^*)
+    &=
+    F^\oppos((f \bincirc g)^*)
+    = \\ &=
+    F(f \bincirc g)^*
+    \reloset{\ref{def:functor/CF2}} = \\ &=
+    (F(f) \bincirc F(g))^*
+    \reloset {\eqref{eq:def:opposite_category/composition}} = \\ &=
+    (F(f))^* \bincirc (F(g))^*
+    = \\ &=
+    F^\oppos(f^*) \bincirc F^\oppos(g^*).
+  \end{align*}
 \end{defproof}
+
+\begin{lemma}\label{thm:composition_of_opposite_functors}
+  \hyperref[def:opposite_functor]{Opposite functors} compose covariantly: if \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{E} \), then
+  \begin{equation*}
+    (G \bincirc F)^\oppos = G^\oppos \bincirc F^\oppos.
+  \end{equation*}
+\end{lemma}
+\begin{proof}
+  For every morphism\( f^*: A \to B \) in \( \cat{C}^\oppos \),
+  \begin{equation*}
+    (G \bincirc F)^\oppos(f^*)
+    =
+    G(F(f))^*
+    =
+    G^\oppos(F(f)^*)
+    =
+    G^\oppos(F^\oppos(f^*))
+    =
+    (G^\oppos \bincirc F^\oppos)(f^*).
+  \end{equation*}
+\end{proof}
 
 \begin{proposition}\label{thm:opposite_category_functor}
   Via \hyperref[def:opposite_functor]{opposite functors}, the \hyperref[def:opposite_category]{opposite category} operation extends to an \hyperref[def:categorical_involution]{involution} in the \hyperref[def:category_of_small_categories]{category of small categories}.
@@ -349,33 +370,17 @@
   \item Thus, \( (\anon*)^\oppos \) is an opposite object functor in the sense of \cref{con:opposite_object}.
 \end{comments}
 \begin{proof}
-  \SubProof{Proof that \( (\anon*)^\oppos \) is a functor} The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds because, for any pair \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{E} \) of composable functors, we have, for every morphism \( f^\oppos: A \to B \) in \( \cat{C}^\oppos \),
-  \begin{equation*}
-    (G \bincirc F)^*(f^\oppos)
-    =
-    G(F(f))^\oppos
-    =
-    G^*(F(f)^\oppos)
-    =
-    G^*(F^*(f^\oppos))
-    =
-    (G^* \bincirc F^*)(f^\oppos).
-  \end{equation*}
+  \SubProof{Proof that \( (\anon*)^\oppos \) is a functor} The condition \ref{def:functor/CF1} is trivial to verify, while \ref{def:functor/CF2} holds as a consequence of \cref{thm:composition_of_opposite_functors}.
 
   \SubProof{Proof that \( (\anon*)^\oppos \) is self-inverse} By definition, for every functor \( F: \cat{C} \to \cat{D} \), \( (F^\oppos)^\oppos \) is again a functor from \( \cat{C} \) to \( \cat{D} \).
 
-  For every object \( A \) in \( \cat{C} \), we have
+  Indeed, for every object \( A \) in \( \cat{C} \), clearly
   \begin{equation*}
-    [(F^\oppos)^\oppos](A) = A.
+    ((F^\oppos)^\oppos)(A) = A,
   \end{equation*}
-
-  Slightly more subtly, for every morphism \( f: A \to B \) in \( \cat{C} \), we have
+  while or every morphism \( f: A \to B \) in \( \cat{C} \), we have
   \begin{equation*}
-    F^\oppos(f^\oppos) = F(f)^\oppos,
-  \end{equation*}
-  thus, by noting that \( f = (f^\oppos)^\oppos \), we obtain
-  \begin{equation*}
-    [(F^\oppos)^\oppos](f) = [F^\oppos(f^\oppos)]^\oppos = (F(f)^\oppos)^\oppos = F(f).
+    ((F^\oppos)^\oppos)(f) = (F^\oppos(f^*))^* = (F(f)^*)^* = F(f).
   \end{equation*}
 \end{proof}
 
@@ -953,7 +958,7 @@
     \begin{aligned}
       &\hom: \cat{C}^\oppos \times \cat{C} \to \cat{Set}, \\
       &\hom(A, Y) \coloneqq \set{ f \in \mor(\cat{C}) \given \dom(f) = A \T{and} \co\dom(f) = Y }, \\
-      &\hom(f: B \to A, g: X \to Y) \coloneqq (s \mapsto g \bincirc s \bincirc f).
+      &\hom(f: B \to A, g: X \to Y) \coloneqq (\underbrace{s}_{\mathclap{A \to X}} \mapsto \underbrace{g \bincirc s \bincirc f}_{B \to Y}).
     \end{aligned}
   \end{equation*}
 
@@ -1004,3 +1009,20 @@
     In particular, when \( a = c \) and \( b = d = 1 \), \( \hom(A, B) \) consists of \hyperref[def:bilinear_form]{bilinear forms}.
   \end{thmenum}
 \end{example}
+
+\begin{remark}\label{rem:opposit_morphism_argument_notation}
+  As an abstract entity, the \hyperref[def:opposite_category/morphism]{opposite morphism} \( f^*: B \to A \) of \( f: A \to B \) may be useful when applying \fullref{thm:category_duality}. In most categories of interest, however, the domain and codomain play an asymmetric role. For example, in any \hyperref[def:concrete_category]{concrete category}, the morphism \( f: A \to B \) can be regarded as a function, while its opposite \( f^*: B \to A \) is an abstract entity with no inherent meaning.
+
+  When used as an argument, opposite morphisms may cause confusion. Opposites are often used in relation to \hyperref[def:contravariant_functor]{contravariant functors}. For example, we define the \( \hom \)-bifunctor in \cref{def:hom_functor} as
+  \begin{equation*}
+    \begin{aligned}
+      &\hom: \cat{C}^\oppos \times \cat{C} \to \cat{Set}, \\
+      &\hom(A, Y) \coloneqq \set{ f \in \mor(\cat{C}) \given \dom(f) = A \T{and} \co\dom(f) = Y }, \\
+      &\hom(f: B \to A, g: X \to Y) \coloneqq (\underbrace{s}_{\mathclap{A \to X}} \mapsto \underbrace{g \bincirc s \bincirc f}_{B \to Y}).
+    \end{aligned}
+  \end{equation*}
+
+  Instead of treating the first argument as the abstract entity \( f^*: A \to B \), we simply swap the usual alphabetical order of its arguments and write \( f: B \to A \). This highlights that \( \hom(\anon*, \anon*) \) is contravariant in its first argument, but avoids formal dualities.
+
+  This convention is useful when dealing with \fullref{sec:yoneda_embeddings}.
+\end{remark}
