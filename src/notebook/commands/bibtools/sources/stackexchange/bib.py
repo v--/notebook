@@ -1,4 +1,6 @@
+import html
 import unicodedata
+from dataclasses import dataclass
 from datetime import UTC, datetime
 lazy from collections.abc import Iterable
 
@@ -7,17 +9,24 @@ from notebook.commands.bibtools.exceptions import BibToolsDecodingError
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
 from notebook.support.iteration import string_accumulator
 
-lazy from .model import StackExchangeEntry
+from .model import StackExchangeAnswer, StackExchangeQuestion
+from .url_parser import StackExchangeUrl
 
 
-SITE_ENTRY_PREFIX_MAP = {
-    'Code Golf Stack Exchange': 'CGSE',
-    'History of Science and Mathematics Stack Exchange': 'HSMSE',
-    'MathOverflow': 'MathOF',
-    'Mathematics Stack Exchange': 'MathSE',
-    'Software Engineering Stack Exchange': 'SESE',
-    'StackOverflow': 'SE',
-    'Theoretical Computer Science Stack Exchange': 'TCSSE',
+@dataclass(frozen=True)
+class SeSiteName:
+    slug: str
+    full: str
+
+
+SITE_NAME_MAP = {
+    'codegolf.stackexchange.com': SeSiteName('CGSE', 'Code Golf Stack Exchange'),
+    'hsm.stackexchange.com': SeSiteName('HSMSE', 'History of Science and Mathematics Stack Exchange'),
+    'mathoverflow.net': SeSiteName('MathOF', 'MathOverflow'),
+    'math.stackexchange.com': SeSiteName('MathSE', 'Math Stack Exchange'),
+    'softwareengineering.stackexchange.com': SeSiteName('SESE', 'Software Engineering Stack Exchange'),
+    'stackoverflow.com': SeSiteName('SE', 'StackOverflow'),
+    'cstheory.stackexchange.com': SeSiteName('TCSSE', 'Theoretical Computer Science Stack Exchange'),
 }
 
 
@@ -33,21 +42,23 @@ def mangle_title(title: str) -> Iterable[str]:
             yield '_'
 
 
-def stackexchange_entry_to_bib(entry: StackExchangeEntry, identifier: str) -> BibEntry:
-    if entry.site not in SITE_ENTRY_PREFIX_MAP:
-        raise BibToolsDecodingError(f'Cannot generate an entry name for {entry.site!r} because we do not have a dedicated prefix.')
+def stackexchange_post_to_bib(question: StackExchangeQuestion, answer: StackExchangeAnswer | None, parsed_url: StackExchangeUrl) -> BibEntry:
+    if parsed_url.site not in SITE_NAME_MAP:
+        raise BibToolsDecodingError(f'Cannot generate an entry name for {parsed_url.site!r} because we do not have a dedicated prefix.')
 
-    author_name: BibString = entry.author_username if len(entry.author_username.split()) > 1 else VerbatimString(f"User ``{entry.author_username}''")
+    post = answer or question
+    author_name: BibString = post.owner.display_name if len(post.owner.display_name.split()) > 1 else VerbatimString(f"User ``{post.owner.display_name}''")
+    title = html.unescape(question.title)
 
     return BibEntry(
         entry_type='online',
-        entry_name=SITE_ENTRY_PREFIX_MAP[entry.site] + ':' + mangle_title(entry.title),
+        entry_name=SITE_NAME_MAP[parsed_url.site].slug + ':' + mangle_title(title),
         authors=[BibAuthor(author_name)],
-        title=entry.title,
-        titleaddon=entry.site,
+        title=title,
+        titleaddon=SITE_NAME_MAP[parsed_url.site].full,
         languages=['english'],
         urldate=to_iso_date(datetime.now(tz=UTC)),
-        date=to_iso_date(entry.datetime),
-        url=identifier,
-        addendum='Citation of question' if entry.answer_id is None else 'Citation of answer',
+        date=to_iso_date(datetime.fromtimestamp(post.creation_date, tz=UTC)),
+        url=parsed_url.raw,
+        addendum='Citation of question' if answer is None else 'Citation of answer',
     )

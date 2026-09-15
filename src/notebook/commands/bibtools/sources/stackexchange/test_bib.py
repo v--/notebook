@@ -1,62 +1,54 @@
 from datetime import UTC, datetime
 
-import pytest
-
-from notebook.bibtex import BibAuthor, BibEntry, VerbatimString
-from notebook.commands.bibtools.exceptions import BibToolsParsingError
+from notebook.bibtex import BibAuthor, BibEntry
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
+from notebook.commands.bibtools.sources.stackexchange.url_parser import parse_stackexchange_url
 
-from .bib import stackexchange_entry_to_bib
+from .bib import stackexchange_post_to_bib
 from .fixtures import get_stackexchange_fixture_path
-from .model import parse_stackexchange_html
+from .model import parse_stackexchange_answer_json, parse_stackexchange_question_json
 
 
 TODAY = to_iso_date(datetime.now(tz=UTC))
 
 
-def test_parse_invalid(identifier: str = 'invalid') -> None:
-    with get_stackexchange_fixture_path(identifier).open() as file:
-        html = file.read()
+def test_parse_mathof_question_115699(url: str = 'https://mathoverflow.net/q/115699') -> None:
+    parsed_url = parse_stackexchange_url(url)
+    question_json = get_stackexchange_fixture_path(parsed_url.site, parsed_url.post_id, is_answer=False).read_text()
+    questions = parse_stackexchange_question_json(question_json)
+    entry = stackexchange_post_to_bib(question=questions.items[0], answer=None, parsed_url=parsed_url)
 
-    with pytest.raises(BibToolsParsingError):
-        parse_stackexchange_html(html)
-
-
-def test_parse_mathse_question_4272953_229174(identifier: str = 'https://math.stackexchange.com/q/4272953/229174') -> None:
-    with get_stackexchange_fixture_path(identifier).open() as file:
-        html = file.read()
-
-    res = parse_stackexchange_html(html)
-    entry = stackexchange_entry_to_bib(res, identifier)
     assert entry == BibEntry(
         entry_type='online',
-        entry_name='MathSE:how_do_you_extend_the_topological_semantics_for_intuitionistic_propositional_logic_ipc_to_a_semantics_for_intuitionistic_first_order_logic_ifol',
-        title='How do you extend the topological semantics for intuitionistic propositional logic (IPC) to a semantics for intuitionistic first order logic (IFOL)?',
-        authors=[BibAuthor(full_name='Greg Nisbet')],
+        entry_name='MathOF:which_term_is_better_for_the_so_called_sphere_packing',
+        title='Which term is better for the so called "sphere packing"?',
+        authors=[BibAuthor(full_name='Hao Chen')],
         languages=['english'],
         addendum='Citation of question',
-        date='2021-10-10',
-        titleaddon='Mathematics Stack Exchange',
-        url=identifier,
+        date='2012-12-07',
+        titleaddon='MathOverflow',
+        url=url,
         urldate=TODAY,
     )
 
 
-def test_parse_mathof_answer_231571(identifier: str = 'https://mathoverflow.net/a/231571') -> None:
-    with get_stackexchange_fixture_path(identifier).open() as file:
-        html = file.read()
+def test_parse_mathse_answer_2167659(url: str = 'https://math.stackexchange.com/a/2167659/229174') -> None:
+    parsed_url = parse_stackexchange_url(url)
+    answer_json = get_stackexchange_fixture_path(parsed_url.site, parsed_url.post_id, is_answer=True).read_text()
+    answers = parse_stackexchange_answer_json(answer_json)
+    question_json = get_stackexchange_fixture_path(parsed_url.site, answers.items[0].question_id, is_answer=False).read_text()
+    questions = parse_stackexchange_question_json(question_json)
+    entry = stackexchange_post_to_bib(question=questions.items[0], answer=answers.items[0], parsed_url=parsed_url)
 
-    res = parse_stackexchange_html(html)
-    entry = stackexchange_entry_to_bib(res, identifier)
     assert entry == BibEntry(
         entry_type='online',
-        entry_name='MathOF:functions_of_several_variables_over_finite_fields',
-        title='Functions of several variables over finite fields',
-        authors=[BibAuthor(full_name=VerbatimString("User ``user9072''"))],
+        entry_name='MathSE:natural_categories_where_monomorphisms_differ_from_injective_morphisms',
+        title='"Natural" categories where monomorphisms differ from injective morphisms',
+        authors=[BibAuthor(full_name='Qiaochu Yuan')],
         languages=['english'],
         addendum='Citation of answer',
-        date='2016-02-19',
-        titleaddon='MathOverflow',
-        url=identifier,
+        date='2017-03-01',
+        titleaddon='Math Stack Exchange',
+        url=url,
         urldate=TODAY,
     )
