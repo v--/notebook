@@ -15,7 +15,7 @@ from .sources.arxiv import retrieve_arxiv_entry
 from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
 from .sources.mathnet import retrieve_mathnet_entry
-from .sources.stackexchange import retrieve_stackexchange_entry
+from .sources.stackexchange import parse_stackexchange_url, retrieve_stackexchange_entry
 
 
 @click.group()
@@ -87,5 +87,6 @@ def mathnet(identifier: str, *, english: bool, dump_as_fixture: bool) -> None:
 @click.argument('identifier', type=str)
 @click.option('--dump-as-fixture', is_flag=True)
 def stackexchange(identifier: str, *, dump_as_fixture: bool) -> None:
-    entry = retrieve_stackexchange_entry(identifier, dump_as_fixture=dump_as_fixture)
+    parsed_url = parse_stackexchange_url(identifier)
+    entry = retrieve_stackexchange_entry(parsed_url, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
