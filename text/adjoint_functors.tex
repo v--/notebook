@@ -1,24 +1,419 @@
-\section{Category adjunctions}\label{sec:category_adjunctions}
+\section{Adjoint functors}\label{sec:adjoint_functors}
 
-\begin{remark}\label{rem:free_construction_univalence}
-  If \( X \) is isomorphic to the \hyperref[con:free_construction]{free object} \( F(A) \), we also refer to \( X \) endowed with this isomorphism as \enquote{free}. This is in line with the practice of regarding isomorphic objects as equal. In this case \( F(A) \) is \enquote{the free object on \( A \)}, while \( X \) is simply a \enquote{free object}.
+\paragraph{Comma categories}
 
-  Such identification is common for \hyperref[def:module]{module over rings}, where such an isomorphism is equivalent to the existence of a \hyperref[def:hamel_basis]{Hamel basis}. See \cref{rem:free_module} for a broader discussion of the latter.
+\begin{definition}\label{def:diagonal_functor}\mimprovised
+  For a fixed category \( \cat{C} \), we define the \( \cat{I} \)-indexed \term[en=diagonal functor (\cite[64]{MacLane1998CategoryTheory})]{diagonal functor} \( {\Delta^{\cat{I}}: \cat{C} \to [\cat{I}, \cat{C}]} \) as the \hyperref[con:currying]{uncurrying} of the \hyperref[def:product_category/projection]{projection functor} \( \Pi_{\cat{C}}: \cat{C} \times \cat{I} \to \cat{C} \).
+
+  This functor sends every object \( A \) of \( \cat{C} \) to the \term{constant functor}
+  \begin{equation*}
+    \begin{aligned}
+      &\Delta^{\cat{I}}(A): \cat{I} \to \cat{C}, \\
+      &\Delta^{\cat{I}}(A)(X) \coloneqq A, \\
+      &\Delta^{\cat{I}}(A)(g: X \to Y) \coloneqq \id_A,
+    \end{aligned}
+  \end{equation*}
+  and every morphism \( f: A \to B \) to the natural transformation
+  \begin{equation*}
+    \Delta^{\cat{I}}(f) \coloneqq \seq{ f }_{k \in \obj(\cat{I})}.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item The functor \( \Delta^{\cat{I}} \) (without the superscript) is called a \enquote{diagonal functor} in \cite[64]{MacLane1998CategoryTheory} and a \enquote{constant functor} in \cite[194]{Awodey2010CategoryTheory}. Its definition is a projection is due to Awodey.
+
+  \item For \hyperref[def:comma_category]{comma categories}, we will usually take \( \cat{I} \) to be the \hyperref[def:singleton_category]{terminal category} \( \cat{1} \). As long as \( \cat{C} \) is a small category, \( \Delta^{\cat{1}}(A) \) is simply a \hyperref[def:global_element]{global element} of \( \cat{C} \) in \( \cat{Cat} \) corresponding to \( A \).
+
+  \item It is called a diagonal functor because, if \( \cat{I} \) is a discrete category with two objects, then the functor \( \Delta^{\cat{I}}: \cat{C} \to [\cat{I}, \cat{C}] \) describes the same information as the functor \( D: \cat{C} \to \cat{C} \times \cat{C} \) that sends an object \( A \) to the ordered pair \( (A, A) \).
+\end{comments}
+
+\begin{definition}\label{def:comma_category}\mcite[45; 46]{MacLane1998CategoryTheory}
+  Suppose we have the \hyperref[def:functor]{functors}
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__comma_category}
+    \end{aligned}
+  \end{equation*}
+
+  We define the \term{comma category} \( (F \downarrow G) \), with notes on special important cases where either \( F \) or \( G \) is a \hyperref[def:diagonal_functor]{constant functor} --- either \( F = \Delta^{\cat{1}} A \) or \( G = \Delta^{\cat{1}} B \).
+
+  \begin{thmenum}
+    \thmitem{def:comma_category/objects} The \hyperref[def:category/objects]{objects} of \( (F \downarrow G) \) are triples \( (A, B, s) \), where \( A \) and \( B \) are objects of \( \cat{A} \) and \( \cat{B} \), respectively, and \( s: F(A) \to G(B) \).
+
+    We may omit \( A \) if \( F = \Delta^{\cat{1}}(A) \) --- a pair \( (B, s) \), where \( s: A \to G(B) \), suffices. Similarly, we may omit \( B \) if \( G = \Delta^{\cat{1}}(B) \).
+
+    \thmitem{def:comma_category/morphisms} The \hyperref[def:category/morphisms]{morphisms} between \( (A, B, s) \) and \( (A', B', s') \) are pairs \( (f, g) \), where \( f: A \to A' \) and \( g: B \to B' \), such that the following diagram commutes:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/def__comma_category}
+      \end{aligned}
+    \end{equation*}
+
+    When \( F = \Delta^{\cat{1}}(A) \) or \( G = \Delta^{\cat{1}}(B) \), respectively, this diagram simplifies to
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=3]{output/def__comma_category}
+        \qquad
+        \includegraphics[page=4]{output/def__comma_category}
+      \end{aligned}
+    \end{equation*}
+
+    In the first case, \( s \) is sufficient for describing the pair \( (s, s') \), while in the second case \( s' \) is sufficient.
+
+    \thmitem{def:comma_category/composition} The \hyperref[def:category/composition]{composition} of two morphisms is their componentwise composition, like in \hyperref[def:product_category]{product categories}.
+
+    \thmitem{def:comma_category/identity} The \hyperref[def:category/identity]{identity morphism} on the object \( (A, s, B) \) is the identity pair \( (\id_A, \id_B) \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item The degenerate comma category \( (\Delta^{\cat{I}}(A), \Delta^{\cat{I}}(B)) \) is \hyperref[def:isomorphism_of_categories]{isomorphic} to the \hyperref[def:discrete_category]{discrete category} on \( \cat{C}(A, B) \) --- its objects are triples \( (A, B, s) \), where \( s: A \to B \), and its morphisms are simply pairs \( (\id_A, \id_B) \) of identity morphisms.
+
+  \Textcite[47]{MacLane1998CategoryTheory} explains that the notation \enquote{\( \hom(A, B) \)} is the reason for the name \enquote{comma categories}, as well as for the notation \( (F, G) \) --- \enquote{a notation which we avoid because the comma is already overworked}.
+\end{comments}
+
+\paragraph{Universal morphisms}
+
+\begin{definition}\label{def:concrete_category}\mcite[def. 5.1]{AdámekHerrlichStrecker2004JoyOfCats}
+  A \term[en=concrete category (\cite[def. 5.1]{AdámekHerrlichStrecker2004JoyOfCats})]{relatively concrete category} over the \term{base category} \( \cat{X} \) is a pair \( (\cat{C}, U) \), where \( \cat{C} \) is a category and \( U: \cat{C} \to \cat{X} \) is a \hyperref[def:functor_invertibility/faithful]{faithful functor}.
+
+  If \( \cat{X} \) is the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of \hyperref[def:small_set]{small sets}, we will simply call \( (\cat{C}, U) \) a \term[ru=конкретная категория (\cite[228]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}), en=concrete category (\cite[26]{MacLane1998CategoryTheory})]{concrete category}. For every morphism \( f: A \to B \) in \( \cat{C} \), \( U(f) \) is a function between the (small) sets \( U(A) \) and \( U(B) \).
+\end{definition}
+\begin{comments}
+  \item This definition of relatively concrete (with respect to \( \cat{X} \)) categories is taken from \cite[def. 5.1]{AdámekHerrlichStrecker2004JoyOfCats}, although the authors use \enquote{concrete} rather than \enquote{relatively concrete}, and call a category concrete over \( \cat{Set} \) a \enquote{construct}. The book is based around the more general relatively concrete categories.
+
+  Usually, only concrete categories over \( \cat{Set} \) are considered, for example in \cite[26]{MacLane1998CategoryTheory} and \cite[def. 1.6.17]{Riehl2016CategoryTheory}. This is pushed even further in \cite[228]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}, where \( U \) is assumed to be a full embedding into \( \cat{Set} \) and not merely a faithful functor.
+
+  \item Cancellation and invertibility of morphisms in concrete categories are discussed in \cref{thm:concrete_category_function_invertibility}.
+\end{comments}
+
+\begin{concept}\label{con:forgetful_functor}
+  Most often, in a \hyperref[def:concrete_category]{concrete category} \( (\cat{C}, U) \), the object \( U(A) \) \enquote{forgets} some structure present in \( A \). It is thus conventional to call \( U \) a \term[ru=пренебрегающий функтор (\cite[180]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий})]{forgetful functor} and any \hyperref[def:category_adjunction]{left adjoint} to \( U \) a \term{free functor}.
+\end{concept}
+
+\begin{remark}\label{rem:concrete_category_notation}
+  Outside this chapter, most \hyperref[def:concrete_category]{concrete categories} will come with an obvious \hyperref[con:forgetful_functor]{forgetful functor}, and we will avoid writing the functor explicitly.
 \end{remark}
 
-\begin{remark}\label{rem:adjoint_functors}
-  Suppose we have the functors \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \).
+\begin{definition}\label{def:universal_morphism}\mcite[55]{MacLane1998CategoryTheory}
+  \hyperref[def:comma_category]{Comma categories} allow formalizing the most common pattern of \hyperref[con:universal_property]{universal properties}.
 
-  \begin{itemize}
-    \item If \( F \) is a left inverse to \( G \), given only \( G(X) \), \( F \) can restore \( X \).
+  \begin{thmenum}
+    \thmitem{def:universal_morphism/source} Fix a functor \( U: \cat{D} \to \cat{C} \), which we may regard as \hyperref[con:forgetful_functor]{forgetful} (even if \( U \) is not faithful). In the comma category \( (\Delta^{\cat{1}} (A) \downarrow U) \), the universal property expressing that \( (\widetilde{A}, \iota) \) is an \hyperref[def:universal_objects/initial]{initial object} can be stated as follows:
+    \begin{displayquote}
+      For every object \( X \) in \( \cat{D} \) and every morphism \( {f: A \to U(X)} \) in \( \cat{C} \), there exists a unique morphism \( \widetilde{f}: \widetilde{A} \to X \) such that the following diagram commutes:
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=1]{output/def__universal_morphism}
+        \end{aligned}
+      \end{equation*}
+    \end{displayquote}
 
-    \item If \( F \) is instead a left adjoint to \( G \), given \( G(X) \) and some object \( A \) in \( \cat{C} \), \( F \) can give us an object \( F(A) \) such that the morphisms from \( F(A) \) to \( X \) are uniquely defined by those from \( A \) to \( G(X) \). Thus, \( F \) cannot restore \( X \), but it can give us objects in \( \cat{D} \) that act on \( X \) as their images under \( G \) would act on \( G(X) \) in \( \cat{C} \).
+    Here \( \widetilde{A} \) can be regarded as \enquote{the closest approximation} of \( A \) in \( \cat{D} \), and \( \iota \) --- as an inclusion. By the above diagram, we can lift a morphism from \( A \) to an object of \( \cat{D} \) to a unique morphism in \( \cat{D} \). As shown in \cref{thm:hom_adjunction_from_universal_morphism}, if this property holds for every object \( A \) in \( \cat{C} \), it be used to define an \hyperref[def:hom_adjunction]{adjoint functor}.
 
-    \item If \( F \) is a right adjoint to \( G \), the morphisms from \( X \) to \( F(A) \) are determined by those from \( G(X) \) to \( A \).
-  \end{itemize}
+    \thmitem{def:universal_morphism/sink} Dually, in the category \( (U \downarrow \Delta^{\cat{1}} (A)) \) (with the functors exchanged), the universal property expressing that \( (\widetilde{A}, \pi) \) is a \hyperref[def:universal_objects/terminal]{terminal object} can be stated as follows:
+    \begin{displayquote}
+      For every object \( X \) in \( \cat{D} \) and every morphism \( f: U(X) \to A \) in \( \cat{C} \), there exists a unique morphism \( \widetilde{f}: X \to \widetilde{A} \) such that the following diagram commutes:
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=2]{output/def__universal_morphism}
+        \end{aligned}
+      \end{equation*}
+    \end{displayquote}
 
-  \Cref{def:category_adjunction} contains two equivalent definition of an adjunction, and \cref{rem:universal_mapping_property} describes how they can be characterized via universal mapping properties.
+    Here \( \widetilde{A} \) plays an analogous role, but is instead characterized by the morphisms \emph{into} \( A \). Instead of an inclusion \( \iota: A \to U(\widetilde{A}) \), here we have a projection \( \pi: U(\widetilde{A}) \to A \).
+  \end{thmenum}
+
+  We refer to either \( (A, \iota) \) a \term[en=universal morphism (\cite[233]{MacLane1971CategoricalAlgebraFoundations}) / universal arrow (\cite[55]{MacLane1998CategoryTheory})]{universal morphism}.
+\end{definition}
+
+\begin{remark}\label{rem:representable_functor_universal_morphism}
+  \hyperref[con:universal_property]{Universal properties} can be described via \hyperref[def:functor_representation]{representable functors}.
+
+  As in \cref{def:universal_morphism}, consider some functor \( U: \cat{C} \to \cat{D} \), which we may regard as \hyperref[con:forgetful_functor]{forgetful} (even if \( U \) is not faithful). Here we additionally need to assume that \( \cat{C} \) is \hyperref[def:small_category]{locally small}.
+
+  For a fixed object \( A \) in \( \cat{C} \), consider the functor \( V \coloneqq H^A \bincirc U \):
+  \begin{equation*}
+    \begin{aligned}
+      &V: \cat{C} \to \cat{Set}, \\
+      &V(X) \coloneqq \cat{C}(A, U(X)), \\
+      &V(g: X \to Y) \coloneqq (\underbrace{s}_{\mathclap{A \to U(X) \quad}} \mapsto \underbrace{U(g) \bincirc s}_{A \to U(Y)}). \\
+    \end{aligned}
+  \end{equation*}
+
+  Suppose that \( (\widetilde{A}, \rho) \) is a \hyperref[def:functor_representation]{representation} of \( V \). By \cref{rem:yoneda_representation_characterization}, there exists a unique morphism \( \iota: A \to U(\widetilde{A}) \) such that \( \rho \) can be described by the natural transformation from \fullref{thm:yonedas_lemma}:
+  \begin{equation*}
+    \alpha_{V,\widetilde{A}}(\iota) \coloneqq \seq[\big]{ \underbrace{\widetilde{f}}_{\widetilde{A} \to X} \mapsto \underbrace{\overbrace{V(\widetilde{f})(\iota)}^{U(\widetilde{f}) \bincirc \iota}}_{A \mapsto U(X)} }_{X \in \cat{C}}.
+  \end{equation*}
+
+  Since \( \rho \) is by assumption an isomorphism, by \cref{rem:yoneda_representation_characterization}, for every object \( X \) and every morphism \( f: A \to U(X) \), there exists a unique morphism \( \widetilde{f}: \widetilde{A} \to X \) such that \( f = U(\widetilde{f}) \bincirc \iota \).
+
+  This is precisely the universal property from \cref{def:universal_morphism/source} that characterizes \( (\widetilde{A}, \iota) \) as a universal morphism. In fact, \textcite[62]{Riehl2016CategoryTheory} defines a \enquote{universal property} as a representable functor \( V \) along with the \enquote{universal element} \( (\widetilde{A}, \iota) \) that uniquely determines a representation \( (\widetilde{A}, \rho) \).
 \end{remark}
+
+\paragraph{Adjunctions}
+
+\begin{remark}\label{rem:adjunction_of_functors}
+  Adjoint functors help systemize \hyperref[def:universal_morphism]{universal morphisms}.
+
+  \begin{thmenum}
+    \thmitem{rem:adjunction_of_functors/hom} The concept is attributed by \textcite[79]{MacLane1998CategoryTheory} to \textcite[def. 3.1]{Kan1958AdjointFunctors}, who, given oppositely-directed functors \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \) and a \hyperref[thm:natural_isomorphism]{natural isomorphism} with components
+    \begin{equation*}
+      \alpha_{A,X}: \cat{D}(F(A), X) \to \cat{C}(A, G(X)),
+    \end{equation*}
+    says that that \enquote{\( F \) is left adjoint to \( G \) under \( \alpha \)} and that \enquote{\( G \) is right adjoint to \( F \) under \( \alpha \)}.
+
+    Thus, \( \alpha \) is a natural transformation between the following twisted variants of the \hyperref[def:hom_functor]{\( \hom \)-bifunctor}\fnote{The second functor generalizes the functor discussed in \cref{rem:representable_functor_universal_morphism}}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{aligned}
+            &L: \cat{C}^\oppos \times \cat{D} \to \cat{Set}, \\
+            &L(A, X) \coloneqq \cat{D}(F(A), X), \\
+            &L(\underbrace{f}_{B \to A}, \underbrace{g}_{X \to Y}) \coloneqq \parens[\big]{ \underbrace{s}_{\mathclap{F(A) \to X}} \mapsto \underbrace{g \bincirc s \bincirc F(f)}_{\mathclap{F(B) \to Y}} },
+          \end{aligned}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{aligned}
+            &R: \cat{C}^\oppos \times \cat{D} \to \cat{Set}, \\
+            &R(A, X) \coloneqq \cat{C}(A, G(X)), \\
+            &R(\underbrace{f}_{B \to A}, \underbrace{g}_{X \to Y}) \coloneqq \parens[\big]{ \underbrace{s}_{\mathclap{A \to G(X)}} \mapsto \underbrace{G(g) \bincirc s \bincirc f}_{\mathclap{B \to G(Y)}} },
+          \end{aligned}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    This definition is later refined to call the triple \( (F, G, \alpha) \) an \enquote{adjunction}, like we will do in \cref{def:hom_adjunction}. Such a definition is given in
+    \cite[80]{MacLane1998CategoryTheory},
+    \cite[def. 16.4.1]{Schubert1972Categories},
+    \cite[def. 4.1.1]{Perrone2024StartingCategoryTheory},
+    \cite[def. 2.1.1]{Leinster2014BasicCategoryTheory},
+    \cite[116]{Riehl2016CategoryTheory} and
+    \cite[178]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}.
+
+    Formally, both \( \cat{C} \) and \( \cat{D} \) must be \hyperref[def:small_category]{locally small}, although the formalisms can be suitably generalized. Such a generalization is implicitly assumed by all the aforementioned authors. This particular issue is discussed in \cite{MathSE:definition_of_adjoint_functor_and_locally_small_categories}.
+
+    \thmitem{rem:adjunction_of_functors/unit_counit} An alternative definition that works more generally uses two natural isomorphisms, the \enquote{unit} \( \eta: \id_{\cat{C}} \to G \bincirc F \) and \enquote{counit} \( \varepsilon: F \bincirc G \to \id_{\cat{D}} \), that must satisfy the conditions in \cref{def:unit_counit_adjunction}. \Textcite[def. 9.1]{Awodey2010CategoryTheory} gives a variation of this definition --- a natural transformation \( \eta: \id_{\cat{C}} \to G \bincirc F \) such that \( \eta_A \) is a universal morphism for every \( A \).
+
+    Awodey also uses the symbol \enquote{\( U \)} instead of \enquote{\( G \)}, highlighting how \( G \) is often a \hyperref[con:forgetful_functor]{forgetful functor}.
+
+    \thmitem{rem:adjunction_of_functors/order} The role of \( F \) and \( G \) in an adjunction is asymmetric. Oftentimes \( G \) is forgetful, while \( F \) generates \hyperref[con:free_construction]{free constructions} in \( \cat{D} \).
+
+    Different authors may prefer different letters for denoting the categories \( \cat{C} \) and \( \cat{D} \) (e.g. \( \mscrA \) and \( \mscrB \)), but the alphabetic order that we use is usually followed. All cited authors use this convention except for Schubert, who prefers the opposite, where \( \cat{C} \) and \( \cat{D} \) are swapped and the free constructions belong to \( \cat{C} \).
+  \end{thmenum}
+\end{remark}
+
+\begin{definition}\label{def:hom_adjunction}\mcite[def. 4.1.1]{Perrone2024StartingCategoryTheory}
+  Suppose that \( \cat{C} \) and \( \cat{D} \) are \hyperref[def:small_category]{locally small} categories. A \term[en=adjunction (\cite[def. 4.1.1]{Perrone2024StartingCategoryTheory})]{\( \hom \)-adjunction} between the oppositely-directed \hyperref[def:functor]{functors} \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \) is a \hyperref[thm:natural_isomorphism]{natural isomorphism} \( \alpha \) with components
+  \begin{equation}\label{eq:def:hom_adjunction}
+    \alpha_{A,X}: \cat{D}(F(A), X) \Rightarrow \cat{C}(A, G(X)).
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item The two functors for which \( \alpha \) is a transformation are written out in \cref{rem:adjunction_of_functors/hom}.
+\end{comments}
+
+\begin{definition}\label{def:unit_counit_adjunction}\mcite[thm. 4.2.17]{Perrone2024StartingCategoryTheory}
+  A \term[en=adjunction (\cite[def. 4.1.1]{Perrone2024StartingCategoryTheory})]{unit-counit adjunction} between the oppositely-directed \hyperref[def:functor]{functors} \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \) is a pair of \hyperref[thm:natural_isomorphism]{natural transformations}
+  \begin{align*}
+           \eta &: \id_{\cat{C}} \Rightarrow G \bincirc F, \\
+    \varepsilon &: F \bincirc G \Rightarrow \id_{\cat{D}},
+  \end{align*}
+  called the \term[en=unit (\cite[def. 4.1.1]{Perrone2024StartingCategoryTheory})]{unit} and \term[en=counit (\cite[def. 4.1.11]{Perrone2024StartingCategoryTheory})]{counit}, respectively.
+
+  We require the following triangle diagrams to commute for every object \( A \) in \( \cat{A} \) and \( X \) in \( \cat{D} \):
+  \begin{equation}\label{eq:def:unit_counit_adjunction/triangle}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__unit_counit_adjunction}
+      \quad
+      \includegraphics[page=2]{output/def__unit_counit_adjunction}
+    \end{aligned}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item The signatures of \( \eta \) and \( \varepsilon \) are adjusted to coincide with the natural isomorphisms in the definition of equivalence in \cref{def:equivalence_of_categories}.
+\end{comments}
+
+\begin{proposition}\label{thm:hom_adjunction_induces_unit_counit_adjunction}
+  For every \hyperref[def:hom_adjunction]{\( \hom \)-adjunction} \( \alpha \) between \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \), the indexed families
+  \begin{align*}
+    \eta        &\coloneqq \seq[\big]{ \alpha_{A,F(A)}(\id_{F(A)}) }_{A \in \obj(\cat{C})}, \\
+    \varepsilon &\coloneqq \seq[\big]{ \alpha_{G(X),X}^{-1}(\id_{G(X)}) }_{X \in \obj(\cat{D})}
+  \end{align*}
+  are natural transformations that form a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction}.
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof of naturality of \( \eta \)} Fix a morphism \( t: A \to B \) in \( \cat{C} \). By the naturality of \( \alpha \), the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Thus,
+  \begin{equation*}
+    \cat{C}(\id_A, [G \bincirc F](t))(\underbrace{ \varphi_{A, F(A)}(\id_{F(A)}) }_{\eta_A}) = \varphi_{A, F(B)}(\underbrace{ \cat{D}(F(\id_A), F(t))(\id_{F(A)}) }_{F(t) \bincirc \id_{F(A)}})
+  \end{equation*}
+  and
+  \begin{equation*}
+    \cat{C}(t, G(\id_{F(B)}))(\underbrace{ \varphi_{B, F(B)}(\id_{F(B)}) }_{\eta_B}) = \varphi_{A, F(B)}(\underbrace{ \cat{D}(F(t), \id_{F(B)})(\id_{F(B)}) }_{\id_{F(B)} \bincirc F(t)}).
+  \end{equation*}
+
+  The right sides of the above equalities coincide, so
+  \begin{equation*}
+    [G \bincirc F](t) \bincirc \eta_A
+    =
+    \cat{C}(\id_A, [G \bincirc F](t))(\eta_A)
+    =
+    \cat{C}(t, G(\id_{F(B)}))(\eta_B)
+    =
+    \eta_B \bincirc t.
+  \end{equation*}
+
+  This equality is encoded in the following diagram:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  This shows the naturality of \( \eta \).
+
+  \SubProof{Proof of naturality of \( \varepsilon \)} Analogously, for any morphism \( p: X \to Y \) in \( \cat{C} \), the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=3]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Thus,
+  \begin{equation*}
+    \cat{D}(F(\id_{G(X)}), p)(\underbrace{ \varphi^{-1}_{G(X), X}(\id_{G(X)}) }_{\varepsilon_X}) = \varphi^{-1}_{G(X), Y}(\underbrace{ \cat{C}(\id_{G(X)}, G(p))(\id_{G(X)}) }_{G(p) \bincirc \id_{G(X)}})
+  \end{equation*}
+  and
+  \begin{equation*}
+    \cat{D}([F \bincirc G](p), \id_Y)(\underbrace{ \varphi^{-1}_{G(Y), Y}(\id_{G(Y)}) }_{\varepsilon_Y}) = \varphi^{-1}_{G(X), Y}(\underbrace{ \cat{C}(G(p), G(\id_Y))(\id_{G(Y)}) }_{\id_{G(Y)} \bincirc G(p)}).
+  \end{equation*}
+
+  The right sides are again equal, so the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=4]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  \SubProof{Proof of commutativity of triangle for \( G(X) \)} By the naturality of \( \alpha \), the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=5]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Starting in the upper-left corner with the morphism \( \id_{[F \bincirc G](X)} \), we obtain
+  \begin{equation*}
+    \underbrace{\cat{C}(\id_{G(X)}, G(\varepsilon_X))\parens[\big]{ \overbrace{\alpha_{G(X), [F \bincirc G](X)}(\id_{[F \bincirc G](X)})}^{\eta_{G(X)}} }}_{G(\varepsilon_X) \bincirc \eta_{G(X)}}
+    =
+    \underbrace{\alpha_{G(X), X} \parens[\big]{ \overbrace{\cat{D}(F(\id_{G(X)}), \varepsilon_X)(\id_{[F \bincirc G](X)})}^{\id_{\varepsilon_X \bincirc [F \bincirc G](X)}} }}_{\id_{G(X)}}.
+  \end{equation*}
+
+  \SubProof{Proof of commutativity of triangle for \( F(A) \)} Similarly, the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=6]{output/thm__hom_adjunction_induces_unit_counit_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Starting in the lower-right corner with the morphism \( \id_{[G \bincirc F](A)} \), we obtain
+  \begin{equation*}
+    \underbrace{\cat{D}(F(\eta_A), \id_{F(A)})\parens[\big]{ \overbrace{\alpha_{[G \bincirc F](A), F(A)}^{-1} (\id_{[G \bincirc F](A)})}^{\varepsilon^{F(A)}} }}_{\varepsilon_{F(A)} \bincirc F(\eta_A)}
+    =
+    \underbrace{\alpha_{A, F(A)}^{-1} \parens[\big]{ \overbrace{\cat{C}(\eta_A, G(\id_{F(A)}))(\id_{[G \bincirc F](A)})}^{\id_{[G \bincirc F](A)} \bincirc \eta_A} }}_{\id_{F(A)}}.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:unit_counit_adjunction_induces_hom_adjunction}
+  Assuming \( \cat{C} \) and \( \cat{D} \) are \hyperref[def:small_category]{locally small}, for every \hyperref[def:unit_counit_adjunction]{unit-counit adjunction} \( (\eta, \varepsilon) \), the indexed family
+  \begin{equation*}
+    \alpha \coloneqq \seq[\big]{ \underbrace{s}_{\mathclap{F(A) \to X}} \mapsto \underbrace{G(s) \bincirc \eta_A}_{A \to G(X)} }_{A \in \obj(\cat{C}), X \in \obj(\cat{D})}, \\
+  \end{equation*}
+  is a \hyperref[def:hom_adjunction]{\( \hom \)-adjunction}, i.e. a natural isomorphism between the twisted \( \hom \)-functors from \cref{rem:adjunction_of_functors/hom}. Its inverse is
+  \begin{equation*}
+    \beta \coloneqq \seq[\big]{ \underbrace{t}_{\mathclap{A \to G(X)}} \mapsto \underbrace{\varepsilon_X \bincirc F(t)}_{F(A) \to X} }_{A \in \obj(\cat{C}), X \in \obj(\cat{D})}
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof of naturality of \( \alpha \)} Given morphisms \( f: B \to A \) in \( \cat{C} \) and \( g: X \to Y \) in \( \cat{D} \), we must show that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__unit_counit_adjunction_induces_hom_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Fix a morphism \( s: F(A) \to X \). On one side, we have
+  \begin{equation*}
+    \alpha_{B,Y}\parens[\big]{ \cat{D}(F(f), g)(s) } = \alpha_{B,Y}(g \bincirc s \bincirc F(f)) = G(g \bincirc s \bincirc F(f)) \bincirc \eta_B.
+  \end{equation*}
+
+  On the other side, we have
+  \begin{equation*}
+    \cat{C}(f, G(g))\parens[\big]{ \alpha_{A,X}(s) } = \cat{C}(f, G(g))\parens[\big]{ G(s) \bincirc \eta_A } = G(g) \bincirc G(s) \bincirc \eta_A \bincirc f.
+  \end{equation*}
+
+  It remains to show that \( \eta_A \bincirc f = [G \bincirc F](f) \bincirc \eta_B \), which readily follows from the naturality of \( \eta \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/thm__unit_counit_adjunction_induces_hom_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  \SubProof{Proof that \( \beta \) is the inverse of \( \alpha \)} Fix a morphism \( s: F(A) \to G \) in \( \cat{D} \). First, we must show that \( s \) equals
+  \begin{equation*}
+    [\beta_{A,X} \bincirc \alpha_{A,X}](s) = \varepsilon_X \bincirc F(G(s) \bincirc \eta_A) = \varepsilon_X \bincirc [F \bincirc G](s) \bincirc F(\eta_A).
+  \end{equation*}
+
+  This equality follows by combining the triangle diagram for \( F(A) \) with the naturality diagram for \( s \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=3]{output/thm__unit_counit_adjunction_induces_hom_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Thus, \( \beta_{A,X} \) is a left inverse of \( \alpha_{A,X} \).
+
+  Conversely, every morphism \( t: A \to G(X) \) in \( \cat{C} \) must equal
+  \begin{equation*}
+    [\alpha_{A,X} \bincirc \beta_{A,X}](t) = G(\varepsilon_X \bincirc F(t)) \bincirc \eta_A = G(\varepsilon_X) \bincirc [G \bincirc F](t) \bincirc \eta_A,
+  \end{equation*}
+  which follows from the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=4]{output/thm__unit_counit_adjunction_induces_hom_adjunction}
+    \end{aligned}
+  \end{equation*}
+
+  Thus, \( \beta_{A,X} \) is also a right inverse of \( \alpha_{A,X} \).
+
+  We have already shown that \( \alpha \) is a natural transformation, so \cref{thm:natural_isomorphism} implies that \( \beta \) is also a natural transformation and, in fact, an inverse of \( \alpha \).
+\end{proof}
+
+\begin{proposition}\label{thm:hom_adjunction_from_universal_morphism}
+\end{proposition}
+
+\begin{definition}\label{def:adjoint_functor}\mimprovised
+  We say that the functor \( F: \cat{C} \to \cat{D} \) is \term[en=left adjoint (\cite[79]{MacLane1998CategoryTheory})]{left adjoint} to \( G: \cat{D} \to \cat{C} \) and that \( G \) is \term[en=right adjoint (\cite[79]{MacLane1998CategoryTheory})]{right adjoint} to \( F \) if there exists a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction} between them.
+
+  If both \( \cat{C} \) and \( \cat{D} \) are \hyperref[def:small_category]{locally small}, \cref{thm:unit_counit_adjunction_induces_hom_adjunction} constructs an explicit \hyperref[def:hom_adjunction]{\( \hom \)-adjunction} from this unit-counit adjunction. Conversely, \cref{thm:hom_adjunction_induces_unit_counit_adjunction} constructs a unit-counit adjunction from a \( \hom \)-adjunction.
+
+  Usually, we will use \cref{thm:hom_adjunction_from_universal_morphism} to construct an adjunction via \hyperref[def:universal_morphism]{universal morphisms}.
+\end{definition}
+\begin{comments}
+  \item We take the unit-counit definition as primitive due to size considerations. The definition is discussed in more detail in \cref{rem:adjunction_of_functors}.
+\end{comments}
+
+\paragraph{Old}
 
 \begin{definition}\label{def:category_adjunction}\mcite[ch. 2]{Leinster2014BasicCategoryTheory}
   \todo{Change notation --- swap \( \cat{C} \) and \( \cat{D} \)}.
@@ -28,8 +423,8 @@
   In both cases below, if there exists an adjunction between \( F \) and \( G \), we say that \( F \) is \term{left adjoint} to \( G \) and, correspondingly, that \( G \) is \term{right adjoint} to \( F \). A conventional notation for adjoint functors is \( F \dashv G \).
 
   \begin{thmenum}
-    \thmitem{def:category_adjunction/hom} A \term{hom-adjunction} is a triple \( (F, G, \varphi) \), where \( \varphi \) is \hyperref[thm:natural_isomorphism]{natural isomorphism}
-    \begin{equation}\label{eq:def:category_adjunction/hom}
+    \thmitem{def:hom_adjunction} A \term{hom-adjunction} is a triple \( (F, G, \varphi) \), where \( \varphi \) is \hyperref[thm:natural_isomorphism]{natural isomorphism}
+    \begin{equation}\label{eq:def:hom_adjunction}
       \varphi: \cat{D}(F(\anon*), \anon*) \Rightarrow \cat{C}(\anon*, G(\anon*)).
     \end{equation}
 
@@ -52,8 +447,8 @@
       G(g) \bincirc \varphi_{A,X}(s) \bincirc f = \varphi_{B,Y}(g \bincirc s \bincirc F(f)).
     \end{equation}
 
-    \thmitem{def:category_adjunction/unit_counit} A \term{unit-counit adjunction} is a quadruple \( (F, G, \eta, \varepsilon) \), where
-    \begin{equation}\label{eq:def:category_adjunction/unit_counit/signature}
+    \thmitem{def:unit_counit_adjunction} A \term{unit-counit adjunction} is a quadruple \( (F, G, \eta, \varepsilon) \), where
+    \begin{equation}\label{eq:def:unit_counit_adjunction/signature}
       \begin{aligned}
                \eta &: \id_{\cat{C}} \Rightarrow G \bincirc F, \\
         \varepsilon &: F \bincirc G \Rightarrow \id_{\cat{D}}
@@ -62,7 +457,7 @@
     are natural transformations satisfying the condition that, for any pair of objects \( A \) in \( \cat{C} \) and \( X \) in \( \cat{D} \), the following triangle diagrams commute:
 
     \begin{minipage}{0.43\textwidth}
-      \begin{equation}\label{eq:def:category_adjunction/d_triangle}
+      \begin{equation}\label{eq:def:unit_counit_adjunction/triangle}
         \begin{aligned}
           \includegraphics[page=2]{output/def__category_adjunction}
         \end{aligned}
@@ -83,7 +478,7 @@
   \end{thmenum}
 \end{definition}
 \begin{defproof}
-  \ImplicationSubProof{def:category_adjunction/hom}{def:category_adjunction/unit_counit} Let \( (F, G, \varphi) \) be a hom-adjunction.
+  \ImplicationSubProof{def:hom_adjunction}{def:unit_counit_adjunction} Let \( (F, G, \varphi) \) be a hom-adjunction.
 
   For every morphism \( f: B \to A \) in \( \cat{C} \), from the naturality of \( \varphi \) we have
   \begin{equation}\label{eq:def:category_adjunction/varphi_eta}
@@ -138,8 +533,8 @@
 
   We can prove that \( \varepsilon \) is a natural transformation analogously to how we proved it for \( \eta \), and we will skip the details.
 
-  We will now show that the triangle diagram \eqref{eq:def:category_adjunction/d_triangle} commutes. Consider the morphism \( (\eta_A, F(\id_A)) \) in \( \cat{C}^\oppos \times \cat{D} \). Applying the functors \( \cat{D}(F(\anon*), \anon*) \) and \( \cat{D}(\anon*, G(\anon*)) \) to this morphism and using the naturality of \( \varphi \), we obtain
-  \begin{equation}\label{eq:def:category_adjunction/d_triangle_proof}
+  We will now show that the triangle diagram \eqref{eq:def:unit_counit_adjunction/triangle} commutes. Consider the morphism \( (\eta_A, F(\id_A)) \) in \( \cat{C}^\oppos \times \cat{D} \). Applying the functors \( \cat{D}(F(\anon*), \anon*) \) and \( \cat{D}(\anon*, G(\anon*)) \) to this morphism and using the naturality of \( \varphi \), we obtain
+  \begin{equation}\label{eq:def:unit_counit_adjunction/triangle_proof}
     \begin{aligned}
       \includegraphics[page=7]{output/def__category_adjunction}
     \end{aligned}
@@ -147,7 +542,7 @@
 
   Note that \( \varepsilon_{F(A)} \) is a member of \( \cat{D}([F \bincirc G \bincirc F](A), F(A)) \).
 
-  Composing the functions in \eqref{eq:def:category_adjunction/d_triangle_proof} in one direction, we obtain
+  Composing the functions in \eqref{eq:def:unit_counit_adjunction/triangle_proof} in one direction, we obtain
   \begin{balign*}
     &\phantom{{}={}}
     \varphi_{A,F(A)}^{-1} \parens[\Bigg]{ \cat{C}\parens[\big]{ \eta_A, [G \bincirc F](\id_A) } \parens[\big]{ \varphi_{[G \bincirc F](A),F(A)} (\varepsilon_{F(A)}) } }
@@ -159,7 +554,7 @@
     \id_{F(A)}.
   \end{balign*}
 
-  Composing the functions in \eqref{eq:def:category_adjunction/d_triangle_proof} in the other direction, we obtain
+  Composing the functions in \eqref{eq:def:unit_counit_adjunction/triangle_proof} in the other direction, we obtain
   \begin{equation*}
     \cat{D}\parens[\big]{ F(\eta_A), F(\id_A) } (\varepsilon_{F(A)})
     =
@@ -170,13 +565,13 @@
   \begin{equation*}
     \id_{F(A)} = \varepsilon_{F(A)} \bincirc F(\eta_A).
   \end{equation*}
-  and thus \eqref{eq:def:category_adjunction/d_triangle} commutes.
+  and thus \eqref{eq:def:unit_counit_adjunction/triangle} commutes.
 
   We can similarly prove that \eqref{eq:def:category_adjunction/c_triangle} commutes.
 
   Therefore, \( (F, G, \eta, \varepsilon) \) is a unit-counit adjunction.
 
-  \ImplicationSubProof{def:category_adjunction/unit_counit}{def:category_adjunction/hom} Let \( (F, G, \eta, \varepsilon) \) be a unit-counit adjunction.
+  \ImplicationSubProof{def:unit_counit_adjunction}{def:hom_adjunction} Let \( (F, G, \eta, \varepsilon) \) be a unit-counit adjunction.
 
   For every pair of objects \( A \in \cat{C} \) and \( X \in \cat{D} \), define the functions
   \begin{equation*}
@@ -193,7 +588,7 @@
     \end{aligned}
   \end{equation*}
 
-  From the naturality of \( \varepsilon \) and from \eqref{eq:def:category_adjunction/d_triangle}, it follows that the following diagram commutes:
+  From the naturality of \( \varepsilon \) and from \eqref{eq:def:unit_counit_adjunction/triangle}, it follows that the following diagram commutes:
   \begin{equation}\label{eq:def:category_adjunction/varphi_inverse_def}
     \begin{aligned}
       \includegraphics[page=8]{output/def__category_adjunction}
@@ -240,32 +635,6 @@
   This proves the naturality of \( \varphi \).
 \end{defproof}
 
-\begin{remark}\label{rem:category_adjunctions_category_order}
-  \hyperref[def:category_adjunction]{Adjunctions} (and also \hyperref[def:equivalence_of_categories]{equivalences}) of categories involve a pair of opposite functors.
-
-  Namely, \( F: \cat{C} \to \cat{D} \) is left adjoint to \( G: \cat{D} \to \cat{C} \) if it there exists a \hyperref[def:natural_isomorphism]{natural isomorphism}
-  \begin{equation*}
-    \varphi: \cat{D}(F(\anon*), \anon*) \Rightarrow \cat{C}(\anon*, G(\anon*)).
-  \end{equation*}
-
-  The role of \( G \) is often that of a \hyperref[con:forgetful_functor]{forgetful functor}, making \( F \) the focus of the adjunction and \( \cat{D} \) the target of our free constructions. In fact, instead of the symbol \enquote{\( G \)}, \textcite[def. 9.1]{
-  Awodey2010CategoryTheory} prefers the symbol \( U \) that is often used for forgetful functors.
-
-  Different authors prefer different letters for denoting the categories \( \cat{C} \) and \( \cat{D} \) (e.g. \( \mscrA \) and \( \mscrB \)), but the obvious alphabetic order is followed in
-  \cite[def. 9.1]{Awodey2010CategoryTheory},
-  \cite[def. 4.1.1]{Perrone2024StartingCategoryTheory},
-  \cite[def. 2.1.1]{Leinster2014BasicCategoryTheory},
-  \cite[116]{Riehl2016CategoryTheory},
-  \cite[493]{Aluffi2009Algebra} and
-  \cite[178]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}.
-
-  Although this difference is only notational, there is an opposite convention, where \( \cat{C} \) and \( \cat{D} \) are swapped and the free constructions belong to \( \cat{C} \). This can lead to some confusion since the roles of \( \cat{C} \) and \( \cat{D} \) are asymmetric. This latter convention is used in
-  \cite[80]{MacLane1998CategoryTheory} and
-  \cite[def. 16.4.1]{Schubert1972Categories}.
-
-  We use the alphabetic order, which seems to dominate.
-\end{remark}
-
 \begin{proposition}\label{thm:category_adjunction_duality}
   The functor \( F: \cat{C} \to \cat{D} \) is \hyperref[def:category_adjunction]{left adjoint} to \( G: \cat{D} \to \cat{C} \) if and only if the \hyperref[def:opposite_functor]{dual functor} \( F^\oppos \) is right adjoint to \( G^\oppos \).
 
@@ -278,27 +647,6 @@
 \end{proof}
 
 \paragraph{Concrete categories}
-
-\begin{definition}\label{def:concrete_category}\mcite[def. 5.1]{AdámekHerrlichStrecker1990JoyOfCats}
-  A \term[en=concrete category (\cite[def. 5.1]{AdámekHerrlichStrecker1990JoyOfCats})]{relatively concrete category} over the \term{base category} \( \cat{X} \) is a pair \( (\cat{C}, U) \), where \( \cat{C} \) is a category and \( U: \cat{C} \to \cat{X} \) is a \hyperref[def:functor_invertibility/faithful]{faithful functor}.
-
-  If \( \cat{X} \) is the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of \hyperref[def:small_set]{small sets}, we will simply call \( (\cat{C}, U) \) a \term[ru=конкретная категория (\cite[228]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}), en=concrete category (\cite[26]{MacLane1998CategoryTheory})]{concrete category}. For every morphism \( f: A \to B \) in \( \cat{C} \), \( U(f) \) is a function from the (small) set \( U(A) \) to \( U(B) \).
-\end{definition}
-\begin{comments}
-  \item This definition of relatively concrete (with respect to \( \cat{X} \)) categories is taken from \cite[def. 5.1]{AdámekHerrlichStrecker1990JoyOfCats}, although the authors use \enquote{concrete} rather than \enquote{relatively concrete}, and call a category concrete over \( \cat{Set} \) a \enquote{construct}. The book is based around the more general relatively concrete categories.
-
-  Usually, only concrete categories over \( \cat{Set} \) are considered, for example in \cite[26]{MacLane1998CategoryTheory} and \cite[def. 1.6.17]{Riehl2016CategoryTheory}. This is pushed even further in \cite[228]{ЦаленкоШульгейфер1974ОсновыТеорииКатегорий}, where \( U \) is assumed to be a full embedding and not merely a faithful functor.
-
-  \item Cancellation and invertibility of morphisms in concrete categories are discussed in \cref{thm:concrete_category_function_invertibility}.
-\end{comments}
-
-\begin{concept}\label{con:forgetful_functor}
-  In a \hyperref[def:concrete_category]{concrete category} \( (\cat{C}, U) \), we call \( U \) a \term[en=forgetful]{forgetful functor} and any \hyperref[def:category_adjunction]{left adjoint} to \( U \) a \term{free functor}.
-\end{concept}
-
-\begin{remark}\label{rem:concrete_category_notation}
-  Outside this chapter, most \hyperref[def:concrete_category]{concrete categories} will come with an obvious \hyperref[con:forgetful_functor]{forgetful functor}, and we will avoid writing the functor explicitly.
-\end{remark}
 
 \begin{theorem}[Discrete category universal property]\label{thm:discrete_category_universal_property}
   Denote by \( U \) the \hyperref[con:forgetful_functor]{forgetful functor} which sends a \hyperref[def:category]{category} to its set of objects.
@@ -363,7 +711,7 @@
       U(F) \bincirc U(S) \bincirc f.
     \end{equation*}
 
-    Therefore, \( (D, U, U) \) is a \hyperref[def:category_adjunction/hom]{hom-adjunction}.
+    Therefore, \( (D, U, U) \) is a \hyperref[def:hom_adjunction]{hom-adjunction}.
 
     We can also explicitly define a unit-counit adjunction. The unit \( \eta: \id_{\cat{Set}} \Rightarrow U \bincirc D \) is simply the identity.
 
@@ -377,9 +725,9 @@
         \includegraphics[page=3]{output/ex__def__category_adjunction}
       \end{aligned}
     \end{equation}
-    corresponding to \eqref{eq:def:category_adjunction/d_triangle} and \eqref{eq:def:category_adjunction/c_triangle}, obviously commute.
+    corresponding to \eqref{eq:def:unit_counit_adjunction/triangle} and \eqref{eq:def:category_adjunction/c_triangle}, obviously commute.
 
-    The quadruple \( (D, U, \eta, \varepsilon) \) is a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction}.
+    The quadruple \( (D, U, \eta, \varepsilon) \) is a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction}.
 
     \thmitem{ex:def:category_adjunction/dm_cat} The left adjoint of the forgetful functor \( U \) from \( \cat{Cat} \) to the \hyperref[def:directed_multigraph/category]{category of small directed multigraphs}, which we will denote by \( \cat{DMGph} \) is the free category functor defined in \cref{def:directed_multigraph_free_category}. We denote this functor by \( F \).
 
@@ -422,7 +770,7 @@
 
     This is also clear from \eqref{eq:def:directed_multigraph_free_category/functor_from_homomorphism}.
 
-    Therefore, \( (F, U, \varphi) \) is a \hyperref[def:category_adjunction/hom]{hom-adjunction}.
+    Therefore, \( (F, U, \varphi) \) is a \hyperref[def:hom_adjunction]{hom-adjunction}.
 
     Furthermore, the canonical embedding \( \iota \) defined above, when parameterized by \( Q \), is a unit of adjunction.
 
@@ -510,7 +858,7 @@
     \end{aligned}
   \end{equation}
 
-  By the commuting triangle \eqref{eq:def:category_adjunction/d_triangle}, all paths from \( F'(A) \) to \( F'(A) \) above are identities.
+  By the commuting triangle \eqref{eq:def:unit_counit_adjunction/triangle}, all paths from \( F'(A) \) to \( F'(A) \) above are identities.
 
   The bottom-most path in \eqref{eq:thm:functor_adjoint_uniqueness/existence} justifies defining the natural transformation
   \begin{equation*}
@@ -522,7 +870,7 @@
 
   Then \( \alpha_A \) is an isomorphism for every object \( A \) in \( \cat{C} \) with inverse \( \varepsilon_{F'(A)}^\dprime \bincirc F^\dprime(\eta_A') \). Therefore, it is a natural isomorphism from \( F' \) to \( F^\dprime \).
 
-  \SubProof{Proof of uniqueness of isomorphism} Suppose that \( \beta: F' \Rightarrow F^\dprime \) is another natural isomorphism. Then, by the commuting triangle \eqref{eq:def:category_adjunction/d_triangle}, the following diagram also commutes:
+  \SubProof{Proof of uniqueness of isomorphism} Suppose that \( \beta: F' \Rightarrow F^\dprime \) is another natural isomorphism. Then, by the commuting triangle \eqref{eq:def:unit_counit_adjunction/triangle}, the following diagram also commutes:
   \begin{equation}\label{eq:thm:functor_adjoint_uniqueness/uniqueness}
     \begin{aligned}
       \includegraphics[page=2]{output/thm__functor_adjoint_uniqueness}
@@ -534,7 +882,7 @@
     \beta_A
     =
     \varepsilon^\dprime_{F^\dprime(A)} \bincirc F^\dprime(\eta^\dprime_A) \bincirc \alpha_A
-    \reloset {\eqref{eq:def:category_adjunction/d_triangle}} =
+    \reloset {\eqref{eq:def:unit_counit_adjunction/triangle}} =
     \alpha_A.
   \end{equation*}
 
@@ -581,13 +929,13 @@
     \end{aligned}
   \end{equation}
 
-  It follows that both \( \eta \) and \( \varepsilon \) are natural transformations. Furthermore, they trivially satisfy the triangle diagrams triangle \eqref{eq:def:category_adjunction/d_triangle} and \eqref{eq:def:category_adjunction/c_triangle}.
+  It follows that both \( \eta \) and \( \varepsilon \) are natural transformations. Furthermore, they trivially satisfy the triangle diagrams triangle \eqref{eq:def:unit_counit_adjunction/triangle} and \eqref{eq:def:category_adjunction/c_triangle}.
 
-  Hence, \( (F, \Delta_I^{\cat{1}}, \eta, \varepsilon) \) is a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction}.
+  Hence, \( (F, \Delta_I^{\cat{1}}, \eta, \varepsilon) \) is a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction}.
 
   \NecessitySubProof Conversely, suppose that \( (F, \Delta_I^{\cat{1}}, \eta, \varepsilon) \) is a unit-counit adjunction.
 
-  Let \( I \coloneqq F(\cat{0}) \). Then \( \varepsilon_A \) is a morphism from \( I \) to \( A \). By \eqref{eq:def:category_adjunction/d_triangle}, \( \varepsilon_I = \id_I \) since the following diagram commutes:
+  Let \( I \coloneqq F(\cat{0}) \). Then \( \varepsilon_A \) is a morphism from \( I \) to \( A \). By \eqref{eq:def:unit_counit_adjunction/triangle}, \( \varepsilon_I = \id_I \) since the following diagram commutes:
   \begin{equation}\label{eq:thm:universal_objects_as_adjunctions/d_triangle}
     \begin{aligned}
       \includegraphics[page=2]{output/thm__universal_objects_as_adjunctions}
@@ -613,7 +961,7 @@
 \begin{remark}\label{rem:universal_mapping_property}
   We will now regard adjoint functors as a way to \enquote{construct} new objects.
 
-  Let \( (F, G, \iota, \pi) \) be a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction} between the categories \( \cat{C} \) and \( \cat{D} \). In the current context, especially in connection with \hyperref[def:category_of_cones/limit]{limits} and \hyperref[def:category_of_cones/colimit]{colimits}, we will call the components of the counit \( \pi: F \bincirc G \Rightarrow \id_{\cat{D}} \) --- \term{projections}, and the components of the unit \( \iota: \id_{\cat{C}} \Rightarrow G \bincirc F \) --- \term{coprojections}.
+  Let \( (F, G, \iota, \pi) \) be a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction} between the categories \( \cat{C} \) and \( \cat{D} \). In the current context, especially in connection with \hyperref[def:category_of_cones/limit]{limits} and \hyperref[def:category_of_cones/colimit]{colimits}, we will call the components of the counit \( \pi: F \bincirc G \Rightarrow \id_{\cat{D}} \) --- \term{projections}, and the components of the unit \( \iota: \id_{\cat{C}} \Rightarrow G \bincirc F \) --- \term{coprojections}.
 
   Take objects \( A \) in \( \cat{C} \) and \( X \) in \( \cat{D} \) and a morphism \( f: A \to G(X) \). We want to obtain a morphism \( \widetilde{f}: F(A) \to X \), for which the following diagram commutes:
   \begin{equation}\label{eq:rem:universal_mapping_property/c_triangle}
@@ -634,7 +982,7 @@
     G(\widetilde{f}) = G(\pi_X) \bincirc [G \bincirc F](f) = G(\pi_X \bincirc F(f)).
   \end{equation*}
 
-  Furthermore, this value is unique. From the naturality of \( \pi \) and the triangle diagram \eqref{eq:def:category_adjunction/d_triangle} it follows that the following diagram commutes:
+  Furthermore, this value is unique. From the naturality of \( \pi \) and the triangle diagram \eqref{eq:def:unit_counit_adjunction/triangle} it follows that the following diagram commutes:
   \begin{equation}\label{eq:rem:universal_mapping_property/f_tilde_uniquness}
     \begin{aligned}
       \includegraphics[page=3]{output/rem__universal_mapping_property}
