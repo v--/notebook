@@ -1,5 +1,131 @@
 \section{Natural transformations}\label{sec:natural_transformations}
 
+\paragraph{Bifunctors}
+
+\begin{definition}\label{def:product_category}\mimprovised
+  We define the \term{product category} \( \prod_{k \in \mscrK} \cat{C}_k \) of the \hyperref[def:indexed_family]{indexed family} \( \seq{ \cat{C}_k }_{k \in \mscrK} \) of categories as follows\fnote{Equivalently, we may consider the \hyperref[def:categorical_diagram]{diagram} \( D: \cat{K} \to \cat{Cat} \), where \( \cat{K} \) is the \hyperref[def:discrete_category]{discrete category} over \( \mscrK \).}:
+  \begin{thmenum}[series=def:product_category]
+    \thmitem{def:product_category/objects} The \hyperref[def:category/objects]{set of objects} is the \hyperref[def:cartesian_product]{Cartesian product}
+    \begin{equation*}
+      \obj\parens*{ \prod_{k \in \mscrK} \cat{C}_k } \coloneqq \prod_{k \in \mscrK} \obj(\cat{C}_k).
+    \end{equation*}
+
+    \thmitem{def:product_category/morphisms} The \hyperref[def:category/morphisms]{set of morphisms} is similarly the Cartesian product
+    \begin{equation*}
+      \mor\parens*{ \prod_{k \in \mscrK} \cat{C}_k } \coloneqq \prod_{k \in \mscrK} \mor(\cat{C}_k).
+    \end{equation*}
+
+    For the tuple \( \seq{ f_k }_{k \in \mscrK} \) of morphisms, where \( f_k: A_k \to B_k \), the domain and codomain are the tuples \( \seq{ A_k }_{k \in \mscrK} \) and \( \seq{ B_k }_{k \in \mscrK} \), respectively.
+
+    \thmitem{def:product_category/composition} The \hyperref[def:category/composition]{composition operation} of two tuples of morphisms is their elementwise composition.
+
+    \thmitem{def:product_category/identity} The \hyperref[def:category/identity]{identity morphism} on \( \seq{ A_k }_{k \in \mscrK} \) is the corresponding tuple of identity morphisms.
+  \end{thmenum}
+
+  We will associate with each product category the following:
+  \begin{thmenum}[resume=def:product_category]
+    \thmitem{def:product_category/projection} For every index \( m \) in \( \mscrK \), we combine the projection functions of objects and morphisms of \( \cat{C}_k \) into a functor
+    \begin{equation*}
+      \pi_m: \prod_{k \in \mscrK} \cat{C}_k \to \cat{C}_m.
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Product categories are \hyperref[def:categorical_product]{products} in the \hyperref[def:category_of_small_categories]{category of small categories} --- see \fullref{thm:product_category_universal_property}.
+
+  \item General product categories are rarely constructed explicitly. Definitions for binary product categories (i.e. \( \cat{C} \times \cat{D} \)) can be found in
+  \cite[36]{MacLane1998CategoryTheory},
+  \cite[def. 2.5.1]{Schubert1972Categories} or
+  \cite[def. 1.3.49]{Perrone2024StartingCategoryTheory}.
+\end{comments}
+
+\begin{concept}\label{con:functor_argument_variance}\mimprovised
+  If the domain of a \hyperref[def:functor]{functor} \( F: \cat{C}_1 \times \cdots \times \cat{C}_n \to \cat{D} \) is a \hyperref[def:product_category]{product category}, we can treat it as a function of several arguments, as per \cref{con:function_arguments}.
+
+  Furthermore, \( F \) can be covariant or \hyperref[def:contravariant_functor]{contravariant} in the \( k \)-th argument, depending on whether \( \cat{C}_k \) is \emph{intended} to be treated as an \hyperref[def:opposite_category]{opposite category}.
+
+  Like the number of arguments, the variance of the arguments is unambiguous in practice. This is easily seen for the \( \hom \)-functors, defined in \cref{def:hom_functor}, which gives rise to \fullref{sec:yoneda_embeddings} and \fullref{sec:adjoint_functors}. Other examples can be found in \cref{ex:def:natural_transformation} for example.
+\end{concept}
+
+\begin{definition}\label{def:bifunctor}\mcite[def. 2.5.2]{Schubert1972Categories}
+  We call a \hyperref[def:functor]{functor} \( F: \cat{C} \times \cat{D} \to \cat{E} \) from any \hyperref[def:product_category]{product category} \( \cat{C} \times \cat{D} \) a \term{bifunctor}.
+\end{definition}
+
+\begin{definition}\label{def:hom_functor}\mcite[37]{Jacobson1989BasicAlgebraII}
+  In a \hyperref[def:small_category]{locally small} \hyperref[def:category]{category} \( \cat{C} \), parametrizing the \( \hom \)-sets gives us the \hyperref[def:bifunctor]{bifunctor}
+  \begin{equation*}
+    \begin{aligned}
+      &\hom: \cat{C}^\oppos \times \cat{C} \to \cat{Set}, \\
+      &\hom(A, Y) \coloneqq \set{ f \in \mor(\cat{C}) \given \dom(f) = A \T{and} \cod(f) = Y }, \\
+      &\hom(f: B \to A, g: X \to Y) \coloneqq (\underbrace{s}_{\mathclap{A \to X}} \mapsto \underbrace{g \bincirc s \bincirc f}_{B \to Y}).
+    \end{aligned}
+  \end{equation*}
+
+  It acts as expected on objects, i.e. \( \hom(A, Y) \) is the set of morphisms from \( A \) to \( Y \). Its action on morphisms can be visualized as follows:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__hom_functor}
+    \end{aligned}
+  \end{equation*}
+
+  By fixing the first pair of arguments to some object \( A \) and its identity morphism \( \id_A \), we obtain the covariant functor
+  \begin{equation*}
+    \hom(A, \anon*): \cat{C} \to \cat{Set},
+  \end{equation*}
+  while fixing the second pair of arguments gives us the contravariant functor
+  \begin{equation*}
+    \hom(\anon*, Y): \cat{C}^\oppos \to \cat{Set}.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item \hyperref[con:currying]{Uncurrying} the \( \hom \)-bifunctor leads to the Yoneda embeddings we describe in \cref{def:yoneda_embeddings}.
+\end{comments}
+\begin{defproof}
+  For the bifunctor, \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__hom_functor}
+    \end{aligned}
+  \end{equation*}
+
+  The other functor condition \ref{def:functor/CF1} is straightforward to prove.
+\end{defproof}
+
+\begin{example}\label{ex:def:hom_functor}
+  We list examples related to the \hyperref[def:hom_functor]{\( \hom \)-bifunctor}:
+  \begin{thmenum}
+    \thmitem{ex:def:hom_functor/vect} Consider the category \hyperref[def:vector_space/category]{\( \cat[\BbbK]{Vect} \)} of small vector spaces over \( \BbbK \).
+
+    For fixed spaces \( \BbbK^m \) and \( \BbbK^n \), the set \( \hom(\BbbK^n, \BbbK^m) \) consists of the corresponding linear functions or, by \cref{rem:linear_operators_and_matrices}, the \( m \times n \) \hyperref[def:array/matrix]{matrices} over \( \BbbK \).
+
+    Then, the \( \hom \)-bifunctor acts on matrices as follows:
+    \begin{equation*}
+      \hom(\underbrace{A}_{a \times b}, \underbrace{B}_{d \times c})
+      =
+      (\underbrace{C}_{c \times a} \mapsto \underbrace{BCA}_{d \times b}).
+    \end{equation*}
+
+    In particular, when \( a = c \) and \( b = d = 1 \), \( \hom(A, B) \) consists of \hyperref[def:bilinear_form]{bilinear forms}.
+  \end{thmenum}
+\end{example}
+
+\begin{remark}\label{rem:opposite_morphism_argument_notation}
+  As an abstract entity, the \hyperref[def:opposite_category/morphisms]{opposite morphism} \( f^*: B \to A \) of \( f: A \to B \) may be useful when applying \fullref{thm:category_duality}. In most categories of interest, however, the domain and codomain play an asymmetric role. For example, in any \hyperref[def:concrete_category]{concrete category}, the morphism \( f: A \to B \) can be regarded as a function, while its opposite \( f^*: B \to A \) is an abstract entity with no inherent meaning.
+
+  When used as an argument, an opposite morphism usually indicates that the argument is \hyperref[con:functor_argument_variance]{contravariant}. For example, we define the \( \hom \)-bifunctor in \cref{def:hom_functor} as
+  \begin{equation*}
+    \begin{aligned}
+      &\hom: \cat{C}^\oppos \times \cat{C} \to \cat{Set}, \\
+      &\hom(A, Y) \coloneqq \set{ f \in \mor(\cat{C}) \given \dom(f) = A \T{and} \cod(f) = Y }, \\
+      &\hom(f: B \to A, g: X \to Y) \coloneqq (\underbrace{s}_{\mathclap{A \to X}} \mapsto \underbrace{g \bincirc s \bincirc f}_{B \to Y}).
+    \end{aligned}
+  \end{equation*}
+
+  Instead of treating the first argument as the abstract entity \( f^*: A \to B \), we simply swap the usual alphabetical order of its arguments and write \( f: B \to A \). This highlights that \( \hom(\anon*, \anon*) \) is contravariant in its first argument, but avoids formal dualities.
+
+  This convention is useful when dealing with \fullref{sec:yoneda_embeddings}.
+\end{remark}
+
 \paragraph{Natural transformations}
 
 \begin{definition}\label{def:natural_transformation}\mcite[def. 7.6; def. 7.10]{Awodey2010CategoryTheory}
