@@ -9,10 +9,10 @@ class StackExchangeOwner(msgspec.Struct):
     reputation: int
     user_id: int
     user_type: str
-    accept_rate: int
     profile_image: str
     display_name: str
     link: str
+    accept_rate: int | None = None
 
 
 class StackExchangePost(msgspec.Struct):

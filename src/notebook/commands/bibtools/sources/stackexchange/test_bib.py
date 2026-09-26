@@ -1,3 +1,4 @@
+from notebook.bibtex.string import VerbatimString
 from datetime import UTC, datetime
 
 from notebook.bibtex import BibAuthor, BibEntry
@@ -49,6 +50,27 @@ def test_parse_mathse_answer_2167659(url: str = 'https://math.stackexchange.com/
         addendum='Citation of answer',
         date='2017-03-01',
         titleaddon='Math Stack Exchange',
+        url=url,
+        urldate=TODAY,
+    )
+
+
+def test_parse_mathof_question_no_accept_rate(url: str = 'https://mathoverflow.net/questions/382239/proof-that-a-cartesian-category-is-monoidal') -> None:
+    parsed_url = parse_stackexchange_url(url)
+    question_json = get_stackexchange_fixture_path(parsed_url.site, parsed_url.post_id, is_answer=False).read_text()
+    questions = parse_stackexchange_question_json(question_json)
+    entry = stackexchange_post_to_bib(question=questions.items[0], answer=None, parsed_url=parsed_url)
+    print(entry.authors[0].full_name)
+
+    assert entry == BibEntry(
+        entry_type='online',
+        entry_name='MathOF:proof_that_a_cartesian_category_is_monoidal',
+        title='Proof that a Cartesian category is monoidal',
+        authors=[BibAuthor(full_name=VerbatimString("User ``nancytrain''"))],
+        languages=['english'],
+        addendum='Citation of question',
+        date='2021-01-26',
+        titleaddon='MathOverflow',
         url=url,
         urldate=TODAY,
     )
