@@ -1,0 +1,424 @@
+\section{Monoidal categories}\label{sec:monoidal_categories}
+
+\paragraph{Monoidal categories}
+
+\begin{definition}\label{def:monoidal_category}\mcite[def. 6.1.1]{Perrone2024StartingCategoryTheory}
+  A \term{monoidal category} is a \hyperref[def:category]{category} \( \cat{C} \) endowed with the following additional structure:
+  \begin{thmenum}[series=def:monoidal_category]
+    \thmitem{def:monoidal_category/product} Most importantly, we need a \hyperref[def:bifunctor]{bifunctor} \( {\otimes}: \cat{C}^2 \to \cat{C} \), which we will call (monoidal) \term{multiplication}.
+
+    It is also called the \term{tensor product} because it generalizes \hyperref[def:module_tensor_product]{tensor products} of \hyperref[def:module]{modules}.
+
+    Similarly to the \hyperref[def:hom_bifunctor]{\( \hom \)-bifunctor}, for every fixed object \( A \), by sending \( B \) to \( A \otimes B \) and \( g: B \to Y \) to \( \id_A \otimes g \), we obtain an endofunctor
+    \begin{equation*}
+      (A \otimes \anon*): \cat{C} \to \cat{C}.
+    \end{equation*}
+
+    Dually, by fixing the second argument to \( B \) (and \( \id_B \)), we obtain another endofunctor
+    \begin{equation*}
+      (\anon* \otimes B): \cat{C} \to \cat{C}.
+    \end{equation*}
+
+    Unlike with the \( \hom \)-functor, here both \( (A \otimes \anon*) \) and \( (\anon* \otimes B) \) are covariant.
+
+    \thmitem{def:monoidal_category/unit} To emulate a \hyperref[def:semigroup_neutral_element]{neutral element}, we need a fixed object \( E \) of \( \cat{C} \), which we will call \term{unit}.
+
+    \thmitem{def:monoidal_category/associator} In order to reconcile with the lack of proper \hyperref[def:binary_operation/associative]{associativity}, as in \cref{ex:def:natural_transformation/set_associator}, we need a \hyperref[def:natural_isomorphism]{natural isomorphism}, called the \term{associator}, with components
+    \begin{equation*}
+      \alpha_{A,B,C}: ((A \otimes B) \otimes C) \to (A \otimes (B \otimes C)).
+    \end{equation*}
+
+    The functors which \( \alpha_{A,B,C} \) transforms between are discussed in detail in \cref{ex:def:natural_transformation/set_associator} for the \hyperref[def:category_of_small_sets]{category of small sets}.
+
+    The associator must satisfy the following pentagonal diagram:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__monoidal_category}
+      \end{aligned}
+    \end{equation*}
+
+    Note that there are only two paths to check in this diagram, which are straightforward to check with a direct definition, like in \cref{ex:category_of_small_sets_is_cartesian}. With an indirect definition, like in \cref{thm:cartesian_monoidal_structure}, this check becomes difficult.
+
+    \thmitem{def:monoidal_category/unitors} Finally, we need two more auxiliary natural isomorphisms, called the \term{left} and \term{right unitor}, with components
+    \begin{align*}
+      \lambda_A: (E \otimes A) \to A && \rho_A: (A \otimes E) \to A.
+    \end{align*}
+
+    The left unitor \( \lambda \) transforms \( (E \otimes \anon*) \) to the identity \( \id_{\cat{C}} \), while \( \rho \) transforms \( (\anon* \otimes E) \) to the identity.
+
+    Their interaction with the associator is determined by the following triangular diagram:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/def__monoidal_category}
+      \end{aligned}
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:category_of_small_sets_is_cartesian}
+  We will show that the \hyperref[def:category_of_small_sets]{category of small sets} becomes \hyperref[def:monoidal_category]{monoidal} with multiplication given by the \hyperref[def:cartesian_product]{Cartesian product}. We will generalize this construction in \cref{thm:cartesian_monoidal_structure}, which will lead to the definition of Cartesian monoidal categories in \cref{def:cartesian_monoidal_category}.
+
+  The product operation is given by \( A \times B \) for sets. To extend this definition for the functions \( {f: A \to X} \) and \( {g: B \to Y} \), we will use the definition
+  \begin{equation*}
+    \parens[\big]{ f \bincirc g }(a, b) \coloneqq \parens[\big]{ f(a), g(b) }.
+  \end{equation*}
+
+  Now consider the associator from \cref{ex:def:natural_transformation/set_associator}:
+  \begin{equation*}
+    \alpha_{A, B, C}\parens[\big]{ (a, b), c } \coloneqq \parens[\big]{ a, (b, c) }.
+  \end{equation*}
+
+  We have already shown that it is a natural isomorphism. Now we show that it satisfies the pentagonal diagram\fnote{This is not a formally a diagram since its vertices are members of the products, not the products themselves.}:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/ex__category_of_small_sets_is_cartesian}
+    \end{aligned}
+  \end{equation*}
+
+  Consider the left unitor from \cref{ex:def:natural_transformation/set_left_unitor}, and the analogously defined right unitor:
+  \begin{align*}
+    \lambda_A(e, a) \coloneqq a,
+    &&
+    \rho_A(a, e) \coloneqq a.
+  \end{align*}
+
+  We have verified naturality, while invertibility is obvious, so these are natural isomorphisms. The triangular unitality diagram is easy to verify:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/ex__category_of_small_sets_is_cartesian}
+    \end{aligned}
+  \end{equation*}
+\end{example}
+
+\begin{definition}\label{def:strict_monoidal_category}\mcite[def. 6.1.3]{Perrone2024StartingCategoryTheory}
+  We say that the \hyperref[def:monoidal_category]{monoidal category} is \term{strict} if its associator and unitors are identity transformations.
+
+  We can thus omit them from the definition, and instead impose the following conditions:
+  \begin{thmenum}
+    \thmitem{def:strict_monoidal_category/unitality} We want the functors \( (E \otimes \anon*) \) and \( (\anon* \otimes E) \) to coincide with the identity \( \id_{\cat{C}} \):
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        For every object \( A \), we want
+        \begin{equation*}
+          E \otimes A = A = A \otimes E.
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        For every morphism \( g \), we want
+        \begin{equation*}
+          \id_E \otimes g = g = \id_E \otimes g.
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    \thmitem{def:strict_monoidal_category/associativity} Strict associativity must hold for both objects and morphisms:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        For every triple of objects, we want
+        \begin{equation*}
+          (A \otimes B) \otimes C = A \otimes (B \otimes C).
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        For every triple of morphisms, we want
+        \begin{equation*}
+          (f \otimes g) \otimes h = f \otimes (g \otimes h).
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:def:strict_monoidal_category}
+  We list some examples of \hyperref[def:strict_monoidal_category]{strict monoidal categories}:
+  \begin{thmenum}
+    \thmitem{ex:def:strict_monoidal_category/endofunctors} The most important example we will deal with are categories of endofunctors --- see \cref{def:endofunctor_category}.
+
+    \thmitem{ex:def:strict_monoidal_category/monoid}\mcite[exerc. 6.1.8]{Perrone2024StartingCategoryTheory} Let \( \cat{M} \) be the \hyperref[def:discrete_category]{discrete category} induced by the underlying set \( U(M) \) of the \hyperref[def:monoid]{monoid} \( M \).
+
+    With the unit \( e \) and with multiplication inherited from \( M \), \( \cat{M} \) becomes a strict monoidal category.
+
+    Multiplication of objects with \( e \) is invariant in \( \cat{M} \) because it is invariant in \( M \), while for morphisms it is vacuous because \( \cat{M} \) only contains identity morphisms.
+
+    Similarly, associativity of object multiplication in \( \cat{M} \) follows from that in \( M \), while for morphisms associativity is again vacuous.
+
+    \thmitem{ex:def:strict_monoidal_category/monoid_order}\mcite[exerc. 6.1.9]{Perrone2024StartingCategoryTheory} A slightly more interesting situation occurs if \( M \) is an \hyperref[def:ordered_semigroup]{ordered monoid}, and we define \( \cat{M} \) as the \hyperref[def:thin_category]{thin category} of \( M \), as per \fullref{thm:order_category_isomorphism}. Compared to the previous example, \( \cat{M} \) has more morphisms --- namely, the morphism \( (x, y) \) in \( \cat{M} \) corresponds to the assumption \( x \leq y \) in \( M \).
+
+    If \( a \leq b \) and \( x \leq y \), \cref{thm:def:ordered_semigroup/pairwise} implies that \( ax \leq by \). Thus,
+    \begin{equation*}
+      (a, b) \otimes (x, y) = (ax, by).
+    \end{equation*}
+
+    Multiplication with \( \id_e = (e, e) \) thus gives
+    \begin{equation*}
+      (e, e) \otimes (x, y)
+      =
+      (ex, ey)
+      \reloset {\eqref{eq:def:semigroup_neutral_element/left}} =
+      (x, y)
+      \reloset {\eqref{eq:def:semigroup_neutral_element/right}} =
+      (xe, ye)
+      =
+      (x, y) \otimes (e, e).
+    \end{equation*}
+
+    Furthermore, since multiplication in \( M \) is associative, it follows that
+    \begin{align*}
+      &\phantom{{}={}}
+      \parens[\big]{ (x, y) \otimes (x', y') } \otimes (x^\dprime, y^\dprime)
+      = \\ &=
+      \parens[\big]{ (xx')x^\dprime, (yy')y^\dprime }
+      \reloset {\eqref{eq:def:binary_operation/associative}} = \\ &=
+      \parens[\big]{ x(x'x^\dprime), y(y'y^\dprime) }
+      = \\ &=
+      (x, y) \otimes \parens[\big]{ (x', y') \otimes (x^\dprime, y^\dprime) }.
+    \end{align*}
+
+    Therefore, the unitality and associativity conditions for \( \cat{M} \) are satisfied, and we conclude that \( \cat{M} \) is a strict monoidal category.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:cartesian_monoidal_structure}\mcite[163]{MacLane1998CategoryTheory}
+  Consider a \hyperref[def:category]{category} \( \cat{C} \) with \hyperref[def:categorical_product]{finite products} and \hyperref[def:universal_objects/terminal]{terminal objects} (e.g. a \hyperref[def:complete_category]{complete category}). We can use these to define a \hyperref[def:monoidal_category]{monoidal structure} on \( \cat{C} \).
+
+  \begin{thmenum}
+    \thmitem{thm:cartesian_monoidal_structure/product} For objects, we define \( A \otimes B \) as \( A \times B \). To extend this definition for the morphisms \( {f: A \to X} \) and \( {g: B \to Y} \), we will need to use the universal property of binary products from \cref{def:categorical_product/binary}:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__cartesian_monoidal_structure}
+      \end{aligned}
+    \end{equation*}
+
+    This defines a functor \( {\otimes}: \cat{C}^2 \to \cat{C} \).
+
+    \thmitem{thm:cartesian_monoidal_structure/unitors} Fix a terminal object \( E \). We can use the right projection of \( E \times A \) as the left unitor \( \lambda_A \), and similarly the left projection of \( A \times E \) as the right unitor.
+
+    \thmitem{thm:cartesian_monoidal_structure/associator} To obtain an associator \( \alpha \), we again use the universal property of products:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/thm__cartesian_monoidal_structure}
+      \end{aligned}
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We will skip proving the properties of \( \alpha \). Invertibility is simple enough, but naturality and the pentagon diagram require enormous diagrams (unlike the simple special case \( \cat{C} = \cat{Set} \) discussed in \cref{ex:category_of_small_sets_is_cartesian}). More abstract proof approaches are discussed in \cite{MathOF:proof_that_a_cartesian_category_is_monoidal}.
+
+  \SubProof{Proof of functoriality of multiplication}
+
+  \SubProofOf*{def:functor/CF1} By the universal property of \( A \times B \), the endomorphism \( \id_A \otimes \id_B \) is the unique one for which the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=3]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  But this diagram is also satisfied by \( \id_{A \times B} \), so the two are equal.
+
+  \SubProofOf*{def:functor/CF2} We can stack the defining diagrams for \( f \otimes g \) and \( h \otimes k \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=4]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  Incidentally, this also defines the morphism \( (h \bincirc f) \otimes (k \bincirc g) \). By the universal property of \( X \times Y \), the two coincide.
+
+  \SubProof{Proof of naturality of the unitors} Naturality for \( f: A \to B \) follows from the defining diagram of \( \id_E \otimes f \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=5]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  For \( \rho_A \), we proceed similarly.
+
+  \SubProof{Proof of invertibility of the unitors} Denote the unique morphism from \( A \) to the terminal object \( E \) by \( e_A \). By the universal property of \( E \times A \), there exists a unique morphism \( \mu_A \) such that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=6]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  This shows that \( \lambda_A \bincirc \mu_A = \id_A \), i.e. \( \mu_A \) is a right inverse of \( \lambda_A \).
+
+  Since \( E \) is a terminal object, it has a unique map from \( E \times A \), so the projection \( \pi_E \) coincides with \( e_A \bincirc \lambda_A \). This allows us to extend the above diagram as follows:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=7]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  By the universal property of \( A \times B \), the composition \( \mu_A \bincirc \lambda_A \) is the unique morphism satisfying the above diagram. But it is also satisfied by \( \id_{E \times A} \), so the two coincide. It follows that \( \mu_A \) is a left inverse of \( \lambda_A \).
+
+  By \cref{thm:def:morphism_invertibility/left_and_right}, \( \lambda_A \) is an isomorphism.
+
+  For \( \rho_A \), we can proceed similarly.
+
+  \SubProof{Proof of triangular diagram for unitors} We start with the following diagram, which glues together defining diagrams for \( \rho_A \otimes \id_B \) and \( \id_A \otimes \lambda_A \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=8]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  To construct the associator \( \alpha_{A,E,B} \), we also need to project \( (A \times E) \times B \) to \( E \times B \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=9]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+
+  With the associator, we now have the unitality diagram:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=10]{output/thm__cartesian_monoidal_structure}
+    \end{aligned}
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:cartesian_monoidal_category}\mcite[def. 6.1.13]{Perrone2024StartingCategoryTheory}
+  We say that the \hyperref[def:monoidal_category]{monoidal category} is \term{Cartesian} if multiplication is given by \hyperref[def:categorical_product]{categorical products}, in accordance with \cref{thm:cartesian_monoidal_structure}.
+\end{definition}
+\begin{comments}
+  \item Every category with finite products has a Cartesian structure, but it may also have other monoidal structures.
+\end{comments}
+
+\begin{proposition}\label{thm:category_of_small_categories_is_cartesian}
+  The \hyperref[def:category_of_small_categories]{category of small categories} is a \hyperref[def:cartesian_monoidal_category]{Cartesian monoidal category}.
+\end{proposition}
+\begin{proof}
+  \Fullref{thm:product_category_universal_property} implies that \( \cat{Cat} \) has arbitrary products, so, by \cref{thm:cartesian_monoidal_structure}, it has a Cartesian monoidal structure.
+\end{proof}
+
+\paragraph{Endofunctor categories}
+
+\begin{definition}\label{def:natural_transformation_horizontal_composition}\mcite[def. 1.4.24]{Perrone2024StartingCategoryTheory}
+  Consider \hyperref[def:functor]{functors} and \hyperref[def:natural_transformation]{natural transformations} as in the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__natural_transformation_horizontal_composition}
+    \end{aligned}
+  \end{equation*}
+
+  We will construct a natural transformation \( (\beta \otimes \alpha): H \bincirc F \Rightarrow I \bincirc G \), called the \term{horizontal composition} of \( \alpha \) and \( \beta \).
+
+  For this, note that, for any object \( A \) in \( \cat{C} \), the naturality of \( \beta \) gives us the following commutative square:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__natural_transformation_horizontal_composition}
+    \end{aligned}
+  \end{equation*}
+
+  We simply let \( (\beta \otimes \alpha)_A \) be either of the two compositions above.
+\end{definition}
+\begin{comments}
+  \item The notation {\( \otimes \)} highlights the role of horizontal composition as \hyperref[def:monoidal_category/product]{multiplication} in \hyperref[def:endofunctor_category]{categories of endofunctors}.
+\end{comments}
+\begin{defproof}
+  The naturality diagram of \( \beta \otimes \alpha \) for any morphism \( f: A \to B \) can be constructed from those of \( H(\alpha) \) and \( \beta \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=3]{output/def__natural_transformation_horizontal_composition}
+    \end{aligned}
+  \end{equation*}
+\end{defproof}
+
+\begin{proposition}\label{thm:horizontal_composition_associativity}
+  \hyperref[def:natural_transformation_horizontal_composition]{Horizontal composition} of natural transformations is associative in the following sense. Consider \hyperref[def:functor]{functors} and \hyperref[def:natural_transformation]{natural transformations} as in the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__horizontal_composition_associativity}
+    \end{aligned}
+  \end{equation*}
+
+  Then the horizontal compositions of the following diagrams are equal:
+  \begin{equation*}
+    \includegraphics[page=2]{output/thm__horizontal_composition_associativity}
+    \qquad\qquad
+    \includegraphics[page=3]{output/thm__horizontal_composition_associativity}
+  \end{equation*}
+
+  Symbolically,
+  \begin{equation*}
+    (\gamma \otimes \beta) \otimes \alpha = \gamma \otimes (\beta \otimes \alpha).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  We will use the path with the dashed arrow from the following diagram of \( (\beta \otimes \alpha)_A \):
+  \begin{equation*}
+    \includegraphics[page=4]{output/thm__horizontal_composition_associativity}
+  \end{equation*}
+
+  For \( J((\beta \otimes \alpha)_A) \), we have
+  \begin{equation*}
+    \includegraphics[page=5]{output/thm__horizontal_composition_associativity}
+  \end{equation*}
+
+  The dotted arrow is due to the naturality of \( \gamma \). With \( X = G(A) \), it coincides with the dotted arrow from the following diagram for \( (\gamma \otimes \beta)_X \):
+  \begin{equation*}
+    \includegraphics[page=6]{output/thm__horizontal_composition_associativity}
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    [(\gamma \otimes \beta) \otimes \alpha]_A = [\gamma \otimes (\beta \otimes \alpha)]_A.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Interchange law]\label{thm:composition_interchange_law}\mcite[prop. 1.4.25]{Perrone2024StartingCategoryTheory}
+  \hyperref[def:functor_category/composition]{Vertical composition} \( {\bincirc} \) and \hyperref[def:natural_transformation_horizontal_composition]{horizontal composition} \( {\otimes} \) of \hyperref[def:natural_transformation]{natural transformations} can be interchanged.
+
+  More precisely, consider natural transformations as in the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__composition_interchange_law}
+    \end{aligned}
+  \end{equation*}
+
+  We claim that
+  \begin{equation*}
+    (\delta \bincirc \gamma) \otimes (\beta \bincirc \alpha) = (\delta \otimes \gamma) \bincirc (\beta \otimes \alpha).
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  From the naturality of \( \gamma \), we have
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/thm__composition_interchange_law}
+    \end{aligned}
+  \end{equation*}
+
+  Going through the top-right corner, we obtain the \( A \)-th component of \( (\delta \bincirc \gamma) \otimes (\beta \bincirc \alpha) \). Going through the bottom-left corner, we obtain the \( A \)-th component of \( (\delta \otimes \gamma) \bincirc (\beta \otimes \alpha) \).
+\end{proof}
+
+\begin{definition}\label{def:endofunctor_category}\mimprovised
+  Unlike more general \hyperref[def:functor_category]{functor categories}, the category \( [\cat{C}, \cat{C}] \) of \hyperref[def:endofunctor]{endofunctors} on \( \cat{C} \) is a \hyperref[def:strict_monoidal_category]{strict monoidal category} with multiplication given by functor composition for objects and \hyperref[def:natural_transformation_horizontal_composition]{horizontal composition} for natural transformations.
+
+  The multiplicative unit in \( [\cat{C}, \cat{C}] \) is, unsurprisingly, the identity functor.
+\end{definition}
+\begin{defproof}
+  \SubProofOf{def:strict_monoidal_category/associativity} (Strict) associativity of object multiplication (functor composition) follows, as in \cref{def:category_of_small_categories}, from ordinary function composition associativity.
+
+  Associativity of morphism multiplication (horizontal composition of natural transformations) is shown in \cref{thm:horizontal_composition_associativity}.
+
+  \SubProofOf{def:strict_monoidal_category/unitality} Composing the endofunctor \( F \) with \( \id_{\cat{C}} \) from either side gives \( F \), so unitality for objects (functors) in \( [\cat{C}, \cat{C}] \) is obvious.
+
+  To show left unitality of horizontal composition, consider functors and natural transformations as in the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__endofunctor_category}
+    \end{aligned}
+  \end{equation*}
+
+  The composition \( \id_{\id_{\cat{C}}} \otimes \alpha \) coincides with \( \alpha \) because its diagram at \( A \) is defined by
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__endofunctor_category}
+    \end{aligned}
+  \end{equation*}
+
+  Right unitality can be shown analogously.
+\end{defproof}
