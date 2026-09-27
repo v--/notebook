@@ -1,7 +1,7 @@
-from notebook.bibtex.string import VerbatimString
 from datetime import UTC, datetime
 
 from notebook.bibtex import BibAuthor, BibEntry
+from notebook.bibtex.string import VerbatimString
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
 from notebook.commands.bibtools.sources.stackexchange.url_parser import parse_stackexchange_url
 
