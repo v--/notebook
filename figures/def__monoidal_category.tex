@@ -1,19 +1,31 @@
 \documentclass{classes/tikzcd}
 
+\usetikzlibrary{positioning}
+
 \begin{document}
   \begin{tikzpicture}[commutative diagrams/every diagram]
-    \node (P0) at (90:15ex)        {\( (A \otimes B) \otimes (C \otimes D) \)};
-    \node (P1) at (90+72:15ex)     {\( ((A \otimes B) \otimes C) \otimes D \)};
-    \node (P2) at (90+2*72-10:9ex) {\makebox[1.5em][r]{\( (A \otimes (B \otimes C)) \otimes D \)}};
-    \node (P3) at (90+3*72+10:9ex) {\makebox[1.5em][l]{\( A \otimes ((B \otimes C) \otimes D) \)}};
-    \node (P4) at (90+4*72:15ex)   {\( A \otimes (B \otimes (C \otimes D)) \)};
+    \node               (P1) at (canvas polar cs:angle=90+0*72,x radius=12ex,y radius=10ex) {\( (A \otimes B) \otimes (C \otimes D) \)};
+    \node[anchor=north] (P2) at (canvas polar cs:angle=90+1*72,x radius=12ex,y radius=10ex) {\phantom{ABC}};
+    \node               (P3) at (canvas polar cs:angle=90+2*72,x radius=12ex,y radius=10ex) {\phantom{ABC}};
+    \node               (P4) at (canvas polar cs:angle=90+3*72,x radius=12ex,y radius=10ex) {\phantom{ABC}};
+    \node[anchor=north] (P5) at (canvas polar cs:angle=90+4*72,x radius=12ex,y radius=10ex) {\phantom{ABC}};
+
+    \begin{scope}[node distance=-2.9em]
+      \node[left=of P3] {\( (A \otimes (B \otimes C)) \otimes D \)};
+      \node[right=of P4] {\( A \otimes ((B \otimes C) \otimes D) \)};
+    \end{scope}
+
+    \begin{scope}[node distance=-5em]
+      \node[left=of P2] {\( ((A \otimes B) \otimes C) \otimes D \)};
+      \node[right=of P5] {\( A \otimes (B \otimes (C \otimes D)) \)};
+    \end{scope}
 
     \path[commutative diagrams/.cd, every arrow, every label]
-    (P1) edge node       {\( \alpha_{A \otimes B, C, D} \)} (P0)
-    (P1) edge node[swap] {\( \alpha_{A,B,C} \otimes \id_D \)} (P2)
-    (P2) edge node[swap] {\( \alpha_{A, B \otimes C, D} \)} (P3)
-    (P3) edge node[swap] {\( \id_A \otimes \alpha_{B, C, D} \)} (P4)
-    (P0) edge node       {\( \alpha_{A, B \otimes C, D} \)} (P4);
+    (P2) edge node[pos=0.35]       {\( \alpha_{A \otimes B, C, D} \)}     (P1)
+    (P2) edge node[pos=0.35, swap] {\( \alpha_{A,B,C} \otimes \id_D \)}   (P3)
+    (P3) edge node[swap]           {\( \alpha_{A, B \otimes C, D} \)}     (P4)
+    (P4) edge node[pos=0.65, swap] {\( \id_A \otimes \alpha_{B, C, D} \)} (P5)
+    (P1) edge node[pos=0.65]       {\( \alpha_{A, B \otimes C, D} \)}     (P5);
   \end{tikzpicture}
 
   \begin{tikzcd}
