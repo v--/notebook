@@ -511,3 +511,139 @@
     \thmitem{ex:def:fol_free_term_model/lattices} Unlike the examples discussed above, for the \hyperref[def:lattice/theory]{theory of lattices} \( T_6 \), we use free term model \( \mscrT_{T_6}(V) \) when defining free lattices in \cref{def:free_lattice}.
   \end{thmenum}
 \end{example}
+
+\paragraph{Presentations and free products}
+
+\begin{definition}\label{def:fol_model_presentation}\mimprovised
+  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_theory/model]{model} of the \hyperref[def:fol_equational_theory]{equational theory} \( T \). Let \( A \) be a set and let \( {\sim} \) be a binary relation on the \hyperref[def:fol_free_term_model]{free term model} \( \mscrT_T(A) = (M, J) \).
+
+  If \( \mscrX \) is \hyperref[def:fol_isomorphism]{isomorphic} to the \hyperref[def:fol_quotient_structure]{quotient} \( \mscrT_T(A) / {\cong} \), where \( {\cong} \) is the \hyperref[def:fol_congruence]{congruence} \hyperref[def:fol_generated_congruence]{generated} by \( {\sim} \), we call the pair \( (A, {\sim}) \) a \term[en=group presentation (\cite[90]{Bourbaki1998Algebra1to3})]{presentation} of \( \mscrX \).
+
+  \begin{thmenum}
+    \thmitem{def:fol_model_presentation/finite} If there exists a presentation \( (A, {\sim}) \) of \( \mscrX \) such that \( A \) is finite, we say that \( \mscrX \) is \term[en=finitely generated group (\cite[90]{Bourbaki1998Algebra1to3})]{finitely generated}\fnote{A structure \( \mscrX \) has a presentation with finitely many generators if and only if it has a finite subset whose \hyperref[def:fol_generated_substructure]{generated substructure} is \( \mscrX \).}. If there exists a presentation \( (A, \sim) \) where both \( A \) and \( {\sim} \) are finite, we say that the model is \term[ru=конечно определённая группа (\cite[43]{Кострикин2020АлгебраЧасть3}), en=finitely presented group (\cite[90]{Bourbaki1998Algebra1to3})]{finitely presented}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We generalize the established concept of \enquote{group presentations}. The latter is presented as a special case in \cref{def:group_presentation}.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_model_presentation_existence}
+  Every \hyperref[def:fol_theory/model]{model} of a \hyperref[def:fol_equational_theory]{equational theory} has at least one \hyperref[def:fol_model_presentation]{presentation}.
+\end{proposition}
+\begin{comments}
+  \item This proof does not use any properties of the particular construction of the \hyperref[def:fol_free_term_model]{free term model}, so it hold for any of the other isomorphic free functors.
+\end{comments}
+\begin{proof}
+  \SubProof{Construction of presentation} \Fullref{thm:fol_free_term_model_universal_property} implies that \( \mscrT_T: \cat{Set} \to \cat{Mod}(T) \) is \hyperref[def:adjoint_functor]{left adjoint} to the corresponding forgetful functor \( U \). Let \( (\eta, \varepsilon) \) be a \hyperref[def:unit_counit_adjunction]{unit-counit adjunction}.
+
+  The \hyperref[def:natural_transformation]{natural transformation} \( \varepsilon: F \bincirc U \Rightarrow \id_{\cat{Mod}(T)} \) acts on a model \( \mscrX = (X, I) \) of \( T \) by \enquote{evaluating} syntax trees over the free model \( [F \bincirc U](\mscrX) \), sending the indeterminates to the corresponding elements of \( X \).
+
+  Consider the following relation on the universe of \( [F \bincirc U](\mscrX) \):
+  \begin{equation*}
+    v \cong w \T{if and only if} \varepsilon_\mscrX(v) = \varepsilon_\mscrX(w).
+  \end{equation*}
+
+  \Cref{thm:fol_homomorphism_induces_congruence} implies that this relation is a \hyperref[def:fol_congruence]{congruence}, so we can form the \hyperref[def:fol_quotient_structure]{quotient} \( [F \bincirc U](\mscrX) / {\cong} \) (with quotient map \( \pi \)). \Cref{thm:fol_equational_theory_models/quotient} implies that this quotient is also a model of \( T \).
+
+  \SubProof{Verification of isomorphism} \Fullref{thm:fol_quotient_structure_universal_property} gives us a unique homomorphism \( \widetilde{\varepsilon_\mscrX} \) such that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__fol_model_presentation_existence}
+    \end{aligned}
+  \end{equation*}
+
+  We claim that \( \widetilde{\varepsilon_\mscrX} \) is an isomorphism.
+
+  \SubProofOf*[def:function_invertibility/injective/equality]{injectivity} Suppose that \( \widetilde{\varepsilon_\mscrX}(\pi(v)) = \widetilde{\varepsilon_\mscrX}(\pi(w)) \). By definition,
+  \begin{equation*}
+    \varepsilon_\mscrX(v) = \widetilde{\varepsilon_\mscrX}(\pi(v)) = \widetilde{\varepsilon_\mscrX}(\pi(w)) = \varepsilon_\mscrX(w),
+  \end{equation*}
+  so \( \pi(v) = \pi(w) \) by definition of \( {\cong} \).
+
+  \SubProofOf*[def:function_invertibility/surjective/existence]{surjectivity} For any value \( x \) in \( X \), the singleton string \( v = x \) evaluates to \( x \) by \( \varepsilon_\mscrX \), so
+  \begin{equation*}
+    \widetilde{\varepsilon_\mscrX}(\pi(v)) = \varepsilon_\mscrX(v) = x.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:fol_equational_free_product}\mimprovised
+  Fix an \hyperref[def:fol_equational_theory]{equational theory} \( T \) over the \hyperref[def:fol_signature]{signature} \( \Sigma \) with no relation symbols. Fix a family \( \seq{ \mscrX_k }_{k \in \mscrK} \) of \hyperref[def:fol_theory/model]{models} of \( T \), where, for every index \( m \) in \( \mscrK \), \( \mscrX_m = (X_m, I_m) \) and \( (A_m, {\sim_m}) \) is a \hyperref[def:fol_model_presentation]{presentation} of \( \mscrX_m \).
+
+  We will define their \term[ru=свободние произведение (\cite[def. X.5.2]{Ляпин1960Полугруппы})]{free product}
+  \begin{equation*}
+    \Ast_{k \in \mscrK} \mscrX_k.
+  \end{equation*}
+
+  Consider the \hyperref[def:disjoint_union]{disjoint union} \( A \coloneqq \coprod_{k \in \mscrK} A_k \) with inclusions \( \lambda_m: A_m \to A \). Denote by \( {\sim} \) the following relation on \( F(A) \):
+  \begin{equation*}
+    \set[\big]{ \parens[\big]{ F(\lambda_m)(t), F(\lambda_m)(t') } \given m \in \mscrK \T{and} t \sim_m t' }.
+  \end{equation*}
+
+  We define the free product \( \Ast_{k \in \mscrK} \mscrX_k \) as the model of \( T \) defined by the presentation \( (A, {\sim}) \). For every index \( m \), we define the inclusion \( \iota_k: \mscrX_k \to \Ast_{k \in \mscrK} \mscrX_k \) using \fullref{thm:fol_quotient_structure_universal_property}:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__fol_equational_coproduct_model}
+    \end{aligned}
+  \end{equation*}
+
+  Here \( {\cong_m} \) and \( {\cong} \) and the congruences generated by \( {\sim_m} \) and \( {\sim} \), while \( \pi_m \) and \( \pi \) are the corresponding projections.
+\end{definition}
+\begin{comments}
+  \item We base our construction on free products of semigroups from \cite[def. X.5.2]{Ляпин1960Полугруппы}, but generalized to first-order models and with many formal details added.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_free_product_inclusion_is_injective}
+  The inclusion homomorphisms of a \hyperref[def:fol_equational_free_product]{free product} are \hyperref[def:fol_embedding]{embeddings} (i.e. \hyperref[def:function_invertibility/injective/equality]{injective} \hyperref[def:fol_homomorphism]{homomorphisms}).
+\end{proposition}
+\begin{proof}
+  Assume the setting of \cref{def:fol_equational_free_product}.
+
+  Suppose that \( \iota_m(\pi_m(t)) = \iota_m(\pi_m(t')) \). By the definition of \( \iota_m \), this implies
+  \begin{equation*}
+    \pi(F(\lambda_m)(t)) = \iota_m(\pi_m(t)) = \iota_m(\pi_m(t')) = \pi(F(\lambda_m)(t')).
+  \end{equation*}
+  and hence
+  \begin{equation*}
+    F(\lambda_m)(t) \cong F(\lambda_m)(t').
+  \end{equation*}
+
+  Note that the values in \( F(A) \) that are inclusions from \( F(A_m) \) can only be related by \( {\cong_m} \). This allows us to conclude that, \( t \cong_m t' \). Therefore, \( \pi_m(t) = \pi_m(t') \).
+\end{proof}
+
+\begin{theorem}[Free product universal property]\label{thm:fol_free_product_universal_property}
+  For any \hyperref[def:fol_equational_theory]{equational theory} \( T \), \hyperref[def:fol_equational_free_product]{free products} are \hyperref[def:categorical_coproduct]{categorical coproducts} in the \hyperref[def:fol_theory_model_functor/obj]{category of small models} \( \cat{Mod}(T) \).
+
+  More precisely, the free product \( \Ast_{k \in \mscrK} \mscrX_k \) is the unique up to an isomorphism model of \( T \) that satisfies the following \hyperref[con:universal_property]{universal property}:
+  \begin{displayquote}
+    Suppose we are given a small model \( \mscrY \) of \( T \) and, for every index \( m \) in \( \mscrK \), a homomorphism \( \beta_m: \mscrX_m \to \mscrY \). Then there exists a unique function \( l_\mscrY: \Ast_{k \in \mscrK} \mscrX_k \to \mscrY \) such that, for every index \( m \), the following diagram commutes:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__fol_free_product_universal_property}
+      \end{aligned}
+    \end{equation*}
+  \end{displayquote}
+\end{theorem}
+\begin{proof}
+  Fix an index \( m \). If \( \mscrX_m = (X_m, I_m) \), for every \( x \) in \( X_m \), we must have
+  \begin{equation*}
+    l_\mscrY(\iota_m(x)) = \beta_m(x).
+  \end{equation*}
+
+  This can be used as a definition as long as \( \iota_m \) and \( \beta_m \) are compatible in the sense that \( \beta_m(x) = \beta_m(x') \) whenever \( \iota_m(x) = \iota_m(x') \).
+
+  This follows from \cref{thm:fol_free_product_inclusion_is_injective} --- \( \iota_m \) is injective, so \( \iota_m(x) = \iota_m(x') \) implies \( {x = x'} \).
+\end{proof}
+
+\begin{proposition}\label{thm:fol_equational_category_of_models_is_cocomplete}
+  The \hyperref[def:fol_theory_model_functor/obj]{category of small models} of an \hyperref[def:fol_equational_theory]{equational theory} is \hyperref[def:cocomplete_category]{cocomplete}.
+\end{proposition}
+\begin{proof}
+  For any equational theory \( T \), \fullref{thm:fol_free_product_universal_property} provides \( \cat{Mod}(T) \) with arbitrary coproducts. We show in \cref{ex:def:categorical_coequalizer/fol} that \( \cat{Mod}(T) \) has coequalizers. Then, by \cref{thm:category_cocompleteness_via_coproducts_and_coequalizers}, \( \cat{Mod}(T) \) has all small colimits.
+\end{proof}
+
+\begin{corollary}\label{thm:fol_equational_category_of_models_is_bicomplete}
+  The \hyperref[def:fol_theory_model_functor/obj]{category of small models} of an \hyperref[def:fol_equational_theory]{equational theory} is \hyperref[def:cocomplete_category]{bicomplete}.
+\end{corollary}
+\begin{proof}
+  Follows from \cref{thm:fol_equational_category_of_models_is_complete} and \cref{thm:fol_equational_category_of_models_is_cocomplete}.
+\end{proof}
