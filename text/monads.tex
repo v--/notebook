@@ -1,0 +1,310 @@
+\section{Monads}\label{sec:monads}
+
+\paragraph{Monads}
+
+\begin{definition}\label{def:monad}\mcite[138]{MacLane1998CategoryTheory}
+  A \term{monad} in the \hyperref[def:category]{category} \( \cat{C} \) is an \hyperref[def:categorical_monoid]{internal monoid} in the \hyperref[def:endofunctor_category]{category of endofunctors} \( [\cat{C}, \cat{C}] \).
+
+  Since \( [\cat{C}, \cat{C}] \) is a \hyperref[def:strict_monoidal_category]{strict monoidal}, the diagrams from \cref{def:categorical_monoid} can be simplified. Namely, a monad is an endofunctor \( T: \cat{C} \to \cat{C} \) with multiplication \( \mu: T^2 \Rightarrow T \) and a unit (\hyperref[def:global_element]{global}) element \( \eta: \id_{\cat{C}} \Rightarrow T \) satisfying the diagrams
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__monad}
+      \qquad
+      \includegraphics[page=2]{output/def__monad}
+      \qquad
+      \includegraphics[page=3]{output/def__monad}
+    \end{aligned}
+  \end{equation*}
+
+  These diagrams can be restated pointwise at \( A \):
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=4]{output/def__monad}
+      \qquad
+      \includegraphics[page=5]{output/def__monad}
+      \qquad
+      \includegraphics[page=6]{output/def__monad}
+    \end{aligned}
+  \end{equation*}
+\end{definition}
+
+\begin{definition}\label{def:adjunction_monad}\mcite[139]{MacLane1998CategoryTheory}
+  Consider some \hyperref[def:unit_counit_adjunction]{unit-counit adjunction} \( (\eta, \varepsilon) \) from \( {F: \cat{C} \to \cat{D}} \) to \( {G: \cat{D} \to \cat{C}} \).
+
+  The composition \( G \bincirc F \) is an endofunctor on \( \cat{C} \). It becomes a \hyperref[def:monad]{monad} with \( \eta \) as the unit and, for multiplication, the \hyperref[def:natural_transformation_whiskering]{whiskering}
+  \begin{equation*}
+    \mu \coloneqq \id_G \otimes \varepsilon \otimes \id_F
+  \end{equation*}
+  with components
+  \begin{equation*}
+    \mu_A \coloneqq G(\underbrace{\varepsilon_{F(A)}}_{\mathclap{[F \bincirc G \bincirc F](A) \to F(A)}}).
+  \end{equation*}
+\end{definition}
+\begin{defproof}
+  The triangular diagrams for adjunctions from \cref{def:unit_counit_adjunction} are
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__adjunction_monad}
+      \quad
+      \includegraphics[page=2]{output/def__adjunction_monad}
+    \end{aligned}
+  \end{equation*}
+
+  Taking the image under \( G \) of the first, and taking \( X = F(A) \) in the second, we obtain the triangular monad diagrams from \cref{def:monad}.
+
+  It remains to show that the rectangular monad diagram commutes. In our case, it becomes
+  \begin{equation}\label{eq:def:adjunction_monad/proof/square_diagram}
+    \begin{aligned}
+      \includegraphics[page=3]{output/def__adjunction_monad}
+    \end{aligned}
+  \end{equation}
+
+  \Fullref{thm:composition_interchange_law} implies that
+  \begin{equation*}
+    \varepsilon \otimes \varepsilon = (\id_{\id_{\cat{C}}} \bincirc \varepsilon) \otimes (\varepsilon \bincirc \id_{F \bincirc G}) = (\id_{\id_{\cat{C}}} \otimes \varepsilon) \bincirc (\varepsilon \otimes \id_{F \bincirc G}) = \varepsilon \bincirc (\varepsilon \otimes \id_{F \bincirc G}),
+  \end{equation*}
+  and similarly
+  \begin{equation*}
+    \varepsilon \otimes \varepsilon = (\varepsilon \bincirc \id_{F \bincirc G}) \otimes (\id_{\id_{\cat{C}}} \bincirc \varepsilon) = (\varepsilon \otimes \id_{\id_{\cat{C}}}) \bincirc (\id_{F \bincirc G} \bincirc \varepsilon) = \varepsilon \bincirc (\id_{F \bincirc G} \bincirc \varepsilon).
+  \end{equation*}
+
+  This can be expressed via the diagram
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=4]{output/def__adjunction_monad}
+    \end{aligned}
+  \end{equation*}
+
+  Composing with \( F \) on the left and \( G \) on the right gives us
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=5]{output/def__adjunction_monad}
+    \end{aligned}
+  \end{equation*}
+
+  Note that, by \ref{def:functor/CF1}, \( \id_{G \bincirc F} = \id_G \bincirc \id_F \), which allows to reduce the above diagram to \eqref{eq:def:adjunction_monad/proof/square_diagram}.
+\end{defproof}
+
+\begin{example}\label{ex:def:monad}
+  We list examples of \hyperref[def:monad]{monads}:
+  \begin{thmenum}
+    \thmitem{ex:def:monad/power_set} Consider the power set functor discussed in \cref{ex:def:functor/power_set}:
+    \begin{equation*}
+      \begin{aligned}
+        &\pow: \cat{Set} \to \cat{Set}, \\
+        &\pow(A) \coloneqq \set{ S \given S \subseteq A }, \\
+        &\pow(f: A \to B) \coloneqq (S \mapsto f[S]). \\
+      \end{aligned}
+    \end{equation*}
+
+    We can use set union as monad multiplication. More precisely, define
+    \begin{equation*}
+      \begin{aligned}
+        &\mu: \pow^2 \to \pow, \\
+        &\mu_A(\mscrA) \coloneqq \bigcup \mscrA.
+      \end{aligned}
+    \end{equation*}
+
+    Here \( \mscrA \) is a set of subsets of \( A \) (an element of \( \pow(\pow(A)) \)), while \( \bigcup \mscrA \) is a subset of \( A \) (an element of \( \pow(A) \)).
+
+    To show that this is indeed a natural transformation, we need to verify the following diagram for a function \( f: A \to B \):
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__monad}
+      \end{aligned}
+    \end{equation*}
+
+    Given a set \( \mscrA \) from \( \pow^2(A) \), we have
+    \begin{equation*}
+      \mu_B\parens[\big]{ \pow^2(f)(\mscrA) } = \mu_B\parens[\big]{ \pow(f)[\mscrA] } = \bigcup \set{ f[S] \given S \in \mscrA },
+    \end{equation*}
+    and
+    \begin{equation*}
+      \pow(f)\parens[\big]{ \mu_A(\mscrA) } = f\bracks*{ \bigcup \mscrA }.
+    \end{equation*}
+
+    The two are equal by the interchange property shown in \cref{thm:function_image_properties/union}.
+
+    Therefore, \( \mu \) is a well-defined natural transformation. We need to verify that it satisfies the square diagram
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__monad}
+      \end{aligned}
+    \end{equation*}
+
+    Let \( \BbbA \) be an element from \( \pow^3(A) \). We have
+    \begin{align*}
+      \mu_A\parens[\big]{ \pow(\mu_A)(\BbbA) }
+      &=
+      \mu_A\parens[\big]{ \mu_A[\BbbA] }
+      = \\ &=
+      \bigcup \set*{ \bigcup \mscrA \given \mscrA \in \BbbA }
+      = \\ &=
+      \bigcup \set[\big]{ \set{ a \in S \given S \in \mscrA } \given \mscrA \in \BbbA }
+      = \\ &=
+      \set{ a \in S \given \mscrA \in \BbbA \T{and} S \in \mscrA }
+    \end{align*}
+    and
+    \begin{align*}
+      \mu_A\parens[\big]{ \mu_{\pow(A)}(\BbbA) }
+      &=
+      \bigcup \bigcup \BbbA
+      = \\ &=
+      \bigcup \set{ S \in \mscrA \given \mscrA \in \BbbA }
+      = \\ &=
+      \set{ a \in S \given \mscrA \in \BbbA \T{and} S \in \mscrA }.
+    \end{align*}
+
+    Thus, the rectangular monad diagram commutes.
+
+    We now need to define a unit transformation. We will use
+    \begin{equation*}
+      \begin{aligned}
+        &\eta: \id_{\cat{C}} \to \pow, \\
+        &\eta_A(x) \coloneqq \set{ x }.
+      \end{aligned}
+    \end{equation*}
+
+    It is easier to verify its naturality because
+    \begin{equation*}
+      \eta_B(f(a)) = \set{ f(a) } = f[\set{ a }] = \pow(f)(\eta_A(a)),
+    \end{equation*}
+    thus the following diagram commutes:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=3]{output/ex__def__monad}
+      \end{aligned}
+    \end{equation*}
+
+    It remains to verify the triangular monad diagrams
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=4]{output/ex__def__monad}
+        \quad
+        \includegraphics[page=5]{output/ex__def__monad}
+      \end{aligned}
+    \end{equation*}
+
+    Both are straightforward --- we have
+    \begin{equation*}
+      \mu_A(\eta_{\pow(A)}(\mscrA)) = \bigcup \set{ \mscrA } = \mscrA
+    \end{equation*}
+    and
+    \begin{equation*}
+      \mu_A(\pow(\eta_A)(\mscrA)) = \mu_A(\eta_A[\mscrA]) = \bigcup \set{ \set{ S } \given S \in \mscrA } = \set{ S \given S \in \mscrA } = \mscrA.
+    \end{equation*}
+
+    \thmitem{ex:def:monad/list} The \hyperref[def:adjunction_monad]{adjunction monad} of the \hyperref[def:free_monoid]{free monoid} functor \( F(\anon*) = (\anon*)^* \) is also called the \term[en=list monad (\cite[example 5.1.4]{Riehl2016CategoryTheory})]{list monad}, for the following reasons.
+
+    Denote the monad \( U \bincirc F \) by \( T \). The set \( T(A) = U(A^*) \) contains all lists of elements of \( A \), while, for every function \( f: A \to B \), we have
+    \begin{equation*}
+      T(f)\parens[\big]{ (a_1, \ldots, a_n) } = \parens[\big]{ f(a_1), \ldots, f(a_n) }.
+    \end{equation*}
+
+    The unit \( \eta_A: A \to T(A) \) sends each element of \( A \) to its singleton set.
+
+    Multiplication \( \mu_A = U(\varepsilon_{F(A)}) \) is more subtle. The domain of \( \varepsilon_{F(A)} \) is the set \( [F \bincirc U \bincirc F](A) \) whose members are lists of lists over \( A \). It must \enquote{flatten} such a nested list into an ordinary list over \( A \). We will use induction on \( m \) to show that this flattening is simple concatenation:
+    \begin{equation}\label{eq:ex:def:monad/list/multiplication}
+      \varepsilon_{F(A)}(v_1, \ldots, v_m) = v_1 \cdot \ldots \cdot v_m.
+    \end{equation}
+
+    \begin{itemize}
+      \item If \( m = 0 \), since \( \varepsilon_{F(A)} \) is a homomorphism, it must send the neutral element of \( [F \bincirc U \bincirc F](A) \) to that of \( F(A) \). The neutral element is the empty list in both, which demonstrates \eqref{eq:ex:def:monad/list/multiplication} for \( m = 0 \).
+
+      \item If \( m = 1 \), we note that, as a counit, \( \varepsilon_{F(A)} \) must satisfy the triangular diagram
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=6]{output/ex__def__monad}
+        \end{aligned}
+      \end{equation*}
+
+      Thus, for every list \( v \) of elements of \( A \), we have
+      \begin{equation*}
+        \varepsilon_{F(A)}(F(\eta_A)(v)) = v.
+      \end{equation*}
+
+      Since \( F(\eta_A)(v) \) is the singleton (nested) list \( (v) \), the above demonstrates \eqref{eq:ex:def:monad/list/multiplication} for \( m = 1 \).
+
+      \item Finally, suppose that the inductive hypothesis holds for \( m \) and consider the lists \( v_1, \ldots, v_m, v_{m+1} \).
+      Since \( \varepsilon_{F(A)} \) is a homomorphism, we must have
+      \begin{equation*}
+        \varepsilon_{F(A)}(v_1, \ldots, v_m, v_{m+1}) = \underbrace{\varepsilon_{F(A)}(v_1) \cdot \ldots \cdot \varepsilon_{F(A)}(v_m)}_{\mathclap{v_1 \cdot \ldots \cdot v_m \T*{by the inductive hypothesis}}} \cdot \underbrace{\varepsilon_{F(A)}(v_{m+1})}_{v_{m+1}}.
+      \end{equation*}
+
+      This concludes the induction.
+    \end{itemize}
+
+    In programming languages like Haskell, which natively support functorial \hyperref[con:type_constructor]{type constructors}, the operation of a functor on morphisms is defined by overloading the \Verb|fmap| function, as described in \cite{HaskellWiki:functor}.
+
+    For example, if \Verb|numbers| is a variable \hyperref[def:type_habitation]{inhabiting} \Verb|List Int|, then the expression
+    \begin{Verbatim}[gobble=4]
+      fmap (\n -> n * n) numbers
+    \end{Verbatim}
+    evaluates to a list whose elements are squares of \Verb|numbers|.
+
+    More generally, the \hyperref[con:type_annotation]{type annotation} of \Verb|fmap| is
+    \begin{Verbatim}[gobble=4]
+      fmap :: Functor f => (a -> b) -> f a -> f b
+    \end{Verbatim}
+
+    The unit \( \eta \) and the multiplication \( \mu \) are represented by the following:
+    \begin{Verbatim}[gobble=4]
+      return :: Monad m => a -> m a
+      join :: Monad m => m (m a) -> m a
+    \end{Verbatim}
+
+    In Python, the equivalent of the above would be
+    \begin{Verbatim}[gobble=4]
+      map(lambda n: n * n, numbers)
+    \end{Verbatim}
+
+    Unlike in Haskell, where each functor decides how to implement \Verb|fmap|, in Python \Verb|map| is a fixed global function that takes and produces an \Verb|Iterable|, so it is only compatible with types that can be represented as finite or infinite sequences. There is no equivalent to \Verb|return| or \Verb|join|.
+
+    \thmitem{ex:def:monad/maybe} Some programming languages allow packing \hyperref[con:undefinedness]{possibly undefined} computations via the \term[en=maybe monad (\cite[example 5.1.4]{Riehl2016CategoryTheory})]{maybe monad}\fnote{For Haskell, this id described in \cite{HaskellWiki:maybe}.}, also called an \term[en=option type (\cite[\S 1.3.4]{Mimram2020ProgramEqualsProof})]{option type}.
+
+    More generally, consider the \hyperref[def:category_of_simple_types]{category of simple types} \( \cat{T} \). We can define a monad \( O \) by sending each type \( \tau \) to the \hyperref[def:simple_sum_type]{sum type} \( \tau \synplus \syn\Bbbzero \), and each morphism \( F: \tau \synimplies \sigma \) to the conclusion of the \hyperref[def:type_derivation_tree]{derivation tree}
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \syns: \tau \synplus \syn\Bbbzero }
+
+        \hypo{ \syna: \tau }
+        \hypo{ F: \tau \synimplies \sigma }
+        \infer2[\ref{inf:def:arrow_type/elim}]{ F\syna: \sigma }
+        \infer1[\ref{inf:def:simple_sum_type/intro_left}]{ \synS_{+L} (F\syna): \sigma \synplus \syn\Bbbzero }
+
+        \hypo{ \synb: \syn\Bbbzero }
+        \infer1[\ref{inf:def:simple_sum_type/intro_right}]{ \synS_{+R} \synb: \sigma \synplus \syn\Bbbzero }
+
+        \infer[left label={\( \syna, \synb \)}]3[\ref{inf:def:simple_sum_type/elim}]{ \synS_- (\qabs {\syna^\tau} \synS_{+L} (F\syna)) (\qabs {\synb^{\syn\Bbbzero}} \synS_{+R} \synb) \syns: \sigma \synplus \syn\Bbbzero }
+        \infer[left label={\( \syns \)}]1[\ref{inf:def:arrow_type/intro/explicit}]{ \synanon: \tau \synplus \syn\Bbbzero \synimplies \sigma \synplus \syn\Bbbzero }
+      \end{prooftree}
+    \end{equation*}
+
+    Thus, \( O(F) \) applies \( F \) to any \( \muplambda \)-term inhabiting \( \tau \) and otherwise propagates the \enquote{invalid} value inhabiting the empty type \( \syn\Bbbzero \).
+
+    The monad unit natural transformation \( \eta_\tau \) is given by
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \tau }
+        \infer1[\ref{inf:def:simple_sum_type/intro_left}]{ \synS_{+L} \synx: \tau \synplus \syn\Bbbzero }
+        \infer[left label={\( \synx \)}]1[\ref{inf:def:arrow_type/intro/explicit}]{ \qabs {\synx^\tau} \synS_{+L} \synx: \tau \synimplies \tau \synplus \syn\Bbbzero }
+      \end{prooftree}
+    \end{equation*}
+    while multiplication \( \mu_\tau \) is a bit more complicated:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \syns: (\tau \synplus \syn\Bbbzero) \synplus \syn\Bbbzero }
+
+        \hypo{ \syna: \tau \synplus \syn\Bbbzero }
+
+        \hypo{ \synb: \syn\Bbbzero }
+        \infer1[\ref{inf:def:simple_sum_type/intro_right}]{ \synS_{+R} \synb: \tau \synplus \syn\Bbbzero }
+
+        \infer[left label={\( \syna, \synb \)}]3[\ref{inf:def:simple_sum_type/elim}]{ \synS_- (\qabs {\syna^{\tau \synplus \syn\Bbbzero}} \syna) (\qabs {\synb^{\syn\Bbbzero}} \synS_{+R} \synb) \syns: \tau \synplus \syn\Bbbzero }
+        \infer[left label={\( \syns \)}]1[\ref{inf:def:arrow_type/intro/explicit}]{ \synanon: ((\tau \synplus \syn\Bbbzero) \synplus \syn\Bbbzero) \synimplies (\tau \synplus \syn\Bbbzero) }
+      \end{prooftree}
+    \end{equation*}
+
+    Verifying naturality for both transformations is straightforward, although tedious, as is verifying the monad diagrams from \cref{def:monad}.
+  \end{thmenum}
+\end{example}
