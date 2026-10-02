@@ -1,5 +1,4 @@
 from itertools import product
-from typing import no_type_check
 lazy from collections.abc import Iterable, Sequence
 
 from notebook.support.coderefs import collector
@@ -15,7 +14,6 @@ def iter_interpretations_for_variables(variables: Sequence[PropVariable]) -> Ite
         yield PropInterpretation(dict(zip(variables, spec, strict=True)))
 
 
-@no_type_check  # mypy does not yet support comprehension unpacking; see https://github.com/python/mypy/issues/21447
 def iter_interpretations(*formulas: PropFormula) -> Iterable[PropInterpretation]:
     return iter_interpretations_for_variables(
         sorted(*get_prop_variables(formula) for formula in formulas),
