@@ -5,7 +5,7 @@ lazy from notebook.bibtex import BibEntry
 from .bib import stackexchange_post_to_bib
 from .fetch import fetch_stackexchange_json
 from .model import parse_stackexchange_answer_json, parse_stackexchange_question_json
-from .url_parser import StackExchangeUrl
+lazy from .url_parser import StackExchangeUrl
 
 
 REGEX = re.compile(r'https?://(?P<url>[\w.]+)/(?P<type>[qa])/(?P<question_id>\d+)(/(?P<answer_id>\d+))?$')

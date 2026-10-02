@@ -1,5 +1,5 @@
-from collections.abc import Mapping, Sequence
 from typing import Any
+lazy from collections.abc import Mapping, Sequence
 
 import msgspec
 

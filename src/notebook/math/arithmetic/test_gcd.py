@@ -1,5 +1,5 @@
 import random
-from collections.abc import Sequence
+lazy from collections.abc import Sequence
 
 from notebook.math.arithmetic.divisibility import rem
 from notebook.support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists, repeat5

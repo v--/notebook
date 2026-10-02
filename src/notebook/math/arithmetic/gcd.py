@@ -1,5 +1,5 @@
-from collections.abc import Sequence
 from dataclasses import dataclass
+lazy from collections.abc import Sequence
 
 from notebook.math.matrices.matrix import IntMatrix
 from notebook.support.coderefs import collector

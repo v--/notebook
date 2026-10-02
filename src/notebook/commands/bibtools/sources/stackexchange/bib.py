@@ -9,8 +9,8 @@ from notebook.commands.bibtools.exceptions import BibToolsDecodingError
 from notebook.commands.bibtools.sources.helpers.dates import to_iso_date
 from notebook.support.iteration import string_accumulator
 
-from .model import StackExchangeAnswer, StackExchangeQuestion
-from .url_parser import StackExchangeUrl
+lazy from .model import StackExchangeAnswer, StackExchangeQuestion
+lazy from .url_parser import StackExchangeUrl
 
 
 @dataclass(frozen=True)

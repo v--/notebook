@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+lazy from collections.abc import Sequence
 
 import msgspec
 import msgspec.json

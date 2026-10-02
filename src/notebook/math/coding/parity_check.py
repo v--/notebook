@@ -1,9 +1,9 @@
 import functools
 import operator
-from collections.abc import Sequence
+lazy from collections.abc import Sequence
 
-from notebook.math.rings.modular import Z2
 from notebook.support.coderefs import collector
+lazy from notebook.math.rings.modular import Z2
 
 from .exceptions import DecodingError, EncodingError
 

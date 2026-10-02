@@ -1,6 +1,6 @@
-from collections.abc import Sequence
-from datetime import datetime
 from typing import Annotated
+lazy from collections.abc import Sequence
+lazy from datetime import datetime
 
 import msgspec
 import msgspec.json

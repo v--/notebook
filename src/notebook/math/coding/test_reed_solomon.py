@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+lazy from collections.abc import Mapping
 
 from notebook.math.rings.modular import Z5, IntModuloMeta
 from notebook.support.pytest import pytest_parametrize_kwargs

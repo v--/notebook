@@ -2,13 +2,13 @@
 
 # The schema here is extracted from a few example responses and guided by
 # https://arxiv.org/schemas/atom.xsd
-from collections.abc import Sequence
 from dataclasses import dataclass, field
+lazy from collections.abc import Sequence
 
 from xsdata.formats.dataclass.parsers import XmlParser
 
 # annotation-only XmlDateTime breaks because of metaprogramming
-from xsdata.models.datatype import XmlDateTime
+lazy from xsdata.models.datatype import XmlDateTime
 
 
 ARXIV_NAMESPACE = 'http://arxiv.org/schemas/atom'

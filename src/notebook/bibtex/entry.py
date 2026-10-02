@@ -1,12 +1,12 @@
-from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import Annotated, Any, Literal, get_args, get_type_hints
+lazy from collections.abc import Collection, Iterable, Mapping, Sequence
 
 from notebook.support.iteration import string_accumulator
 
-from .author import BibAuthor
 from .escaping import escape
-from .string import BibString
+lazy from .author import BibAuthor
+lazy from .string import BibString
 
 
 TAB_SIZE = 2
