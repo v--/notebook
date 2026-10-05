@@ -1,48 +1,55 @@
 \chapter{Set theory}\label{ch:set_theory}
 
-Sets are ubiquitous in mathematics, yet set theory itself is quite complicated. Attention needs to be put to define a \hyperref[def:fol_theory]{logical theory} of sets that is both useful and \hyperref[def:fol_theory/consistent]{consistent}.
+We have dedicated \fullref{ch:mathematical_logic} to \hyperref[def:formal_language]{formal languages} with a notion of \hyperref[con:proposition]{formula} --- a concrete string of symbols encoding a (possibly \hyperref[con:hypothetical_judgment]{hypothetical}) \hyperref[con:judgment]{metalingual judgment}. Certain formulas can then be grouped into \hyperref[def:logical_theory]{theories}, allowing us to study \hyperref[con:logical_model]{models} --- external entities satisfying the formulas in the theory.
 
-We first use the simplicity of \hyperref[def:naive_set_theory]{naive set theory} to introduce some fundamental definitions. This theory turns out to be inconsistent due to \fullref{thm:russels_paradox}.
+This approach reverses the historical development of mathematics. \hyperref[con:logical_system]{Logical systems} are developed so that they can encode theories of interest, which themselves arise by studying concrete models. For example, Peano has aided the development of \hyperref[con:predicate_logic]{predicate logic} with his arithmetical theory exhibited in \cite{Peano1889ArithmeticesPrincipia} --- what we now call \hyperref[def:peano_arithmetic]{Peano arithmetic}. The corresponding model --- the natural numbers, in their abstract form --- dates back to at least Ancient Greece\fnote{A historical account of ancient mathematics can be found in \cite{Kline1972MathematicalThoughtVol1}.}, with books VII to IX of Euclid's \enquote{Elements} dedicated to positive integers.
 
-We later introduce the more sophisticated \hyperref[def:zfc]{Zermelo-Fraenkel set theory} (\logic{ZFC}) and enhance it with Grothendieck's \hyperref[def:zfcu]{axiom of universes} to obtain \logic{ZFC+U}. The consistency of the latter theory is discussed in \cref{rem:set_definition_recursion}.
+In a concrete model, there are two perspectives on logical formulas, which \textcite[125]{Enderton1977SetTheory} summarizes as follows\fnote{We discuss extensionality in \cref{con:extensionality}.}:
+\begin{displayquote}
+  If a couple of properties have the same extension (i.e., if they are true of exactly the same objects), are they in fact one and the same property? Is the property of being a prime number less than 10 the same
+  as the property of being a solution to
+  \begin{equation*}
+    x^4 - 17x^3 + 101x^2 - 247x + 210 = 0?
+  \end{equation*}
 
-Depending on the context, by \enquote{set theory} we mean either naive set theory, \logic{ZF}, \logic{ZFC}, \logic{ZFC+U} or further variations.
+  If you answer \enquote{yes,} then one says that you are thinking of properties \textit{extensionally}, whereas if you answer \enquote{no,} then you are thinking of properties \textit{intensionally}. Both alternatives are legitimate, as long as the choice of
+  alternatives is made clear.
+\end{displayquote}
 
-\begin{remark}\label{rem:set_definition_recursion}
-  The relation between \hyperref[sec:first_order_logic]{first-order logic} and set theory is remarkably circular.
+Enderton uses the above to describe sets as \enquote{extensions of properties}. This view of sets aligns with \cref{def:fol_definability}, where we introduce sets of \hyperref[con:predicate_logic/types]{individuals} definable by \hyperref[def:fol_formula]{first-order formulas}. It is also rather concrete because it provides a notion of \enquote{set} that depends on the concrete models and theories. For example, a set of real numbers has topological and order-theoretic properties, while a set of permutations has neither.
 
-  \begin{itemize}
-    \item We define set theory as a \hyperref[def:fol_theory]{theory} of first-order logic.
+As a confirmation of the above remarks on historical development, set theory arose from abstracting away all aspects of sets except those expressible via membership.
 
-    \item We define first-order logic itself via sets --- see even the basic definitions from \fullref{sec:first_order_logic}.
-  \end{itemize}
+We formulate the essence of set theory in \fullref{sec:naive_set_theory} and construct some basic notions in \fullref{sec:relations} and \fullref{sec:functions} so that we are able to state a proper axiomatization in \fullref{sec:zermelo_fraenkel_set_theory}.
 
-  In order to resolve this circularity, we utilize the concept of \hyperref[con:metalogic]{metalogic}:
-  \begin{itemize}
-    \item We start with some intuitive understanding of sets and build first-order logic as in \fullref{ch:mathematical_logic}. This is our initial metatheory, where we assume the availability of first-order logic. We construct formulas specifying certain special sets that can be used as models of \logic{ZFC} --- see \fullref{sec:grothendieck_universes}
+We then study what grew out of Cantor's theory of infinite sets in \fullref{sec:ordinals}, \fullref{sec:cardinals} and \fullref{sec:transfinite_arithmetic}. This allows us to construct models of set theory in \fullref{sec:von_neumanns_cumulative_hierarchy} and \fullref{sec:grothendieck_universes}.
 
-    \item We now transition to work within \logic{ZFC+U} as a metatheory and \logic{ZFC} as an object theory. We use Grothendieck's \hyperref[def:zfcu]{axiom of universes} in the metatheory because it provides us with \hyperref[def:set_countability/uncountable]{uncountable} \hyperref[def:grothendieck_universe]{Grothendieck universes}\fnote{We can assume the existence of only one such universe, but that would complicate our discussion of \hyperref[ch:category_theory]{category theory}}, which are models of \logic{ZFC} as a consequence of \cref{thm:grothendieck_universe_is_model_of_zfc}. Hence, within this metatheory, the object theory \logic{ZFC} is consistent.
-  \end{itemize}
+\begin{concept}\label{con:foundational_theory}
+  In \cref{con:metalogic}, we have discussed how object theories are expressed within an ambient metatheory, and we have noted that some theories are rich enough to themselves serve as metatheories. We call such theories \term{foundational}.
 
-  There are, however, caveats, among which:
-  \begin{itemize}
-    \item We restrict ourselves to \hyperref[rem:standard_model_of_set_theory]{standard} \hyperref[rem:transitive_model_of_set_theory]{transitive} models in order to avoid very counterintuitive results.
+  \begin{thmenum}
+    \thmitem{con:foundational_theory/sets} The dominant approach is to use \hyperref[def:axiomatic_set_theory]{axiomatic set theory}.
 
-    \item It is possible that the set theory which we use within the metatheory in order to provide models of \logic{ZFC} is itself inconsistent. In that case, due to \eqref{eq:thm:intuitionistic_tautologies/efq}, every theorem can be derived and a proof of consistency of \logic{ZFC} is insubstantial.
-  \end{itemize}
-\end{remark}
+    By default, this is \hyperref[def:zfc]{Zermelo-Fraenkel set theory} (\logic{ZFC}) or a variation like \hyperref[def:zfcu]{\logic{ZFC+U}} --- the one we use in this monograph --- or \hyperref[rem:small_category/reflection]{\logic{ZFC/S}}. There are also alternatives like \hyperref[def:nbg]{Von Neumann-G\"odel-Bernays set theory} (\logic{NBG}) that have a notion of \enquote{class} in addition to \enquote{set}. We compare these in \cref{rem:small_category} from the perspective of \hyperref[ch:category_theory]{category theory}.
 
-\begin{remark}\label{rem:first_order_theories_in_zfc}
-  Instead of discussing first-order theories like the \hyperref[def:group/theory]{theory of groups}, we can instead reformulate the definition within set theory and add a \hyperref[con:formula_defined_predicate]{formula-defined predicate} \( \op{IsGroup}[\synx] \), which is valid only for groups.
+    These are all theories of \hyperref[def:first_order_logic]{classical first-order logic}, but set theory can use other \hyperref[con:logical_system]{logical systems}. For example, as noted in \cref{def:zfc}, \hyperref[def:second_order_logic]{monadic second order logic} allows a more faithful encoding of \logic{ZFC}. We can also pursue \hyperref[con:intuitionistic_logic]{constructive (intuitionistic) logic}, with some notable downsides --- it would break equality, as explained in \cref{rem:intuitionistic_equality}, and it would conflict with the axiom of choice because of \fullref{thm:diaconescu_goodman_myhill_theorem}.
 
-  This is a natural approach, and we will use it implicitly. Furthermore, it makes no sense to speak about concepts like the \hyperref[thm:fol_lattice_of_substructures]{lattice of subgroups} or the \hyperref[def:cardinal]{cardinality} of a group otherwise.
+    Thus, a set-theoretic foundation requires both a logical system and a set theory. This is observed in \cite[17]{UnivalentFoundationsProgram2013HoTT}:
+    \begin{displayquote}
+      We note that a set-theoretic foundation has two \enquote{layers}: the deductive system of first-order logic, and, formulated inside this system, the axioms of a particular theory, such as ZFC. Thus, set theory is not only about sets, but rather about the interplay between sets (the objects of the second layer) and propositions (the objects of the first layer).
+    \end{displayquote}
 
-  This is also a natural framework for defining \hyperref[def:topological_space]{topological spaces} and \hyperref[def:category]{categories} via \hyperref[def:directed_multigraph]{directed multigraphs}. Some theories like the \hyperref[def:partially_ordered_set]{partially ordered sets} are first-order theories, but \hyperref[def:well_ordered_set]{well-ordered sets} is an extension that requires an ambient set theory.
+    \thmitem{con:foundational_theory/types} As manifested by the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, a suitable \hyperref[def:abstract_type_system]{type system} like \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} or \hyperref[def:homotopy_type_theory]{homotopy type theory} can act as a logical system. For this, only a part of the type system is sufficient --- for example, the types that are \hyperref[def:mere_proposition]{mere propositions}.
 
-  Thus, roughly, set theory allows us to use \hyperref[def:higher_order_logic]{higher-order relations and types} within first-order logic.
+    Furthermore, the commonplace use of sets can often be translated by replacing set membership with \hyperref[def:type_habitation]{type habitance}, set union with \hyperref[def:dependent_sum]{sum types}, set intersection with \hyperref[def:dependent_product]{product types}, etc.
 
-  We will end this remark with a quote from \cite[17]{UnivalentFoundationsProgram2013HoTT}:
-  \begin{displayquote}
-    We note that a set-theoretic foundation has two \enquote{layers}: the deductive system of first-order logic, and, formulated inside this system, the axioms of a particular theory, such as ZFC. Thus, set theory is not only about sets, but rather about the interplay between sets (the objects of the second layer) and propositions (the objects of the first layer).
-  \end{displayquote}
-\end{remark}
+    The quote above continues as follows:
+    \begin{displayquote}
+      By contrast, type theory is its own deductive system: it need not be formulated inside any superstructure, such as first-order logic. Instead of the two basic notions of set theory, sets and propositions, type theory has one basic notion: \textit{types}.
+    \end{displayquote}
+
+    \thmitem{con:foundational_theory/categories} Yet another alternative is to take \hyperref[def:category]{categories} as primitive notions and develop theories inside specific categories, like how \hyperref[def:categorical_monoid]{internal monoids} can be defined in \hyperref[def:monoidal_category]{monoidal categories}.
+
+    Reconstructing logic and set theory from categories alone is sketched in \cite{Awodey2009SetsTypesCategories}.
+  \end{thmenum}
+\end{concept}

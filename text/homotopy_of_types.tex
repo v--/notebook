@@ -1,0 +1,487 @@
+\section{Homotopy of types}\label{sec:homotopy_of_types}
+
+This section continues \fullref{sec:dependent_types} with a sketch of some ideas from homotopy type theory.
+
+\paragraph{Mere propositions}
+
+\begin{remark}\label{rem:mere_propositions}
+  Due to the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, every type in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be regarded as a logical formula in the sense of \cref{con:proposition}.
+
+  As noted in \cite[111]{UnivalentFoundationsProgram2013HoTT}, this definition only takes into account whether the type is inhabited, and not in which terms inhabit it. The authors suggest restricting the Curry-Howard correspondence to only those types that are inhabited by at most one term. We define such types, called \enquote{mere propositions}, in \cref{def:mere_proposition}.
+\end{remark}
+
+\begin{definition}\label{def:mere_proposition}\mcite[def. 3.3.1]{UnivalentFoundationsProgram2013HoTT}
+  Within \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we call the type \( \tau \) a \term{mere proposition} if all its habitants are \hyperref[def:mltt_propositional_equality]{propositionally equal} or, more formally, if the following type is inhabited:
+  \begin{equation*}
+    \op{IsProp}(\tau) \coloneqq \qprod {x^\tau} \qprod {y^\tau} (x \syneq y).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Since the condition resembles that for \hyperref[def:subsingleton_set]{subsingleton sets}, mere propositions are also called \enquote{subsingletons}.
+
+  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsProp} \) here is an abbreviation in the sense of \cref{con:syntactic_abbreviation}.
+
+  \item As shown in \cref{thm:is_prop_is_proposition}, assuming \hyperref[def:function_extensionality_axiom]{function extensionality}, the type \( \op{IsProp}(\tau) \) is itself \hyperref[def:mere_proposition]{mere proposition}.
+\end{comments}
+
+\begin{proposition}\label{thm:uninhabited_type_is_proposition}
+  Any \hyperref[def:propositionally_uninhabited]{propositionally uninhabited} term is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{proposition}
+\begin{proof}
+  If \( \tau \) is propositionally uninhabited, there exists a term \( M \) inhabiting \( \tau \synimplies \syn\Bbbzero \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \tau: \BbbU }
+      \hypo{ x: \tau }
+      \hypo{ y: \tau }
+      \infer3[\ref{inf:def:identity_type/form}]{ x \syneq y: \BbbU }
+
+      \hypo {}
+      \ellipsis {} { M: \tau \synimplies \syn\Bbbzero }
+
+      \hypo{ y: \tau }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ M y: \syn\Bbbzero }
+
+      \infer2[\ref{inf:def:dependent_empty_type/elim}]{ \synE_- (\qabs {z^{\syn\Bbbzero}} x \syneq y) (M y): x \syneq y }
+      \infer[left label=\( y \)]1[\ref{inf:def:dependent_product/intro}]{ \qabs {y^\tau} \ldots: \qprod {y^\tau} x \syneq y }
+      \infer[left label=\( x \)]1[\ref{inf:def:dependent_product/intro}]{ \qabs {x^\tau} \qabs {y^\tau} \ldots: \op{IsProp}(\tau) }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:empty_type_is_proposition}
+  The (dependent) \hyperref[def:dependent_empty_type]{empty type} is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{corollary}
+\begin{proof}
+  By \cref{thm:empty_type_is_uninhabited}, the empty type is (propositionally) uninhabited. By \cref{thm:uninhabited_type_is_proposition}, it is a mere proposition.
+\end{proof}
+
+\begin{definition}\label{def:contractible_type}\mcite[def. 3.11.1]{UnivalentFoundationsProgram2013HoTT}
+  Within \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we call the type \( \tau \) \term{contractible} if it has a distinguished habitant, called the \term{center of contraction}, that is \hyperref[def:mltt_propositional_equality]{propositionally equal} to any other habitant, i.e. if the following type is inhabited:
+  \begin{equation*}
+    \op{IsContr}(\tau) \coloneqq \qsum {\syna^\tau} \qprod {x^\tau} (\syna \syneq x).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item There is generally no canonical choice of center of contraction.
+
+  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsContr} \) here is an abbreviation in the sense of \cref{con:syntactic_abbreviation}.
+\end{comments}
+
+\begin{proposition}\label{thm:contractible_type_is_proposition}
+  Any \hyperref[def:contractible_type]{contractible type} is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{proposition}
+\begin{proof}
+  Fix a term \( M: \qsum {\syna^\tau} \qprod {x^\tau} (\syna \syneq x) \). Such a term can only be obtained via \ref{inf:def:dependent_sum/intro}, hence \( M = \synS_+ N K \) for some terms \( N \) and \( K \) such that \( N: \tau \) and \( K: \qprod {x^\tau} (N \syneq x) \).
+
+  For any term \( L: \tau \), \ref{inf:def:dependent_product/elim} allows us to derive \( KL: N \syneq L \). In particular, for two variables \( a: \tau \) and \( b: \tau \), we have \( Ka: N \syneq a \) and \( Kb: N \syneq b \). \Cref{thm:propositional_equality_equivalence_relation/symmetry} gives us a term of type \( a \syneq N \), and we combine it with \( Kb \) to obtain, via \cref{thm:propositional_equality_equivalence_relation/transitivity}, a term of type \( a \syneq b \).
+
+  Since \( a \) and \( b \) are arbitrary, we can use \ref{inf:def:dependent_product/intro} twice to obtain \( \op{IsProp}(\tau) \).
+\end{proof}
+
+\begin{proposition}\label{thm:unit_type_is_contractible}
+  The (dependent) \hyperref[def:dependent_unit_type]{unit type} is \hyperref[def:contractible_type]{contractible}.
+\end{proposition}
+\begin{proof}
+  \Cref{thm:unit_type_term_uniqueness} shows how to derive a term of type \( x \syneq \synU_+ \). We will find it more convenient to swap the two sides (which is justified by \cref{thm:propositional_equality_equivalence_relation/symmetry}).
+
+  Let \( M: \synU_+ \syneq x \). We can then construct the following derivation:
+  \footnotesize
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \BbbU }
+
+      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \BbbU }
+      \hypo{ \syna: \syn\Bbbone }
+      \hypo{ x: \syn\Bbbone }
+      \infer3[\ref{inf:def:identity_type/form}]{ \syna \syneq x: \BbbU }
+
+      \infer[left label=\( x \)]2[\ref{inf:def:dependent_product/form}]{ \qprod {x^{\syn\Bbbone}} \syna \syneq x: \BbbU }
+
+      \infer0[\ref{inf:def:dependent_unit_type/intro}]{ \synU_+: \syn\Bbbone }
+
+      \hypo{ x: \syn\Bbbone }
+      \ellipsis {} { M: \synU_+ \syneq x }
+
+      \infer[left label=\( x \)]1[\ref{inf:def:dependent_product/intro}]{ \qabs {x^{\syn\Bbbone}} M: \qprod {x^{\syn\Bbbone}} \synU_+ \syneq x }
+
+      \infer[left label=\( \syna \)]3[\ref{inf:def:dependent_sum/intro}]{ \synS_+ \synU_+ (\qabs {x^{\syn\Bbbone}} M): \op{IsContr}(\syn\Bbbone) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+\end{proof}
+
+\begin{corollary}\label{thm:unit_type_is_proposition}
+  The (dependent) \hyperref[def:dependent_unit_type]{unit type} is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{corollary}
+\begin{proof}
+  \Cref{thm:unit_type_is_contractible} implies that the unit type is contractible, and \cref{thm:contractible_type_is_proposition} implies that contractible types are mere propositions.
+\end{proof}
+
+\paragraph{Subtypes}
+
+\begin{definition}\label{def:dependent_subtype}\mcite[46; 115]{UnivalentFoundationsProgram2013HoTT}
+  Consider the \hyperref[def:dependent_sum]{dependent sum} \( \qsum {x^\tau} \sigma \), assumed to satisfy
+  \begin{equation}\label{eq:def:dependent_subtype}
+    \qprod {x^\tau} \op{IsProp}(\sigma).
+  \end{equation}
+
+  This sum corresponds, via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, to an \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifier}, hinting that we can regard it as an abstract collection of habitants \( M \) of \( \tau \) satisfying the condition \( \sigma[x \mapsto M] \).
+
+  Because of this interpretation, where appropriate, we will call \( \qsum {x^\tau} \sigma \) a \term{subtype} of \( \tau \) determined by the proposition \( \sigma \) parameterized by \( x \).
+
+  We can use the projection functions from \cref{def:dependent_sum_projections} to clarify the relation between a type and its subtype. Given a term \( S: \qsum {x^\tau} \sigma \), the left projection \( \pi_L S \) is an habitant of \( \tau \), while the right projection \( \pi_R S \) is a witness that \( \pi_L S \) satisfies the subtype criterion. We will call \( \pi_L \) the \enquote{inclusion into \( \tau \)} and denote it by \( \iota \). Since, \( \sigma[x \mapsto M] \) is a mere proposition whenever \( M: \tau \), the inclusion term \( \iota \) is injective as a function.
+\end{definition}
+\begin{comments}
+  \item It is important to note that \( \qsum {x^\tau} \sigma \) is a purely syntactic object used only as a type annotation. As such, it merely expresses the intention of taking a subcollection of \( \tau \) satisfying some condition.
+
+  \item Subtypes are ubiquitous in programming, where they are advised, if not enforced, to obey Liskov's substitution principle. We discuss this principle in \cref{con:liskov_substitution_principle}.
+\end{comments}
+
+\begin{example}\label{ex:def:dependent_subtype}
+  We list examples of \hyperref[def:dependent_subtype]{subtypes}:
+  \begin{thmenum}
+    \thmitem{ex:def:dependent_subtype/trivial} For any type \( \tau \), the (dependent) \hyperref[def:dependent_empty_type]{empty type} induces the \hyperref[def:propositionally_uninhabited]{propositionally uninhabited} subtype \( \qsum {x^\tau} \syn\Bbbzero \).
+
+    Indeed, by \cref{thm:empty_type_is_proposition}, \( \syn\Bbbzero \) is a mere proposition, so the condition \eqref{eq:def:dependent_subtype} for the definition of subtype is satisfied.
+
+    Furthermore, the right projection \( \pi_R: \qprod {\syna^{\qsum {x^\tau} \syn\Bbbzero}} \syn\Bbbzero \) itself acts as a witness that the subtype \( \qsum {x^\tau} \syn\Bbbzero \) is (propositionally) uninhabited.
+
+    \thmitem{ex:def:dependent_subtype/improper} Dually, for any type \( \tau \), the (dependent) \hyperref[def:dependent_unit_type]{unit type} induces the subtype \( \qsum {x^\tau} \syn\Bbbone \).
+
+    The definition of subtype is satisfied because, due to \cref{thm:unit_type_is_proposition}, \( \syn\Bbbone \) is a mere proposition.
+
+    Furthermore, \( \syn\Bbbone \) does not depend on \( x \) and it is always inhabited. Thus, the inclusion \( \iota \) is a surjective function --- for any term \( M \) of \( \tau \), \( \synS_+ M \synU_+ \) is a term of the subtype \( \qsum {x^\tau} \syn\Bbbone \).
+
+    \thmitem{ex:def:dependent_subtype/unit} Consider the subtype \( \qsum {x^{\syn\Bbbone}} (x \syneq \synU_+) \) of the unit type \( \syn\Bbbone \).
+
+    For simplicity, we can assume the \( K \) elimination rule \ref{inf:def:identity_type/k/elim}. By \cref{thm:uniqueness_of_identity_proofs}, that would imply that the identity type \( \synU_+ \syneq \synU_+ \) is \hyperref[def:contractible_type]{contractible} and, by \cref{thm:contractible_type_is_proposition}, a mere proposition.
+
+    Then \ref{inf:def:dependent_unit_type/elim} can be used to conclude that \( x \syneq \synU_+ \) is a mere proposition for any \( x \), hence the condition \eqref{eq:def:dependent_subtype} for subtype is satisfied.
+  \end{thmenum}
+\end{example}
+
+\begin{concept}\label{con:liskov_substitution_principle}
+  In \cite[25]{Liskov1987DataAbstractionAndHierarchy}, in the context of object-oriented programming, Barbara Liskov formulates the following informal definition for \hyperref[def:dependent_subtype]{subtypes}:
+  \begin{displayquote}
+    A type hierarchy is composed of subtypes and supertypes. The intuitive idea of a \textit{subtype} is one whose objects provide all the behavior of objects of another type (the \textit{supertype}) plus something extra. What is wanted here is something like the following substitution property [6]: If for each object \( o_1 \) of type \( S \) there is an object \( o_2 \) of type \( T \) such that for all programs \( P \) defined in the terms of \( T \), the behavior of \( P \) is unchanged when \( o_1 \) is substituted for \( o_2 \), then \( S \) is a subtype of \( T \).
+  \end{displayquote}
+
+  The bibliography entry \( 6 \) refers to a PhD thesis that is not available to the general public.
+
+  Anyhow, the first two sentences of the quote highlight how Liskov's notion of type is distinct from ours. Nevertheless, we can adapt the above as a property that is possibly satisfied by a subtype \( \qsum {x^\tau} \sigma \) of \( \tau \):
+  \begin{displayquote}
+    For every term \( M \) of \( \qsum {x^\tau} \sigma \) and for every type \( \qprod {y^{\tau + \qsum {x^\tau} \sigma}} \rho \) depending on either \( \tau \) or \( \qsum {x^\tau} \sigma \), if \( \rho M \) is inhabited, so is \( \rho (\iota M) \).
+  \end{displayquote}
+
+  We will refer to the view that this property must be satisfied as \term[en=(the) Liskov substitution principle (\cite*[1]{Martin1996LiskovSubstitutionPrinciple})]{Liskov's substitution principle}. This particular name was introduced by Robert Martin in \cite[1]{Martin1996LiskovSubstitutionPrinciple}, who rephrases Liskov's definition as a software engineering principle:
+  \begin{displayquote}
+    Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
+  \end{displayquote}
+
+  We discuss the relationship between types and object-oriented classes in \cref{rem:types_and_classes}.
+\end{concept}
+
+\begin{remark}\label{rem:types_and_classes}
+  In connection to \hyperref[con:liskov_substitution_principle]{Liskov's substitution principle}, it should be noted that the concept of class and subclass in object-oriented programming languages is quite different from our notion of type and subtype:
+  \begin{itemize}
+    \item A class is a self-contained specification of the internal state of an entity and its methods for interaction. It can be instantiated to create an object, which encapsulates its state data and can act via the methods of its class.
+
+    A subclass extends its base class with additional state and methods, possibly overriding methods of the class. Every subclass instance can be used where an instance of its parent class is expected.
+
+    A subclass is thus a refinement of its base class.
+
+    \item A type (within the scope of this monograph) is simply a label. The rules for type inference are part of the ambient type system. A term of a given type is simply an immutable string of symbols that can be used for type derivation.
+
+    A subtype is a specification for filtering the terms of a type. Via the inclusion, a term inhabiting a subtype is an unmodified term of its base type.
+
+    A subtype is thus a restriction of its base type.
+  \end{itemize}
+
+  In \cite[25]{Liskov1987DataAbstractionAndHierarchy}, Liskov emphasizes that (her notion of) types and subtypes are distinct from classes and subclasses:
+  \begin{displayquote}
+    We are using the words \enquote{subtype} and \enquote{supertype} here to emphasize that now we are talking about a semantic distinction. By contrast, \enquote{subclass} and \enquote{superclass} are simply linguistic concepts in programming languages that allow programs to be built in a particular way. They can be used to implement subtypes, but also, as mentioned above, in other ways.
+  \end{displayquote}
+
+  She attempts to characterize subtypes by how they behave, irrespective of how they are defined in the language. Our notion of subtype is purely syntactic and, as discussed in \cref{con:liskov_substitution_principle}, is distinct from Liskov's. Nevertheless is it similar in that it is determined only by its properties.
+\end{remark}
+
+\paragraph{Homotopies}
+
+\begin{definition}\label{def:homotopy_of_types}\mcite[def. 2.4.1]{UnivalentFoundationsProgram2013HoTT}
+  For a pair of \hyperref[def:type_theory_function_term]{dependent function terms} \( F, G: \qprod {x^\tau} \sigma \), we will find useful the following type, whose habitants we will call \term{homotopies}:
+  \begin{equation*}
+    (F \sim G) \coloneqq \qprod {x^\tau} (Fx \syneq Gx).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Homotopies are based on the eponymous concept in topology, which we discuss in \cref{def:homotopy}.
+\end{comments}
+
+\begin{proposition}\label{thm:homotopy_of_types_is_equivalence}
+  For the \hyperref[def:type_habitation]{habitants} of a \hyperref[def:dependent_product]{dependent product type}, \hyperref[def:homotopy_of_types]{homotopy of types} is an \hyperref[def:equivalence_relation]{equivalence relation}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} Given \( F \sim F \), we can construct an habitant of \( F \sim F \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \tau: \BbbU }
+
+      \hypo{ F: \qprod {x^\tau} \sigma }
+      \hypo{ x: \tau }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ F x: \sigma }
+
+      \infer2[\ref{inf:def:identity_type/intro}]{ \synI_+ F x: (F x \syneq F x) }
+      \infer[left label=\( x \)]1[\ref{inf:def:dependent_product/intro}]{ \qabs {x^\tau} \synI_+ F x: F \sim F }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf*[def:binary_relation/symmetric]{symmetry} Given \( M: F \sim G \) and \( x: \tau \), \ref{inf:def:dependent_product/elim} produces \( Mx: Fx \sim Gx \). Then \cref{thm:propositional_equality_equivalence_relation/symmetry} implies that \( Gx \sim Fx \) is also inhabited, so we can apply \ref{inf:def:identity_type/intro} and conclude that \( G \sim F \) is inhabited.
+
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} Similarly, transitivity follows from \cref{thm:propositional_equality_equivalence_relation/transitivity}.
+\end{proof}
+
+\begin{definition}\label{def:arrow_type_quasi_inverse}\mcite[def. 2.4.6]{UnivalentFoundationsProgram2013HoTT}
+  A \term{quasi-inverse} of the function term \( F: \tau \synimplies \sigma \) is a function term \( G: \sigma \synimplies \tau \) with two \hyperref[def:homotopy_of_types]{homotopies}
+  \begin{align*}
+    &A: \overbrace{\qprod {y^\sigma} (FGy \syneq y)}^{F \bincirc G \sim \id_\sigma}, \\
+    &B: \underbrace{\qprod {x^\tau} (GFx \syneq x)}_{G \bincirc F \sim \id_\tau}.
+  \end{align*}
+
+  The notation for composition and identities is based on the category of types from \cref{def:category_of_types}.
+
+  Using \ref{inf:def:simple_product_type/intro} and \ref{inf:def:dependent_sum/intro}, we can pack this condition into the type
+  \begin{equation*}
+    \op{QInv}(F) \coloneqq \qsum {g^{\sigma \synimplies \tau}} (F \bincirc g \sim \id_\sigma \syntimes g \bincirc F \sim \id_\tau).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item This definition is modeled after \hyperref[def:equivalence_of_categories]{equivalence of categories}. Equivalence of types requires a stronger condition --- see \cref{def:equivalence_of_types}.
+
+  \item Conversely, using \ref{inf:def:dependent_sum/elim}, \ref{inf:def:simple_product_type/elim_left} and \ref{inf:def:simple_product_type/elim_right}, we can extract \( G \), \( A \) and \( B \) from \( \op{QInv}(F) \). The derivation is analogous to \cref{thm:equivalence_of_types_inverse}.
+\end{comments}
+
+\paragraph{Equivalence of types}
+
+\begin{definition}\label{def:equivalence_of_types}\mcite[77; 78]{UnivalentFoundationsProgram2013HoTT}
+  In \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we say that the function term \( F: \tau \synimplies \sigma \) is an \term{equivalence} if the following type is inhabited:
+  \begin{equation*}
+    \op*{IsEquiv}(F) \coloneqq (\qsum {g^{\sigma \synimplies \tau}} F \bincirc g \sim \id_\sigma) \syntimes (\qsum {h^{\sigma \synimplies \tau}} h \bincirc F \sim \id_\tau).
+  \end{equation*}
+
+  We say that \( \tau \) and \( \sigma \) is \term{equivalent} if the following type is inhabited:
+  \begin{equation*}
+    (\tau \cong \sigma) \coloneqq \qsum {f^{\tau \synimplies \sigma}} \op*{IsEquiv}(f).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item This definition requires more than the existence of a \hyperref[def:arrow_type_quasi_inverse]{quasi-inverse} and thus deviates from the definition of equivalence of categories in \cref{def:equivalence_of_categories}.
+
+  We use this definition because, as shown in \cref{thm:is_equiv_is_proposition}, assuming \hyperref[def:function_extensionality_axiom]{function extensionality}, the type \( \op{IsEquiv}(F) \) is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{comments}
+
+\begin{proposition}\label{thm:equivalence_of_types_inverse}
+  If the function term \( F: \tau \synimplies \sigma \) is an \hyperref[def:equivalence_of_types]{equivalence}, it has a \hyperref[def:arrow_type_quasi_inverse]{quasi-inverse}; that is, if \( \op*{IsEquiv}(F) \) is inhabited, so is \( \op*{QInv}(F) \).
+\end{proposition}
+\begin{proof}
+  We have assumed that there exists some habitant \( M \) of \( \op*{IsEquiv}(F) \).
+
+  Using the dependent sum projections from \cref{def:dependent_sum_projections}, we let
+  \begin{align*}
+    G &\coloneqq \pi_L \synP_{-L} M: \sigma \synimplies \tau, \\
+    A &\coloneqq \pi_R \synP_{-L} M: F \bincirc G \sim \id_\sigma
+  \intertext{and}
+    H &\coloneqq \pi_L \synP_{-R} M: \tau \synimplies \sigma, \\
+    B &\coloneqq \pi_R \synP_{-R} M: H \bincirc F \sim \id_\tau.
+  \end{align*}
+
+  Here \( G \) and \( A \) are as in the definition of a quasi-inverse. We need to construct the other homotopy.
+
+  Since \( B \) inhabits \( H \bincirc F \sim \id_\tau = \qprod {x^\tau} (H F x \syneq x) \), it is itself a function term, and thus
+  \begin{equation*}
+    B G y: H F G y \syneq G y.
+  \end{equation*}
+
+  Similarly,
+  \begin{equation*}
+    A y: F G y \syneq y.
+  \end{equation*}
+
+  Then \ref{inf:def:identity_type/j/elim} allows us to substitute the latter in the former and conclude that the type \( H y \syneq G y \) is inhabited (when \( y: \sigma \)).
+
+  Using \ref{inf:def:identity_type/j/elim} on the above and on \( F x: G F x \syneq x \), we can conclude that \( G F x \syneq x \) also is inhabited. Using \ref{inf:def:dependent_product/intro}, we obtain a habitant of \( G \bincirc F \sim \id_\tau \), i.e. the desired homotopy.
+\end{proof}
+
+\begin{proposition}\label{thm:equivalence_of_types_is_equivalence}\mcite[lemma 2.4.12]{UnivalentFoundationsProgram2013HoTT}
+  Within a \hyperref[con:type_universe]{type universe}, the \hyperref[def:equivalence_of_types]{equivalence of types} is as \hyperref[def:equivalence_relation]{equivalence relation}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} We can take \( \id_\tau \) for \( f \), \( g \) and \( h \) in \( \tau \cong \tau \).
+
+  \SubProofOf*[def:binary_relation/symmetric]{symmetry} If \( \tau \cong \sigma \), we can exchange \( f \) and \( g \) and use \cref{thm:equivalence_of_types_inverse} to justify substituting \( h \) for \( f \).
+
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} If \( \tau \cong \sigma \) and \( \sigma \cong \rho \), then \( \tau \cong \rho \) follows by composing the instances of \( f \), \( g \) and \( h \) in \( \tau \cong \sigma \) and \( \sigma \cong \rho \).
+\end{proof}
+
+\paragraph{Function extensionality}
+
+\begin{definition}\label{def:dependent_product_happly}\mcite[axiom 2.9.3]{UnivalentFoundationsProgram2013HoTT}
+  Fix a pair of \hyperref[def:type_theory_function_term]{dependent function terms} \( F, G: \qprod {x^\tau} \sigma \) and consider the type
+  \begin{equation*}
+    (F \syneq G) \synimplies (F \sim G),
+  \end{equation*}
+  where \( F \sim G \) is the \hyperref[def:homotopy_of_types]{type of homotopies} of \( F \) and \( G \).
+
+  We will construct a habitant of this type, which we will denote by \( \op*{hApply}(F, G) \):
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ \substack{ a: \qprod {x^\tau} \sigma \\ b: \qprod {x^\tau} \sigma \\ x: \tau } }
+      \ellipsis{ P } { a x \syneq b x: \BbbU }
+
+      \hypo{ h: \qprod {x^\tau} \sigma }
+      \hypo{ x: \tau }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ h x: \sigma }
+      \infer1[\ref{inf:def:identity_type/intro}]{ \synI_+ h x: (h x \syneq h x) }
+
+      \hypo{ F: \qprod {x^\tau} \sigma }
+      \hypo{ G: \qprod {x^\tau} \sigma }
+      \hypo{ e: F \syneq G }
+
+      \infer[left label={\( a, b, p, h \)}]5[\ref{inf:def:identity_type/j/elim}]{ \synJ \synanon: Fx \syneq Gx }
+      \infer[left label={\( x \)}]1[\ref{inf:def:dependent_product/intro}]{ \qabs {x^\tau} \synJ \synanon: F \sim G }
+      \infer[left label={\( e \)}]1[\ref{inf:def:dependent_product/intro}]{ \qabs {e^\tau} \qabs {x^\tau} \synJ \synanon: (F \syneq G) \synimplies (F \sim G) }
+    \end{prooftree}
+  \end{equation*}
+  where \( P \) is
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \tau: \BbbU }
+
+      \hypo{ a: \qprod {x^\tau} \sigma }
+      \hypo{ x: \tau }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ a x: \sigma }
+
+      \hypo{ b: \qprod {x^\tau} \sigma }
+      \hypo{ x: \tau }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ b x: \sigma }
+
+      \infer3[\ref{inf:def:identity_type/form}]{ a x \syneq b x: \BbbU }
+    \end{prooftree}
+  \end{equation*}
+\end{definition}
+
+\begin{definition}\label{def:function_extensionality_axiom}\mcite[axiom 2.9.3; 440]{UnivalentFoundationsProgram2013HoTT}
+  The \term{function extensionality axiom} states that for any pair of \hyperref[def:type_theory_function_term]{dependent function terms} \( F, G: \qprod {x^\tau} \sigma \), the term \( \op*{hApply}(F, G) \) from \cref{def:dependent_product_happly} is an \hyperref[def:equivalence_of_types]{equivalence of types}.
+
+  \Cref{thm:equivalence_of_types_inverse} implies that \( \op{hApply}(F, G) \) has a \hyperref[def:arrow_type_quasi_inverse]{quasi-inverse}, which we denote by \( \op*{FunExt}(F, G) \). It inhabits \( (F \sim G) \synimplies (F \syneq G) \).
+
+  The axiom can be expressed via the following rule:
+  \begin{equation*}\taglabel[\ensuremath{ \Pi_{\logic{ext}} }]{inf:def:function_extensionality_axiom}
+    \begin{prooftree}
+      \hypo{ f: \qprod {x^\tau} \sigma }
+      \hypo{ g: \qprod {x^\tau} \sigma }
+      \infer2[\ref{inf:def:function_extensionality_axiom}]{ \synF_+ f g: \op{IsEquiv}(\op{hApply}(f, g)) }
+    \end{prooftree}
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:function_extensionality_usage}
+  Assuming \hyperref[def:function_extensionality_axiom]{function extensionality}, if the dependent function terms \( F, G: \qprod {x^\tau} \sigma \) are \hyperref[def:homotopy_of_types]{homotopic}, they are \hyperref[def:mltt_propositional_equality]{propositionally equal}; that is, if \( F \sim G \) is inhabited, so is \( F \cong G \) .
+\end{proposition}
+\begin{proof}
+  The \hyperref[def:function_extensionality_axiom]{function extensionality axiom} gives us the function term
+  \begin{equation*}
+    \op*{FunExt}(F, G): (F \sim G) \synimplies (F \syneq G).
+  \end{equation*}
+
+  Given \( M: F \sim G \), we can apply \ref{inf:def:dependent_product/elim}:
+  \begin{equation*}
+    \op*{FunExt}(F, G) \thinspace M: F \syneq G.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:is_prop_is_proposition}\mcite[lemma 3.3.5]{UnivalentFoundationsProgram2013HoTT}
+  Assuming \hyperref[def:function_extensionality_axiom]{function extensionality}, for every type \( \tau \), the type \( \op{IsProp}(\tau) \) from \cref{def:mere_proposition} is itself a mere proposition.
+\end{proposition}
+\begin{comments}
+  \item We will not prove this because it requires a lot of auxiliary work. A proof can be found in \cite[lemma 3.3.5]{UnivalentFoundationsProgram2013HoTT}.
+\end{comments}
+
+\begin{proposition}\label{thm:is_equiv_is_proposition}
+  Assuming \hyperref[def:function_extensionality_axiom]{function extensionality}, for every function term \( F: \tau \synimplies \sigma \), the type \( \op{IsEquiv}(F) \) from \cref{def:equivalence_of_types} is a \hyperref[def:mere_proposition]{mere proposition}.
+\end{proposition}
+\begin{comments}
+  \item We will not prove this because it requires a lot of auxiliary work. A proof can be found in \cite[corr. 4.6.4]{UnivalentFoundationsProgram2013HoTT}.
+\end{comments}
+
+\paragraph{Univalence}
+
+\begin{definition}\label{def:univalent_type_universe}\mcite[axiom 2.10.3]{UnivalentFoundationsProgram2013HoTT}
+  Fix a \hyperref[con:type_universe]{type universe} \( \BbbU \) and a pair \( \tau \) and \( \sigma \) from \( \BbbU \). Consider the type
+  \begin{equation*}
+    (\tau \syneq \sigma) \synimplies (\tau \cong \sigma),
+  \end{equation*}
+  where \( \tau \cong \sigma \) is the \hyperref[def:equivalence_of_types]{type of equivalences} of \( \tau \) and \( \sigma \).
+
+  We will construct a habitant of this type, which we will denote by \( \op*{IdToEquiv}(\tau, \sigma) \):
+  \begin{equation*}
+    \begin{prooftree}[separation=1.5em]
+      \hypo{ \substack{ \alpha: \BbbU \\ \beta: \BbbU } }
+      \ellipsis{\( P \)} { \alpha \cong \beta: \BbbU }
+
+      \hypo{ \rho: \tau }
+      \ellipsis { \cref{thm:equivalence_of_types_is_equivalence} } { \synanon : \rho \cong \rho }
+
+      \hypo{ \tau: \BbbU }
+      \hypo{ \sigma: \BbbU }
+      \hypo{ e: \tau \syneq \sigma }
+
+      \infer[left label={\( \alpha, \beta, p, \rho \)}]5[\ref{inf:def:identity_type/j/elim}]{ \synJ \synanon: \tau \cong \sigma }
+      \infer[left label={\( e \)}]1[\ref{inf:def:dependent_product/intro}]{ \qabs {e^{\tau \syneq \sigma}} \synJ \synanon: (\tau \syneq \sigma) \synimplies (\tau \cong \sigma) }
+    \end{prooftree}
+  \end{equation*}
+
+  If \( \op*{IdToEquiv}(\tau, \sigma) \) induces an \hyperref[def:equivalence_of_types]{equivalence} for each \( \tau \) and \( \sigma \) in \( \BbbU \), we say that the universe \( \BbbU \) is \term{univalent}.
+
+  \Cref{thm:equivalence_of_types_inverse} implies that, in an univalent universe, \( \op*{IdToEquiv}(\tau, \sigma) \) has a \hyperref[def:arrow_type_quasi_inverse]{quasi-inverse}, which we denote by \( \op*{EquivToId}(\tau, \sigma) \). It inhabits \( (\tau \cong \sigma) \synimplies (\tau \syneq \sigma) \).
+\end{definition}
+
+\begin{proposition}\label{thm:univalent_type_universe_usage}
+  In a \hyperref[def:univalent_type_universe]{univalent} \hyperref[con:type_universe]{type universe}, if two types \( \tau \) and \( \sigma \) are \hyperref[def:equivalence_of_types]{equivalent}, they are \hyperref[def:mltt_propositional_equality]{propositionally equal}; that is, if \( \tau \cong \sigma \) is inhabited, so is \( \tau \syneq \sigma \).
+\end{proposition}
+\begin{proof}
+  If \( \BbbU \) is univalent and \( \tau \cong \sigma \) is inhabited, it has a counterpart in \( \tau \syneq \sigma \).
+\end{proof}
+
+\begin{definition}\label{def:univalence_axiom}\mcite[axiom 2.10.3; ]{UnivalentFoundationsProgram2013HoTT}
+  The \term{univalence axiom} for the \hyperref[con:type_universe]{type universe} \( \BbbU \) states, unsurprisingly, that \( \BbbU \) is \hyperref[def:univalent_type_universe]{univalent}.
+
+  This can be expressed via the following rule:
+  \begin{equation*}\taglabel[\ensuremath{ \BbbU_{\logic{univ}} }]{inf:def:univalence_axiom}
+    \begin{prooftree}
+      \hypo{ \tau: \BbbU }
+      \hypo{ \sigma: \BbbU }
+      \infer2[\ref{inf:def:univalence_axiom}]{ \synV_+ \tau \sigma: \op{IsEquiv}(\op*{IdToEquiv}(\tau, \sigma)) }
+    \end{prooftree}
+  \end{equation*}
+\end{definition}
+
+\begin{remark}\label{rem:univalence_etymology}
+  In \cite[8]{Voevodsky2014UnivalentFoundations}, Vladimir Voevodsky explains that his choice of the word \enquote{univalence} for the \hyperref[def:univalence_axiom]{axiom of univalence} comes from the Russian translation of \enquote{\hyperref[def:functor_invertibility/faithful]{faithful functor}} as \enquote{\textru{унивалентный}} (\enquote{univalent}).
+\end{remark}
+
+\begin{theorem}[Univalence implies function extensionality]\label{thm:univalence_implies_function_extensionality}
+  For a fixed \hyperref[con:type_universe]{type universe}, the \hyperref[def:univalence_axiom]{univalence axiom} implies the \hyperref[def:function_extensionality_axiom]{function extensionality axiom}.
+\end{theorem}
+\begin{comments}
+  \item We will not prove this because it requires a lot of auxiliary work. A proof can be found in \cite[\S 4.9]{UnivalentFoundationsProgram2013HoTT}.
+\end{comments}
+
+\begin{definition}\label{def:homotopy_type_theory}\mimprovised
+  \term[en=homotopy type theory (\cite[1]{UnivalentFoundationsProgram2013HoTT})]{Homotopy type theory} is an extension of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} in which the \hyperref[def:identity_type]{identity type} \( \tau \syneq \sigma \) between the types \( \tau \) and \( \sigma \) is subsumed by the \hyperref[def:equivalence_of_types]{equivalence} \( \tau \cong \sigma \). This enables a consistent interpretation of types as \hyperref[def:topological_space]{topological spaces}.
+
+  The theory rests on the \hyperref[def:univalence_axiom]{univalence axiom} and its consequences like \hyperref[def:function_extensionality_axiom]{function extensionality}. This justifies the name \term[en=univalent foundations (\cite[1]{UnivalentFoundationsProgram2013HoTT})]{univalent foundations} for homotopy type theory used as a \hyperref[con:foundational_theory/types]{foundational type theory}.
+\end{definition}
+\begin{comments}
+  \item We have only sketched a few formalisms of homotopy type theory. The essential reference is \cite{UnivalentFoundationsProgram2013HoTT}, written by the originators. An less rigorous introduction can be found in \cite[ch. 9]{Mimram2020ProgramEqualsProof}.
+\end{comments}
