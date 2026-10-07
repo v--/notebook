@@ -343,3 +343,61 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
     with caplog.at_level('INFO'):
         adjust_entry(entry, None)
         assert message in caplog.text
+
+
+def test_crossref_with_duplicate_date(caplog: pytest.LogCaptureFixture) -> None:
+    message = "Year mismatch between the entry name and the crossref's date; using the year from the crossref date"
+    parent, child, = parse_bibtex(
+        dedent("""\
+            @collection{Zermelo2010CollectedWorksVol1,
+              author = {Ernst Zermelo},
+              date = {2010},
+              language = {english and german},
+              publisher = {Springer Berlin Heidelberg},
+              subtitle = {Set Theory, Miscellanea / Mengenlehre, Varia},
+              title = {Collected Works / Gesammelte Werke},
+              volume = {1}
+            }
+
+            @incollection{Zermelo1908GrundlagenDerMengenlehre,
+              crossref = {Zermelo2010CollectedWorksVol1},
+              date = {1908},
+              pages = {188-229},
+              title = {Untersuchungen über die Grundlagen der Mengenlehre I / Investigations in the foundations of set theory I}
+            }
+            """,
+        ),
+    )
+
+    with caplog.at_level('INFO'):
+        adjusted_child = adjust_entry(child, parent)
+        assert message in caplog.text
+        assert adjusted_child.entry_name == 'Zermelo2010GrundlagenDerMengenlehre'
+
+
+def test_crossref_with_orig_date(caplog: pytest.LogCaptureFixture) -> None:
+    parent, child, = parse_bibtex(
+        dedent("""\
+            @collection{Zermelo2010CollectedWorksVol1,
+              author = {Ernst Zermelo},
+              date = {2010},
+              language = {english and german},
+              publisher = {Springer Berlin Heidelberg},
+              subtitle = {Set Theory, Miscellanea / Mengenlehre, Varia},
+              title = {Collected Works / Gesammelte Werke},
+              volume = {1}
+            }
+
+            @incollection{Zermelo1908GrundlagenDerMengenlehre,
+              crossref = {Zermelo2010CollectedWorksVol1},
+              origdate = {1908},
+              pages = {188-229},
+              title = {Untersuchungen über die Grundlagen der Mengenlehre I / Investigations in the foundations of set theory I}
+            }
+            """,
+        ),
+    )
+
+    with caplog.at_level('INFO'):
+        adjust_entry(child, parent)
+        assert caplog.text == ''
