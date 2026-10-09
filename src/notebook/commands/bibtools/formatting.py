@@ -9,7 +9,6 @@ from notebook.commands.common.names import latinize_cyrillic_name
 
 from . import url_templates
 from .sources.helpers.dates import extract_year
-from .sources.helpers.entries import regenerate_entry_name
 from .sources.helpers.languages import get_main_entry_language, normalize_language_name
 from .sources.helpers.names import get_main_human_name, normalize_human_name
 from .sources.helpers.pages import normalize_pages
@@ -181,22 +180,10 @@ class BibEntryAdjuster:
             self.bound_logger.warning('The entry name contains a date, but its date field does not')
 
         elif name_year and self.crossref and crossref_date_year is None:
-            self.bound_logger.warning("The entry name contains a date, but neither the entry's nor its crossref's date field does not")
-
-        elif name_year is None and date_year:
-            self.bound_logger.warning("The crossref's date field contains a date, but the entry name does not")
-
-        elif name_year is None and self.crossref and crossref_date_year:
-            self.bound_logger.warning("The entry's date field contains a date, but the entry name does not")
+            self.bound_logger.warning("The entry name contains a date, but neither the entry's nor its crossref's date field does")
 
         elif name_year and name.endswith(name_year):
             self.bound_logger.warning('No subject present in the entry name')
-
-        else:
-            return
-
-        suggestion = regenerate_entry_name(self.adjusted, get_main_entry_language(self.adjusted))
-        self.bound_logger.warning(f'Consider the entry name {suggestion}')
 
     def adjust_url_identifier(self, field_name: str, url_template: UrlTemplate | None = None) -> None:
         if url_template is None:

@@ -347,7 +347,7 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
 
 # "report" entries are exempt from date checks
 def test_date_mismatch(caplog: pytest.LogCaptureFixture) -> None:
-    message = "Year mismatch between the entry name and date; using the year from the date"
+    message = 'Year mismatch between the entry name and date; using the year from the date'
     entry, = parse_bibtex(
         dedent("""\
             @book{Barendregt1985LambdaCalculus,
@@ -371,7 +371,7 @@ def test_date_mismatch(caplog: pytest.LogCaptureFixture) -> None:
 
 # "report" entries are exempt from date checks
 def test_no_date_in_report(caplog: pytest.LogCaptureFixture) -> None:
-    message = "Year mismatch between the entry name and date; using the year from the date"
+    message = 'Year mismatch between the entry name and date; using the year from the date'
     entry, = parse_bibtex(
         dedent("""\
             @report{IETF:RFC5234,
