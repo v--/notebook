@@ -148,13 +148,13 @@ class BibEntryAdjuster:
         if self.adjusted.relatedtype == 'translationof' and len(self.adjusted.origlanguages) > 0:
             self.bound_logger.warning('Specified both an original publication and an original language')
 
-        if len(self.adjusted.translators) > 0 and self.adjusted.crossref is None and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
-            self.bound_logger.warning('Specified the translators, but not the original publication nor the original language')
+        if self.adjusted.entry_type != 'collection':
+            if len(self.adjusted.translators) > 0 and self.adjusted.crossref is None and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
+                self.bound_logger.warning('Specified the translators, but not the original publication nor the original language')
 
-        if len(self.adjusted.origlanguages) > 0 and self.adjusted.crossref is None and len(self.adjusted.translators) == 0:
-            self.bound_logger.warning('Specified the original language, but not the translators')
+            if len(self.adjusted.origlanguages) > 0 and self.adjusted.crossref is None and len(self.adjusted.translators) == 0:
+                self.bound_logger.warning('Specified the original language, but not the translators')
 
-    # ruff: ignore[complex-structure]
     def adjust_entry_name(self) -> None:
         name = self.adjusted.entry_name
 
@@ -164,7 +164,6 @@ class BibEntryAdjuster:
 
         name_year = extract_year(name)
         date_year = extract_year(str(self.adjusted.date))
-        date_origyear = extract_year(str(self.adjusted.origdate)) if self.adjusted.origdate else None
         crossref_date_year = extract_year(str(self.crossref.date)) if self.crossref else None
 
         if name_year and date_year and name_year != date_year:
@@ -174,13 +173,9 @@ class BibEntryAdjuster:
         if date_year and crossref_date_year:
             self.bound_logger.warning("Both the entry's and crossref's date field are present")
 
-        if self.crossref and name_year:
-            if date_origyear:
-                if name_year != date_origyear:
-                    self.update(entry_name=self.adjusted.entry_name.replace(name_year, date_origyear))
-            elif crossref_date_year and name_year != crossref_date_year:
-                self.bound_logger.info("Year mismatch between the entry name and the crossref's date; using the year from the crossref date")
-                self.update(entry_name=self.adjusted.entry_name.replace(name_year, crossref_date_year))
+        if self.crossref and name_year and crossref_date_year and name_year != crossref_date_year:
+            self.bound_logger.info("Year mismatch between the entry name and the crossref's date; using the year from the crossref date")
+            self.update(entry_name=self.adjusted.entry_name.replace(name_year, crossref_date_year))
 
         if name_year and date_year is None and self.crossref is None:
             self.bound_logger.warning('The entry name contains a date, but its date field does not')
