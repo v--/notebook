@@ -345,7 +345,54 @@ def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
         assert message in caplog.text
 
 
-def test_crossref_with_duplicate_date(caplog: pytest.LogCaptureFixture) -> None:
+# "report" entries are exempt from date checks
+def test_date_mismatch(caplog: pytest.LogCaptureFixture) -> None:
+    message = "Year mismatch between the entry name and date; using the year from the date"
+    entry, = parse_bibtex(
+        dedent("""\
+            @book{Barendregt1985LambdaCalculus,
+              author = {Henk Barendregt},
+              isbn = {0-444-86748-1},
+              language = {english},
+              publisher = {North-Holland},
+              title = {The Lambda Calculus - Its Syntax and Semantics},
+              subtitle = {Test Subtitle},
+              date = {1984}
+            }
+            """,
+        ),
+    )
+
+    with caplog.at_level('INFO'):
+        adjusted_entry = adjust_entry(entry, None)
+        assert message in caplog.text
+        assert adjusted_entry.entry_name == 'Barendregt1984LambdaCalculus'
+
+
+# "report" entries are exempt from date checks
+def test_no_date_in_report(caplog: pytest.LogCaptureFixture) -> None:
+    message = "Year mismatch between the entry name and date; using the year from the date"
+    entry, = parse_bibtex(
+        dedent("""\
+            @report{IETF:RFC5234,
+              author = {{IETF}},
+              date = {2008-01},
+              doi = {10.17487/RFC5234},
+              number = {5234},
+              title = {Augmented BNF for Syntax Specifications: ABNF},
+              type = {Request for Comments}
+            }
+            """,
+        ),
+    )
+
+    with caplog.at_level('INFO'):
+        adjust_entry(entry, None)
+        print(caplog.text)
+        assert message not in caplog.text
+
+
+def test_crossref_date(caplog: pytest.LogCaptureFixture) -> None:
     message = "Year mismatch between the entry name and the crossref's date; using the year from the crossref date"
     parent, child, = parse_bibtex(
         dedent("""\
@@ -359,9 +406,8 @@ def test_crossref_with_duplicate_date(caplog: pytest.LogCaptureFixture) -> None:
               volume = {1}
             }
 
-            @incollection{Zermelo2010Collection:GrundlagenDerMengenlehre,
+            @incollection{Zermelo1918Collection:GrundlagenDerMengenlehre,
               crossref = {Zermelo2010CollectedWorksVol1},
-              date = {1908},
               pages = {188-229},
               title = {Untersuchungen über die Grundlagen der Mengenlehre I / Investigations in the foundations of set theory I}
             }
@@ -372,4 +418,4 @@ def test_crossref_with_duplicate_date(caplog: pytest.LogCaptureFixture) -> None:
     with caplog.at_level('INFO'):
         adjusted_child = adjust_entry(child, parent)
         assert message in caplog.text
-        assert adjusted_child.entry_name == 'Zermelo2010GrundlagenDerMengenlehre'
+        assert adjusted_child.entry_name == 'Zermelo2010Collection:GrundlagenDerMengenlehre'

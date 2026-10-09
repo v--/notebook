@@ -158,8 +158,8 @@ class BibEntryAdjuster:
     def adjust_entry_name(self) -> None:
         name = self.adjusted.entry_name
 
-        # We assume that such entries are special, e.g. standards
-        if ':' in name:
+        # Entries like standards often have numeric ids that look like dates, so we ignore the "report" entry type
+        if self.adjusted.entry_type in {'report', 'techreport'}:
             return
 
         name_year = extract_year(name)
