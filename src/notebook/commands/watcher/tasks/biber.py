@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class BiberTask(CliTask):
     def __init__(self, trigger: TaskTrigger, reason: str) -> None:
         super().__init__(trigger, reason)
-        self.bound_logger = logging.LoggerAdapter(logger, extra={'subject': self.trigger.path.name})
+        self.bound_logger = logging.LoggerAdapter(logger, extra={'subject': self.bcf_path.name})
 
     @override
     def get_default_extension(self) -> str:
@@ -48,6 +48,6 @@ class BiberTask(CliTask):
             LaTeXTask(
                 LaTeXCompiler.lualatex,
                 TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
-                reason=self.bcf_path.as_posix(),
+                reason=self.bcf_path.name,
             ),
         )

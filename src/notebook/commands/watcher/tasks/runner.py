@@ -57,9 +57,7 @@ class TaskRunner:
             self.run_queued()
 
     def schedule(self, task: Task) -> None:
-        existing = self._queue.get(task.trigger)
-
-        if existing:
+        if existing := self._queue.get(task.trigger):
             if existing.aio_task is None:
                 existing.task = task
             else:

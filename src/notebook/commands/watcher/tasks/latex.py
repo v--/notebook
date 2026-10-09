@@ -111,7 +111,7 @@ class LaTeXTask(CliTask):
                 ),
             )
         elif requires_biber_rerun:
-            if self.trigger.path.with_suffix('.bcf').as_posix() == self.reason:
+            if self.get_aux_path('.bcf').name == self.reason:
                 self.bound_logger.warning('Cyclic babel rebuild request detected; ignoring.')
                 shutil.copyfile(self.get_aux_path('.pdf'), self.get_output_path())
             else:
