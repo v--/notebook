@@ -1,0 +1,219 @@
+\section{Algebra of sets}\label{sec:algebra_of_sets}
+
+\begin{definition}\label{def:basic_set_operations}
+  We define the following operations:
+
+  \begin{thmenum}
+    \thmitem{def:basic_set_operations/difference}\mcite[27]{Enderton1977SetTheory} We define the \term{difference} of \( A \) and \( B \) as
+    \begin{equation*}
+      A \setminus B \coloneqq \set{ x \in A \given x \notin B }.
+    \end{equation*}
+
+    We define the \hyperref[con:formula_defined_predicate]{formula-defined predicate}
+    \begin{equation*}\taglabel[\op{IsDifference}]{eq:def:basic_set_operations/difference/predicate}
+      \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \sigma, \tau] \coloneqq \qforall \synx \parens[\big]{ \synx \in \rho \syniff (\synx \in \sigma \synwedge \synneg(\synx \in \tau)) }.
+    \end{equation*}
+
+    \thmitem{def:basic_set_operations/symmetric_difference}\mcite[9]{Jech2006SetTheory} We define the \term{symmetric difference} of two sets \( A \) and \( B \) as
+    \begin{equation}
+      A \symdiff B \coloneqq \set{ x \in A \given x \notin B }.
+    \end{equation}
+
+    We also define the \hyperref[con:formula_defined_predicate]{formula-defined predicate}
+    \begin{equation*}\taglabel[\op{IsSymDiff}]{eq:def:basic_set_operations/symmetric_difference/predicate}
+      \ref{eq:def:basic_set_operations/symmetric_difference/predicate}[\rho, \sigma, \tau] \coloneqq \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \sigma, \tau] \synvee \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \tau, \sigma].
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:union_intersection_distributivity}
+  \hyperref[def:set_union]{Set unions} and \hyperref[def:set_intersection]{set intersections} distribute over themselves and over each other. That is,
+  \begin{align}
+    X \cup \bigcup \mscrA &= \bigcup \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_union} \\
+    X \cap \bigcup \mscrA &= \bigcup \set{ A \cap X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/intersection_over_union} \\
+    X \cup \bigcap \mscrA &= \bigcap \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_intersection} \\
+    X \cap \bigcap \mscrA &= \bigcap \set{ A \cap X \given A \in \mscrA }. \label{eq:thm:union_intersection_distributivity/intersection_over_intersection}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_union} Trivial.
+
+  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_intersection}
+  \begin{align*}
+    X \cap \bigcup \mscrA
+    &=
+    \set{ x \given x \in X \T{and} \qexists{A \in \mscrA} x \in A }
+    = \\ &=
+    \set{ x \given \qexists{A \in \mscrA} (x \in A \T{and} x \in X) }
+    = \\ &=
+    \bigcup \set{ A \cup X \given A \in \mscrA }.
+  \end{align*}
+
+  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_union} Analogous.
+
+  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_intersection} Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:set_difference}
+  \hyperref[def:basic_set_operations/difference]{Set difference} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:set_difference/intersection} If \( A \) and \( B \) are subsets of \( C \), then \( A \setminus B = A \cap (C \setminus B) \).
+
+    \thmitem{thm:set_difference/superset} For any two sets \( A \) and \( B \), we have \( A \setminus B = A \setminus (A \cap B) \).
+
+    \thmitem{thm:set_difference/double_difference} If \( A \subseteq B \), then \( B \setminus (B \setminus A) = A \)
+
+    \thmitem{thm:set_difference/complement} If \( A \subseteq B \subseteq C \), then \( C \setminus B \subseteq C \setminus A \).
+
+    If \( A \neq B \), then \( C \setminus B \neq C \setminus A \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:set_difference/intersection} Since \( a \in A \) implies \( a \in C \), we have
+  \begin{align*}
+    A \setminus B
+    &=
+    \set{ x \in A \given x \notin B }
+    = \\ &=
+    \set{ x \in A \given x \in C \T{and} x \notin B }
+    = \\ &=
+    A \cap (C \setminus B).
+  \end{align*}
+
+  \SubProofOf{thm:set_difference/superset} Follows from \cref{thm:set_difference/intersection}.
+
+  \SubProofOf{thm:set_difference/double_difference} By \hyperref[thm:propositional_semantic_dne]{double negation elimination},
+  \begin{align*}
+    B \setminus (B \setminus A)
+    &=
+    \set[\big]{ x \in B \given x \notin \set{ x \in B \given x \notin A } }
+    = \\ &=
+    \set{ x \in B \given x \in A }
+    = \\ &=
+    A.
+  \end{align*}
+
+  \SubProofOf{thm:set_difference/complement} Any element in \( A \) is also in \( B \), thus, by contraposition, every element not in \( B \) is not in \( A \).
+\end{proof}
+
+\begin{proposition}\label{thm:boolean_algebra_of_subsets}
+  Let \( X \) be an arbitrary set. Then the \hyperref[def:power_set]{power set} \( \pow(X) \) endowed with the \hyperref[def:subset]{inclusion} partial order \( \subseteq \) is a \hyperref[def:complete_lattice]{complete} \hyperref[def:boolean_algebra]{Boolean algebra}\fnote{We will not make use here of the full apparatus of Boolean algebras. Instead, we regard this statement as a shorthand that would otherwise require enumerating a lot of properties.}.
+
+  Explicitly:
+  \begin{thmenum}
+    \thmitem{thm:boolean_algebra_of_subsets/join} The \hyperref[def:lattice]{join} of an arbitrary family \( \mscrA \) of subsets of \( X \) is simply the \hyperref[def:set_union]{union} \( \bigcap \mscrA \).
+
+    \thmitem{thm:boolean_algebra_of_subsets/top} The \hyperref[def:extremal_points/top_and_bottom]{top element} is the set \( X \) itself.
+
+    \thmitem{thm:boolean_algebra_of_subsets/meet} The \hyperref[def:lattice]{meet} of an arbitrary family \( \mscrA \) of sets is simply the \hyperref[def:set_intersection]{intersection} \( \bigcup \mscrA \). Unlike for a general family of sets, we have no problem defining the intersection of an empty set to be the top element \( X \).
+
+    \thmitem{thm:boolean_algebra_of_subsets/bottom} The \hyperref[def:extremal_points/top_and_bottom]{bottom element} is the empty set.
+
+    \thmitem{thm:boolean_algebra_of_subsets/complement} The \hyperref[def:boolean_algebra]{complement} \( A^\complement \) of the subset \( A \) is the \hyperref[def:basic_set_operations/difference]{difference} \( X \setminus A \).
+  \end{thmenum}
+
+  \begin{figure}
+    \hfill
+    \includegraphics[page=1]{output/thm__boolean_algebra_of_subsets}
+    \hfill\hfill
+    \caption{The \hyperref[def:hasse_diagram]{Hasse diagram} of \( \pow(\set{ A, B }) \) with respect to \hyperref[def:subset]{set inclusion}}
+    \label{fig:thm:boolean_algebra_of_subsets}
+  \end{figure}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:boolean_algebra_of_subsets/join} The union of \( \mscrA \) exists by \cref{thm:zfc_existence_theorems/arbitrary_union}, and it is itself a subset of \( \mscrA \). Every set in \( \mscrA \) is contained in \( \bigcup \mscrA \), hence it is indeed a join.
+
+  \SubProofOf{thm:boolean_algebra_of_subsets/top} Clearly \( X \) contains every subset of \( X \).
+
+  \SubProofOf{thm:boolean_algebra_of_subsets/join} The intersection of \( \mscrA \) exists by \cref{thm:zfc_existence_theorems/arbitrary_union}, and it is itself a subset of \( \mscrA \). Every set in \( \mscrA \) contains \( \bigcap \mscrA \), hence it is indeed a meet.
+
+  \SubProofOf{thm:boolean_algebra_of_subsets/bottom} The empty set is contained in every set, in particular in every subset of \( A \).
+
+  \SubProofOf[def:distributive_lattice]{distributivity} Follows from \cref{thm:union_intersection_distributivity}.
+
+  \SubProofOf{thm:boolean_algebra_of_subsets/complement} The operation \( A^\complement \) is well-defined for each subset \( A \) of \( X \) due to \cref{thm:zfc_existence_theorems/difference}.
+
+  By definition
+  \begin{equation*}
+    A \synvee A^\complement
+    =
+    A \cup (X \setminus A)
+    =
+    X
+  \end{equation*}
+  and
+  \begin{equation*}
+    A \synvee A^\complement
+    =
+    A \cup (X \setminus A)
+    =
+    X,
+  \end{equation*}
+  hence \( A^\complement \) is indeed the complement of \( A \).
+
+  Therefore, \( \pow(X) \) is a Boolean algebra.
+\end{proof}
+
+\begin{theorem}[De Morgan's laws for sets]\label{thm:de_morgans_laws_for_sets}
+  The following hold for any sets:
+  \begin{align}
+    X \setminus \bigcup \mscrA = \bigcap \set{ X \setminus A \given A \in \mscrA } \label{eq:thm:de_morgans_laws_for_sets/complement_of_union} \\
+    X \setminus \bigcap \mscrA = \bigcup \set{ X \setminus A \given A \in \mscrA } \label{eq:thm:de_morgans_laws_for_sets/complement_of_intersection}
+  \end{align}
+\end{theorem}
+\begin{comments}
+  \item This is one of several variants of De Morgan's laws presented here --- see \cref{rem:de_morgans_laws/sets}.
+\end{comments}
+\begin{proof}
+  \SubProof{Direct proof} We have
+  \begin{align*}
+    X \setminus \bigcup \mscrA
+    &=
+    \set{ x \given x \in X \T{and} \synneg \qexists{A \in \mscrA} x \in A }
+    \reloset {\eqref{eq:thm:fol_quantifier_duality}} = \\ &=
+    \set{ x \given x \in X \T{and} \qforall{A \in \mscrA} {x \notin A} }
+    = \\ &=
+    \set{ x \given \qforall{A \in \mscrA} (x \in X \T{and} x \notin A) }
+    = \\ &=
+    \bigcap \set{ X \setminus A \given A \in \mscrA }
+  \end{align*}
+  and
+  \begin{align*}
+    X \setminus \bigcap \mscrA
+    &=
+    \set{ x \given x \in X \T{and} \synneg \qforall{A \in \mscrA} x \in A }
+    \reloset {\eqref{eq:thm:fol_quantifier_duality}} = \\ &=
+    \set{ x \given x \in X \T{and} \qexists{A \in \mscrA} {x \notin A} }
+    = \\ &=
+    \set{ x \given \qforall{A \in \mscrA} (x \in X \T{and} x \notin A) }
+    = \\ &=
+    \bigcup \set{ X \setminus A \given A \in \mscrA }.
+  \end{align*}
+
+  \SubProof{Consequence of \fullref{thm:de_morgans_laws}}
+  All subsets of \( X \) form a Boolean algebra as a consequence of \cref{thm:boolean_algebra_of_subsets}. Then
+  \begin{equation*}
+    \bigcup_{k \in \mscrK} (X \setminus A_k)
+    \reloset {\ref{thm:set_difference/superset}} =
+    \bigcup_{k \in \mscrK} (X \cap A_k)^\complement
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} =
+    \parens*{ \bigcap_{k \in \mscrK} (X \cap A_k) }^\complement
+    =
+    \parens*{ X \cap \bigcap_{k \in \mscrK} A_k }^\complement
+    \reloset {\ref{thm:set_difference/superset}} =
+    X \setminus \parens*{ \bigcap_{k \in \mscrK} A_k }.
+  \end{equation*}
+
+  The other identity requires distributivity:
+  \begin{equation*}
+    \bigcap_{k \in \mscrK} (X \setminus A_k)
+    \reloset {\ref{thm:set_difference/superset}} =
+    \bigcap_{k \in \mscrK} (X \cap A_k)^\complement
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} =
+    \parens*{ \bigcup_{k \in \mscrK} (X \cap A_k) }^\complement
+    \reloset {\eqref{eq:thm:union_intersection_distributivity/intersection_over_union}} =
+    \parens*{ X \cap \bigcup_{k \in \mscrK} A_k }^\complement
+    \reloset {\ref{thm:set_difference/superset}} =
+    X \setminus \parens*{ \bigcup_{k \in \mscrK} A_k }.
+  \end{equation*}
+\end{proof}
