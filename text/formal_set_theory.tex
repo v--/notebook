@@ -1,6 +1,8 @@
 \section{Formal set theory}\label{sec:formal_set_theory}
 
-We start with some basics of set theory from the perspective of \fullref{ch:mathematical_logic}. We will work in a less formal metalanguage afterwards.
+We start with some basics of set theory from the perspective of \fullref{ch:mathematical_logic}. In particular, the results will be based on derivability via formal proofs. This will allow us to formulate very general definitions like the inclusion order in \cref{def:inclusion_order} and the lattice of sets in \cref{def:lattice_of_sets} that would otherwise require more awkward model-theoretic counterparts.
+
+In later sections, we will work with a model of set theory in a less formal metalanguage.
 
 \paragraph{Axiomatic set theory}
 
@@ -14,7 +16,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
     An exception is the \term[ru=аксиома объёмности (\cite[180]{Герасимов2014Вычислимость})]{axiom of extensionality}, which expresses the essence of a set --- namely, that a set is completely determined by its members\fnote{Technically, we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of \eqref{eq:def:axiomatic_set_theory/extensionality}.}:
     \begin{equation}\label{eq:def:axiomatic_set_theory/extensionality}
-      \qforall \synz (\synz \synin \synx \syniff \synz \synin \syny) \synimplies \synx \syneq \syny.
+      \qforall \synz (\synz \synin x \syniff \synz \synin \syny) \synimplies x \syneq \syny.
     \end{equation}
 
     The converse follows by a simple application of \ref{inf:def:fol_natural_deduction/equality/elim}.
@@ -131,14 +133,14 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
   \begin{thmenum}
     \thmitem{def:naive_set_theory/comprehension} The \term[en=unrestricted comprehension (\cite[240]{Mimram2020ProgramEqualsProof})]{axiom schema of unrestricted comprehension} states that any \hyperref[def:fol_formula]{first-order formula} \( \varphi \) determines a set:
     \begin{equation}\label{eq:def:naive_set_theory/comprehension}
-      \qexists \syna \qforall \synx (\synx \synin \syna \syniff \syn\varphi).
+      \qexists a \qforall x (x \synin a \syniff \syn\varphi).
     \end{equation}
 
-    Note that \eqref{eq:def:naive_set_theory/comprehension} is a formula schema in the sense of \cref{def:fol_formula_schema}. An \hyperref[con:schemas_and_instances]{instance} of \( \syn\varphi \) may have free variables other than \( \synx \), so we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete instance.
+    Note that \eqref{eq:def:naive_set_theory/comprehension} is a formula schema in the sense of \cref{def:fol_formula_schema}. An \hyperref[con:schemas_and_instances]{instance} of \( \syn\varphi \) may have free variables other than \( x \), so we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete instance.
 
     The schema is a adaptation, in the sense of \cref{def:fol_adaptation_of_monadic_sol_theory}, of the following second-order axiom:
     \begin{equation}\label{eq:def:naive_set_theory/comprehension/sol}
-      \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \qexists {\syna^{\syn\iota}} \qforall {\synx^{\syn\iota}} (\synx \synin \syna \syniff \synp \synx).
+      \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \qexists {a^{\syn\iota}} \qforall {x^{\syn\iota}} (x \synin a \syniff \synp x).
     \end{equation}
   \end{thmenum}
 \end{definition}
@@ -151,21 +153,21 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
   \hyperref[def:naive_set_theory/comprehension]{Unrestricted comprehension} and its less powerful variants like \hyperref[def:zfc/specification]{specification} allow introducing function symbols as \hyperref[def:fol_definition/function]{first-order definitions}, thus not interfering with the logical properties of the theory.
 
-  Fix a \hyperref[def:fol_formula]{formula} \( \varphi \) whose free variables are \( x, u_1, \ldots, u_n \). The corresponding instance of unrestricted comprehension is
+  Fix a \hyperref[def:fol_formula]{formula} \( \varphi \) whose free variables are \( x, a_1, \ldots, a_n \). The corresponding instance of unrestricted comprehension is
   \begin{equation*}
-    \qforall {u_1} \ldots \qforall {u_n} \qexists a \qforall x (x \synin a \syniff \varphi).
+    \qforall {a_1} \ldots \qforall {a_n} \qexists a \qforall x (x \synin a \syniff \varphi).
   \end{equation*}
 
   With uniqueness provided by extensionality, the above acts as a proof of correctness for a definition of an \( n \)-ary \hyperref[def:fol_signature/function]{function symbol} \( A \):
   \begin{equation*}
-    \qforall {u_1} \ldots \qforall {u_n} \qforall a \parens[\big]{ (A(u_1, \ldots, u_n) \syneq a) \syniff \qforall x (x \synin a \syniff \varphi)) }.
+    \qforall {a_1} \ldots \qforall {a_n} \qforall a \parens[\big]{ (A(a_1, \ldots, a_n) \syneq a) \syniff \qforall x (x \synin a \syniff \varphi)) }.
   \end{equation*}
 
   We can now use \( A \) to construct terms in the corresponding \hyperref[def:fol_definitional_extension]{definitional extension} \( T^+ \). Any formula and any proof in \( T^+ \) can be encoded more verbosely in \( T \).
 
-  We call \( A \) a \term{definition by specification} and we call the variables \( u_1, \ldots, u_n \) \term{parameters}. For convenience, we will use the following metasyntax, called \term[en=set-builder notation (\cite[10]{CitkinMuravitsky2022ConsequenceRelations})]{set-builder notation}.:
+  We call \( A \) a \term{definition by specification} and we call the variables \( a_1, \ldots, a_n \) \term{parameters}. For convenience, we will use the following metasyntax, called \term[en=set-builder notation (\cite[10]{CitkinMuravitsky2022ConsequenceRelations})]{set-builder notation}.:
   \begin{equation*}
-    A(u_1, \ldots, u_n) \coloneqq \set{ x \given \varphi }.
+    A(a_1, \ldots, a_n) \coloneqq \set{ x \given \varphi }.
   \end{equation*}
 
   Of course, if \( n = 0 \), we avoid the parameter list altogether and write
@@ -176,16 +178,16 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
   \begin{thmenum}
     \thmitem{def:set_theory_definition/function} Some variations of this notation are common. For example, if \( g \) is a unary function symbol, we can define \( A \) by
     \begin{equation*}
-      \qforall {u_1} \ldots \qforall {u_n} \qforall a \parens[\big]{ (A(u_1, \ldots, u_n) \syneq a) \syniff \qforall x (g(x) \synin a \syniff \varphi)) }.
+      \qforall {a_1} \ldots \qforall {a_n} \qforall a \parens[\big]{ (A(a_1, \ldots, a_n) \syneq a) \syniff \qforall x (g(x) \synin a \syniff \varphi)) }.
     \end{equation*}
     and denote it as
     \begin{equation*}
-      A(u_1, \ldots, u_n) \coloneqq \set{ g(x) \given \varphi }.
+      A(a_1, \ldots, a_n) \coloneqq \set{ g(x) \given \varphi }.
     \end{equation*}
 
     \thmitem{def:set_theory_definition/restricted} With the axiom schema specification, which provides restricted comprehension, we must formally add an additional parameter \( u \) and substitute \( \varphi \) with \( \varphi \synwedge x \in u \), but informally we can simply write
     \begin{equation*}
-      A(u_1, \ldots, u_n, u) \coloneqq \set{ x \synin u \given \varphi }.
+      A(a_1, \ldots, a_n, u) \coloneqq \set{ x \synin u \given \varphi }.
     \end{equation*}
 
     If \( n = 0 \), by fixing a closed term \( \tau \) to substitute for \( u \), we can avoid the parameter list altogether and write
@@ -199,6 +201,15 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
     \end{equation*}
 
     This is sometimes called \term[en=roster notation (\cite[10]{CitkinMuravitsky2022ConsequenceRelations})]{roster notation}.
+
+    \thmitem{def:set_theory_definition/predicate} If \( a_1, \ldots, a_n \) are free variables in \( \varphi \), we can shorten the \hyperref[def:fol_definition/predicate]{first-order predicate definition}
+    \begin{equation*}
+      \qforall {a_1} \cdots \qforall {a_n} (P(a_1, \ldots, a_n) \syniff \varphi)
+    \end{equation*}
+    to
+    \begin{equation*}
+      P(a_1, \ldots, a_n) \coloneqq \varphi.
+    \end{equation*}
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -216,7 +227,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 \begin{theorem}[Russell's paradox]\label{thm:russels_paradox}
   \hyperref[def:naive_set_theory]{Naive set theory} is \hyperref[def:fol_theory/consistent]{inconsistent}. More precisely, consider the set
   \begin{equation*}
-    \synR \coloneqq \set{ \synx \given \synneg (\synx \synin \synx) }.
+    \synR \coloneqq \set{ x \given \synneg (x \synin x) }.
   \end{equation*}
 
   Using \hyperref[def:fol_natural_deduction_system]{classical natural deduction}, we can derive both \( \synR \synin \synR \) and \( \synneg (\synR \synin \synR) \).
@@ -229,13 +240,13 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 \begin{proof}
   The first-order definition of \( R \) is given by
   \begin{equation*}
-    \qforall \synx (\synx \synin R \syniff \synneg (\synx \synin \synx)).
+    \qforall x (x \synin R \syniff \synneg (x \synin x)).
   \end{equation*}
 
   We can derive
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ [\qforall \synx (\synx \synin R \syniff \synneg (\synx \synin \synx))]^u }
+      \hypo{ [\qforall x (x \synin R \syniff \synneg (x \synin x))]^u }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synR \synin \synR \syniff \synneg (\synR \synin \synR) }
 
       \hypo{ [\synR \synin \synR]^v }
@@ -251,10 +262,10 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
   Denote the above derivation tree by \( P \). It allows us to also derive
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ [\qforall \synx (\synx \synin R \syniff \synneg (\synx \synin \synx))]^u }
+      \hypo{ [\qforall x (x \synin R \syniff \synneg (x \synin x))]^u }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synR \synin \synR \syniff \synneg (\synR \synin \synR) }
 
-      \hypo{ [\qforall \synx (\synx \synin R \syniff \synneg (\synx \synin \synx))]^u }
+      \hypo{ [\qforall x (x \synin R \syniff \synneg (x \synin x))]^u }
       \ellipsis {\( P \)} { \synneg (R \synless R) }
 
       \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_left}]{ \synR \synin \synR }
@@ -265,7 +276,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 \begin{definition}\label{def:universal_set}\mimprovised
   As justified by \cref{def:set_theory_definition}, in \hyperref[def:naive_set_theory]{naive set theory}, we can easily define the \term[en=universal set (\cite[xvi]{Mendelson2015Logic})]{universal set}
   \begin{equation*}
-    \synV \coloneqq \set{ \synx \given \syntop }.
+    \synV \coloneqq \set{ x \given \syntop }.
   \end{equation*}
 
   Similarly to how Russell's set from \fullref{thm:russels_paradox} demonstrates the inconsistency of naive set theory, we will show in \fullref{thm:cantors_paradox} how the universal set also leads to a similar result.
@@ -280,9 +291,9 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
   If \( A \subseteq B \) and \( A \neq B \), we say that the subset \( A \) is \term[ru=собственное (подмножество) (\cite[34]{БелоусовТкачёв2004ДискретнаяМатематика}), en=proper (subset) (\cite[126]{Rosen2019DiscreteMathematics})]{proper} or \term[ru=строгое (подмножество) (\cite[34]{БелоусовТкачёв2004ДискретнаяМатематика}), en=strict (subset) (\cite[403]{Müller2022HandbookOfDynamicsAndProbability})]{strict} of \( B \) and write \( A \subsetneq B \).
 
-  Formally, we can introduce the \hyperref[def:fol_signature/notation]{infix} binary \hyperref[def:fol_signature/predicate]{predicate symbol} \( {\synsubseteq} \) via the \hyperref[def:fol_definition/predicate]{first-order predicate definition}
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce an \hyperref[def:fol_signature/notation]{infix} binary \hyperref[def:fol_signature/predicate]{predicate symbol}:
   \begin{equation*}
-    \qforall \syna \qforall \synb (\syna \synsubseteq \synb \syniff (\synx \synin \syna \synimplies \synx \synin \synb)).
+    (a \synsubseteq b) \coloneqq \qforall x (x \synin a \synimplies x \synin b).
   \end{equation*}
 \end{definition}
 \begin{comments}
@@ -322,7 +333,6 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
       \cite[503]{Müller2022HandbookOfDynamicsAndProbability}          & \( A \subseteq B \) & \( A \subset B \)    \\
       \cite[def. 2.1.3]{Rosen2019DiscreteMathematics}                 & \( A \subseteq B \) & \( A \subset B \)    \\
       \cite[def. 1.1]{Александров1977ОбщаяТопология}                  & \( A \subseteq B \) & \( A \subset B \)    \\
-      \cite[def. 1.1]{АлександровКолмогоров1948ТеорияМножеств}        & \( A \subseteq B \) & \( A \subset B \)    \\
       \cite[10]{Мальцев1970АлгебраическиеСистемы}                     & \( A \subseteq B \) & \( A \subset B \)    \\
       \cite[33]{БелоусовТкачёв2004ДискретнаяМатематика}               & \( A \subseteq B \) & \( A \subset B \)    \\
       \cite[def. 3.1.14]{Tao2022AnalysisI}                            & \( A \subseteq B \) & \( A \subsetneq B \) \\
@@ -331,6 +341,67 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
     \caption{The table for \cref{rem:strict_subset_notation} discussing how different authors denote \hyperref[def:subset]{subsets}.}\label{tab:rem:strict_subset_notation}
   \end{table}
 \end{remark}
+
+\begin{proposition}\label{thm:inclusion_order}
+  The \hyperref[def:subset]{subset predicate} \( {\synsubseteq} \) satisfies the axioms of the \hyperref[def:partially_ordered_set/theory]{theory of partially ordered sets}.
+\end{proposition}
+\begin{proof}
+  We will use the expanded formula \( \qforall x (x \synin a \synimplies x \synin b) \) rather than \( a \synsubseteq b \).
+
+  \SubProofOf[def:binary_relation/reflexive]{reflexivity}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:propositional_admissible_rules/self_conditional}]{ x \synin a \synimplies x \synin a }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (x \synin a \synimplies x \synin a) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall x (x \synin a \synimplies x \synin b)]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin a \synimplies x \synin b }
+
+      \hypo{ [x \synin a]^t }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin b }
+
+      \hypo{ \substack{ [\qforall x (x \synin a \synimplies x \synin b)]^v \\ [x \synin b]^s } }
+      \ellipsis {} { x \synin a }
+
+      \infer[left label={\( t, s \)}]2[\ref{inf:def:propositional_natural_deduction/iff/intro}]{ x \synin a \syniff x \synin b }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (x \synin a \syniff x \synin b) }
+
+      \hypo{ [\eqref{eq:def:axiomatic_set_theory/extensionality}]^w }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synanon }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ a \syneq b }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf[def:binary_relation/transitive]{transitivity}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall x (x \synin a \synimplies x \synin b)]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin a \synimplies x \synin b }
+
+      \hypo{ [x \synin a]^t }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin b }
+
+      \hypo{ [\qforall x (x \synin b \synimplies x \synin c)]^v }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin b \synimplies x \synin c }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin c }
+      \infer[left label=\( t \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ x \synin a \synimplies x \synin c }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (x \synin a \synimplies x \synin c) }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:inclusion_order}\mimprovised
+  When regarded as a \hyperref[def:binary_relation]{binary relation} in some \hyperref[def:set_theory_model]{model} of \hyperref[def:axiomatic_set_theory]{axiomatic set theory}, we refer to the \hyperref[def:subset]{subset} predicate as the \term[ru=отношение включения (\cite[44]{Гуров2013ТеорияРешёток}), en=inclusion order (\cite[4]{DaveyPriestley2002LatticeTheory})]{inclusion order}. It follows from \cref{thm:inclusion_order} that it is a \hyperref[def:partially_ordered_set]{partial order} on the model itself, as well as on any collection of sets.
+\end{definition}
+\begin{comments}
+  \item As shown in \cref{thm:lattice_of_sets}, this is a lattice order whose joins and meets and unions and intersections.
+\end{comments}
 
 \begin{definition}\label{def:power_set}\mcite[19]{Enderton1977SetTheory}
   For every set \( A \), we define the \term[ru=булеан (\cite[34]{БелоусовТкачёв2004ДискретнаяМатематика})]{power set} \( \pow(A) \) whose members are the \hyperref[def:subset]{subsets} of \( A \).
@@ -372,7 +443,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
   Formally, in accordance with \cref{def:set_theory_definition}, we can use set-builder notation to introduce a nullary \hyperref[def:fol_signature/function]{function symbol} \( {\syn\varnothing} \):
   \begin{equation*}
-    \syn\varnothing \coloneqq \set{ \synx \given \synbot }.
+    \syn\varnothing \coloneqq \set{ x \given \synbot }.
   \end{equation*}
 \end{definition}
 \begin{comments}
@@ -422,63 +493,155 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 \end{comments}
 
 \begin{proposition}\label{thm:unordered_pair_extensionality}
-  For \hyperref[def:unordered_pair]{unordered pairs} of sets the following property holds:
-  \begin{equation}\label{eq:thm:unordered_pair_extensionality}
-    \set{ a, b } = \set{ c, d } \T{if and only if} (a = c \T{and} b = d) \T{or} (a = d \T{and} b = c).
-  \end{equation}
+  For \hyperref[def:unordered_pair]{unordered pairs} of sets the following is derivable:
+  \begin{equation*}
+    \set{ a, b } \syneq \set{ c, d } \syniff (a \syneq c \synwedge b \syneq d) \synvee (a \syneq d \synwedge b \syneq c)
+  \end{equation*}
 \end{proposition}
 \begin{comments}
   \item For \hyperref[def:kuratowski_pair]{Kuratowski pairs}, we have the stronger statement \cref{thm:unordered_pair_extensionality}. For indexed families, we have \cref{thm:indexed_family_extensionality}.
 \end{comments}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( \set{ a, b } = \set{ c, d } \).
+  After expanding the roster notation, we our goal becomes
+  \begin{equation*}
+    \qforall x (x \syneq a \synvee x \syneq b \syniff x \syneq c \synvee x \syneq d) \syniff (a \syneq c \synwedge b \syneq d) \synvee (a \syneq d \synwedge b \syneq c).
+  \end{equation*}
 
-  By the \hyperref[def:naive_set_theory/extensionality]{axiom of extensionality}, both sets have the same members. We will consider several cases:
-  \begin{itemize}
-    \item If \( a = b \), then both \( c \) and \( d \) must be equal to their common value, hence \( a = b = c = d \). In particular, we have both
-    \begin{equation*}
-      a = c \T{and} b = d
-    \end{equation*}
-    and
-    \begin{equation*}
-      a = d \T{and} b = c.
-    \end{equation*}
+  In one direction, we have the derivation
+  \small
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall x (x \syneq a \synvee x \syneq b \syniff x \syneq c \synvee x \syneq d)]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ a \syneq a \synvee a \syneq b \syniff a \syneq c \synvee a \syneq d }
 
-    \item If \( a \neq b \) and \( a = c \), then \( b = c \) leads to a contradiction, so it remains for \( b = d \) to hold.
+      \infer0[\ref{inf:def:fol_natural_deduction/equality/intro}]{ a \syneq a }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ a \syneq a \synvee a \syneq b }
 
-    \item Similarly, if \( a \neq b \) and \( a = d \), then \( b = c \).
-  \end{itemize}
+      \infer2[\ref{inf:def:propositional_natural_deduction/iff/elim_right}]{ a \syneq c \synvee a \syneq d }
 
-  \NecessitySubProof In the converse, we also do case analysis.
-  \begin{itemize}
-    \item If \( a = c \) and \( b = d \), then both \( a \) and \( b \) belong to \( \set{ c, d } \), hence \( \set{ a, b } \) is a subset of \( \set{ c, d } \). We obtain the converse inclusion analogously, thus \( \set{ a, b } = \set{ c, d } \).
+      \hypo{ \substack{ [\synanon]^u \\ [a \syneq c]^v } }
+      \ellipsis {\( L \)} { \synanon }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \synanon }
 
-    \item If \( a = d \) and \( b = c \), we proceed analogously.
-  \end{itemize}
+      \hypo{ \substack{ [\synanon]^u \\ [a \syneq d]^w } }
+      \ellipsis {} { \synanon }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \synanon }
+
+      \infer[left label={\( v, w \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ (a \syneq c \synwedge b \syneq d) \synvee (a \syneq d \synwedge b \syneq c) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  where \( L \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [a \syneq c]^v }
+
+      \hypo{ [\qforall x (x \syneq a \synvee x \syneq b \syniff x \syneq c \synvee x \syneq d)]^u }
+      \ellipsis {} {b \syneq c \synvee b \syneq d}
+
+      \hypo{ [a \syneq c]^v }
+      \hypo{ [b \syneq c]^t }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ c \syneq b }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ a \syneq b }
+      \ellipsis {\( L' \)} { b \syneq d }
+
+      \hypo{ [b \syneq d]^s }
+      \infer[left label={\( t, s \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ b \syneq d }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ a \syneq c \synwedge b \syneq d }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  and \( L' \) is
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall x (x \syneq a \synvee x \syneq b \syniff x \syneq c \synvee x \syneq d)]^u }
+      \ellipsis {} {d \syneq a \synvee d \syneq b}
+
+      \hypo{ [d \syneq a]^o }
+      \hypo{ [a \syneq b]^r }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ d \syneq b }
+
+      \hypo{ [d \syneq b]^p }
+      \infer[left label={\( o, p \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ d \syneq b }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ b \syneq d }
+    \end{prooftree}
+  \end{equation*}
+  and the other skipped subtrees are analogous.
+
+  In the other direction, we have
+  \small
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [(a \syneq c \synwedge b \syneq d) \synvee (a \syneq d \synwedge b \syneq c)]^u }
+
+      \hypo{ \substack{ [a \syneq c \synwedge b \syneq d]^v \\ [x \syneq a \synvee x \syneq b]^t } }
+      \ellipsis {\( L \)} { \synanon }
+
+      \hypo{ \substack{ [a \syneq c \synwedge b \syneq d]^v \\ [x \syneq c \synvee x \syneq d]^s } }
+      \ellipsis {} { \synanon }
+
+      \infer[left label={\( t, s \)}]2[\ref{inf:def:propositional_natural_deduction/iff/intro}]{ \synanon }
+
+      \hypo{ [a \syneq d \synwedge b \syneq c]^w }
+      \ellipsis {} { \synanon }
+
+      \infer[left label={\( v, w \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \synanon }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (x \syneq a \synvee x \syneq b \syniff x \syneq c \synvee x \syneq d) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  where \( L \) is
+  \small
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [x \syneq a \synvee x \syneq b]^t }
+
+      \hypo{ [x \syneq a]^r }
+      \hypo{ [a \syneq c \synwedge b \syneq d]^v }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ a \syneq c }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ x \syneq c }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_left}]{ \synanon }
+
+      \hypo{ [x \syneq b]^p }
+      \hypo{ [a \syneq c \synwedge b \syneq d]^v }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_right}]{ b \syneq d }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ x \syneq d }
+      \infer1[\ref{inf:def:propositional_natural_deduction/or/intro_right}]{ \synanon }
+
+      \infer[left label={\( r, p \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ x \syneq c \synvee x \syneq d }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+  and the other skipped subtrees are analogous.
 \end{proof}
 
 \paragraph{Algebra of sets}
 
 \begin{definition}\label{def:set_union}\mcite[9]{Jech2006SetTheory}
-  We will introduce two operations on sets, both called \term[ru=объединение (\cite[6]{ШеньВерещагин2020НачалаТеорииМножеств})]{union}.
+  We introduce two operations on sets, both called \term[ru=объединение (\cite[6]{ШеньВерещагин2020НачалаТеорииМножеств})]{union}.
 
-  In accordance with \cref{def:set_theory_definition}, we will introduce two \hyperref[def:fol_signature/function]{function symbol} using set-builder notation:
+  In accordance with \cref{def:set_theory_definition}, we introduce two \hyperref[def:fol_signature/function]{function symbol} using set-builder notation:
   \begin{thmenum}
     \thmitem{def:set_union/unary} First, we introduce the \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\synbigcup} \):
     \begin{equation*}
       \synbigcup a \coloneqq \set{ x \given \underbrace{\qexists y (y \synin a \synwedge x \synin y)}_{\qexists {y \synin a} {x \synin y}} }.
     \end{equation*}
 
-    Informally, \( \bigcup \mscrA \) contains the common members of all members of \( \mscrA \).
+    Informally, \( \bigcap \mscrA \) contains all members of all members of \( \mscrA \) --- it \enquote{flattens} the set \( \mscrA \). Expressed more rigorously, the unary intersection is the multiplication operation of the power set monad --- see \cref{ex:def:monad/power_set}.
 
     \thmitem{def:set_union/binary} Second, we introduce the infix binary function symbol \( {\syncup} \):
     \begin{equation*}
       a \syncup b \coloneqq \set{ x \given x \synin a \synwedge x \synin b }.
     \end{equation*}
 
-    Informally, the members of \( A \cap B \) belong to both \( A \) and \( B \).
+    Informally, the members of \( A \cup B \) belong to either \( A \) or \( B \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item In \hyperref[def:zfc]{\logic{ZFC}}, the correctness of the unary definition relies on the \hyperref[def:zfc/union]{axiom of unions} --- see \cref{thm:zfc_existence_theorems/arbitrary_union}.
+\end{comments}
 
 \begin{proposition}\label{thm:binary_set_union_via_pair}
   The \hyperref[def:set_union/binary]{binary union} \( a \syncup b \) is provably equal to the \hyperref[def:set_union/unary]{unary union} of the \hyperref[def:unordered_pair]{unordered pair} \( \set{ a, b } \), i.e. we can derive
@@ -555,23 +718,23 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 \end{proof}
 
 \begin{definition}\label{def:set_intersection}\mcite[14; 15]{Halmos1960NaiveSetTheory}
-  Dually to unions, we will introduce two operations on sets, both called \term[ru=пересечение (\cite[6]{ШеньВерещагин2020НачалаТеорииМножеств})]{intersection}.
+  Dually to unions, we introduce two operations on sets, both called \term[ru=пересечение (\cite[6]{ШеньВерещагин2020НачалаТеорииМножеств})]{intersection}.
 
-  In accordance with \cref{def:set_theory_definition}, we will introduce two \hyperref[def:fol_signature/function]{function symbol} using set-builder notation:
+  In accordance with \cref{def:set_theory_definition}, we introduce two \hyperref[def:fol_signature/function]{function symbol} using set-builder notation:
   \begin{thmenum}
     \thmitem{def:set_intersection/unary} First, we introduce the \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\synbigcap} \):
     \begin{equation*}
       \synbigcap a \coloneqq \set{ x \given \underbrace{\qforall y (y \synin a \synimplies x \synin y)}_{\qforall {y \synin a} x \synin y} }.
     \end{equation*}
 
-    Informally, \( \bigcap \mscrA \) contains all members of all members of \( \mscrA \) --- it \enquote{flattens} the set \( \mscrA \). Expressed more rigorously, the unary intersection is the multiplication operation of the power set monad --- see \cref{ex:def:monad/power_set}.
+    Informally, \( \bigcup \mscrA \) contains the common members of all members of \( \mscrA \). It is well-defined in naive set theory, however in \hyperref[def:zfc]{\logic{ZFC}} it can only be formally defined if \( \mscrA \) is nonempty since \( \bigcap \varnothing \) is the \hyperref[def:universal_set]{universal set}.
 
     \thmitem{def:set_intersection/binary} Second, we introduce the infix binary function symbol \( {\syncap} \):
     \begin{equation*}
-      a \syncap b \coloneqq \set{ x \given x \synin a \synvee x \synin b }.
+      a \syncap b \coloneqq \set{ x \given x \synin a \synwedge x \synin b }.
     \end{equation*}
 
-    Informally, the members of \( A \cap B \) belong to either \( A \) or \( B \).
+    Informally, the members of \( A \cap B \) belong to either \( A \) or \( B \). It is always well-defined in \hyperref[def:zfc]{\logic{ZFC}}, as shown in \cref{thm:zfc_existence_theorems/binary_intersection}.
   \end{thmenum}
 \end{definition}
 
@@ -628,7 +791,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
       \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin a }
 
-      \hypo{ [\synanon]^u }
+      \hypo{ [anon]^u }
       \ellipsis {} { x \synin b }
 
       \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ x \synin a \synwedge x \synin b }
@@ -636,42 +799,114 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
   \end{equation*}
 \end{proof}
 
+\begin{proposition}\label{thm:lattice_of_sets}
+  Binary \hyperref[def:set_union]{unions} and \hyperref[def:set_intersection]{intersections} of sets act as suprema and infima with respect to the \hyperref[def:inclusion_order]{inclusion order}.
+\end{proposition}
+\begin{comments}
+  \item Thus, by \cref{thm:lattice_via_order_relation}, they satisfy the axioms of the \hyperref[def:lattice/theory]{theory of lattices}.
+\end{comments}
+\begin{proof}
+  The following proof tree allows us to derive (the definitional expansion of) \( a \synvee b \synsubseteq c \) from \( a \synsubseteq c \) and \( b \synsubseteq c \):
+  \footnotesize
+  \begin{equation*}
+    \begin{prooftree}[separation=1em]
+      \hypo{ [\qforall x (x \synin a \synvee x \synin b)]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin a \synvee x \synin b }
+
+      \hypo{ [x \synin a]^t }
+      \hypo{ [\qforall x (x \synin a \synimplies x \synin c)]^v }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin a \synvee x \synin b }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin c }
+
+      \hypo{ [x \synin b]^s }
+      \hypo{ [\qforall x (x \synin b \synimplies x \synin c)]^w }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin b \synvee x \synin c }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin c }
+
+      \infer[left label={\( t, s \)}]3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ x \synin c }
+      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ (x \synin a \synvee x \synin b) \synimplies x \synin c }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x ((x \synin a \synvee x \synin b) \synimplies x \synin c) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  Furthermore, \( a \synvee b \) is an upper bound of \( a \) and \( b \) because we have \( a \synsubseteq a \synvee b \) by \ref{inf:def:propositional_natural_deduction/or/intro_left} and \( b \synsubseteq a \synvee b \) by \ref{inf:def:propositional_natural_deduction/or/intro_right}.
+
+  Therefore, \( a \synvee b \) is indeed a supremum of \( a \) and \( b \).
+
+  Similarly, from \( c \synsubseteq a \) and \( c \synsubseteq b \) we can derive \( c \synsubseteq a \syncap b \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [x \synin c]^t }
+      \hypo{ [\qforall x (x \synin c \synimplies x \synin a)]^v }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin c \synimplies x \synin a }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin a }
+
+      \hypo{ [x \synin c]^t }
+      \hypo{ [\qforall x (x \synin c \synimplies x \synin b)]^w }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x \synin c \synimplies x \synin b }
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ x \synin b }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/and/intro}]{ x \synin a \synwedge x \synin b }
+      \infer[left label=\( t \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ x \synin c \synimplies x \synin a \synwedge x \synin b }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall x (x \synin c \synimplies x \synin a \synwedge x \synin b) }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+\end{proof}
+
+\begin{definition}\label{def:lattice_of_sets}\mimprovised
+  As long as we can prove their existence, binary \hyperref[def:set_union]{unions} and \hyperref[def:set_intersection]{intersections} of sets turn any \hyperref[def:set_theory_model]{model} of \hyperref[def:axiomatic_set_theory]{axiomatic set theory} into a \hyperref[def:lattice]{lattice}.
+
+  This also holds more generally for any collection of sets that is closed under binary unions and intersections. We call such a collection a \term[en=lattice of sets (\cite[37]{DaveyPriestley2002LatticeTheory})]{lattice of sets}.
+
+  Similarly, arbitrary unions and intersections act as joins and meets in a \hyperref[def:complete_lattice]{complete lattice}.
+\end{definition}
+\begin{defproof}
+  \Cref{thm:lattice_of_sets} implies that binary unions and intersections are suprema and infima, correspondingly, with respect to the inclusion order. Thus, by \cref{thm:lattice_via_order_relation}, they satisfy the axioms of the \hyperref[def:lattice/theory]{theory of lattices}.
+
+  For arbitrary unions and intersections, we can give a simpler model-theoretic proof.
+\end{defproof}
+
+\paragraph{Transitive sets}
+
+\begin{definition}\label{def:transitive_set}\mcite[def. 6.1.3(i)]{Hinman2005Logic}
+  We say that a set \( A \) is \term[ru=транзитивное (множество) (\cite[86]{ШеньВерещагин2020НачалаТеорииМножеств})]{transitive} if the members of \( A \) are also subsets of \( A \). As shown in \cref{thm:transitive_set_membership_is_transitive}, assuming the \hyperref[def:zfc/foundation]{axiom of foundation}, in a transitive set, membership is a transitive relation.
+
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
+  \begin{equation*}
+    \op{IsTransitive}(a) \syniff \qforall x (x \synin a \synimplies x \synsubseteq a).
+  \end{equation*}
+
+  We have used the subset predicate symbol \( {\synsubseteq} \) from \cref{def:subset}.
+\end{definition}
+\begin{comments}
+  \item We use transitive sets to define ordinals in \cref{def:ordinal} and Grothendieck universes in \cref{def:grothendieck_universe}. We have also already mentioned transitive sets when defining transitive models of set theory in \cref{def:set_theory_model/transitive}.
+\end{comments}
+
 \paragraph{Inductive sets}
 
-\begin{remark}\label{rem:inductive_sets}
-  We are now interested in the inductive axiom schema \eqref{eq:def:peano_arithmetic/theory/PA3}, which will allow us to define, among other things, natural numbers. Induction is an important proof technique that is discussed in detail in our proof of \cref{thm:peano_arithmetic_predecessor_existence}. There are more general forms of induction than \eqref{eq:def:peano_arithmetic/theory/PA3} like \fullref{thm:well_founded_induction} and \fullref{thm:well_founded_induction}. They do, however, require concepts which in turn depend on the existence of natural numbers within set theory. As a consequence, we cannot prove \eqref{eq:def:peano_arithmetic/theory/PA3} via \fullref{thm:well_founded_induction}.
+\begin{definition}\label{def:ordinal_successor}\mcite[132]{КолмогоровДрагалин2006ЛогикаВведение}
+  We introduce a unary \term[ru=операция следования, en=successor (\cite[43]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы})]{successor} operation \( S \) on sets that generalizes successors in Peano arithmetic (see \cref{def:peano_arithmetic/signature/succ}).
 
-  We will introduce the concept of inductive sets in \cref{def:inductive_set} and prove in \fullref{thm:omega_induction} that a special inductive set \hyperref[thm:smallest_inductive_set_existence]{\( \omega \)}, which will be the universe of our model of \( \BbbN \), allows performing inductive proofs. The technique that allows us to perform inductive proofs on \( \omega \) can be seen in our proof of \cref{thm:omega_is_transitive}. \Fullref{thm:omega_induction} will allow us to define natural numbers without relying on metalogical induction along the way. See our proof of \fullref{thm:omega_induction} for a description of natural number induction within set theory and \cref{rem:def:peano_arithmetic_term_model} for a further discussion of the use of natural numbers in the metatheory and in the object logic.
-
-  We also introduce \term{recursion} in parallel as a technique for constructing objects. See \fullref{thm:omega_recursion}.
-\end{remark}
-
-\begin{definition}\label{def:ordinal_successor}\mcite[68]{Enderton1977SetTheory}
-  We define the \term[ru=операция следования (\cite[1.1.11]{КолмогоровДрагалин2006ЛогикаВведение})]{successor} \( \op{sc}(A) \) of a set \( A \) as the set
+  In accordance with \cref{def:set_theory_definition}, we introduce a \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\synS} \) using set-builder notation:
   \begin{equation*}
-    \op{sc}(A) \coloneqq A \cup \set{ A }.
+    \synS a \coloneqq a \syncup \set{ a }.
   \end{equation*}
-
-  The following \hyperref[con:formula_defined_predicate]{formula-defined predicate}
-  \begin{equation*}\taglabel[\op{IsSucc}]{eq:def:ordinal_successor/predicate}
-    \ref{eq:def:ordinal_successor/predicate}[\rho, \sigma] \coloneqq \qforall \synx \parens[\big]{ \synx \in \rho \syniff (\synx \in \sigma \synvee \synx = \sigma) },
-  \end{equation*}
-  which states that \( \rho \) is the successor of \( \sigma \), will be useful for us when working with \hyperref[def:inductive_set]{inductive sets}.
 \end{definition}
 \begin{comments}
   \item We also call it the \term{ordinal successor} operation since it is an important concept in the \hyperref[sec:ordinals]{theory of ordinals}. See \cref{rem:def:ordinal_successor} for an example of how it naturally arises. It should be distinguished from successor cardinals defined in \cref{def:successor_and_limit_cardinal}.
 \end{comments}
 
 \begin{definition}\label{def:inductive_set}\mcite[68]{Enderton1977SetTheory}
-  A set is called \term{inductive} if contains the empty set and is closed under the \hyperref[def:ordinal_successor]{successor operator}.
+  We call a set \term{inductive} if contains the \hyperref[def:empty_set]{empty set} and is closed under the \hyperref[def:ordinal_successor]{successor operator}.
 
-  We introduce the following \hyperref[con:formula_defined_predicate]{formula-defined predicate}
-  \begin{equation*}\taglabel[\op{IsInductive}]{eq:def:inductive_set/predicate}
-    \ref{eq:def:inductive_set/predicate}[\sigma] \coloneqq
-      \parens[\big]{ \qexists {\synx \in \sigma} \ref{eq:def:empty_set/predicate}[\synx] }
-      \synwedge
-      \parens[\big]{ \qforall {\synx \in \sigma} \qexists {\syny \in \sigma} \ref{eq:def:ordinal_successor/predicate}[\syny, \synx] }.
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
+  \begin{equation*}
+    \op{IsInductive}(a) \coloneqq (\syn\varnothing \synin a) \synwedge \qforall x (x \synin a \synimplies \synS x \synin a).
   \end{equation*}
+
+  We have used the empty set constant symbol from \cref{def:empty_set} and the ordinal successor function symbol from \cref{def:ordinal_successor}.
 \end{definition}
 
 \begin{proposition}\label{thm:smallest_inductive_set_existence}
@@ -695,35 +930,35 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
     \item If \( A \) contains \( n \), it also contains \( \op{sc}(n) \).
   \end{itemize}
 
-  More precisely, the following is a theorem of both naive set theory and \hyperref[def:zfc]{\logic{ZF}} (\( \omega \) satisfies \( \sigma \) and \( \synx \) plays the role of \( A \) above):
+  More precisely, the following is a theorem of both naive set theory and \hyperref[def:zfc]{\logic{ZF}} (\( \omega \) satisfies \( \sigma \) and \( x \) plays the role of \( A \) above):
   \footnotesize
   \begin{equation}\label{eq:thm:omega_induction}
     \qexists \sigma
-    \qforall \synx
+    \qforall x
     \parens[\Bigg]
       {
         \parens[\Bigg]
           {
             \parens[\big]
             {
-              \underbrace{ \qexists {\syny \in \synx} \ref{eq:def:empty_set/predicate}[\syny] }_{\mathclap{\T{base case}}}
+              \underbrace{ \qexists {\syny \in x} \ref{eq:def:empty_set/predicate}[\syny] }_{\mathclap{\T{base case}}}
             }
             \synwedge
             \qforall \syny \parens[\big]
               {
                 \overbrace
                   {
-                    \underbrace{ \syny \in \synx }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                    \underbrace{ \syny \in x }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
                     \synimplies
                     \underbrace
                       {
-                        \qexists {\synz \in \synx} \ref{eq:def:ordinal_successor/predicate}[\synz, \syny]
+                        \qexists {\synz \in x} \ref{eq:def:ordinal_successor/predicate}[\synz, \syny]
                       }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
                   }^{\T{inductive step}}
               }
           }
         \synimplies
-        \underbrace{ \ref{eq:def:subset/predicate}[\sigma, \synx] }_{\T{conclusion}}
+        \underbrace{ \ref{eq:def:subset/predicate}[\sigma, x] }_{\T{conclusion}}
       }
   \end{equation}
   \normalsize
@@ -732,24 +967,12 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
   \item This is an analog of \eqref{eq:def:peano_arithmetic/theory/PA3} and is actually used in \cref{thm:omega_is_model_of_pa} to prove that \( \omega \) is a model of \hyperref[def:peano_arithmetic]{\logic{PA}}. Instead of an entire theorem schema, however, for this theorem it is sufficient to use one single formula. The more general induction principles that use theorem schemas cannot be proved without natural numbers, which are a model of \logic{PA} by virtue of this theorem.
 \end{comments}
 \begin{proof}
-  The antecedent of (the inner formula in) \eqref{eq:thm:omega_induction} is a restatement of the formula-defined predicate \( \ref{eq:def:inductive_set/predicate}[\synx] \). The situation resembles the \hyperref[eq:def:zfc/infinity]{axiom of infinity}, but, instead of existence of an inductive set \( \synx \), it states the existence of a set \( \sigma \) such that if \( \synx \) is an inductive set, then \( \sigma \) is a subset of \( \synx \) (if we restrict \( \syny \) to range only over members of \( \sigma \), then we would obtain equality of \( \synx \) and \( \sigma \) instead). In other words, we have reduced the verification of \eqref{eq:thm:omega_induction} to showing that there exists a minimal inductive set in both naive set theory and \logic{ZF}.
+  The antecedent of (the inner formula in) \eqref{eq:thm:omega_induction} is a restatement of the formula-defined predicate \( \ref{eq:def:inductive_set/predicate}[x] \). The situation resembles the \hyperref[eq:def:zfc/infinity]{axiom of infinity}, but, instead of existence of an inductive set \( x \), it states the existence of a set \( \sigma \) such that if \( x \) is an inductive set, then \( \sigma \) is a subset of \( x \) (if we restrict \( \syny \) to range only over members of \( \sigma \), then we would obtain equality of \( x \) and \( \sigma \) instead). In other words, we have reduced the verification of \eqref{eq:thm:omega_induction} to showing that there exists a minimal inductive set in both naive set theory and \logic{ZF}.
 
   We have already proved in \cref{thm:smallest_inductive_set_existence} that our fixed model \( \mscrV = (V, I) \) of set theory has a minimal inductive set \( \omega \). Thus, for any \hyperref[def:fol_variable_assignment]{variable assignment} \( v \), the modified assignment \( v_{\sigma \mapsto \omega} \) satisfies \eqref{eq:thm:omega_induction} with the outer existential quantifier removed. Hence, \( v \) satisfies the entire formula \eqref{eq:thm:omega_induction}.
 
   Both the assignment \( v \) and the model \( \mscrV \) were arbitrary, therefore we can conclude that \eqref{eq:thm:omega_induction} is a theorem of both naive set theory and \logic{ZF}.
 \end{proof}
-
-\begin{definition}\label{def:transitive_set}\mcite[def. 6.1.3(i)]{Hinman2005Logic}
-  We say that a set \( A \) is \term{transitive} if from \( B \in A \) it follows that \( B \subseteq A \).
-
-  We introduce the following \hyperref[con:formula_defined_predicate]{formula-defined predicate}:
-  \begin{equation*}\taglabel[\op{IsSetTransitive}]{eq:def:transitive_set/predicate}
-    \ref{eq:def:transitive_set/predicate}[\sigma] \coloneqq \qforall {\synx \in \sigma} \qforall {\syny \in \synx} {\syny \in \sigma}
-  \end{equation*}
-\end{definition}
-\begin{comments}
-  \item See \cref{rem:ordinal_definition} for a discussion of the motivation and terminology of transitive sets and \cref{def:set_theory_model/transitive} for their importance.
-\end{comments}
 
 \begin{proposition}\label{thm:omega_is_transitive}
   The set \( \omega \) is transitive and every member of \( \omega \) is transitive.
@@ -823,14 +1046,14 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
   Fix any \hyperref[def:fol_variable_assignment]{variable assignment} \( v \). As in our proof of \fullref{thm:omega_induction}, we consider the modified assignment \( v_{\tau \mapsto \omega} \) that \enquote{eliminates} the outer existential quantifier in \eqref{eq:thm:omega_induction}.
 
-  To show that \eqref{eq:thm:omega_induction} really corresponds to \eqref{eq:def:peano_arithmetic/theory/PA3} (and hence that \( \omega \) satisfies \eqref{eq:def:peano_arithmetic/theory/PA3}), fix some formula \( \varphi \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} (\emph{not \logic{ZFC}!}) and suppose that \( \synx, \synz_1, \ldots, \synz_n \) are all of its free variables. Fix also some parameter values \( u_1, \ldots, u_n \in \omega \) and, as in \cref{def:set_theory_definition}, define the set
+  To show that \eqref{eq:thm:omega_induction} really corresponds to \eqref{eq:def:peano_arithmetic/theory/PA3} (and hence that \( \omega \) satisfies \eqref{eq:def:peano_arithmetic/theory/PA3}), fix some formula \( \varphi \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} (\emph{not \logic{ZFC}!}) and suppose that \( x, \synz_1, \ldots, \synz_n \) are all of its free variables. Fix also some parameter values \( a_1, \ldots, a_n \in \omega \) and, as in \cref{def:set_theory_definition}, define the set
   \begin{equation*}
-    A \coloneqq \set{ x \in \omega \given \Bracks{\varphi}(x, u_1, \ldots, x_n) }.
+    A \coloneqq \set{ x \in \omega \given \Bracks{\varphi}(x, a_1, \ldots, x_n) }.
   \end{equation*}
 
   Since \eqref{eq:thm:omega_induction} is satisfied by \( v \), the inner formula in \eqref{eq:thm:omega_induction} (without the quantifiers over \( \tau \) and \( \sigma \)) is satisfied by \( v_{\tau \mapsto \omega, \sigma \mapsto A} \).
 
-  Since our choice of parameters \( u_1, \ldots, u_n \) was arbitrary, we can conclude that the universal closure of \eqref{eq:def:peano_arithmetic/theory/PA3} is satisfied by \( \omega \) for every formula \( \varphi \) of \logic{PA}.
+  Since our choice of parameters \( a_1, \ldots, a_n \) was arbitrary, we can conclude that the universal closure of \eqref{eq:def:peano_arithmetic/theory/PA3} is satisfied by \( \omega \) for every formula \( \varphi \) of \logic{PA}.
 \end{proof}
 
 \begin{remark}\label{rem:set_theory_natural_numbers_without_operations}
@@ -840,7 +1063,7 @@ We start with some basics of set theory from the perspective of \fullref{ch:math
 
   Since the ordering in \cref{def:peano_arithmetic_ordering} is defined via addition, we must define some other ordering. Luckily, as we shall see in \fullref{sec:ordinals}, \( n < m \) corresponds to \( n \in m \). In particular, the members of \( m \) are ordered.
 
-  As a consequence, every natural number \( n \) equals the set of all smaller natural numbers by the \hyperref[def:naive_set_theory/extensionality]{axiom of extensionality}. It is conventional to write \( \set{ 0, 1, \ldots, n } \) rather than \( \set{ m \given m \in \op{sc}(n) } \). The former notation will be fully justified in \fullref{sec:ordinals}.
+  As a consequence, every natural number \( n \) equals the set of all smaller natural numbers by the \hyperref[def:axiomatic_set_theory/extensionality]{axiom of extensionality}. It is conventional to write \( \set{ 0, 1, \ldots, n } \) rather than \( \set{ m \given m \in \op{sc}(n) } \). The former notation will be fully justified in \fullref{sec:ordinals}.
 
   Until then, natural numbers will be useful, for example, in \cref{def:sequence}.
 \end{remark}
