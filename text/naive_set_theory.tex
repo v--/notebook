@@ -1,75 +1,35 @@
 \section{Naive set theory}\label{sec:naive_set_theory}
 
-\begin{definition}\label{def:basic_set_operations}
-  We define the following operations:
+We continue the developments from \fullref{sec:formal_set_theory}, but in a more established, more convenient and less formal metalanguage. We will be working in \hyperref[def:naive_set_theory]{naive (axiomatic) set theory}, but will give comments on how the definitions and results need to be adapted to \hyperref[def:zfc]{\logic{ZFC}}. The symbols not following the dot convention from \cref{rem:object_language_dots} are assumed to be interpretations in a fixed arbitrary model (i.e. \( \varnothing \) is an interpretation of \( \synnothing \)).
 
-  \begin{thmenum}
-    \thmitem{def:basic_set_operations/difference}\mcite[27]{Enderton1977SetTheory} We define the \term{difference} of \( A \) and \( B \) as
-    \begin{equation*}
-      A \setminus B \coloneqq \set{ x \in A \given x \notin B }.
-    \end{equation*}
+\paragraph{Power set algebras}
 
-    We define the \hyperref[con:formula_defined_predicate]{formula-defined predicate}
-    \begin{equation*}\taglabel[\op{IsDifference}]{eq:def:basic_set_operations/difference/predicate}
-      \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \sigma, \tau] \coloneqq \qforall \synx \parens[\big]{ \synx \in \rho \syniff (\synx \in \sigma \synwedge \synneg(\synx \in \tau)) }.
-    \end{equation*}
+\begin{definition}\label{def:set_difference}\mcite[458]{Hinman2005Logic}
+  We define the \term[ru=разность (\cite[6]{ШеньВерещагин2020НачалаТеорииМножеств})]{difference} \( A \setminus B \) as the \hyperref[def:subset]{subset} of those members of \( A \) that are not in \( B \).
 
-    \thmitem{def:basic_set_operations/symmetric_difference}\mcite[9]{Jech2006SetTheory} We define the \term{symmetric difference} of two sets \( A \) and \( B \) as
-    \begin{equation}
-      A \symdiff B \coloneqq \set{ x \in A \given x \notin B }.
-    \end{equation}
-
-    We also define the \hyperref[con:formula_defined_predicate]{formula-defined predicate}
-    \begin{equation*}\taglabel[\op{IsSymDiff}]{eq:def:basic_set_operations/symmetric_difference/predicate}
-      \ref{eq:def:basic_set_operations/symmetric_difference/predicate}[\rho, \sigma, \tau] \coloneqq \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \sigma, \tau] \synvee \ref{eq:def:basic_set_operations/difference/predicate}[\rho, \tau, \sigma].
-    \end{equation*}
-  \end{thmenum}
+  Formally, in accordance with \cref{def:set_theory_definition}, we can use set-builder notation to introduce an \hyperref[def:fol_signature/notation]{infix} binary \hyperref[def:fol_signature/function]{function symbol} \( {\synminus} \):
+  \begin{equation*}
+    \syna \synminus \synb \coloneqq \set{ \synx \given \synx \synin \syna \synwedge \synneg (\synx \synin \synb) }.
+  \end{equation*}
 \end{definition}
-
-\begin{proposition}\label{thm:union_intersection_distributivity}
-  \hyperref[def:set_union]{Set unions} and \hyperref[def:set_intersection]{set intersections} distribute over themselves and over each other. That is,
-  \begin{align}
-    X \cup \bigcup \mscrA &= \bigcup \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_union} \\
-    X \cap \bigcup \mscrA &= \bigcup \set{ A \cap X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/intersection_over_union} \\
-    X \cup \bigcap \mscrA &= \bigcap \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_intersection} \\
-    X \cap \bigcap \mscrA &= \bigcap \set{ A \cap X \given A \in \mscrA }. \label{eq:thm:union_intersection_distributivity/intersection_over_intersection}
-  \end{align}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_union} Trivial.
-
-  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_intersection}
-  \begin{align*}
-    X \cap \bigcup \mscrA
-    &=
-    \set{ x \given x \in X \T{and} \qexists{A \in \mscrA} x \in A }
-    = \\ &=
-    \set{ x \given \qexists{A \in \mscrA} (x \in A \T{and} x \in X) }
-    = \\ &=
-    \bigcup \set{ A \cup X \given A \in \mscrA }.
-  \end{align*}
-
-  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_union} Analogous.
-
-  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_intersection} Trivial.
-\end{proof}
+\begin{comments}
+  \item This definition is compatible with the restricted comprehension pattern described in \cref{def:set_theory_definition/restricted}, so it is always well-defined in \hyperref[def:zfc]{\logic{ZFC}} --- see \cref{thm:zfc_existence_theorems/difference}.
+\end{comments}
 
 \begin{proposition}\label{thm:set_difference}
-  \hyperref[def:basic_set_operations/difference]{Set difference} has the following basic properties:
+  \hyperref[def:set_difference]{Set difference} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:set_difference/intersection} If \( A \) and \( B \) are subsets of \( C \), then \( A \setminus B = A \cap (C \setminus B) \).
+    \thmitem{thm:set_difference/superset} If \( A \) and \( B \) are subsets of \( C \), then \( A \setminus B = A \cap (C \setminus B) \).
 
-    \thmitem{thm:set_difference/superset} For any two sets \( A \) and \( B \), we have \( A \setminus B = A \setminus (A \cap B) \).
+    \thmitem{thm:set_difference/intersection} For any two sets \( A \) and \( B \), we have \( A \setminus B = A \setminus (A \cap B) \).
 
-    \thmitem{thm:set_difference/double_difference} If \( A \subseteq B \), then \( B \setminus (B \setminus A) = A \)
+    \thmitem{thm:set_difference/double_difference} If \( A \subseteq B \), then \( B \setminus (B \setminus A) = A \).
 
-    \thmitem{thm:set_difference/complement} If \( A \subseteq B \subseteq C \), then \( C \setminus B \subseteq C \setminus A \).
-
-    If \( A \neq B \), then \( C \setminus B \neq C \setminus A \).
+    \thmitem{thm:set_difference/complement} If \( A \subseteq B \subseteq C \), then \( C \setminus B \subseteq C \setminus A \), with equality holding only if \( A = B \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:set_difference/intersection} Since \( a \in A \) implies \( a \in C \), we have
+  \SubProofOf{thm:set_difference/superset} Since \( a \in A \) implies \( a \in C \), we have
   \begin{align*}
     A \setminus B
     &=
@@ -80,7 +40,16 @@
     A \cap (C \setminus B).
   \end{align*}
 
-  \SubProofOf{thm:set_difference/superset} Follows from \cref{thm:set_difference/intersection}.
+  \SubProofOf{thm:set_difference/intersection}
+  \begin{align*}
+    A \setminus B
+    &=
+    \set{ x \in A \given x \notin B }
+    = \\ &=
+    \set{ x \in A \given x \notin A \cap B }
+    = \\ &=
+    A \setminus (A \cap B).
+  \end{align*}
 
   \SubProofOf{thm:set_difference/double_difference} By \hyperref[thm:propositional_semantic_dne]{double negation elimination},
   \begin{align*}
@@ -96,46 +65,63 @@
   \SubProofOf{thm:set_difference/complement} Any element in \( A \) is also in \( B \), thus, by contraposition, every element not in \( B \) is not in \( A \).
 \end{proof}
 
-\begin{proposition}\label{thm:boolean_algebra_of_subsets}
-  Let \( X \) be an arbitrary set. Then the \hyperref[def:power_set]{power set} \( \pow(X) \) endowed with the \hyperref[def:subset]{inclusion} partial order \( \subseteq \) is a \hyperref[def:complete_lattice]{complete} \hyperref[def:boolean_algebra]{Boolean algebra}\fnote{We will not make use here of the full apparatus of Boolean algebras. Instead, we regard this statement as a shorthand that would otherwise require enumerating a lot of properties.}.
+\begin{definition}\label{def:set_symmetric_difference}\mcite[9]{Jech2006SetTheory}
+  Based on how we defined symmetric differences in \hyperref[def:boolean_algebra]{Boolean algebras} in \cref{def:symmetric_difference}, we define the \term[ru=симметричная разность (\cite[7]{ШеньВерещагин2020НачалаТеорииМножеств})]{symmetric difference} formally, in accordance with \cref{def:set_theory_definition}, as:
+  \begin{equation*}
+    \syna \synsymdiff \synb \coloneqq (\syna \synminus \synb) \syncup (\synb \synminus \syna).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item This definition is well-defined as long as differences and binary unions are, so there is nothing to prove in \hyperref[def:zfc]{\logic{ZFC}}.
+\end{comments}
 
-  Explicitly:
-  \begin{thmenum}
-    \thmitem{thm:boolean_algebra_of_subsets/join} The \hyperref[def:lattice]{join} of an arbitrary family \( \mscrA \) of subsets of \( X \) is simply the \hyperref[def:set_union]{union} \( \bigcap \mscrA \).
-
-    \thmitem{thm:boolean_algebra_of_subsets/top} The \hyperref[def:extremal_points/top_and_bottom]{top element} is the set \( X \) itself.
-
-    \thmitem{thm:boolean_algebra_of_subsets/meet} The \hyperref[def:lattice]{meet} of an arbitrary family \( \mscrA \) of sets is simply the \hyperref[def:set_intersection]{intersection} \( \bigcup \mscrA \). Unlike for a general family of sets, we have no problem defining the intersection of an empty set to be the top element \( X \).
-
-    \thmitem{thm:boolean_algebra_of_subsets/bottom} The \hyperref[def:extremal_points/top_and_bottom]{bottom element} is the empty set.
-
-    \thmitem{thm:boolean_algebra_of_subsets/complement} The \hyperref[def:boolean_algebra]{complement} \( A^\complement \) of the subset \( A \) is the \hyperref[def:basic_set_operations/difference]{difference} \( X \setminus A \).
-  \end{thmenum}
-
-  \begin{figure}
-    \hfill
-    \includegraphics[page=1]{output/thm__boolean_algebra_of_subsets}
-    \hfill\hfill
-    \caption{The \hyperref[def:hasse_diagram]{Hasse diagram} of \( \pow(\set{ A, B }) \) with respect to \hyperref[def:subset]{set inclusion}}
-    \label{fig:thm:boolean_algebra_of_subsets}
-  \end{figure}
+\begin{proposition}\label{thm:union_intersection_distributivity}
+  Unary \hyperref[def:set_union/unary]{unions} and \hyperref[def:set_intersection/unary]{intersections} distribute over themselves and over each other. That is,
+  \begin{align}
+    X \cup \bigcup \mscrA &= \bigcup \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_union} \\
+    X \cap \bigcup \mscrA &= \bigcup \set{ A \cap X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/intersection_over_union} \\
+    X \cup \bigcap \mscrA &= \bigcap \set{ A \cup X \given A \in \mscrA }, \label{eq:thm:union_intersection_distributivity/union_over_intersection} \\
+    X \cap \bigcap \mscrA &= \bigcap \set{ A \cap X \given A \in \mscrA }. \label{eq:thm:union_intersection_distributivity/intersection_over_intersection}
+  \end{align}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:boolean_algebra_of_subsets/join} The union of \( \mscrA \) exists by \cref{thm:zfc_existence_theorems/arbitrary_union}, and it is itself a subset of \( \mscrA \). Every set in \( \mscrA \) is contained in \( \bigcup \mscrA \), hence it is indeed a join.
+  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_union} Trivial.
 
-  \SubProofOf{thm:boolean_algebra_of_subsets/top} Clearly \( X \) contains every subset of \( X \).
+  \SubProofOf{eq:thm:union_intersection_distributivity/union_over_intersection}
+  \begin{align*}
+    X \cap \bigcup \mscrA
+    &=
+    \set{ x \given x \in X \T{and} \qexists*{A \in \mscrA} x \in A }
+    = \\ &=
+    \set{ x \given \qexists*{A \in \mscrA} (x \in A \T{and} x \in X) }
+    = \\ &=
+    \bigcup \set{ A \cap X \given A \in \mscrA }.
+  \end{align*}
 
-  \SubProofOf{thm:boolean_algebra_of_subsets/join} The intersection of \( \mscrA \) exists by \cref{thm:zfc_existence_theorems/arbitrary_union}, and it is itself a subset of \( \mscrA \). Every set in \( \mscrA \) contains \( \bigcap \mscrA \), hence it is indeed a meet.
+  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_union} Analogous.
 
-  \SubProofOf{thm:boolean_algebra_of_subsets/bottom} The empty set is contained in every set, in particular in every subset of \( A \).
+  \SubProofOf{eq:thm:union_intersection_distributivity/intersection_over_intersection} Trivial.
+\end{proof}
 
-  \SubProofOf[def:distributive_lattice]{distributivity} Follows from \cref{thm:union_intersection_distributivity}.
+\begin{definition}\label{def:power_set_algebra}\mcite[23]{HalmosGivant2009BooleanAlgebras}
+  The \hyperref[def:power_set]{power set} \( \pow(X) \) of any set \( X \) is closed under (unary) \hyperref[def:set_union/unary]{unions} and \hyperref[def:set_intersection/unary]{intersections} (with \( \bigcap \varnothing \) defined as \( X \)), and is thus a \hyperref[def:lattice_of_sets]{complete lattice of sets}.
 
-  \SubProofOf{thm:boolean_algebra_of_subsets/complement} The operation \( A^\complement \) is well-defined for each subset \( A \) of \( X \) due to \cref{thm:zfc_existence_theorems/difference}.
-
-  By definition
+  The \hyperref[def:set_difference]{set difference} \( X \setminus A \), also called the \term[en=complement (\cite[13]{Willard2004GeneralTopology})]{complement} of \( A \) in \( X \), can be used to define \hyperref[def:bounded_lattice_complement]{lattice complements} on \( \pow(X) \):
   \begin{equation*}
-    A \synvee A^\complement
+    A^\complement \coloneqq X \setminus A.
+  \end{equation*}
+
+  With this, \( \pow(X) \) becomes a \hyperref[def:boolean_algebra]{Boolean algebra}, which we call the \term{power set (Boolean) algebra}.
+\end{definition}
+\begin{comments}
+  \item We will not make use of the apparatus of Boolean algebras inside the object theory, at least at this point. Instead, we will regard this statement as a shorthand for the defining conditions of a complete Boolean algebra.
+\end{comments}
+\begin{proof}
+  Distributivity of \( \bigcup \) and \( \bigcap \) over each other is shown in \cref{thm:union_intersection_distributivity}.
+
+  Furthermore, we have
+  \begin{equation*}
+    A \cup A^\complement
     =
     A \cup (X \setminus A)
     =
@@ -143,11 +129,11 @@
   \end{equation*}
   and
   \begin{equation*}
-    A \synvee A^\complement
+    A \cap A^\complement
     =
-    A \cup (X \setminus A)
+    A \cap (X \setminus A)
     =
-    X,
+    \varnothing,
   \end{equation*}
   hence \( A^\complement \) is indeed the complement of \( A \).
 
@@ -162,18 +148,18 @@
   \end{align}
 \end{theorem}
 \begin{comments}
-  \item This is one of several variants of De Morgan's laws presented here --- see \cref{rem:de_morgans_laws/sets}.
+  \item This is one of several variants of De Morgan's laws presented here --- see \cref{rem:de_morgans_laws}.
 \end{comments}
 \begin{proof}
   \SubProof{Direct proof} We have
   \begin{align*}
     X \setminus \bigcup \mscrA
     &=
-    \set{ x \given x \in X \T{and} \synneg \qexists{A \in \mscrA} x \in A }
+    \set{ x \given x \in X \T{and} \neg \qexists* {A \in \mscrA} x \in A }
     \reloset {\eqref{eq:thm:fol_quantifier_duality}} = \\ &=
-    \set{ x \given x \in X \T{and} \qforall{A \in \mscrA} {x \notin A} }
+    \set{ x \given x \in X \T{and} \qforall* {A \in \mscrA} {x \notin A} }
     = \\ &=
-    \set{ x \given \qforall{A \in \mscrA} (x \in X \T{and} x \notin A) }
+    \set{ x \given \qforall* {A \in \mscrA} (x \in X \T{and} x \notin A) }
     = \\ &=
     \bigcap \set{ X \setminus A \given A \in \mscrA }
   \end{align*}
@@ -181,39 +167,277 @@
   \begin{align*}
     X \setminus \bigcap \mscrA
     &=
-    \set{ x \given x \in X \T{and} \synneg \qforall{A \in \mscrA} x \in A }
+    \set{ x \given x \in X \T{and} \neg \qforall* {A \in \mscrA} x \in A }
     \reloset {\eqref{eq:thm:fol_quantifier_duality}} = \\ &=
-    \set{ x \given x \in X \T{and} \qexists{A \in \mscrA} {x \notin A} }
+    \set{ x \given x \in X \T{and} \qexists* {A \in \mscrA} {x \notin A} }
     = \\ &=
-    \set{ x \given \qforall{A \in \mscrA} (x \in X \T{and} x \notin A) }
+    \set{ x \given \qforall* {A \in \mscrA} (x \in X \T{and} x \notin A) }
     = \\ &=
     \bigcup \set{ X \setminus A \given A \in \mscrA }.
   \end{align*}
 
-  \SubProof{Consequence of \fullref{thm:de_morgans_laws}}
-  All subsets of \( X \) form a Boolean algebra as a consequence of \cref{thm:boolean_algebra_of_subsets}. Then
-  \begin{equation*}
+  \SubProof{Consequence of \fullref{thm:de_morgans_laws}} The first identity is straightforward:
+  \begin{multline*}
     \bigcup_{k \in \mscrK} (X \setminus A_k)
-    \reloset {\ref{thm:set_difference/superset}} =
+    \reloset {\ref{thm:set_difference/intersection}} =
     \bigcup_{k \in \mscrK} (X \cap A_k)^\complement
     \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} =
     \parens*{ \bigcap_{k \in \mscrK} (X \cap A_k) }^\complement
-    =
+    = \\ =
     \parens*{ X \cap \bigcap_{k \in \mscrK} A_k }^\complement
-    \reloset {\ref{thm:set_difference/superset}} =
+    \reloset {\ref{thm:set_difference/intersection}} =
     X \setminus \parens*{ \bigcap_{k \in \mscrK} A_k }.
-  \end{equation*}
+  \end{multline*}
 
   The other identity requires distributivity:
-  \begin{equation*}
+  \begin{multline*}
     \bigcap_{k \in \mscrK} (X \setminus A_k)
-    \reloset {\ref{thm:set_difference/superset}} =
+    \reloset {\ref{thm:set_difference/intersection}} =
     \bigcap_{k \in \mscrK} (X \cap A_k)^\complement
     \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} =
     \parens*{ \bigcup_{k \in \mscrK} (X \cap A_k) }^\complement
-    \reloset {\eqref{eq:thm:union_intersection_distributivity/intersection_over_union}} =
+    \reloset {\eqref{eq:thm:union_intersection_distributivity/intersection_over_union}} = \\ =
     \parens*{ X \cap \bigcup_{k \in \mscrK} A_k }^\complement
-    \reloset {\ref{thm:set_difference/superset}} =
+    \reloset {\ref{thm:set_difference/intersection}} =
     X \setminus \parens*{ \bigcup_{k \in \mscrK} A_k }.
-  \end{equation*}
+  \end{multline*}
 \end{proof}
+
+\paragraph{Inductive sets}
+
+\begin{definition}\label{def:ordinal_successor}\mcite[132]{КолмогоровДрагалин2006ЛогикаВведение}
+  We introduce a unary \term[ru=операция следования, en=successor (\cite[43]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы})]{successor} operation \( S \) on sets that generalizes successors in Peano arithmetic (see \cref{def:peano_arithmetic/signature/succ}).
+
+  In accordance with \cref{def:set_theory_definition}, we introduce a \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\synS} \) using set-builder notation:
+  \begin{equation*}
+    \synS \syna \coloneqq \syna \syncup \set{ \syna }.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item We also call \( Sa \) the \term{ordinal successor} of \( a \) since it is an important concept in the \hyperref[sec:ordinals]{theory of ordinals}. See \cref{rem:def:ordinal_successor} for an example of how it naturally arises. It should be distinguished from successor cardinals defined in \cref{def:successor_and_limit_cardinal}.
+\end{comments}
+
+\begin{definition}\label{def:inductive_set}\mcite[def. I.5.1]{Kunen2013SetTheory}
+  We call a set \term[ru=индуктивное (множество) (\cite[184]{Герасимов2014Вычислимость})]{inductive} if contains the \hyperref[def:empty_set]{empty set} and is closed under the \hyperref[def:ordinal_successor]{successor operator}.
+
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
+  \begin{equation*}
+    \op{IsInductive}(\syna) \coloneqq (\synnothing \synin \syna) \synwedge \qforall \synx (\synx \synin \syna \synimplies \synS \synx \synin \syna).
+  \end{equation*}
+
+  We have used the empty set constant symbol from \cref{def:empty_set} and the ordinal successor function symbol from \cref{def:ordinal_successor}.
+\end{definition}
+
+\begin{definition}\label{def:smallest_inductive_set}\mcite[69]{Enderton1977SetTheory}
+  We can single out an \hyperref[def:inductive_set]{inductive set} contained in all others. We call it the \term[en=smallest inductive set (\cite[13]{Jech2006SetTheory})]{smallest inductive set} and denote it by \( \omega \) --- Cantor's original notation, which, as explained in \cref{con:transfinitum}, has been chosen because it resembles the lower half of \( \infty \).
+
+  Formally, in accordance with \cref{def:set_theory_definition}, we can use set-builder notation to introduce a nullary \hyperref[def:fol_signature/function]{function symbol}:
+  \begin{equation*}
+    \syn\Omega \coloneqq \set{ \synx \given \qforall \syny \op{IsInductive}(\syny) \synimplies \synx \synin \syny }.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item In \hyperref[def:zfc]{\logic{ZFC}}, the correctness of this definition relies on the \hyperref[def:zfc/infinity]{axiom of infinite}, but also requires some additional justification --- see \cref{thm:zfc_existence_theorems/smallest_inductive_set}.
+
+  \item By definition, \( \omega \) is contained in all others, so it is indeed smallest with respect to the \hyperref[def:inclusion_order]{inclusion order}.
+
+  \item We cannot use the symbol \( \syn\omega \) because, as explained in \cref{def:fol_signature}, we disallow lowercase Greek letters in \hyperref[def:fol_signature]{first-order signatures} --- they conflict with the syntax for terms.
+
+  \item The formal definition can be rewritten more simply as
+  \begin{equation*}
+    \syn\Omega \coloneqq \synbigcap \set{ \syny \given \op{IsInductive}(\syny) }.
+  \end{equation*}
+
+  Unfortunately, the collection of all inductive sets is ill-defined in \logic{ZFC}.
+\end{comments}
+
+\begin{theorem}[\( \omega \)-induction]\label{thm:omega_induction}\mcite[thm. 6.2.17]{Hinman2005Logic}
+  By definition, the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) is contained in every \hyperref[def:inductive_set]{inductive set}. This can be seen as a set-theoretic counterpart to the second-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3/sol} from \hyperref[def:peano_arithmetic]{Peano arithmetic}:
+  \begin{equation}\label{eq:thm:omega_induction}
+    \mathclap
+      {
+      \qforall \syna
+      \parens[\big]
+        {
+          \parens[\big]
+            {
+              \underbrace{ \synnothing \synin \syna }_{\T{base case}}
+              \synwedge
+              \qforall \synx \parens[\big]
+                {
+                  \overbrace
+                    {
+                      \underbrace{ \synx \synin \syna }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                      \synimplies
+                      \underbrace{ \synS \synx \synin \syna }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                    }^{\T{inductive step}}
+                }
+            }
+          \synimplies
+          \underbrace{\syn\Omega \synsubseteq \syna}_{\T{conclusion}}
+        }.
+      }
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item \hyperref[def:set_theory_definition]{Set-builder notation} makes the connection with the first-order axiom schema \eqref{eq:def:peano_arithmetic/theory/PA3} apparent: instantiating \eqref{eq:thm:omega_induction} with the term \( \tau = \set{ x \given \varphi } \) and rewriting \enquote{\( \sigma \synin \tau \)} as \enquote{\( \varphi[x \mapsto \sigma] \)} gives us
+  \begin{equation*}
+    \parens[\big]
+      {
+        \underbrace{ \varphi[x \mapsto \synnothing] }_{\T{base case}}
+        \synwedge
+        \qforall n \parens[\big]
+          {
+            \overbrace
+              {
+                \underbrace{ \varphi[x \mapsto n] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                \synimplies
+                \underbrace{ \varphi[x \mapsto \synS n] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+              }^{\T{inductive step}}
+          }
+      }
+    \synimplies
+    \underbrace{\qforall n (n \synin \syn\Omega \synimplies \varphi[x \mapsto n])}_{\T{conclusion}}
+  \end{equation*}
+
+  This allows us to treat the members of \( \omega \) as natural numbers --- see \cref{rem:set_theory_natural_numbers_without_operations}. In fact, will we use \( \omega \)-induction to prove that \fullref{thm:omega_is_model_of_pa}.
+
+  \item We discuss induction more generally in \cref{con:induction}.
+\end{comments}
+\begin{proof}
+  The theorem itself is a mere restatement.
+\end{proof}
+
+\begin{definition}\label{def:transitive_set}\mcite[def. 6.1.3(i)]{Hinman2005Logic}
+  We say that a set \( A \) is \term[ru=транзитивное (множество) (\cite[86]{ШеньВерещагин2020НачалаТеорииМножеств})]{transitive} if the members of \( A \) are also subsets of \( A \). As shown in \cref{thm:transitive_set_membership_is_transitive}, assuming the \hyperref[def:zfc/foundation]{axiom of foundation}, in a transitive set, membership is a transitive relation.
+
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
+  \begin{equation*}
+    \op{IsTransitive}(a) \syniff \qforall x (x \synin a \synimplies x \synsubseteq a).
+  \end{equation*}
+
+  We have used the subset predicate symbol \( {\synsubseteq} \) from \cref{def:subset}.
+\end{definition}
+\begin{comments}
+  \item We use transitive sets to define ordinals in \cref{def:ordinal} and Grothendieck universes in \cref{def:grothendieck_universe}. We have also already mentioned transitive sets when defining transitive models of set theory in \cref{def:set_theory_model/transitive}.
+\end{comments}
+
+\begin{proposition}\label{thm:omega_is_transitive}
+  The \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) is transitive and every member of \( \omega \) is transitive.
+\end{proposition}
+\begin{comments}
+  \item This proof demonstrates how \fullref{thm:omega_induction} can be used in practice.
+\end{comments}
+\begin{proof}
+  \SubProof{Proof that all members of \( \omega \) are transitive} We will use \fullref{thm:omega_induction}. For this, consider the set
+  \begin{equation*}
+    T \coloneqq \set{ n \in \omega \given n \T{is transitive} }.
+  \end{equation*}
+
+  We will show that \( T \) is inductive.
+  \begin{itemize}
+    \item Clearly \( \varnothing \) is transitive because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \). Thus, \( \varnothing \in T \).
+
+    \item Now suppose that \( n \in T \) and let \( m \in Sn \). We have two possibilities:
+    \begin{itemize}
+      \item If \( m \in n \), then \( m \subseteq n \) since \( n \) is transitive, and hence \( m \subseteq n \subseteq Sn \).
+      \item Otherwise, if \( m = n \), then \( m = n \subseteq Sn \).
+    \end{itemize}
+
+    Thus, \( Sn \) is also transitive.
+  \end{itemize}
+
+  We have shown that \( T \) is inductive. Therefore, \( T = \omega \), i.e. every member of \( \omega \) is transitive.
+
+  \SubProof{Proof that \( \omega \) is transitive} Similarly, consider the set
+  \begin{equation*}
+    T \coloneqq \set{ n \in \omega \given n \subseteq \omega }.
+  \end{equation*}
+
+  This set is the largest transitive subset of \( \omega \). We will show that it is inductive.
+  \begin{itemize}
+    \item The case \( n = \varnothing \) is again trivial.
+
+    \item Suppose that \( n \in T \) and let \( m \in Sn \). We have two possibilities:
+    \begin{itemize}
+      \item If \( m \in n \), then \( m \in \omega \) since \( n \subseteq \omega \) by assumption.
+      \item Otherwise, if \( m = n \), then \( m \in \omega \) because \( n \in \omega \).
+    \end{itemize}
+
+    In either case, \( m \in Sn \) implies \( m \in \omega \), so \( Sn \in T \).
+  \end{itemize}
+
+  We have shown that \( T \) is inductive. Therefore, \( T = \omega \), i.e. \( \omega \) is transitive.
+\end{proof}
+
+\begin{lemma}\label{thm:members_of_omega_do_not_contain_themselves}
+  No element of \( \omega \) is a member of itself.
+\end{lemma}
+\begin{proof}
+  We will use \fullref{thm:omega_induction}. For this, consider the following set:
+  \begin{equation*}
+    R \coloneqq \set{ n \in \omega \given n \not\in n }.
+  \end{equation*}
+
+  We must show that \( R \) is inductive\fnote{To show that \( n \not\in n \), we can show that \( n \in n \) leads to a contradiction, and then utilize \ref{inf:def:propositional_natural_deduction/neg/intro}.}:
+  \begin{itemize}
+    \item Obviously \( \varnothing \synin \varnothing \) is a contradiction, so \( \varnothing \in R \).
+
+    \item If \( n \not\in n \) and \( Sn \in Sn \), we have two possibilities:
+    \begin{itemize}
+      \item If \( Sn \in n \), then \( Sn \subseteq n \) since, by \cref{thm:omega_is_transitive}, \( n \) is transitive. Hence, \( n \in n \), which easily leads to a contradiction.
+
+      \item Otherwise, if \( Sn = n \), then \( n \in n \) since \( n \in Sn \), which again leads to a contradiction.
+    \end{itemize}
+  \end{itemize}
+
+  We have shown that \( R \) is inductive. Therefore, \( R = \omega \), i.e. no member of \( \omega \) contains itself.
+\end{proof}
+
+\begin{proposition}\label{thm:omega_is_model_of_pa_without_operations}
+  The \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) satisfies the axioms \eqref{eq:def:peano_arithmetic/theory/PA1}, \eqref{eq:def:peano_arithmetic/theory/PA2} and \eqref{eq:def:peano_arithmetic/theory/PA3/sol} from \hyperref[def:peano_arithmetic]{Peano arithmetic} with the following interpretation:
+  \begin{thmenum}
+    \thmitem{thm:omega_is_model_of_pa_without_operations/zero} The \hyperref[def:peano_arithmetic/signature/zero]{zero} constant \( \syn0 \) is interpreted as \( \varnothing \).
+
+    \thmitem{thm:omega_is_model_of_pa_without_operations/succ} The \hyperref[def:peano_arithmetic/signature/succ]{successor function symbol} \( \synS \) is interpreted as the \hyperref[def:ordinal_successor]{ordinal successor} operation \( S \).
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item We will strengthen this theorem to \fullref{thm:omega_is_model_of_pa} after we are able to define the arithmetic operations in \( \omega \).
+
+  \item We will not make use of the apparatus of \fullref{ch:mathematical_logic} inside the object theory, at least at this point. Instead, we will regard this theorem as a statement that the translation of the axioms of \( \logic{PA}_2 \) into set theory can be proven.
+\end{comments}
+\begin{proof}
+  \SubProofOf{eq:def:peano_arithmetic/theory/PA1} Let \( n, m \in \omega \) and suppose that \( Sn = Sm \).
+
+  Since \( n \in Sn \), either \( n = m \) or \( n \in m \). Aiming at a contradiction, suppose that the latter holds.
+
+  Then, since \( m \in Sm \) and \( n \neq m \), we have \( m \in n \). \Cref{thm:omega_is_transitive} implies that \( n \) is transitive and hence \( n \in m \in n \) collapses to \( n \in n \), which contradicts \cref{thm:members_of_omega_do_not_contain_themselves}.
+
+  The obtained contradiction shows that \( n = m \).
+
+  \SubProofOf{eq:def:peano_arithmetic/theory/PA2} If \( Sn = \varnothing \) for any set \( n \), then \( n \in \varnothing \), which contradicts the definition of \( \varnothing \).
+
+  Therefore, \( \varnothing \) has no predecessor.
+
+  \SubProofOf{eq:def:peano_arithmetic/theory/PA3/sol} We have already explained in \fullref{thm:omega_induction} how \( \omega \)-induction encodes the first-order axiom \eqref{eq:def:peano_arithmetic/theory/PA3} via \hyperref[def:set_theory_definition]{set-builder notation}.
+
+  If we extend set-builder notation to second-order predicates, we can conclude the same for the corresponding second-order Peano induction axiom.
+\end{proof}
+
+\begin{remark}\label{rem:set_theory_natural_numbers_without_operations}
+  Due to \cref{thm:omega_is_model_of_pa_without_operations}, we will henceforth identify the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) with the set \( \BbbN \) of \hyperref[def:natural_numbers]{natural numbers} and use the familiar \hyperref[def:positional_number_system/decimal]{decimal notation}
+  \begin{align*}
+    0 &\coloneqq \synnothing,                   \\
+    1 &\coloneqq \synS \synnothing,             \\
+    2 &\coloneqq \synS \synS \synnothing,       \\
+    3 &\coloneqq \synS \synS \synS \synnothing, \\
+      &\vdots
+  \end{align*}
+
+  We are not yet able to formalize addition and multiplication natural numbers, nor rely on their well-foundedness. Furthermore, since the ordering in \cref{def:peano_arithmetic_ordering} is defined via addition, we must use some other ordering.
+
+  Luckily, as we shall see in \fullref{sec:ordinals}, \( n < m \) corresponds to \( n \in m \). In particular, the members of \( m \) are ordered. As a consequence, by the \hyperref[def:axiomatic_set_theory/extensionality]{axiom of extensionality}, every natural number \( n \) equals the set of all smaller natural numbers; it is conventional to write \( Sn = \set{ 0, 1, \ldots, n } \).
+
+  For now, natural numbers will be useful, for example, in \cref{def:sequence}.
+\end{remark}
