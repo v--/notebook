@@ -3,6 +3,7 @@ access patterns;
 patterns.add('ne_hatch', patterns.hatch(1.5, NE, mediumgray));
 patterns.add('nw_hatch', patterns.hatch(1.5, NW, mediumgray));
 
+pen densely_dotted = linetype(new real[] { 1, 3 });
 pen densely_dashed = linetype(new real[] { 2, 2 });
 pen ne_hatch = pattern('ne_hatch');
 pen nw_hatch = pattern('nw_hatch');

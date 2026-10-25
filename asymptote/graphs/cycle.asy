@@ -6,11 +6,11 @@ struct CycleGraph {
   int n;
   pair[] vert;
 
-  void operator init(int n, pair center = (0, 0), real radius = 1) {
+  void operator init(int n, pair center = (0, 0), real radius = 1, real rotation = 0) {
     this.n = n;
 
     // The following correction ensures that the figure is "upright"
-    real base_angle = 3 / 2 * pi;
+    real base_angle = rotation + 3 / 2 * pi;
     real next_angle = (3 / 4 + 1 / n) * 2 * pi;
     real correction = -(base_angle + next_angle) / 2;
 

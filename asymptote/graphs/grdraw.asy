@@ -10,6 +10,10 @@ pen regular_edge = linewidth(0.5);
 pen bold_edge = linewidth(2);
 real dot_radius = 0.08;
 
+pen _determine_pen(bool dash = false, bool dots = false, bool bold = false) {
+  return (dots ? pens.densely_dotted : (dash ? pens.densely_dashed : currentpen)) + (bold ? bold_edge : regular_edge);
+}
+
 void vert(
   pair v,
   Label L = '',
@@ -30,10 +34,11 @@ void _draw_edge_impl(
   Label L = '',
   pen p = black,
   bool dash = false,
+  bool dots = false,
   bool bold = false,
   bool is_arc = false
 ) {
-  pen p = (dash ? pens.densely_dashed : currentpen) + (bold ? bold_edge : regular_edge) + linecap(0) + p;
+  pen p = _determine_pen(dash, dots, bold) + linecap(0) + p;
 
   if (is_arc) {
     arrowbar arrow = Arrow(size=(bold ? 5 : 4), angle=(bold ? 30 : 20), filltype=FillDraw(drawpen=linecap(0)));
@@ -72,6 +77,7 @@ void edge(
   Label L = '',
   pen p = black,
   bool dash = false,
+  bool dots = false,
   bool bold = false,
   bool is_arc = false
 ) {
@@ -81,7 +87,7 @@ void edge(
 
   _draw_edge_impl(
     u_ .. mid .. v_,
-    L=L, p=p, dash=dash, bold=bold, is_arc=is_arc
+    L=L, p=p, dash=dash, dots=dots, bold=bold, is_arc=is_arc
   );
 }
 
@@ -92,6 +98,7 @@ void loop(
   real angle = 0,
   real vertex_offset = dot_radius,
   bool dash = false,
+  bool dots = false,
   bool bold = false,
   bool is_arc = false
 ) {
@@ -109,6 +116,7 @@ void hyperedge(
   Label L = '',
   real vertex_offset = dot_radius,
   bool dash = false,
+  bool dots = false,
   bool bold = false
 ) {
   path outline = nullpath;
@@ -130,7 +138,7 @@ void hyperedge(
 
   filldraw(
     outline,
-    drawpen=(dash ? pens.densely_dashed : currentpen) + (bold ? bold_edge : regular_edge),
+    drawpen=_determine_pen(dash, dots, bold),
     fillpen=pens.ne_hatch
   );
 
