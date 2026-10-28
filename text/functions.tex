@@ -1,206 +1,275 @@
 \section{Functions}\label{sec:functions}
 
+\paragraph{Set-valued functions}
+
 \begin{concept}\label{con:variable_dependence}
   Consider the following \hyperref[def:fol_formula]{first-order formula}:
   \begin{equation*}
-    \qforall x \qexists y p(x, y).
+    \qforall \synx \qexists \syny \synp(\synx, \syny).
   \end{equation*}
 
-  Both \hyperref[con:variable]{variables} here are \hyperref[con:variable_binding]{bound}, but they have a fundamental distinction --- the values which \( x \) may take are unrestricted, while the values of \( y \) are restricted by both \( x \) and \( p(x, y) \). This allows us to express \( y \) as a \hyperref[def:function]{set-valued function} of \( x \); we call it an \term[bg=неявна функция (\cite[377]{Тагамлицки1971ДиференциалноСмятане}), ru=неявная функция (\cite[314]{Фихтенгольц1968ОсновыАнализаТом2}), en=implicitly-defined function (\cite[29]{DontchevRockafellar2014SolutionMappings})]{implicit function}.
+  Both \hyperref[con:variable]{variables} here are \hyperref[con:variable_binding]{bound}, but semantically they play distinct roles --- for the formula to be satisfied, the values which \( \synx \) can take are unrestricted, while the values of \( \syny \) depend on both \( \synx \) and \( \synp(\synx, \syny) \). This is the essence of \fullref{alg:fol_skolemization}.
 
-  There is also another related terminology --- we say that \( x \) is \term[ru=независимая (переменная) (\cite[145]{Гончаров1952ФункцииДействительногоПеременного}), en=independent (variable) (\cite[74]{Kleene2002Logic})]{independent} and that \( y \) is \term[ru=зависимая (переменная) (\cite[145]{Гончаров1952ФункцииДействительногоПеременного}), en=dependent (variable) (\cite[74]{Kleene2002Logic})]{dependent}.
-\end{concept}
+  We refer to this dependency as a \term[ru=соотвествие (\cite[\S 1.2.5]{КусраевКутателадзе2005БулевозначныйАнализ}), en=correspondence (\cite[30]{Halmos1960NaiveSetTheory})]{correspondence} or a \term[en=map (\cite[30]{Halmos1960NaiveSetTheory})]{map}/\term[en=mapping (\cite[30]{Halmos1960NaiveSetTheory})]{mapping}. We call \( \synx \) the \term[bg=независима променлива (\cite[127]{Тагамлицки1971ДиференциалноСмятане}), ru=независимая (переменная) (\cite[39]{ИльинСадовничийСендов1985АнализТом1}), en=independent variable (\cite[74]{Kleene2002Logic})]{independent variable} of the correspondence, and to \( \syny \) as the \term[bg=зависима променлива (\cite[127]{Тагамлицки1971ДиференциалноСмятане}), ru=зависимая переменная (\cite[39]{ИльинСадовничийСендов1985АнализТом1}), en=dependent variable (\cite[74]{Kleene2002Logic})]{dependent variable}.
 
-\begin{concept}\label{con:correspondence}
+  If a given \hyperref[con:logical_model]{model}, we can express \( \syny \) as a \hyperref[def:function]{set-valued function} of \( \synx \); we call it an \term[bg=неявна функция (\cite[377]{Тагамлицки1971ДиференциалноСмятане}), ru=неявная функция (\cite[314]{Фихтенгольц1968ОсновыАнализаТом2}), en=implicitly-defined function (\cite[29]{DontchevRockafellar2014SolutionMappings})]{implicit function}.
 \end{concept}
+\begin{comments}
+  \item Formal definitions of the term \enquote{correspondence} are given in the literature for several related concepts --- see \cref{rem:function_definition}.
+
+  \item Formally, correspondences manifest themselves as single-valued and set-valued functions, which we discuss in this section, as well as the purely syntactic \( \muplambda \)-term abstractions discussed in \fullref{ch:lambda_calculus}.
+
+  As per \cref{rem:cartesian_product_definition} (and \cref{rem:function_definition}), we have defined indexed families in \cref{sec:relations} as more primitive precursors of single-valued functions.
+\end{comments}
 
 \begin{remark}\label{rem:function_definition}
-  \todo{Revise remark}
+  In the literature, functions are often conflated with their graphs, which precludes a formal treatment of function images and related concepts like surjectivity. Additionally, set-valued functions, which we discuss in \cref{def:set_valued_function}, are not an established concept and their treatment is often delegated to a more general discussion of relations.
 
-  \cref{thm:grothendieck_universe_closure/function} may break --- see \cref{rem:function_size}.
+  To address both, we proceed as follows:
+  \begin{itemize}
+    \item We have already introduced indexed families in \cref{def:indexed_family}. These act as \hyperref[con:variable_dependence]{correspondences} that, unlike functions, are determined solely by their graphs.
 
-  Consider the formula of first-order set theory
-  \begin{equation}\label{eq:rem:function_definition}
-    \qforall \synx \qexists \syny (\synx \in \syny)
-  \end{equation}
-  stating that every set belongs to some set.
+    Based on indexed families, we have defined Cartesian products and relations in \cref{sec:relations}.
 
-  Fix an arbitrary set \( A \). We are free to choose any set, for which reason we call \( \synx \) an \term{independent variable}. Then we must find a set \( B \) of \( V \), \emph{dependent} on \( A \), such that \( A \in B \). Possible values for \( B \) are the singleton set \( \set{ A } \), as well as all its supersets, for example \( \pow(A) \). We call \( \syny \) a \term{dependent variable} because it depends on \( \synx \)\fnote{This terminology can be slightly inappropriate if \( \syny \) does not actually depend on \( \synx \), for example in the formula \( \qforall \synx \qexists \syny (\syny \syneq \syny) \)}.
+    \item In \cref{def:set_valued_function}, we introduce set-valued functions from \( A \) to \( B \) as \hyperref[def:binary_relation]{binary relations} \( F \subseteq A \times B \) with a fixed \enquote{type signature} \( A \to B \) (encoded \( (R, A, B) \)).
 
-  We want an abstraction that would capture such dependence. The approach that we took in \cref{def:power_set} is to describe how to obtain the power set \( \pow(A) \) of any set. Thus, for each set \( A \), there exists a unique set \( \pow(A) \) whose members are the subsets of \( A \). We say that the \term[bg=изображение,ru=изображение]{mapping} \( \pow \) \term{maps} a set to its power set.
+    \item Finally, we introduce the usual single-valued functions in \cref{def:function} as a special case of set-valued functions.
 
-  What if we wanted to study properties of a mapping and relations between different mappings? In order to do this via set theory, we must represent a mapping as a set.
+    Functions are thus determined both by their graphs and by their signatures. Even though this makes functions conceptually different from indexed families, we often use them interchangeably. For example, when stating formal axioms like the axiom of choice in \cref{def:zfc/choice} or the axiom of universes in \cref{def:axiom_of_universes}, we use indexed families in the object theory and treat them as functions in the metatheory.
+  \end{itemize}
 
-  \textcite[def. I.3.1]{Bourbaki2004TheoryOfSets} propose using a \hyperref[def:binary_relation]{binary relation} \( R \), called the \term{graph} of the mapping, such that the sets \( A \) and \( B \) are related under \( R \) if \( B \) is the unique value corresponding to \( A \).
+  As mentioned in the beginning, this approach differs from what is established in the literature. We list approaches used in different sources.
+  \begin{itemize}
+    \item Indexed families are not usually defined as standalone entities but are introduced as special cases of functions. As explained in \cref{rem:cartesian_product_definition}, we make a formal distinction between an indexed family and a function for the purpose of streamlining our chain of definitions.
 
-  In the case of the power set mapping, it would make sense for the graph to be a subset of \( V \times V \), where \( V \) is a set containing all sets. But if we want our definition to be compatible with \hyperref[def:zfc]{\logic{ZFC}}, then the existence of \( V \) would contradict \cref{thm:zfc_existence_theorems/set_containing_all}.
+    A thorough discussion of indexed families can be found in \cite[\S 9]{Halmos1960NaiveSetTheory}. Halmos defines them as functions, but treats them like we do.
 
-  Instead, fix some set \( V \) closed under the power set operation\fnote{Such as \( V_\lambda \) for limit ordinals --- see \cref{thm:def:cumulative_hierarchy/power_set}.} and call it our \term{domain}. Then we can define the relation\fnote{The \hyperref[def:zfc/replacement]{axiom of replacement} ensures that the set \( \mscrP \) exists.}
-  \begin{equation*}
-    \mscrP \coloneqq \set[\big]{ (A, \pow(A)) \given* A \in V }.
-  \end{equation*}
+    \item \Textcite[def. II.3.2]{Bourbaki2004TheoryOfSets} define \enquote{correspondences} (\enquote{\textfr{correspondance}} in French) as relations (\enquote{graphs}) with type signatures, exactly how we define set-valued functions.
 
-  There is a nuance here that turns out to be important. We know that \( \mscrP \) maps members of the domain into members of some other set, the \term{codomain}. A natural candidate is the following set, which we will call the \term{image}:
-  \begin{equation*}
-    W \coloneqq \set[\big]{ B \given* (A, B) \in \mscrP }.
-  \end{equation*}
+    Some authors like \textcite[17]{КусраевКутателадзе2005БулевозначныйАнализ} follow this definition. Without type signatures (i.e. conflated with their graphs), set-valued functions are introduced under different names (mostly in non-set-theoretic literature):
+    \begin{itemize}
+      \item The term \enquote{correspondence} (\enquote{\textru{соответствие}} in Russian) is used in this sense in
+      \cite[77]{Lang2002Algebra},
+      \cite[253]{ПоловинкинБалашов2007ВыпуклыйАнализ} and
+      \cite[49]{БелоусовТкачёв2004ДискретнаяМатематика}.
 
-  We thus have the ordered triple \( (\mscrP, V, W) \). This definition captures the graph of the mapping, as well as its domain and codomain. We will call this triple a \term{function}. In this more narrow context, we will synonymously use \enquote{function}, \enquote{transformation}, \enquote{operator}, \enquote{map} and \enquote{mapping}.
+      On the other hand, the term is used for single-valued functions in
+      \cite[12]{Jech2006SetTheory},
+      \cite[30]{Halmos1960NaiveSetTheory} and
+      \cite[12]{Курош1973ОбщаяАлгебра}.
 
-  We have chosen \( V \) so that if \( A \in V \), then also \( \pow(A) \in V \), thus \( V \) is also a candidate for a codomain. The triple \( (\mscrP, V, V) \) is another function with the same domain and graph, yet with a different codomain.
+      \item The phrase \enquote{set-valued map} is used for set-valued functions in \cite[34]{AubinFrankowska1990SetValuedAnalysis} and, with only an informal definition, in \cite[2]{DontchevRockafellar2014SolutionMappings}.
 
-  It should be noted that many authors, including influential authors of books on set theory, define functions as sets of ordered pairs, without any regard to the domain and codomain. This includes
-  \textcite[def. 6.2.8]{Hinman2005Logic},
-  \textcite[def. I.6.3]{Kunen2013SetTheory},
-  \textcite[43]{Enderton1977SetTheory},
-  \textcite[30]{Halmos1960NaiveSetTheory},
-  \textcite[7]{Kelley1975GeneralTopology},
-  \textcite[1]{Engelking1989GeneralTopology},
-  \textcite[143]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы},
-  \textcite[127]{Герасимов2014Вычислимость} and
-  \textcite[32]{ШеньВерещагин2020НачалаТеорииМножеств}. This renders the discussion of function images and related concepts like surjectivity meaningless.
+      This is not to be confused with \enquote{set-valued functors}, as used in \cite[\S 8.1]{Awodey2010CategoryTheory}, which are simply \hyperref[def:functor]{functors} into the \hyperref[def:category_of_small_sets]{category of small sets}.
 
-  \textcite[\S 1.2.5]{КусраевКутателадзе2005БулевозначныйАнализ} define functions as sets of ordered pairs and then define \enquote{соответствия} (\enquote{correspondences}) as the triples discussed above.
+      Aubin and Frankowska list alternatives such as \enquote{correspondence} (discussed above), \enquote{multifunction} and \enquote{multivalued function}, all of which can be found in the literature.
 
-  The difference between the two leads to different \hyperref[def:set_of_all_functions]{sets of functions}, either those from \( V \) to \( W \) or those from \( V \) to \( V \). Sets of functions are fundamental for \fullref{ch:functional_analysis} and \fullref{ch:category_theory}, as well as algebraic disciplines like \fullref{ch:group_theory}, \fullref{ch:ring_theory} and \fullref{ch:linear_algebra}.
+      \item For a for a function into a power set, the phrase \enquote{multivalued function} (\enquote{\textru{многозначное изображение}}) and its variants are introduced in
+      \cite[278]{Deimling1985NonlinearFA},
+      \cite[3]{GondranMinoux1984GraphsAndAlgorithms},
+      \cite[42]{ИоффеТихомиров1974ЭкстремальныеЗадачи} and
+      \cite[147]{ФедорчукФилиппов2006ОбщаяТопология},
+      and with only an informal definition in
+      \cite[113]{Арутюнов2014ВыпуклыйАнализ}.
+    \end{itemize}
 
-  Another function from \( V \) to \( V \) that we discussed earlier relates \( \set{ A } \) to \( A \). Both of the aforementioned functions have different ranges, but we chose them to have the same domain and codomain, and thus belong to the set of functions from \( V \) to itself.
+    \item Single-valued functions, as one of the fundamental notions in all of mathematics, are extensively discussed in all areas.
 
-  Rather than focusing on only one solution to \eqref{eq:rem:function_definition}, we may instead define the relation
-  \begin{equation*}
-    \mscrR \coloneqq \set[\big]{ (A, B) \given* A, B \in V \T{and} A \in B }.
-  \end{equation*}
+    Still, the definition of a function \( f: A \to B \) as the relation \( f \subset A \times B \) is prevalent, used in set theory literature like
+    \cite[def. I.6.3]{Kunen2013SetTheory},
+    \cite[11]{Jech2006SetTheory},
+    \cite[43]{Enderton1977SetTheory},
+    \cite[30]{Halmos1960NaiveSetTheory},
+    \cite[def. 6.2.8]{Hinman2005Logic},
+    \cite[xxi]{Mendelson2015Logic},
+    \cite[143]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы},
+    \cite[127]{Герасимов2014Вычислимость} and
+    \cite[\S 1.2.4]{КусраевКутателадзе2005БулевозначныйАнализ} (despite later defining \enquote{\textru{соответствия}} (\enquote{correspondences}) as relations with signatures).
 
-  Then \( A \) is related under \( \mscrR \) with both \( \set{ A } \) and \( \pow(A) \). This is technically not a graph of a function because we lack uniqueness. It is a generalization, which \textcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis}, \textcite[1]{DontchevRockafellar2014SolutionMappings} and \textcite[VII]{Phelps1993ConvexDifferentiability} call \term{set-valued maps}\fnote{Every mapping is technically set-valued, but the values of single-valued functions are treated as atoms, while the values of set-valued maps are treated as sets of atoms}.
+    \Textcite[26]{Kelley1975GeneralTopology} explicitly states
+    \begin{displayquote}
+      We do not distinguish between a function and its graph.
+    \end{displayquote}
 
-  Prime examples of set-valued maps used in practice are the subdifferentials defined in \cref{def:subdifferentials}, as well as solution mappings which provide sets of solutions to some equation that depends on a parameter.
+    The most notable exception to this convention is \cite[def. II.3.4]{Bourbaki2004TheoryOfSets}, who call the above a \enquote{functional graph} (\enquote{\textfr{graphe fonctionne}} in French), and proceed to define a function \( f: A \to B \) as a triple \( (\gr f, A, B) \).
+
+    This is followed by authors in other areas, for example
+    \cite[2]{Harzheim2005OrderedSets} and
+    \cite[14]{AdámekHerrlichStrecker2004JoyOfCats}.
+  \end{itemize}
 \end{remark}
+\begin{comments}
+  \item A consequence of treating functions as triples is that the concept of a \enquote{small function} (with respect to a \hyperref[def:grothendieck_universe]{Grothendieck universe}) changes --- see \cref{thm:small_set_closure/function}.
+\end{comments}
 
-\begin{definition}\label{def:set_valued_map}\mcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis}
-  A \term{set-valued map} from \( A \) to \( B \) is an ordered triple \( F = (R, A, B) \), where \( R \subseteq A \times B \) is a \hyperref[def:binary_relation]{binary relation}.
+\begin{definition}\label{def:set_valued_function}\mimprovised
+  A \term[ru=многозначное отображение (\cite[253]{ПоловинкинБалашов2007ВыпуклыйАнализ}), en=set-valued map (\cite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis})]{set-valued map} from \( A \) to \( B \) is an ordered triple \( F = (R, A, B) \), where \( R \subseteq A \times B \) is a \hyperref[def:binary_relation]{binary relation}.
 
-  We use the notation \( F: A \multto B \) instead of \( F = (R, A, B) \), where we call the string of symbols \( A \multto B \) the \term{signature} of the map.
+  We call \( (A, B) \) the \term[en=type signature (\cite{HaskellWiki:type_signature})]{type signature} of \( F \) and denote it by \( A \multto B \), resembling \hyperref[con:type_annotation]{type annotations} for \hyperref[def:arrow_type]{arrow types}\fnote{For \hyperref[def:function]{single-valued functions}, the notation \( f: A \to B \) coincides with that for \hyperref[def:type_theory_function_term]{function terms} (even though formally these are very distinct objects).}. We denote the function itself (as a triple) by \( F: A \multto B \).
 
-  \begin{thmenum}[series=def:set_valued_map]
-    \thmitem{def:set_valued_map/graph} We call the relation \( R \) the \term{graph}\fnote{The term \enquote{graph} in this context is unrelated to the different kinds of graphs defined in \fullref{sec:graphs}.} of \( F \) and denote it by \( \gr(F) \).
+  We introduce several important notions:
+  \begin{thmenum}[series=def:set_valued_function]
+    \thmitem{def:set_valued_function/graph}\mcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis} We call the relation \( R \) the \term{graph}\fnote{The term \enquote{graph} in this context is unrelated to the different types of graphs defined in \fullref{sec:graphs}.} of \( F \) and denote it by \( \gr(F) \).
 
-    \thmitem{def:set_valued_map/value} We define the \term{value} of \( F \) at \( x \) as
+    \thmitem{def:set_valued_function/value}\mcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis} We define the \term{value} of \( F \) at \( x \) as
     \begin{equation*}
       F(x) \coloneqq \set{ y \in B \given (x, y) \in \gr(F) }.
     \end{equation*}
 
-    The notation \( F(x) \) refers to a member of \( B \) if \( x \) is a \hyperref[def:fol_formula_bound_variables]{bound variable} and to the map \( F \) itself if \( x \) is a \hyperref[def:fol_variable_freeness]{free variable}.
+    We also call \( F(x) \) the \term{image} or \term[en=action (\cite[9]{Aluffi2009Algebra})]{action} of \( F \) at \( x \).
 
-    \textcite[9]{Aluffi2009Algebra} also uses the terminology \enquote{\term{action} of \( F \) on \( x \)} or \enquote{\term{image} of \( F \) on \( x \)}.
+    The notation \( F(x) \) refers to a member of \( B \) if \( x \) is a \hyperref[con:variable_binding]{bound variable} and to the function \( F \) itself if \( x \) is a \hyperref[con:variable_binding]{free variable}.
 
-    We say that \( F \) is \term{single-valued} at \( x \) if \( F(x) \) has exactly one member and \term{multivalued} if it has more than one member.
+    \thmitem{def:set_valued_function/value_cardinality}\mcite[3]{DontchevRockafellar2014SolutionMappings} We set apart the following cases for the value \( F(x) \):
+    \begin{thmenum}
+      \thmitem{def:set_valued_function/value_cardinality/empty} If \( F(x) \) is the empty set, we say that \( F \) is \term{empty-valued} at \( x \).
 
-    \thmitem{def:set_valued_map/partial}\mcite[def. 2.3.13]{Rosen2019DiscreteMathematics} We say that \( F \) is \term{partial} if \( F(x) = \varnothing \) for some \( x \in A \) and \term{total} otherwise.
+      \thmitem{def:set_valued_function/value_cardinality/single} If \( F(x) \) is a singleton set, we say that \( F \) is \term{single-valued} at \( x \).
 
-    \thmitem{def:set_valued_map/image} We also define the \term{image} of a set \( X \subseteq A \) under \( F \) as
+      \thmitem{def:set_valued_function/value_cardinality/multi} Otherwise, we say that \( F(x) \) is a is \term{multi-valued} at \( x \).
+    \end{thmenum}
+
+    \thmitem{def:set_valued_function/domain}\mcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis} We define the \term[ru=область определения (\cite[\S 1.2.4]{КусраевКутателадзе2005БулевозначныйАнализ})]{domain} of \( F \) as the subset of \( A \) for which \( F \) is non-empty-valued:
+    \begin{equation*}
+      \dom(F) \coloneqq \set{ x \in A \given F(x) \neq \varnothing }.
+    \end{equation*}
+
+    \thmitem{def:set_valued_function/image}\mcite[def. II.3.3]{Bourbaki2004TheoryOfSets} We define the \term[ru=образ (\cite[\S 1.2.5]{КусраевКутателадзе2005БулевозначныйАнализ})]{image} of a subset \( X \subseteq A \) under \( F \) as
     \begin{equation*}
       F[X] \coloneqq \bigcup \set{ F(x) \given x \in X }.
     \end{equation*}
 
-    If \( X = A \), we call the set \( F[A] \) the image of \( F \) and denote it by \( \img(F) \).
+    We can also denote the image by \( F(X) \), although this may be ambiguous --- see \cref{rem:notation_for_function_image}.
 
-    \thmitem{def:set_valued_map/domain} We define the \term{domain} of \( F \) as the set
-    \begin{equation*}
-      \dom(F) \coloneqq \set{ x \in A \given \qexists{F(x)} \neq \varnothing }.
-    \end{equation*}
+    If \( X = A \), we call the set \( F[A] \) the \term[ru=область значений (\cite[\S 1.2.5]{КусраевКутателадзе2005БулевозначныйАнализ})]{image} of \( F \) and denote it by \( \img(F) \).
 
-    \thmitem{def:set_valued_map/codomain} Contrastingly, we define the \term{codomain} \( \cod(F) \) of \( F \) as the entire set \( B \).
+    \thmitem{def:set_valued_function/codomain} We define the \term{codomain} \( \cod(F) \) of \( F \) as the entire set \( B \).
 
     The reason for the inconsistency with the term \enquote{domain} is due to the terminology coming from \hyperref[def:function]{single-valued functions}, where the domain is required to be the entirety of \( A \).
-
-    \thmitem{def:set_valued_map/restriction} For each subset \( X \subseteq A \), we can define the \term{domain restriction} \( F\restr_X: X \to B \) of \( F \) to \( X \) as the set-valued map such that
-    \begin{equation*}
-      \gr(F_X) \coloneqq \gr(F) \cap X \times B.
-    \end{equation*}
-
-    Similarly, we define the \term{codomain restriction} for \( Y \subseteq B \) as the set-valued map \( F\restr^Y \) such that
-    \begin{equation*}
-      \gr(F_Y) \coloneqq \gr(F) \cap A \times Y.
-    \end{equation*}
   \end{thmenum}
 
   The following terminology is consistent with relations:
-  \begin{thmenum}[resume=def:set_valued_map]
-    \thmitem{def:set_valued_map/empty} We say that the function \( F: A \multto B \) is \term{empty} if \( \gr(F) = \varnothing \), i.e. if the graph is empty in the sense of \cref{def:relation/empty}.
+  \begin{thmenum}[resume=def:set_valued_function]
+    \thmitem{def:set_valued_function/empty} We say that \( F: A \multto B \) is \term{empty} if \( \gr(F) = \varnothing \), i.e. if the graph is empty in the sense of \cref{def:relation/empty}.
 
-    \thmitem{def:set_valued_map/identity}\mcite[2]{Engelking1989GeneralTopology} We define the \term{identity function} \( \id_A \) on the set \( A \) as the function corresponding to the identity relation \( \Delta_A \) from \cref{def:binary_relation/diagonal}.
+    \thmitem{def:set_valued_function/identity}\mcite[82]{Bourbaki2004TheoryOfSets} On every set \( A \), we define the \term[ru=тождественная функция (\cite[33]{ШеньВерещагин2020НачалаТеорииМножеств}), en=identity mapping (\cite[82]{Bourbaki2004TheoryOfSets})]{identity function} \( \id_A \) using the diagonal relation \( \Delta_A \) from \cref{def:binary_relation/diagonal}.
 
-    \thmitem{def:set_valued_map/inverse} We define the \term{inverse} \( F^{-1}: B \multto A \) of a set-valued map \( F: A \multto B \) as the function whose graph is the inverse of \( \gr(F) \) in the sense of \cref{def:binary_relation/inverse}.
+    It is vacuously a single-valued function.
 
-    For each set \( Y \subseteq B \), we call \( F^{-1}(Y) \) the \term{preimage} of \( Y \).
+    \thmitem{def:set_valued_function/inverse}\mcite[def. II.2.5]{Bourbaki2004TheoryOfSets} We define the \term[ru=обратное (\cite[\S 1.2.6]{КусраевКутателадзе2005БулевозначныйАнализ}) (соответствие)]{inverse} \( F^{-1}: B \multto A \) of a set-valued map \( F: A \multto B \) as the function whose graph is the inverse of \( \gr(F) \) in the sense of \cref{def:binary_relation/inverse}.
 
-    \thmitem{def:set_valued_map/composition} We define the \term{composition} \( G \bincirc F \) of two set-valued maps \( F: A \multto B \) and \( G: B \multto C \) as the function
+    For each subset \( Y \subseteq B \), we call \( F^{-1}(Y) \) the \term[ru=прообраз (\cite[33]{ШеньВерещагин2020НачалаТеорииМножеств}),en=preimage (\cite[def. 1.16]{Rudin1991FunctionalAnalysis})]{preimage} of \( Y \).
+
+    \thmitem{def:set_valued_function/composition}\mcite[def. II.2.6]{Bourbaki2004TheoryOfSets} We define the \term{composition} of two set-valued functions \( F: A \multto B \) and \( G: B \multto C \) by composing their graphs as per \cref{def:binary_relation/composition}\fnote{The square brackets around \( G \bincirc F \) are not a special notation, but rather another pair of delimiters that looks different from parentheses for the sake of reducing visual clutter.}:
     \begin{equation*}
-      [G \bincirc F](x) \coloneqq G(F(x)).
+      \begin{aligned}
+        &G \bincirc F: A \to C \\
+        &[G \bincirc F](x) \coloneqq G(F(x)).
+      \end{aligned}
     \end{equation*}
 
-    The square brackets around \( G \bincirc F \) are not a special notation, but rather another pair of delimiters that looks different from parentheses for the sake of reducing visual clutter.
+    As shown in \cref{thm:def:function/composition}, the composition of single-valued functions is again single-valued.
 
-    This definition is consistent with binary relation composition from \cref{def:binary_relation/composition}.
+    \thmitem{def:set_valued_function/restriction}\mcite[58]{БелоусовТкачёв2004ДискретнаяМатематика} Set-valued functions have a general notion of \term[en=restriction (\cite[34]{AubinFrankowska1990SetValuedAnalysis}), ru=ограничение]{restriction} inherited from \hyperref[def:relation/restriction]{that of relations}.
+
+    Namely, given a function \( F: A \multto B \) and subsets \( X \subseteq A \) and \( Y \subseteq B \), we can define the function \( F\restr_{X,Y}: X \to Y \) with graph \( \gr F \cap (X \times Y) \).
+
+    If \( F \) is a single-valued function, in order for \( F_\restr{X,Y} \) to also be single-valued, \( Y \) must be a superset of the image.
+
+    We usually only restrict the domain, in which case we write \( F\restr_X: X \to B \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Rather than introducing these concepts for set-valued functions, \textcite[8]{Kelley1975GeneralTopology} does it for relations.
+  \item This definition is an amalgamation of notions defined by different authors at different levels of generality. See \cref{rem:function_definition}.
+
+  The precise definition of \( F: A \multto B \) is used in \cite[def. II.3.2]{Bourbaki2004TheoryOfSets}, where it is called a \enquote{correspondence}, however the terminology and notation more closely resembles \cite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis} and \cite[1]{DontchevRockafellar2014SolutionMappings}.
+
+  \item Since set-valued functions are often conflated with their graphs, many of the above definitions can be stated for binary relations, as it is done in \cite[8]{Kelley1975GeneralTopology}.
 \end{comments}
-
-\begin{remark}\label{rem:codomain_and_range}
-  Some authors like \textcite[1]{Engelking1989GeneralTopology} and \textcite[596]{Knapp2016BasicAlgebra} use \enquote{range} for what we call the codomain of a function, while others like \textcite[11]{Kelley1975GeneralTopology} and \textcite[43]{Enderton1977SetTheory} use \enquote{range} for what we call the image.
-
-  To avoid ambiguity, we avoid the term \enquote{range} altogether.
-\end{remark}
-
-\begin{remark}\label{rem:red_herring_principle}\mcite{nLab:red_herring_principle}
-  The \term{mathematical red herring principle} states that a \enquote{red herring} need not, in general, be red or a herring.
-\end{remark}
-\begin{comments}
-  \item This principle is barely related to the eponymous informal logical fallacy, stated in \cite[\S 3.2.8]{Hurley2023LogicIntroduction} as follows:
-  \begin{displayquote}
-    The red herring fallacy is committed when the arguer diverts the attention of the reader or listener by changing the subject to a different but sometimes subtly related one. He or she then finishes by either drawing a conclusion about this different issue or by merely presuming that some conclusion has been established. By so doing, the arguer purports to have won the argument. The fallacy gets its name from a procedure used to train hunting dogs to follow a scent. A red herring (or bag of them) is dragged across the trail with the aim of leading the dogs astray. Since red herrings have an especially potent scent (caused in part by the smoking process used to preserve them), only the best dogs will follow the original scent.
-  \end{displayquote}
-\end{comments}
-
-\begin{example}\label{ex:rem:red_herring_principle}
-  We list examples of the \hyperref[rem:red_herring_principle]{red herring principle}:
-  \begin{thmenum}
-    \thmitem{ex:rem:red_herring_principle/function} The principle mostly applies to generalizations, like \hyperref[def:set_valued_map]{set-valued functions} and \hyperref[def:partial_function]{partial functions} generalize \hyperref[def:function]{functions}.
-
-    \thmitem{ex:rem:red_herring_principle/contravariant_functor} More interestingly, a \hyperref[def:contravariant_functor]{contravariant functor} from \( \cat{C} \) to \( \cat{D} \) is a \hyperref[def:functor]{functor} from \( \cat{C}^{\oppos} \) to \( \cat{D} \).
-  \end{thmenum}
-\end{example}
 
 \begin{remark}\label{rem:notation_for_function_image}
-  The notation \( f[X] \) for the image of a set \( A \) is mostly used within set theory, for example by \textcite[44]{Enderton1977SetTheory}. The notation \( f(X) \) is used in other context like topology, for example by \textcite[1]{Engelking1989GeneralTopology}, and analysis, for example by \textcite[def. 1.3.1]{AubinFrankowska1990SetValuedAnalysis}. We generally prefer \( f(X) \) because it reflects the established convention in fields more relevant to us, but occasionally use \( F[X] \) in order to avoid ambiguities. For example, if \( A \) is a \hyperref[def:transitive_set]{transitive set}, then \( x \in A \) implies that \( x \subseteq A \), yet
+  In \cref{def:set_valued_Function/image}, we have denoted the image of a function \( F: A \to B \) at \( X \subseteq A \) by \( F[X] \). For single-valued functions, the notation is used by \textcite[11]{Kelley1975GeneralTopology}, while the related notation \( F\Bracks{X} \) is used by \textcite[44]{Enderton1977SetTheory}.
+
+  An alternative is to use \( F(X) \), which is unFortunately ambiguous if \( X \) is a \hyperref[def:transitive_set]{transitive set}: if \( A \) contains both \( x \) and \( \set{ x } \) (e.g. if \( A \) is an \hyperref[def:ordinal]{ordinal}), then
   \begin{equation*}
-    f[\set{ \varnothing }] = \set{ f(\varnothing) } \neq f(\set{ \varnothing }).
+    F[\set{ x }] = \set{ F(x) } \T{may not equal} F(\set{ x }).
   \end{equation*}
+
+  Outside set theory, \( F(X) \) is the dominant notation, introduced for single-valued functions in
+  \cite[31]{Halmos1960NaiveSetTheory},
+  \cite[1]{Engelking1989GeneralTopology},
+  \cite[4]{Willard2004GeneralTopology},
+  \cite[def. 2.2]{Rudin1976AnalysisPrinciples},
+  \cite[3]{Folland1999RealAnalysis},
+  \cite[12]{WheedenZygmund2015MeasureAndIntegral},
+  \cite[\S 1.2.5]{КусраевКутателадзе2005БулевозначныйАнализ},
+  \cite[46]{БелоусовТкачёв2004ДискретнаяМатематика} and
+  \cite[33]{ШеньВерещагин2020НачалаТеорииМножеств}.
+
+  \Textcite[def. II.2.3]{Bourbaki2004TheoryOfSets} use \( F(X) \) and \( F\braket{ X } \).
+
+  Yet another alternative is to denote the value \( F(x) \) by \( F'x \) and the image \( F[X] \) by \( F^\dprime X \). For single-valued functions, this can be found in set-theoretic literature:
+  \begin{itemize}
+    \item \Textcite[21]{Jech2006SetTheory} and \textcite[def. I.6.12]{Kunen2013SetTheory} uses \( F(X) \) and \( F^\dprime X \).
+    \item \Textcite[def. 6.2.10]{Hinman2005Logic} uses \( F^* X \).
+    \item \Textcite[245]{Mendelson2015Logic} uses \( F^\dprime X \).
+  \end{itemize}
 \end{remark}
 
-\begin{proposition}\label{thm:def:set_valued_map}
-  \hyperref[def:set_valued_map]{Multi-valued functions} have the following basic properties:
+\begin{remark}\label{rem:range_of_function}
+  In the literature, the term \enquote{range} is unfortunately used for both the image and the codomain of a function. We avoid this term because of possible ambiguity.
+
+  \begin{itemize}
+    \item \enquote{Range} is used for the image of a function in
+    \cite[76]{Bourbaki2004TheoryOfSets},
+    \cite[10]{Jech2006SetTheory},
+    \cite[XX]{Mendelson2015Logic},
+    \cite[27]{Halmos1960NaiveSetTheory},
+    \cite[40]{Enderton1977SetTheory},
+    \cite[7]{Kelley1975GeneralTopology},
+    \cite[20]{Schechter1997AnalysisHandbook},
+    \cite[def. 2.1]{Rudin1976AnalysisPrinciples} and
+    \cite[3]{DontchevRockafellar2014SolutionMappings}.
+
+    \item \enquote{Range} is used for the codomain of a function in
+    \cite[596]{Knapp2016BasicAlgebra},
+    \cite[1]{Engelking1989GeneralTopology} and
+    \cite[4]{Willard2004GeneralTopology}.
+  \end{itemize}
+\end{remark}
+
+\begin{proposition}\label{thm:def:set_valued_function}
+  \hyperref[def:set_valued_function]{Set-valued functions} have the following basic properties:
 
   \begin{thmenum}
-    \thmitem{thm:def:set_valued_map/associative} \hyperref[def:set_valued_map/composition]{Composition} is associative. That is, for any three functions \( F: A \to B \), \( G: B \to C \) and \( H: C \to D \) we have
+    \thmitem{thm:def:set_valued_function/associative} \hyperref[def:set_valued_function/composition]{Composition} is associative: for any three functions \( F: A \to B \), \( G: B \to C \) and \( H: C \to D \) we have
     \begin{equation*}
       H \bincirc [G \bincirc F] = [H \bincirc G] \bincirc F.
     \end{equation*}
 
     We will henceforth simply write \( H \bincirc G \bincirc F \).
 
-    \thmitem{thm:def:set_valued_map/composition_inverse} If \( F: A \to B \) and \( G: B \to C \) are \hyperref[def:function]{set-valued maps}, then
+    \thmitem{thm:def:set_valued_function/identity} \hyperref[def:set_valued_function/identity]{Identities} act as \hyperref[def:semigroup_neutral_element]{neutral elements}: for every function \( F: A \to B \), we have
+    \begin{equation*}
+      F \bincirc \id_A = \id_B \bincirc F = F.
+    \end{equation*}
+
+    \thmitem{thm:def:set_valued_function/composition_inverse} Inverses are contravariant: for any two functions \( F: A \to B \) and \( G: B \to C \), we have
     \begin{equation*}
       [G \bincirc F]^{-1} = F^{-1} \bincirc G^{-1}.
     \end{equation*}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:set_valued_map/associative} Let \( a \in A \). Then in order for \( d \in D \) to belong to \( [[H \bincirc G] \bincirc F](a) \), there must exist values \( b \in B \) and \( c \in C \) such that \( b \in F(a) \) and \( c \in G(b) \) and \( d \in H(c) \). Clearly this is also the condition for \( d \) to belong to \( [H \bincirc [G \bincirc F]](a) \).
+  \SubProofOf{thm:def:set_valued_function/associative} Fix some \( a \in A \) and \( d \in D \).
 
-  \SubProofOf{thm:def:set_valued_map/composition_inverse} Since \( G \bincirc F \) has signature \( A \to C \), clearly \( [G \bincirc F]^{-1} \) has signature \( C \to A \). Let \( c \in C \).
+  In order for \( d \) to belong to \( [[H \bincirc G] \bincirc F](a) \), there must exist values \( b \in B \) and \( c \in C \) such that \( b \in F(a) \) and \( c \in G(b) \) and \( d \in H(c) \).
+
+  Clearly this is also the condition for \( d \) to belong to \( [H \bincirc [G \bincirc F]](a) \).
+
+  \SubProofOf{thm:def:set_valued_function/identity} Trivial.
+
+  \SubProofOf{thm:def:set_valued_function/composition_inverse} Since \( G \bincirc F \) has signature \( A \to C \), clearly \( [G \bincirc F]^{-1} \) has signature \( C \to A \). Let \( c \in C \).
 
   \begin{itemize}
     \item If \( [G \bincirc F]^{-1}(c) \) is empty, \( c \notin \img(G \bincirc F) \), hence either \( G^{-1}(c) \) is empty or is nonempty, but disjoint from \( \img(F) \). Hence, \( [F^{-1} \bincirc G^{-1}](c) \) is also empty.
@@ -219,32 +288,26 @@
 \end{proof}
 
 \begin{concept}\label{con:function_arguments}
-  As mentioned in \cref{def:set_valued_map/value}, given a map \( F: A \multto B \) and a free variable \( x \), we sometimes use the notation \( F(x) \).
+  As mentioned in \cref{def:set_valued_function/value}, given a map \( F: A \multto B \) and a free variable \( x \), we sometimes use the notation \( F(x) \) rather than \( F \).
 
   If \( A = A_1 \times \cdots \times A_n \) is a \hyperref[def:cartesian_product]{finite Cartesian product}, we can instead use the notation \( F(x_1, \ldots, x_n) \) and regard \( x_1, \ldots, x_n \) as free variables that have no assigned value.
 
-  The variables are called \term{arguments} or sometimes \term{parameters}. This notion is somewhat informal and depends on the context since \( A \) can usually be represented as a Cartesian product in different ways and with different arities. For example, if \( A = B \times C \), we can write both \( f(a) \) and \( f(b, c) \) and the function has a different number of parameters in each case. In practice, the number of arguments is usually clear from the context. We sometimes use \( \vect{a} \) to highlight that we regard \( a \) as a tuple.
+  We call these variables \term[ru=аргументы (\( n \)-местной операции) (\cite[def. 2.1]{БелоусовТкачёв2004ДискретнаяМатематика}), en=arguments (of an \( n \)-ary operation) (\cite[xxii]{Mendelson2015Logic})]{arguments}. This notions is well-defined in some cases like \hyperref[def:operation_on_set]{\( n \)-ary operatons}, but may be ambiguous in general since \( A \) can often be represented as a Cartesian product in different ways and with different arities. For example, if \( A = B \times C \) and \( C = D \times E \), we can write both \( f(b, c) \) and \( f(b, d, e) \). In practice, the number of arguments is usually clear from the context. We sometimes use \( \vect{a} \) to highlight that we regard \( a \) as a tuple.
 
   If the number of arguments is well-defined, we call it the \term{arity} of the function and use prefixes from \cref{def:operation_arity_terminology} like \enquote{unary}, \enquote{binary} and so forth.
 \end{concept}
 
-\begin{definition}\label{def:function}
-  We say that the \hyperref[def:function]{set-valued map} \( F: A \multto B \) is a \term{function} if \( F(x) \) is \hyperref[def:set_valued_map/value]{single-valued} for each \( x \in A \). In this case, we write \( F: A \to B \) rather than \( F: A \multto B \). If disambiguation is necessary, we will use the term \term[bg=еднозначна функция, ru=однозначная функция]{single-valued function}.
+\paragraph{Single-valued functions}
 
-  Strictly speaking, the value \( f(x) \) of a function \( f: A \to B \) is a \hyperref[def:singleton_set]{singleton set}. It is thus prevalent to define the value of a function to be an element of \( B \) rather than a subset of \( B \).
+\begin{definition}\label{def:function}\mcite[def. II.3.9]{Bourbaki2004TheoryOfSets}
+  If a \hyperref[def:set_valued_function]{set-valued function} \( F: A \multto B \) is \hyperref[def:set_valued_function/value_cardinality/single]{single-valued} at every point of \( A \), we say that it is a \term[ru=однозначное отображение (\cite[113]), en=single-valuedness (\cite[5]{Jacobson1985BasicAlgebraI})]{single-valued function}, a \term[en=total function (\cite[def. 2.3.13]{Rosen2019DiscreteMathematics})]{total function} or simply a \term[ru=функция (\cite[\S 1.2.4]{КусраевКутателадзе2005БулевозначныйАнализ})]{function}.
 
-  \begin{thmenum}
-    \thmitem{def:function/endofunction}\mcite[183]{DaveyPriestley2002LatticeTheory} We call functions from a set to itself \term{endofunctions}.
+  We write write \( F: A \to B \) rather than \( F: A \multto B \).
 
-    \medskip
-
-    \thmitem{def:function/selection}\mcite[52]{DontchevRockafellar2014SolutionMappings} If \( f: A \to B \) is a single-valued function, \( F: A \multto B \) is a set-valued map and \( \gr(f) \subseteq \gr(F) \), we say that \( f \) is a \term{selection} of \( F \).
-  \end{thmenum}
+  All concepts from \cref{def:set_valued_function} apply to single-valued functions, however we treat the value \( F(x) \) as an element of \( B \) rather than as a singleton subset of \( B \).
 \end{definition}
 \begin{comments}
-  \item All definitions from \cref{def:function} holds for single-valued functions.
-
-  \item We can simplify \cref{def:set_valued_map/image} to
+  \item We can simplify \cref{def:set_valued_function/image} to
   \begin{equation*}
     f[A]
     =
@@ -253,16 +316,40 @@
     \set{ f(x) \given x \in A }.
   \end{equation*}
 
-  As mentioned in \cref{def:set_valued_map/image}, we usually prefer the notation \( f[A] \) outside \fullref{ch:set_theory} where we are less prone to ambiguity.
-
   \item By convention, when both single-valued and set-valued maps are involved, the former are denoted using lowercase letters and the latter using uppercase letters.
 \end{comments}
 
-\begin{definition}\label{def:partial_function}
+\begin{remark}\label{rem:set_valued_map_as_single_valued}
+  As discussed in \cref{rem:function_definition}, rather than defining \hyperref[def:function]{single-valued functions} as a special case of \hyperref[def:set_valued_function]{set-valued functions}, some authors define set-valued functions from \( A \) to \( B \) as single-valued functions from \( A \) to the power set \( \pow(B) \).
+
+  The downside of the latter approach is that notions such as the \hyperref[def:set_valued_function/image]{image}, \hyperref[def:set_valued_function/codomain]{codomain} and \hyperref[def:set_valued_function/inverse]{inverse} of the set-valued map have a different and less useful for us meaning.
+\end{remark}
+
+\begin{definition}\label{def:partial_function}\mcite[def. 2.3.13]{Rosen2019DiscreteMathematics}
+  If a \hyperref[def:set_valued_function]{set-valued function} \( F: A \multto B \) is either \hyperref[def:set_valued_function/value_cardinality/empty]{empty-valued} or \hyperref[def:set_valued_function/value_cardinality/single]{single-valued} at every point of \( A \), we say that it is a \term[ru=частичное отображение (\cite[35]{Мальцев1970АлгебраическиеСистемы})]{partial function}.
 \end{definition}
 
+\begin{remark}\label{rem:red_herring_principle}\mcite{nLab:red_herring_principle}
+  The \term{mathematical red herring principle} states that a \enquote{red herring} need not, in general, be red or a herring.
+\end{remark}
+\begin{comments}
+  \item This principle is barely related to the eponymous informal logical fallacy, stated in \cite[\S 3.2.8]{Hurley2023LogicIntroduction} as follows:
+  \begin{displayquote}
+    The red herring fallacy is committed when the arguer diverts the attention of the reader or listener by changing the subject to a different but sometimes subtly related one. He or she then finishes by either drawing a conclusion about this different issue or by merely presuming that some conclusion has been established. By so doing, the arguer purports to have won the argument. The fallacy gets its name from a procedure used to train hunting dogs to follow a scent. A red herring (or bag of them) is dragged across the trail with the aim of leading the dogs astray. Since red herrings have an especially potent scent (caused in part by the smoking process used to preserve them), only the best dogs will follow the original scent.
+  \end{displayquote}
+\end{comments}
+
+\begin{example}\label{ex:rem:red_herring_principle}
+  We list examples of the \hyperref[rem:red_herring_principle]{red herring principle}:
+  \begin{thmenum}
+    \thmitem{ex:rem:red_herring_principle/function} The principle mostly applies to generalizations, like \hyperref[def:set_valued_function]{set-valued functions} and \hyperref[def:partial_function]{partial functions} generalize \hyperref[def:function]{functions}.
+
+    \thmitem{ex:rem:red_herring_principle/contravariant_functor} More interestingly, a \hyperref[def:contravariant_functor]{contravariant functor} from \( \cat{C} \) to \( \cat{D} \) is a \hyperref[def:functor]{functor} from \( \cat{C}^{\oppos} \) to \( \cat{D} \).
+  \end{thmenum}
+\end{example}
+
 \begin{concept}\label{con:undefinedness}\mimprovised
-  Consider the (real-valued) \hyperref[def:derived_trigonometric_functions/tan]{tangent function} \( \tan(x) \). We can regard it as \hyperref[def:function]{single-valued function} on the set \( \BbbR \setminus \set{ (2k + 1) \pi / 2 \given k \in \BbbZ } \), or as a \hyperref[def:set_valued_map/partial]{partial} single-valued function on the entire real line \( \BbbR \).
+  Consider the (real-valued) \hyperref[def:derived_trigonometric_functions/tan]{tangent function} \( \tan(x) \). We can regard it as \hyperref[def:function]{single-valued function} on the set \( \BbbR \setminus \set{ (2k + 1) \pi / 2 \given k \in \BbbZ } \), or as a \hyperref[def:partial_function]{partial} function on the entire real line \( \BbbR \).
 
   The second approach is often more convenient. Yet, it requires a new notion --- called \term[ru=неопределённость (\cite[62]{ШеньВерещагин2020НачалаТеорииМножеств}), en=undefinedness (\cite[284]{Farmer2008STTVirtues})]{undefinedness} --- used to express the fact that \( \tan(\pi / 2) \) becomes a \hyperref[con:expression]{syntactic expression} without meaningful \hyperref[con:syntax_semantics_duality]{semantics}. We say that \( \tan(\pi / 2) \) is undefined.
 
@@ -287,37 +374,35 @@
   \item Ill-formed syntactic expressions are necessarily undefined (i.e. have no meaningful semantics), but not vice versa. The examples above demonstrate that allowing undefinedness can be less daunting than restricting the syntax of the metalanguage to expressions that we consider meaningful.
 
   \item Some programming languages handle undefinedness using the Maybe monad --- see \cref{ex:def:monad/maybe}.
+
+  \item \hyperref[con:primitive_notion]{Primitive notions} are also sometimes called \enquote{undefined} --- see \cref{rem:undefined_and_primitive_terms}.
 \end{comments}
 
-\begin{remark}\label{rem:undefined_and_primitive_terms}
-  \textcite[v]{WhiteheadRussell1927PrincipiaMathematicaVol1} and \textcite[28]{Kleene1971Metamathematics} use the adjective \enquote{undefined} for the symbols that are considered primitive rather than defined via others. As discussed in \cref{con:primitive_notion}, we call such symbols \enquote{primitive} to prevent confusion with the notion of undefinedness which we present in \cref{con:undefinedness}.
-
-  Primitive symbols delegate their semantics to the \hyperref[con:metalogic]{metatheory}, while undefinedness signifies that the expression has no intended semantics.
-\end{remark}
+\begin{definition}\label{def:set_valued_selection}\mcite[52]{DontchevRockafellar2014SolutionMappings}
+  If \( f: A \to B \) is a single-valued function, \( F: A \multto B \) is a set-valued map and \( \gr(f) \subseteq \gr(F) \), we say that \( f \) is a \term{selection} of \( F \).
+\end{definition}
 
 \begin{proposition}\label{thm:def:function}
   \hyperref[def:function]{Single-valued functions} have the following properties when regarded as \hyperref[def:function]{set-valued maps}:
   \begin{thmenum}
-    \thmitem{thm:def:function/total} Single-valued functions are \hyperref[def:set_valued_map/partial]{total} as set-valued maps.
+    \thmitem{thm:def:function/total} Single-valued functions are \hyperref[def:partial_function]{total} as set-valued functions.
 
-    \thmitem{thm:def:function/section_total} If a set-valued map has a \hyperref[def:function/selection]{selection}, it is \hyperref[def:set_valued_map/partial]{total}.
+    \thmitem{thm:def:function/selection_total} If a set-valued function \( F: A \multto B \) has a \hyperref[def:set_valued_selection]{selection}, then \( F \) itself is \hyperref[def:partial_function]{total}.
 
-    \thmitem{thm:def:set_valued_map/composition} The \hyperref[def:set_valued_map/composition]{composition} of single-valued functions is a single-valued function.
+    \thmitem{thm:def:function/composition} The \hyperref[def:set_valued_function/composition]{composition} of single-valued functions is a single-valued function.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Trivial.
+  \SubProofOf{thm:def:function/total} Trivial.
+  \SubProofOf{thm:def:function/selection_total} Trivial.
+  \SubProofOf{thm:def:function/composition} Trivial.
 \end{proof}
 
-\begin{definition}\label{def:indicator_function}
-  \todo{Define indicator functions}
+\begin{definition}\label{def:constant_function}\mcite[21]{Church1956LogicVol1}
+  If the \hyperref[def:set_valued_function/image]{image} of a \hyperref[def:function]{single-valued function} \( f: A \to B \) is some \hyperref[def:singleton_set]{singleton set} \( \set{ b } \), we call it a \term{constant function} with value \( b \).
 \end{definition}
 
-\begin{definition}\label{def:constant_function}\mimprovised
-  If the \hyperref[def:set_valued_map/image]{image} of a \hyperref[def:function]{single-valued function} \( f: A \to B \) is some \hyperref[def:singleton_set]{singleton set} \( \set{ b } \), we call it a \term{constant function} with value \( b \).
-\end{definition}
-
-\begin{remark}\label{rem:constant_function}\mcite{Social:empty_constant_function}
+\begin{remark}\label{rem:constant_function}
   \hyperref[def:constant_function]{Our definition} for constant functions avoids a common pitfall.
 
   Consider the following definition, based on Walter Rudin's one in \cite[def. 4.3]{Rudin1976AnalysisPrinciples}:
@@ -325,45 +410,14 @@
     If a \hyperref[def:function]{single-valued function} \( f: A \to B \) satisfies \( f(a) = b \) for every \( a \in A \), we call it a \term{constant function} with value \( b \).
   \end{displayquote}
 
-  Under the latter definition, any function \( f: \varnothing \to B \) from an empty set is vacuously a constant function taking every possible value in \( B \). This is discussed in
+  Under the latter definition, any function \( f: \varnothing \to B \) from an empty set is vacuously a constant function taking every possible value in \( B \). This is discussed in \cite{Social:empty_constant_function}.
 
-  On the other hand, under the former definition, constant functions are precisely those that that \hyperref[def:factors_through]{factor through} \enquote{the} \hyperref[def:universal_objects/terminal]{terminal object} in \hyperref[def:category_of_small_sets]{\( \cat{Set} \)}, the set \( \set{ \varnothing } \).
+  On the other hand, under the former definition, constant functions are precisely those that that \hyperref[def:factors_through]{factor through} \enquote{the} \hyperref[thm:universal_sets]{terminal set} \( \set{ \varnothing } \).
 
   Hence, our definition also gives a good categorical characterization.
 \end{remark}
 
-\begin{remark}\label{rem:set_valued_map_as_single_valued}
-  Rather than defining a \hyperref[def:function]{single-valued function} to be a special case of \hyperref[def:set_valued_map]{set-valued maps}, \textcite[def. 2.3]{Phelps1993ConvexDifferentiability} defines set-valued maps from \( A \) to \( B \) as single-valued functions from \( A \) to \( \pow(B) \).
-
-  The downside of the latter approach is that notions such as the \hyperref[def:set_valued_map/image]{image}, \hyperref[def:set_valued_map/codomain]{codomain} and \hyperref[def:set_valued_map/inverse]{inverse} of the set-valued map have a different and less useful for us meaning.
-\end{remark}
-
-\begin{remark}\label{rem:implicit_function_notation}
-  It is sometimes useful to utilize \term{anonymous functions} such as \( x \mapsto x^2 \), which generalize \hyperref[def:fol_substitution/term_in_term]{term substitution}. The goal is to avoid naming functions whose name we will not use. Some examples where we utilize this:
-  \begin{itemize}
-    \item Quotient maps such as \( H \mapsto H / N \) from \fullref{thm:lattice_theorem_for_subgroups}.
-    \item Highlighting dependent and independent variables, such as Euclidean plane rotations in \cref{thm:plane_rotation_matrix_angle}:
-    \begin{equation*}
-      \varphi
-      \mapsto
-      \begin{pmatrix}
-        \cos \varphi & -\sin \varphi \\
-        \sin \varphi & \cos \varphi
-      \end{pmatrix}
-    \end{equation*}
-
-    \item Defining functors such as the power set functor from \cref{ex:def:functor/power_set}:
-    \begin{equation*}
-      \begin{aligned}
-        &\pow: \cat{Set} \to \cat{Set}, \\
-        &\pow(A) \coloneqq \set{ S \given S \subseteq A }, \\
-        &\pow(f: A \to B) \coloneqq (S \mapsto f[S]). \\
-      \end{aligned}
-    \end{equation*}
-  \end{itemize}
-\end{remark}
-
-\paragraph{...}
+\paragraph{Function cancellation and invertibility}
 
 \begin{definition}\label{def:function_invertibility}\mimprovised
   We introduce the following terminology for invertibility of a (single-valued) function \( f: A \to B \):
@@ -451,7 +505,7 @@
 \end{proof}
 
 \begin{concept}\label{con:function_superposition}
-  Although the terms \enquote{composition} and \enquote{superposition} are used interchangeably, for example by \textcite[\S 25]{Фихтенгольц1968ОсновыАнализаТом1}, the term \enquote{superposition} often refers to a certain generalization of \hyperref[def:set_valued_map/composition]{function composition}. The latter is used by \textcite[16]{Яблонский2003ДискретнаяМатематика}.
+  Although the terms \enquote{composition} and \enquote{superposition} are used interchangeably, for example by \textcite[\S 25]{Фихтенгольц1968ОсновыАнализаТом1}, the term \enquote{superposition} often refers to a certain generalization of \hyperref[def:set_valued_function/composition]{function composition}. The latter is used by \textcite[16]{Яблонский2003ДискретнаяМатематика}.
 
   If we are given the family of functions (or set-valued maps) \( f_k: A \multto B_k \) for \( k = 1, \ldots, n \) and \( G: B_1 \times \cdots \times B_n \multto C \), we define their \term{superposition} as
   \begin{equation*}
@@ -518,7 +572,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:function_image_properties}
-  \hyperref[def:set_valued_map/image]{Images of sets} under \( f: A \to B \) have the following basic properties:
+  \hyperref[def:set_valued_function/image]{Images of sets} under \( f: A \to B \) have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:function_image_properties/monotonicity} If \( A_1 \subseteq A_2 \), then \( f[A_1] \subseteq f[A_2] \).
 
@@ -544,7 +598,7 @@
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item Compare this result to the more well-behaved properties of \hyperref[def:set_valued_map/inverse]{preimages} described in \cref{thm:function_preimage_properties}.
+  \item Compare this result to the more well-behaved properties of \hyperref[def:set_valued_function/inverse]{preimages} described in \cref{thm:function_preimage_properties}.
 
   \item Equality in \eqref{eq:thm:function_image_properties/difference} holds if \( f \) is injective. If \( f \) is not injective, for example if \( A_1 \subsetneq A_2 \), but \( f[A_1] = f[A_2] \), then
   \begin{equation*}
@@ -597,7 +651,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:function_preimage_properties}
-  Function \hyperref[def:set_valued_map/inverse]{preimages} have the following basic properties:
+  Function \hyperref[def:set_valued_function/inverse]{preimages} have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:function_preimage_properties/monotonicity} If \( B_1 \subseteq B_2 \), then \( f^{-1}[B_1] \subseteq f^{-1}[B_2] \).
 
@@ -803,7 +857,7 @@
   satisfies \fullref{thm:cartesian_product_universal_property} --- it is a \hyperref[def:categorical_product]{categorical product} in \( \hyperref[def:category_of_small_sets]{\cat{Set}} \).
 \end{proposition}
 \begin{comments}
-  \item The only formal distinction between \( \bigsqcap_{k \in \mscrK} A_k \) as defined here and \( \prod_{k \in \mscrK} A_k \) as defined in \cref{def:cartesian_product} is that choice functions have attached information about their domain and codomain. Thus, taking the \hyperref[def:set_valued_map/graph]{graph} of the choice functions instead, we obtain \( \prod_{k \in \mscrK} A_k \).
+  \item The only formal distinction between \( \bigsqcap_{k \in \mscrK} A_k \) as defined here and \( \prod_{k \in \mscrK} A_k \) as defined in \cref{def:cartesian_product} is that choice functions have attached information about their domain and codomain. Thus, taking the \hyperref[def:set_valued_function/graph]{graph} of the choice functions instead, we obtain \( \prod_{k \in \mscrK} A_k \).
 
   Following the practice from \cref{rem:categorical_limit_uniqueness} of not distinguishing between different instances of the same categorical limit (as long as it is used consistently), we will regard elements of Cartesian products as choice functions in the cases where we will find that convenient.
 
@@ -912,7 +966,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:ordered_tuple_via_disjoint_union}
-  The \hyperref[def:disjount_union]{disjoint union} \( \coprod_{k \in \mscrK} A_k \) satisfies a variant of \cref{thm:indexed_family_extensionality}:
+  The \hyperref[def:disjoint_union]{disjoint union} \( \coprod_{k \in \mscrK} A_k \) satisfies a variant of \cref{thm:indexed_family_extensionality}:
   \begin{equation*}
     \coprod_{k \in \mscrK} A_k = \coprod_{k \in \mscrK} B_k \T{if and only if} A_k = B_k \T{for every} k \T{in} \mscrK.
   \end{equation*}
@@ -1008,7 +1062,7 @@
 \begin{theorem}[Function factorization]\label{thm:function_factorization}\mcite[thm. I.2.7]{Aluffi2009Algebra}
   For any \hyperref[def:function]{function} \( f: A \to B \) and consider its induced \hyperref[def:equivalence_relation]{equivalence relation} from \cref{thm:function_induces_equivalence}.
 
-  Let \( \pi: A \to A / {\sim} \) be the \hyperref[def:equivalence_relation/projection]{quotient map} onto the \hyperref[def:equivalence_relation/quotient]{quotient}, and let \( \iota: f[A] \to B \) be the inclusion of the \hyperref[def:set_valued_map/image]{image} of \( f \) into \( B \).
+  Let \( \pi: A \to A / {\sim} \) be the \hyperref[def:equivalence_relation/projection]{quotient map} onto the \hyperref[def:equivalence_relation/quotient]{quotient}, and let \( \iota: f[A] \to B \) be the inclusion of the \hyperref[def:set_valued_function/image]{image} of \( f \) into \( B \).
 
   Then there exists a unique \hyperref[def:function_invertibility/bijective]{bijective function} \( \widetilde{f}: A / {\cong} \to A[X] \) such that the following diagram commutes:
   \begin{equation*}
@@ -1053,7 +1107,7 @@
   \item Note that we do not yet use the notation \( n + 1 \) because we will use this theorem to define addition.
 \end{comments}
 \begin{proof}
-  Let \( G \subseteq \pow(\omega \times A) \) be the set of all \hyperref[def:set_valued_map/partial]{partial single-valued functions} \( g: \omega \to A \) such that
+  Let \( G \subseteq \pow(\omega \times A) \) be the set of all \hyperref[def:partial_function]{partial single-valued functions} \( g: \omega \to A \) such that
   \begin{itemize}
     \item If \( g \) is defined at \( \varnothing \), then \( g(\varnothing) = a_0 \).
     \item For every \( n \in \omega \), if \( g \) is defined at \( \op{sc}(n) \), then \( g \) is also defined at \( n \) and
@@ -1068,7 +1122,7 @@
 
   Define \( f \coloneqq \bigcup G \). At this point \( f \) is simply some \hyperref[def:function]{set-valued map}. We must now show that \( f \) has all the properties that we want.
 
-  \SubProofOf[def:set_valued_map/partial]{totality} First, we will use \fullref{thm:omega_induction} to show that \( f \) is total. Clearly \( \varnothing \in \dom f \).
+  \SubProofOf[def:partial_function]{totality} First, we will use \fullref{thm:omega_induction} to show that \( f \) is total. Clearly \( \varnothing \in \dom f \).
 
   Now fix \( n \in \dom f \). Then there exists a function \( g \in G \) defined at \( n \).
 
