@@ -71,14 +71,14 @@
 
     We have used the subset predicate symbol \( {\synsubseteq} \) from \cref{def:subset}.
 
-    \thmitem{def:zfc/foundation}\mcite[184]{Герасимов2014Вычислимость} The \term[ru=аксиома фундирования, en=axiom of foundation (\cite[245]{Mimram2020ProgramEqualsProof})]{axiom of foundation} allows proving that set membership is \hyperref[def:well_founded_relation]{well-founded}:
+    \thmitem{def:zfc/foundation}\mcite[184]{Герасимов2014Вычислимость} The \term[ru=аксиома фундирования, en=axiom of foundation (\cite[245]{Mimram2020ProgramEqualsProof})]{axiom of foundation} states that set membership is \hyperref[def:well_founded_relation]{well-founded}:
     \begin{equation}\label{eq:def:zfc/foundation/expanded}
-      \qforall \syna (\underbrace{ \qexists \synx {\synx \synin \syna} }_{\mathclap{ \syna \T*{is not empty} }} \synimplies \underbrace{ \qexists {\synx \synin \syna} \synneg \qexists {\syny \synin \syna} {\syny \synin \synx} }_{\synx \T*{is minimal with respect to} \synin}).
+      \qforall \syna (\underbrace{ \qexists \synx {\synx \synin \syna} }_{\mathclap{ \syna \T*{is not empty} }} \synimplies \underbrace{ \qexists {\synm \synin \syna} \synneg \qexists {\synx \synin \syna} {\synx \synin \synm} }_{\synm \T*{is minimal in} \syna \T*{with respect to} \synin}).
     \end{equation}
 
-    It is also sometimes stated in a more cryptic form --- that every nonempty set contains a member disjoint from itself:
+    The axiom is also sometimes stated in a more cryptic form --- that every nonempty set contains a member disjoint from itself:
     \begin{equation}\label{eq:def:zfc/foundation}
-      \qforall \syna (\synneg (\syna \syneq \synnothing) \synimplies \qexists {\synx \synin \syna} (\synx \syncap \syna \syneq \synnothing)).
+      \qforall \syna (\synneg (\syna \syneq \synnothing) \synimplies \qexists {\synm \synin \syna} (\synm \syncap \syna \syneq \synnothing)).
     \end{equation}
 
     Both forms are listed in \cite[245]{Mimram2020ProgramEqualsProof} and \cite[187]{Герасимов2014Вычислимость}. They are alternatively referred to as the \term[ru=аксиома регулярности, en=axiom of regularity (\cite[\S I.6]{Jech2006SetTheory})]{axiom of regularity} in \cite[\S I.6]{Jech2006SetTheory}, \cite[159]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы} and \cite[187]{Герасимов2014Вычислимость}, because they are equivalent to \fullref{thm:axiom_of_regularity}.
@@ -657,138 +657,191 @@
 \paragraph{Well-founded induction}
 
 \begin{definition}\label{def:well_founded_relation}
-  If \( \prec \) is simply a binary relation without any additional conditions imposed, we can still make sense of the chain conditions from \cref{def:chain_condition}. We will restrict ourselves to the descending chain condition --- we call the relation \( \prec \) \term{well-founded} if any of the following equivalent conditions hold:
+  The equivalent descending chain conditions from \cref{def:chain_condition} make sense more generally for an arbitrary \hyperref[def:binary_relation]{binary relation} \( {\prec} \) on \( X \). We call \( {\prec} \) \term{well-founded} if any of the following equivalent conditions hold:
 
   \begin{thmenum}
-    \thmitem{def:well_founded_relation/minimal}\mcite[241]{Enderton1977SetTheory} \Cref{def:chain_condition/maximal} can be restated as follows: every nonempty subset of \( P \) has a minimal element \( m \) in the sense that there does not exist any other element \( x \) from \( P \) such that \( x \prec m \).
+    \thmitem{def:well_founded_relation/minimal}\mcite[25]{Jech2006SetTheory} \Cref{def:chain_condition/maximal}: every nonempty subset \( A \) of \( X \) has a \enquote{minimal} element \( m \) such that \( x \prec m \) does not hold for any \( x \) in \( A \).
 
-    \thmitem{def:well_founded_relation/stabilization} \Cref{def:chain_condition/stabilization} can be restated as follows: every nonstrict descending sequence
+    \thmitem{def:well_founded_relation/stabilization}\mimprovised \Cref{def:chain_condition/stabilization}: every nonstrictly descending sequence
     \begin{equation}\label{eq:def:well_founded_relation/stabilization}
       \cdots \prec x_3 \prec x_2 \prec x_1
     \end{equation}
-    stabilizes in the sense that there exists an index \( n \) such that \( x_k = x_n \) for \( k > n \).
+    \hyperref[def:stabilizing_sequence]{stabilizes}, i.e. there exists an index \( n \) such that \( x_k = x_n \) for \( k > n \).
 
-    \thmitem{def:well_founded_relation/infinite} \Cref{def:chain_condition/infinite} can be restarted as follows: there exists no strictly infinitely ascending descending sequence in \( P \), i.e. a sequence of the form \eqref{eq:def:well_founded_relation/stabilization} such that no two members are equal.
+    \thmitem{def:well_founded_relation/infinite} \Cref{def:chain_condition/infinite}\mcite[198]{Shoenfield1967MathematicalLogic}: \( A \) contains no strictly descending sequence.
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Sets equipped with well-founded relations generalize \hyperref[def:well_ordered_set]{well-ordered sets}.
+\end{comments}
 
 \begin{proposition}\label{thm:set_membership_is_well_founded}
-  Set membership is \hyperref[def:well_founded_relation]{well-founded} in \logic{ZFC}. More precisely, given a set \( A \), if we regard \( \in \) as a binary relation between members of \( A \), then we would obtain that \( \in \) is a well-founded relation.
+  With the \hyperref[def:zfc/foundation]{axiom of foundation}, set membership becomes \hyperref[def:well_founded_relation]{well-founded} as a relation on a given \hyperref[def:set_theory_model]{model of set theory}.
 \end{proposition}
 \begin{proof}
-  The empty set is vacuously well-founded, so suppose that \( A \) is nonempty.
-
-  Aiming at a contradiction, suppose also that \( \in \) is not well-founded on \( A \). Then there exists an strictly descending sequence \( \seq{ x_k }_{k=1}^\infty \subseteq A \) such that
-  \begin{equation*}
-    \cdots \in x_3 \in x_2 \in x_1.
-  \end{equation*}
-
-  Denote by \( B \) the set \( \set{ x_k \given k = 1, 2, \ldots } \). By the \hyperref[def:zfc/foundation]{axiom of foundation}, \( B \) contains a set \( C \) which is disjoint from \( B \).
-
-  Clearly \( C \) coincides with at least one of \( x_1, x_2, \ldots \). Let \( C = x_{k_0} \). Since \( x_{k_0} \cap B = \varnothing \), then \( x_{k_0 + 1} \) is either not a member of \( x_{k_0} \) or of \( B \). But it is a member of both by our assumption that the sequence is infinitely descending.
-
-  The obtained contradiction proves that \( \in \) is well-founded on \( A \).
+  The axiom of foundation in the form \eqref{eq:def:zfc/foundation/expanded} corresponds exactly to condition \cref{def:well_founded_relation/minimal}.
 \end{proof}
 
 \begin{corollary}\label{thm:simple_foundation_theorems}
-  We list several statements, which are consequences of the \hyperref[def:zfc/foundation]{axiom of foundation} via \cref{thm:set_membership_is_well_founded}:
+  We list several consequences of the \hyperref[def:zfc/foundation]{axiom of foundation}:
 
   \begin{thmenum}
     \thmitem{thm:simple_foundation_theorems/member_of_itself} No set is a member of itself.
 
     \thmitem{thm:simple_foundation_theorems/mutual_membership} For any two sets \( A \) and \( B \), it is not possible for both \( A \in B \) and \( B \in A \) to hold.
 
-    \thmitem{thm:simple_foundation_theorems/ordinal_successor_is_injective} The \hyperref[def:ordinal_successor]{ordinal successor operation} is injective. That is, for every two set \( A \) and \( B \) from \( \op{sc}(A) = \op{sc}(B) \) it follows that \( A = B \).
+    \thmitem{thm:simple_foundation_theorems/ordinal_successor_is_injective} The \hyperref[def:ordinal_successor]{ordinal successor operation} is injective: for every pair of sets \( A \) and \( B \), from \( SA = SB \) it follows that \( A = B \).
+
+    This statement generalizes \eqref{eq:def:peano_arithmetic/theory/PA1}, which we have already shown in \cref{thm:omega_is_model_of_pa_without_operations} for members of \( \omega \).
   \end{thmenum}
 \end{corollary}
 \begin{proof}
-  \SubProofOf{thm:simple_foundation_theorems/member_of_itself} The sequence
+  \SubProofOf{thm:simple_foundation_theorems/member_of_itself} If \( A \in A \), then the sequence
   \begin{equation*}
     \cdots A \in A \in A
   \end{equation*}
-  is infinitely descending, hence \( A \) cannot be a member of itself.
+  is infinitely descending, contradicting well-foundedness of set membership.
 
-  \SubProofOf{thm:simple_foundation_theorems/mutual_membership} The sequence
+  \SubProofOf{thm:simple_foundation_theorems/mutual_membership} If \( A \in B \) and \( B \in A \), then the sequence
   \begin{equation*}
     \cdots A \in B \in A \in B \in A
   \end{equation*}
-  is infinitely descending, hence \( A \in B \) and \( B \in A \) cannot simultaneously hold.
+  is infinitely descending, contradicting well-foundedness of set membership.
 
-  \SubProofOf{thm:simple_foundation_theorems/ordinal_successor_is_injective} Note that \( A \in \op{sc}(A) = \op{sc}(B) \), hence either \( A = B \) or \( A \in B \). We can analogously conclude that either \( A = B \) or \( B \in A \).
+  \SubProofOf{thm:simple_foundation_theorems/ordinal_successor_is_injective} Suppose that \( SA = SB \). Since \( A \in SA \), we conclude that \( A \in SB = B \cup \set{ B } \), so either \( A \in B \) or \( A = B \).
 
-  But \( A \in B \) and \( B \in A \) cannot simultaneously hold due to \cref{thm:simple_foundation_theorems/mutual_membership}. Hence, it remains for \( A = B \) to hold.
+  Similarly, we conclude that either \( B \in A \) or \( B = A \). But \( A \in B \) and \( B \in A \) cannot simultaneously hold due to \cref{thm:simple_foundation_theorems/mutual_membership}. Hence, it remains for \( A = B \) to hold.
 \end{proof}
 
 \begin{theorem}[Well-founded induction]\label{thm:well_founded_induction}
-  Let \( \mscrL \) be the \hyperref[def:first_order_language]{first-order language} with no functional symbols and a single predicate symbol \( \prec \). We have already mentioned that we cannot formalize the concept of well-foundedness in first-order logic alone, so we will work with \hyperref[def:fol_structure]{structures} directly.
+  To properly formula this principle, we will use \hyperref[def:second_order_logic]{monadic second-order logic}, although we will mostly be interested in its \hyperref[def:fol_adaptation_of_monadic_sol_theory]{first-order adaptation}.
 
-  Every \hyperref[def:well_founded_relation]{well-founded} structure \( \mscrX = (X, I) \) over \( \mscrL \) satisfies an inductive axiom schema. For every formula \( \varphi \) over \( \mscrL \) not containing \( \syny \) nor \( \synz \) as free variables, \( X \) satisfies
+  We will work in a fixed \hyperref[def:hol_theory]{theory} \( T \). Let \( {\prec} \) be a binary predicate, i.e. a \hyperref[def:hol_signature/nl_const]{nonlogical constant} of type \( \syn\iota \synimplies \syn\iota \synimplies \syn\omicron \). This will usually be set membership, however it is also useful for other relations.
+
+  Suppose that \( {\prec} \) is \hyperref[def:well_founded_relation]{well-founded} in the sense that it satisfies an analog of the \hyperref[def:zfc/foundation]{axiom of foundation}:
+  \begin{equation}\label{eq:thm:well_founded_induction/condition}
+    \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} (\underbrace{ \qexists {\synx^{\syn\iota}} {\synp \synx} }_{\mathclap{ \synp \T*{is not contradictory} }} \synimplies \underbrace{ \qexists {\synm^{\syn\iota}} (\synp \synm \synwedge \synneg \qexists {\synx^{\syn\iota}} (\synp \synx \synwedge \synx \prec \synm) }_{\synm \T*{is minimal among those satisfying} \synp}).
+  \end{equation}
+
+  Then we can derive the following induction principle:
   \begin{equation}\label{eq:thm:well_founded_induction}
-    \qforall \syny
+    \qforall {\synp^{\syn\iota \synimplies \syn\omicron}}
     \parens[\big]
       {
-        \overbrace
-          {
-            \underbrace{ \parens[\big]{ \qforall {\synz \prec \syny} \varphi[\synx \mapsto \synz] } }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
-            \synimplies
-            \underbrace{ \varphi[\synx \mapsto \syny] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
-          }^{\T{inductive step}}
-      }
-    \synimplies
-    \underbrace{ \qforall \syny \varphi[\synx \mapsto \syny] }_{\T{conclusion}}.
+        \parens[\big]
+        {
+          \qforall {\synx^{\syn\iota}}
+          \overbrace
+            {
+              (\underbrace{ \qforall {\syny^{\syn\iota}} (\syny \prec \synx \synimplies \synp \syny) }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}})
+              \synimplies
+              \underbrace{ \synp \synx }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+            }^{\T{inductive step}}
+        }
+        \synimplies
+        \underbrace{ \qforall {\synx^{\syn\iota}} \synp \synx }_{\T{conclusion}}
+      }.
   \end{equation}
+
+  Informally, it can be restated as follows:
+  \begin{displayquote}
+    In order for \( p(x) \) to hold \emph{for every} \( x \), it is sufficient for \( p(x) \) to hold \emph{whenever} \( p(y) \) holds for every \( y \prec x \).
+  \end{displayquote}
 \end{theorem}
 \begin{comments}
-  \item See the comments in \cref{def:peano_arithmetic/theory/PA3} regarding variables and quantification in axiom schemas and \cref{con:induction} for a general discussion of induction.
-  \item In the special case where \( X = \BbbN \), this is called \term{strong induction} compared to the usual natural number induction \eqref{eq:def:peano_arithmetic/theory/PA3}. This is discussed in \cref{con:induction/well_founded}.
+  \item With less formality, well-founded induction is discussed in \cite[thm. 6.10]{Jech2006SetTheory} and \cite[thm. 6.8.6.3]{Mimram2020ProgramEqualsProof}. It is also called \enquote{noetherian induction} in \cite[prop. III.6.7]{Bourbaki2004TheoryOfSets}.
+
+  \item In the special case where \( \synp \) is membership in the set \( \BbbN \) of \hyperref[def:natural_numbers]{natural numbers}, we obtain \fullref{thm:strong_induction_on_natural_numbers}. Ironically, it is weaker than \fullref{thm:induction_on_natural_numbers} --- see \cref{thm:strong_induction_implies_induction}.
+
+  Another useful special case is \fullref{thm:induction_on_rooted_trees}.
+
+  We discuss induction more generally in \cref{con:induction}.
 \end{comments}
 \begin{proof}
-  Fix a formula \( \varphi \) in \( \mscrL \). Fix a variable assignment \( v \) in \( X \). We will show that the \hyperref[def:conditional_formula/contrapositive]{contraposition} of \eqref{eq:thm:well_founded_induction} holds in this model.
-
-  Suppose that there exists a value \( x \in X \) such that \( \Bracks{\varphi}_{v_{\synx \mapsto x}} = F \), that is,
-  \begin{equation*}
-    \qexists \syny \synneg \varphi[\synx \mapsto \syny].
-  \end{equation*}
-  holds.
-
-  Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( X \) is well-founded by \( \prec \)). Thus, the inductive hypothesis \( \qforall {\synz < x_0} \varphi[\synx \mapsto \synz] \) holds, but the inductive step conclusion \( \varphi[\synx \mapsto x_0] \) does not.
-
-  Since \( v \) was chosen arbitrarily, this is true for all variable assignments in \( X \). Then the following formula is \hyperref[def:fol_semantics/model]{valid} in \( \mscrX \):
-  \begin{equation}\label{eq:thm:well_founded_induction/contraposition}
-    \qexists \syny \synneg \varphi[\synx \mapsto \syny]
-    \synimplies
-    \qexists \syny
-    \parens[\big]
-      {
-        \qforall {\synz \prec \syny} \varphi[\synx \mapsto \synz] \synwedge \synneg \varphi[\synx \mapsto \syny]
-      }
+  We will assume the antecedent of \eqref{eq:thm:well_founded_induction}:
+  \begin{equation}\label{eq:thm:well_founded_induction/proof/antecedent}
+    \qforall \synx ((\qforall {\syny^{\syn\iota}} (\syny \prec \synx \synimplies \synp \syny)) \synimplies \synp \synx).
   \end{equation}
 
-  This is precisely the contrapositive of \eqref{eq:thm:well_founded_induction}. Since we are working in classical logic, the contrapositive is semantically equivalent to its original implication, hence \( \eqref{eq:thm:well_founded_induction} \) is also valid in \( \mscrX \).
+  We will also assume the negation \( \synneg \qforall {\synx^{\syn\iota}} \synp \synx \) of the consequent of \eqref{eq:thm:well_founded_induction}. With this, we can construct the following proof tree:
+  \footnotesize
+  \begin{equation*}
+    \begin{prooftree}[separation=0.9em]
+      \hypo{ [\eqref{eq:thm:well_founded_induction/condition}]^u }
+      \infer1[\ref{inf:def:hol_natural_deduction/forall/elim}]{ \synanon }
+      \hypo{ [\synneg \qforall {\synx^{\syn\iota}} \synp \synx]^v }
+      \ellipsis {} { \qexists {\synx^{\syn\iota}} \synneg \synp \synx }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \qexists {\synm^{\syn\iota}} (\synneg \synp \synm \synwedge \synneg \qexists {\synx^{\syn\iota}} (\synneg \synp \synx \synwedge \synx \prec \synm)) }
+
+      \hypo{ [\synanon]^t }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_right}]{ \synneg \qexists {\synx^{\syn\iota}} (\synneg \synp \synx \synwedge \synx \prec \synm) }
+      \ellipsis {} { \qforall {\synx^{\syn\iota}} (\synp \synx \synvee \synneg (\synx \prec \synm)) }
+      \ellipsis {} { \qforall {\synx^{\syn\iota}} ((\synx \prec \synm) \synimplies \synp \synx) }
+      \ellipsis {} { \qforall {\syny^{\syn\iota}} ((\syny \prec \synm) \synimplies \synp \syny) }
+
+      \hypo{ [\eqref{eq:thm:well_founded_induction/proof/antecedent}]^w }
+      \infer1[\ref{inf:def:hol_natural_deduction/forall/elim}]{ \synanon }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction/imp/elim}]{ \synp \synm }
+
+      \hypo{ [\synanon]^t }
+      \infer1[\ref{inf:def:propositional_natural_deduction/and/elim_left}]{ \synneg \synp \synm }
+      \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
+      \infer[left label={\( t \)}]2[\ref{inf:def:hol_natural_deduction/exists/elim}]{ \synbot }
+      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \qforall {\synx^{\syn\iota}} \synp \synx }
+      \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \synanon }
+      \infer1[\ref{inf:def:hol_natural_deduction/forall/intro}]{ \eqref{eq:thm:well_founded_induction} }
+    \end{prooftree}
+  \end{equation*}
+  \normalsize
+
+  The ellipses are rule applications based on \fullref{alg:fol_formula_dualization} and similar principles which we have not formally stated as inference rules for higher-order logic.
 \end{proof}
 
 \begin{theorem}[Epsilon induction]\label{thm:epsilon_induction}
-  For every formula \( \varphi \) in the language of set theory not containing \( \syny \) nor \( \synz \) as free variables, the following is a theorem of \logic{ZFC}:
-  \begin{equation*}
-    \qforall \syny
+  The following second-order induction principle can be derived in \hyperref[def:zfc]{\( \logic{ZFC}_2 \)}, or any \hyperref[def:axiomatic_set_theory]{axiomatic set theory} with the \hyperref[def:zfc/foundation]{axiom of foundation}:
+  \begin{equation}\label{eq:thm:epsilon_induction/sol}
+    \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \qforall {\synx^{\syn\iota}}
     \parens[\big]
       {
         \overbrace
           {
-            \underbrace{ \parens[\big]{ \qforall {\synz \in \syny} \varphi[\synx \mapsto \synz] } }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \underbrace{ (\qforall {\syny^{\syn\iota}} (\syny \synin \synx \synimplies \synp \syny)) }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
             \synimplies
-            \underbrace{ \varphi[\synx \mapsto \syny] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+            \underbrace{ \synp \synx }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
           }^{\T{inductive step}}
       }
     \synimplies
-    \underbrace{ \qforall \syny \varphi[\synx \mapsto \syny] }_{\T{conclusion}}.
-  \end{equation*}
+    \underbrace{ \qforall {\synx^{\syn\iota}} \synp \synx }_{\T{conclusion}}.
+  \end{equation}
+
+  Informally, it can be restated as follows:
+  \begin{displayquote}
+    In order for \( p(x) \) to hold \emph{for every} set \( x \), it is sufficient for \( p(x) \) to hold \emph{whenever} \( p(y) \) holds for every member \( y \) of \( x \).
+  \end{displayquote}
+
+  Its corresponding \hyperref[def:fol_adaptation_of_monadic_sol_theory]{first-order adaptation} is
+  \begin{equation}\label{eq:thm:epsilon_induction}
+    \qforall \synx
+    \parens[\big]
+      {
+        \overbrace
+          {
+            \underbrace{ (\qforall {\syny \synin \synx} \syn\varphi[\synx \synsubst \syny]) }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \synimplies
+            \underbrace{ \syn\varphi }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+          }^{\T{inductive step}}
+      }
+    \synimplies
+    \underbrace{ \qforall \synx \syn\varphi }_{\T{conclusion}}.
+  \end{equation}
+
+  This is a formula schema in the sense of \cref{def:fol_formula_schema}. We require the \hyperref[con:schemas_and_instances]{instance} of \( \syny \) not to be free in \( \syn\varphi \), but otherwise put no restrictions on the placeholders. Note that we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of each concrete axiom of the schema.
 \end{theorem}
 \begin{comments}
   \item This induction schema is called \enquote{\( \varepsilon \)-induction} because the set membership symbol \( \in \) is derived from \( \varepsilon \) as explained in \cref{rem:epsilon_and_set_membership}.
-
-  \item See the comments in \cref{def:peano_arithmetic/theory/PA3} regarding variables and quantification in axiom schemas and \cref{con:induction} for a general discussion of induction.
 \end{comments}
 \begin{proof}
-  Every model of \logic{ZFC} is well-founded by \( \in \) as a consequence of \cref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
+  Special case of \fullref{thm:well_founded_induction} with set membership as a well-founded relation.
 \end{proof}
