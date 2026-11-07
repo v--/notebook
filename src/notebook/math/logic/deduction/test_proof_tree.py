@@ -211,7 +211,7 @@ def test_implication_distributivity_axiom_tree() -> None:
     )
 
 
-# inf:thm:propositional_admissible_rules/self_biconditional
+# inf:thm:fol_natural_deduction_equality/refl
 def test_self_biconditional() -> None:
     premise_ = premise_config(
         attachments=[prop_marked_formula('p', 'u')],
