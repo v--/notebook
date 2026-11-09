@@ -1,5 +1,111 @@
 \section{Ordinals}\label{sec:ordinals}
 
+\paragraph{Hereditarily transitive sets}
+
+\begin{definition}\label{def:hereditarily_transitive_set}\mimprovised
+  We say that a \hyperref[def:transitive_set]{transitive set} is \term{hereditarily transitive} if its members are also transitive sets.
+\end{definition}
+\begin{comments}
+  \item As we will see in \cref{thm:hereditarily_transitive_set_recursion}, this definition applies recursively, which justifies the name.
+
+  \item With the \hyperref[def:zfc/foundation]{axiom of foundation}, the hereditarily transitive sets are precisely the \hyperref[def:ordinal]{ordinals}. Hence, a separate notion of a hereditarily transitive set is not established.
+
+  We extract this into a separate definition to study properties that only depend on transitivity.
+\end{comments}
+
+\begin{proposition}\label{thm:hereditarily_transitive_set_recursion}
+  All members of a \hyperref[def:hereditarily_transitive_set]{hereditarily transitive set} are also hereditarily transitive.
+\end{proposition}
+\begin{proof}
+  If \( A \) is hereditarily transitive and \( x \) belongs to \( A \), then \( x \) is by definition transitive. If \( y \) belongs to \( x \), it also belongs to \( A \) since \( A \) is transitive. Then \( y \) is transitive as a member of \( A \). Generalizing on \( y \), we conclude that \( x \) is hereditarily transitive.
+\end{proof}
+
+\begin{proposition}\label{thm:transitive_set_membership_is_transitive}
+  A \hyperref[def:transitive_set]{transitive} set \( A \) is \hyperref[def:hereditarily_transitive_set]{hereditarily transitive} if and only if the \hyperref[def:relation/restriction]{restriction} of set membership to \( A \) is a \hyperref[def:binary_relation/transitive]{transitive relation}.
+\end{proposition}
+\begin{proof}
+  Suppose that \( A \) is a transitive set. Let \( x \), \( y \) and \( z \) be members of \( A \) such that
+  \begin{equation*}
+    z \in y \in x.
+  \end{equation*}
+
+  Then \( z \) belongs to \( x \) for any \( y \) and \( z \) if and only if \( x \) is a transitive set.
+\end{proof}
+
+\begin{definition}\label{def:set_transitive_closure}\mcite[286]{Mendelson2015Logic}
+  We define the \term{transitive closure} of a set \( A \) as
+  \begin{equation*}
+    \cl^T(A) \coloneqq \bigcup_{n=0}^\infty {\bigcup}^n A,
+  \end{equation*}
+  where \( {\bigcup}^n \) is the \( n \)-fold composition of the \hyperref[def:set_union/unary]{unary set union}.
+\end{definition}
+\begin{comments}
+  \item Formally, we must take the unary union of the \hyperref[def:set_valued_function/image]{image} of the following \hyperref[def:sequence]{sequence} defined via \fullref{thm:omega_recursion}:
+  \begin{equation*}
+    T_n \coloneqq \begin{cases}
+      A,               &n = 0, \\
+      \bigcup T_{n-1}, &n > 0.
+    \end{cases}
+  \end{equation*}
+
+  \item \Cref{thm:set_transitive_closure} implies that the transitive closure satisfies the conditions for a \hyperref[def:abstract_closure_operator]{closure operator} on the \hyperref[def:lattice_of_sets]{lattice of all sets}.
+
+  We can regard it as a metatheoretic operator on a model of set theory.
+
+  \item This concept is fundamentally different from that of the transitive closure of a relation defined in \cref{def:relation_closures/transitive}.
+\end{comments}
+
+\begin{proposition}\label{thm:set_transitive_closure}
+  The \hyperref[def:set_transitive_closure]{transitive closure} \( \cl^T(A) \) of the set \( A \) is the smallest \hyperref[def:transitive_set]{transitive set} containing \( A \).
+
+  More formally, \( \cl^T(A) \) is transitive and every transitive set that contains \( A \) also contains \( \cl^T(A) \).
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof that \( \cl^T(A) \) is transitive} Fix some member \( x \) of \( \cl^T(A) \). Then \( x \) belongs to \( {\bigcup}^n A \) for some \( n \). \Cref{thm:unary_set_union_inequality} implies that \( x \) is a subset of \( {\bigcup}^{n+1} A \), and thus of \( \cl^T(A) \).
+
+  It follows that \( \cl^T(A) \) is transitive.
+
+  \SubProof{Proof that \( \cl^T(A) \) is minimal} Clearly \( A = {\bigcup}^0 A \) is a subset of \( \cl^T(A) \).
+
+  Let \( B \) be any transitive set containing \( A \). We will use \fullref{thm:omega_induction} on \( n \) in \( \omega \) to show that \( \bigcup^n A \) is a subset of \( B \).
+  \begin{itemize}
+    \item The case \( n = 0 \) is obvious since \( B \) is assumed to be a superset of \( A = {\bigcup}^0 A \).
+
+    \item If \( {\bigcup}^n A \) is a subset of \( B \), we must show that \( {\bigcup}^{n+1} A \) also is.
+
+    Fix some \( x \) from \( {\bigcup}^{n+1} A \). By definition of union, \( x \) belongs to some member \( A' \) of \( {\bigcup}^n A \).
+
+    We have assumed that \( {\bigcup}^n A \) is a subset of \( B \), so \( A' \) belongs to \( B \). Since \( B \) is transitive, the member \( x \) of \( A' \) also belongs to \( B \).
+
+    Therefore, \( {\bigcup}^{n+1} A \) is a subset of \( B \).
+  \end{itemize}
+
+  Thus, the union
+  \begin{equation*}
+    \cl^T(A) = \set*{ {\bigcup}^n(A) \given n \in \omega }
+  \end{equation*}
+  is also a subset of \( B \).
+\end{proof}
+
+\begin{corollary}\label{thm:closure_of_hereditarily_transitive_sets}
+  The \hyperref[def:set_transitive_closure]{transitive closure} of a collection of \hyperref[def:hereditarily_transitive_set]{hereditarily transitive sets} is itself hereditarily transitive.
+\end{corollary}
+\begin{comments}
+  \item \Cref{thm:set_of_transitive_sets} restates this proposition for \hyperref[def:ordinal]{ordinals}.
+\end{comments}
+\begin{proof}
+  Let \( A \) be a collection of hereditarily transitive sets. \Cref{thm:set_transitive_closure} implies that the closure \( \cl^T(A) \) is transitive.
+
+  We will use \fullref{thm:omega_induction} on \( n \) to show that the members of \( {\bigcup}^n A \) are hereditarily transitive.
+  \begin{itemize}
+    \item This is vacuous for \( n = 0 \) since the members of \( A = {\bigcup}^0 A \) are transitive by assumption.
+
+    \item Suppose that the members of \( {\bigcup}^n A \) are hereditarily transitive.
+
+    If \( x \) belongs to \( {\bigcup}^{n+1} A \), it belongs to some set \( A' \) in \( {\bigcup}^n A \). The latter is hereditarily transitive by assumption, so, by \cref{thm:hereditarily_transitive_set_recursion}, \( x \) is also hereditarily transitive.
+  \end{itemize}
+\end{proof}
+
 \paragraph{Ordinals}
 
 \begin{concept}\label{con:transfinitum}
@@ -9,11 +115,8 @@
 
   Cantor suggested, based on the idea of \hyperref[def:dedekind_cut]{Dedekind cuts}, to introduce \enquote{number classes}, which would be sets of natural numbers and smaller number classes. These number classes are now known more concretely as \hyperref[def:ordinal]{ordinals}. Thus, Cantor did not aim to formalize actual infinity, but to introduce sets strictly between those that are finite and those that would be actually infinite.
 
-  He called this concept \term{transfinitum}, with \enquote{suprafinitum} suggested as an alternative. For the first number class, he introduced the symbol \( \omega \) to distinguish is from the \hyperref[rem:lemniscate_symbol]{lemniscate} used to denote actual infinity. Both the word \enquote{transfinitum} and the symbol \( \omega \) are in wide use today.
+  He called this concept \term{transfinitum}\fnote{Cantor also suggested the term \enquote{suprafinitum} as an alternative, however it has not attracted attention.}. For the first number class, he introduced the symbol \( \omega \) to distinguish is from the \hyperref[rem:lemniscate_symbol]{lemniscate} used to denote actual infinity. Both the word \enquote{transfinitum} and the symbol \( \omega \) are in wide use today.
 \end{concept}
-
-\begin{proposition}\label{thm:transitive_set_membership_is_transitive}
-\end{proposition}
 
 \begin{remark}\label{rem:ordinal_definition}
   Ordinals are generalizations of \hyperref[def:natural_numbers]{natural numbers}. We will find characterizing properties of the natural numbers (defined as members of \hyperref[def:smallest_inductive_set]{\( \omega \)}), so that it is clear what we want to generalize.
@@ -85,6 +188,50 @@
     \end{aligned}
   \end{equation*}
 \end{definition}
+
+\begin{proposition}\label{thm:set_of_transitive_sets}
+\end{proposition}
+\begin{proof}
+  Restatement of \cref{thm:closure_of_hereditarily_transitive_sets}.
+\end{proof}
+
+\begin{proposition}\label{thm:transitive_set_of_transitive_sets}\mcite{MathSE:transitive_set_of_transitive_sets}
+  A \hyperref[def:transitive_set]{transitive set} whose members are transitive sets is an ordinal.
+
+  In particular, a transitive set of ordinals is an ordinal. If a set of ordinals is not transitive, we can instead take its \hyperref[def:set_transitive_closure]{transitive closure}.
+\end{proposition}
+\begin{proof}
+  Let \( A \) be a set whose members are themselves transitive sets.
+
+  We will first show that set membership is transitive on \( A \). If \( x \), \( y \) and \( z \) are members of \( A \) such that \( x \in y \in z \), then since \( z \) is transitive we have \( y \subseteq z \) and thus \( x \in z \).
+
+  Therefore, we can conclude that set membership is a \hyperref[def:partially_ordered_set/strict]{strict partial order} on \( A \). Now define the set
+  \begin{equation*}
+    B \coloneqq \set{ x \in A \given \qexists {y \in A} x \notin y \synwedge y \notin x }
+  \end{equation*}
+  of all members of \( A \) which are not related to at least one other member. If \( B \) is empty, then set membership is trichotomous on \( A \).
+
+  If \( B \) is nonempty, let \( b \) be a minimal element of \( B \). A minimal element must exist because set membership is a well-founded partial order on \( A \). We have chosen \( b \), so that every member of \( b \) is related to every other member of \( A \).
+
+  Define the set
+  \begin{equation*}
+    C \coloneqq \set{ x \in A \given x \neq b \synwedge x \notin b \synwedge b \notin x }
+  \end{equation*}
+  of all members of \( A \) which are not related to \( b \) and let \( c \) be a minimal element of \( C \). We will now show that \( b = c \), which is a contradictions with our choice of \( c \).
+
+  Let \( x \in b \). As we have already mentioned, \( x \) is related to every other member of \( A \), including \( c \).
+  \begin{itemize}
+    \item If \( c = x \), then \( c \in b \), which contradicts our choice of \( c \).
+
+    \item Suppose that \( c \in x \). We have chosen \( x \) to be a member of \( b \) and we thus have \( c \in x \in b \). The set \( b \) is transitive as a member of \( A \), hence \( x \) is also a member of \( A \). Since set membership is a transitive relation on \( A \), it follows that \( c \in b \), which contradicts our choice of \( c \).
+
+    \item It remains for \( x \in c \) to hold.
+  \end{itemize}
+
+  Therefore, \( b \subseteq c \). The converse inclusion \( c \subseteq b \) can be obtained analogously by noting that \( c \) is a minimal element of \( C \) and hence every \( x \in c \) is related to \( b \). Thus, we obtain \( b = c \), which contradicts our choice of \( c \) as a member of \( C \).
+
+  The obtained contradiction shows that the set \( B \) is empty and thus every member of \( A \) is related to every other member, proving trichotomy of set membership on \( A \). This allows us to conclude that \( A \) is an ordinal because it is a transitive set and we have already shown in the beginning of the proof that set membership is a transitive relation on \( A \).
+\end{proof}
 
 \begin{proposition}\label{thm:omega_is_an_ordinal}
   The \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) is an \hyperref[def:ordinal]{ordinal}.
@@ -364,75 +511,6 @@
   \end{itemize}
 
   We have shown that \( \op{sc}(\alpha) \subseteq \beta \). Thus, we either have \( \op{sc}(\alpha) = \beta \in \op{sc}(\beta) \) or else by \cref{thm:ordinal_ordering_via_subsets} we have \( \op{sc}(\alpha) \in \beta \in \op{sc}(\beta) \).
-\end{proof}
-
-\begin{proposition}\label{thm:transitive_set_of_transitive_sets}\mcite{MathSE:transitive_set_of_transitive_sets}
-  A \hyperref[def:transitive_set]{transitive set} whose members are transitive sets is an ordinal.
-
-  In particular, a transitive set of ordinals is an ordinal. If a set of ordinals is not transitive, we can instead take its \hyperref[def:transitive_closure_of_a_set]{transitive closure}.
-\end{proposition}
-\begin{proof}
-  Let \( A \) be a set whose members are themselves transitive sets.
-
-  We will first show that set membership is transitive on \( A \). If \( x \), \( y \) and \( z \) are members of \( A \) such that \( x \in y \in z \), then since \( z \) is transitive we have \( y \subseteq z \) and thus \( x \in z \).
-
-  Therefore, we can conclude that set membership is a \hyperref[def:partially_ordered_set/strict]{strict partial order} on \( A \). Now define the set
-  \begin{equation*}
-    B \coloneqq \set{ x \in A \given \qexists {y \in A} x \notin y \synwedge y \notin x }
-  \end{equation*}
-  of all members of \( A \) which are not related to at least one other member. If \( B \) is empty, then set membership is trichotomous on \( A \).
-
-  If \( B \) is nonempty, let \( b \) be a minimal element of \( B \). A minimal element must exist because set membership is a well-founded partial order on \( A \). We have chosen \( b \), so that every member of \( b \) is related to every other member of \( A \).
-
-  Define the set
-  \begin{equation*}
-    C \coloneqq \set{ x \in A \given x \neq b \synwedge x \notin b \synwedge b \notin x }
-  \end{equation*}
-  of all members of \( A \) which are not related to \( b \) and let \( c \) be a minimal element of \( C \). We will now show that \( b = c \), which is a contradictions with our choice of \( c \).
-
-  Let \( x \in b \). As we have already mentioned, \( x \) is related to every other member of \( A \), including \( c \).
-  \begin{itemize}
-    \item If \( c = x \), then \( c \in b \), which contradicts our choice of \( c \).
-
-    \item Suppose that \( c \in x \). We have chosen \( x \) to be a member of \( b \) and we thus have \( c \in x \in b \). The set \( b \) is transitive as a member of \( A \), hence \( x \) is also a member of \( A \). Since set membership is a transitive relation on \( A \), it follows that \( c \in b \), which contradicts our choice of \( c \).
-
-    \item It remains for \( x \in c \) to hold.
-  \end{itemize}
-
-  Therefore, \( b \subseteq c \). The converse inclusion \( c \subseteq b \) can be obtained analogously by noting that \( c \) is a minimal element of \( C \) and hence every \( x \in c \) is related to \( b \). Thus, we obtain \( b = c \), which contradicts our choice of \( c \) as a member of \( C \).
-
-  The obtained contradiction shows that the set \( B \) is empty and thus every member of \( A \) is related to every other member, proving trichotomy of set membership on \( A \). This allows us to conclude that \( A \) is an ordinal because it is a transitive set and we have already shown in the beginning of the proof that set membership is a transitive relation on \( A \).
-\end{proof}
-
-\begin{definition}\label{def:transitive_closure_of_a_set}\mcite[491]{Hinman2005Logic}
-  To show that every set has a rank we must introduce additional definitions. We use \fullref{thm:omega_recursion} to define the \term{transitive closure} of a set \( A \) as
-  \begin{equation*}
-    \cl^T(A) \coloneqq \bigcup \set{ \cl_n^T(A) \given n \in \omega },
-  \end{equation*}
-  where
-  \begin{equation*}
-    \cl_n^T(A) \coloneqq \begin{cases}
-      A,                      &n = 0 \\
-      \bigcup \cl_{n-1}^T(A), &n > 0
-    \end{cases}
-  \end{equation*}
-
-  Note that this is different from the transitive closure of a relation defined in \cref{def:relation_closures/transitive}.
-\end{definition}
-
-\begin{proposition}\label{thm:transitive_closure_of_a_set}\mcite[corr. 6.2.43]{Hinman2005Logic}
-  The \hyperref[def:transitive_closure_of_a_set]{transitive closure} \( \cl^T(A) \) of the set \( A \) is the smallest transitive set containing \( A \).
-\end{proposition}
-\begin{proof}
-  It is clear that \( A = \cl_0^T(A) \) is a subset of \( \cl^T(A) \).
-
-  If \( x \in \cl^T(A) \), then there exists some natural number \( n \) for which \( x \in \cl_n^T(A) \). Therefore, \( x \subseteq \bigcup \cl_n^T(A) = \cl_{n+1}^T(A) \) and thus \( x \subseteq \cl^T(A) \).
-
-  Now suppose that \( B \) is a transitive subset of \( \cl^T(A) \) which contains \( A \). Let \( x_0 \in \cl^T(A) \).
-
-  Suppose that \( x_0 \notin B \). Then there must exist a smallest nonzero number \( n \) such that \( x_0 \in \cl_n^T(A) \). Then \( x_0 \) belongs to some member \( x_1 \) of \( \cl_{n-1}^T(A) \). If \( x_1 \in A \), then \( x_0 \) must belong to \( B \) since it is transitive. But this contradicts our choice of \( x_0 \). Then \( x_1 \notin A \), in which case there exists some \( x_2 \in \cl_{n-2}^T(A) \) such that \( x_1 \in x_2 \). If \( x_2 \in A \), then again \( x_0 \in B \), which contradicts our choice of \( x_0 \). We can thus recursively construct a sequence \( \set{ x_k }_{k=0}^\infty \) such that for every \( k \geq 0 \) both \( x_k \in x_{k+1} \) and \( x_k \notin A \) hold. The existence of such a sequence contradicts \cref{thm:set_membership_is_well_founded}.
-
-  Therefore, \( \cl^T(A) \subseteq B \), hence \( \cl^T(A) \) is the smallest transitive set containing \( A \).
 \end{proof}
 
 \begin{proposition}\label{thm:ordinal_is_set_of_smaller_ordinals}
