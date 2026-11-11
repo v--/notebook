@@ -159,7 +159,7 @@
 
     \thmitem{rem:peano_arithmetic/successor} Although Peano introduces a dedicated successor operation, he denotes it by \( a + 1 \) in \cite[1]{Peano1889ArithmeticesPrincipia} and by \( a+ \) in \cite[27]{Peano1908FormulatioMathematico}.
 
-    Using a dedicated symbol for this operation is a modern practice. That the successor can be expressed via addition can be proven easily --- see \cref{thm:peano_arithmetic_successor_and_addition}.
+    Using a dedicated symbol for this operation is a modern practice. That the successor can be expressed via addition can be proven easily --- see \cref{thm:peano_arithmetic_successor_via_addition}.
 
     \thmitem{rem:peano_arithmetic/fol_variants} Modern formulations of first-order Peano arithmetic mostly agree with each other, up to a precise choice of formalisms:
     \begin{itemize}
@@ -281,30 +281,53 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:peano_arithmetic_successor_and_addition}
-  In \hyperref[def:peano_arithmetic]{Peano arithmetic}, we can express the successor operation by adding \( 1 = S(0) \). More precisely, the following is provable:
-  \begin{equation}\label{eq:thm:peano_arithmetic_successor_and_addition}
-    \qforall \synn (\synS \synn \syneq \synn \synplus \synS \syn0).
+\begin{proposition}\label{thm:peano_arithmetic_addition_via_successor}
+  In \hyperref[def:peano_arithmetic]{Peano arithmetic}, we can express addition by iterating the successor operation. More precisely, for any metatheoretic natural number \( m \), denote by \( \synS^m \) the \( m \)-fold application of \( \synS \). Then, for every \( m \), the following formula is provable:
+  \begin{equation}\label{eq:thm:peano_arithmetic_addition_via_successor}
+    \qforall \synn (\synS^m \synn \syneq \synn \synplus \synS^m \syn0).
   \end{equation}
 \end{proposition}
+\begin{proof}
+  We use metatheoretic induction on \( m \).
+
+  \SubProof{Proof of base case}
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA4}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synn \synplus \synS^0 \syn0 \syneq \synS^0 \synn }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synS^0 \synn \syneq \synn \synplus \synS^0 \syn0 }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synn (\synS^0 \synn \syneq \synn \synplus \synS^0 \syn0) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof{Proof of inductive step}
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA5}]^{a_1} }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synn \synplus \synS \synS^m \syn0 \syneq \synS(\synn \synplus \synS^m \syn0) }
+
+      \hypo{ [\synS^m \synn \syneq \synn \synplus \synS^m \syn0]^u }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synn \synplus \synS^m \syn0 \syneq \synS^m \synn }
+      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synn \synplus \synS^{m+1} \syn0 \syneq \synS^{m+1} \synn }
+      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synS^{m+1} \synn \syneq \synn \synplus \synS^{m+1} \syn0 }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:peano_arithmetic_successor_via_addition}
+  In \hyperref[def:peano_arithmetic]{Peano arithmetic}, we can express the successor operation by adding \( 1 = S(0) \). More precisely, the following is provable:
+  \begin{equation}\label{eq:thm:peano_arithmetic_successor_via_addition}
+    \qforall \synn (\synS \synn \syneq \synn \synplus \synS \syn0).
+  \end{equation}
+\end{corollary}
 \begin{comments}
   \item When not dealing with formal arithmetic, we will avoid the successor operation altogether.
   \item We extend this to \hyperref[def:ordinal]{ordinal numbers} in \cref{rem:ordinal_successor_via_addition}.
 \end{comments}
 \begin{proof}
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA5}]^{a_1} }
-      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ \synn \synplus \synS \syn0 \syneq \synS(\synn \synplus \syn0) }
-      \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ \synS(\synn \synplus \syn0) \syneq \synn \synplus \synS \syn0 }
-
-      \hypo{ [\eqref{eq:def:peano_arithmetic/theory/PA4}]^{a_2} }
-      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synn \synplus \syn0 \syneq \synn }
-
-      \infer2[\ref{inf:def:fol_natural_deduction/equality/elim}]{ \synS \synn \syneq \synn \synplus \synS \syn0 }
-      \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall \synn (\synS \synn \syneq \synn \synplus \synS \syn0) }
-    \end{prooftree}
-  \end{equation*}
+  Special case of \cref{thm:peano_arithmetic_addition_via_successor} with \( m = 1 \).
 \end{proof}
 
 \begin{remark}\label{rem:natural_number_induction_base}
@@ -389,7 +412,7 @@
   \begin{equation*}
     \tau_k \coloneqq \begin{cases}
       \syn0,        &k = \varnothing, \\
-      \synS \tau_m, &k = \op{sc}(m).
+      \synS \tau_m, &k = S(m).
     \end{cases}
   \end{equation*}
 
@@ -407,7 +430,7 @@
   \begin{itemize}
     \item If \( i = \varnothing \), then \( \tau_i = \syn0 = \tau_j \) is the unique string in \( N \) that starts with \( \syn0 \), and hence \( j = \varnothing \).
 
-    \item Suppose that \( i = \op{sc}(k) \), where the inductive hypothesis holds for \( k \). By definition, \( \tau_i = \synS \tau_k = \tau_j \), so there must exist some \( m \) such that \( j = \op{sc}(m) \). In particular, \( \tau_j = \synS \tau_m \), where \( \tau_k = \tau_m \).
+    \item Suppose that \( i = S(k) \), where the inductive hypothesis holds for \( k \). By definition, \( \tau_i = \synS \tau_k = \tau_j \), so there must exist some \( m \) such that \( j = S(m) \). In particular, \( \tau_j = \synS \tau_m \), where \( \tau_k = \tau_m \).
 
     By the inductive hypothesis on \( k \), we conclude that \( k = m \), hence also \( i = j \).
   \end{itemize}
@@ -420,7 +443,7 @@
   \begin{equation*}
     \tau_k \coloneqq \begin{cases}
       \syn0,        &k = \varnothing, \\
-      \synS \tau_m, &k = \op{sc}(m),
+      \synS \tau_m, &k = S(m),
     \end{cases}
   \end{equation*}
   with the intention to formalize the informal linguistic definition
@@ -438,7 +461,7 @@
 
     \item Suppose that the inductive hypothesis holds for \( n \) and suppose that \( \sigma \) has length \( n + 1 \). Then \( \sigma = a \rho \) for some symbol \( a \), which can only be \( \synS \).
 
-    Then \( \rho \) is a well-formed term of length \( n \), so the inductive hypothesis implies that \( \rho = \tau_k \) for some \( k \in \omega \). It follows that \( \rho = \synS \tau_k = \tau_m \), where \( m = \op{sc}(k) \).
+    Then \( \rho \) is a well-formed term of length \( n \), so the inductive hypothesis implies that \( \rho = \tau_k \) for some \( k \in \omega \). It follows that \( \rho = \synS \tau_k = \tau_m \), where \( m = S(k) \).
   \end{itemize}
 \end{remark}
 
@@ -684,16 +707,16 @@
 \begin{definition}\label{def:peano_arithmetic_ordering}
   We can introduce a new binary predicate \( \synleq \) to \hyperref[def:peano_arithmetic]{Peano arithmetic} using the \hyperref[def:fol_definition/predicate]{first-order definition}\fnote{Technically, we must take the \hyperref[def:fol_quantifier_closure]{universal closure} of \eqref{eq:def:peano_arithmetic_ordering/nonstrict}.}
   \begin{equation}\label{eq:def:peano_arithmetic_ordering/nonstrict}
-    \synn \synleq \synm \syniff \qexists \syna (\synn \synplus \syna \syneq \synm).
+    \synn \synleq \synm \syniff \qexists \synk (\synn \synplus \synk \syneq \synm).
   \end{equation}
 
   As we shall show in \cref{thm:natural_numbers_are_well_ordered}, this predicate acts as a \hyperref[def:well_ordered_set]{well-order}. We will show in \cref{thm:peano_arithmetic_order_compatibility} that the corresponding \hyperref[def:partially_ordered_set/strict]{strict relation} can be defined via
   \begin{equation}\label{eq:def:peano_arithmetic_ordering/strict}
-    \synn \synless \synm \syniff \qexists \syna (\synn \synplus \synS \syna \syneq \synm).
+    \synn \synless \synm \syniff \qexists \synk (\synn \synplus \synS \synk \syneq \synm).
   \end{equation}
 \end{definition}
 \begin{comments}
-  \item For the specific model of \logic{PA} based on the smallest inductive set \( \omega \), the latter relation \( \synless \) is interpreted as \( \in \); we discuss this in more detail in \cref{rem:ordinal_definition}.
+  \item For the specific model of \logic{PA} based on the smallest inductive set \( \omega \), the latter relation \( \synless \) coincides with set membership. This is shown in \cref{thm:omega_natural_numbers_order}.
 \end{comments}
 
 \begin{proposition}\label{thm:peano_arithmetic_order_rules}
@@ -791,7 +814,7 @@
       \hypo{ [\eqref{eq:def:peano_arithmetic_ordering/strict}]^{a_2} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}*]{ n \synless \synS n \syniff \qexists a (n \synplus \synS a \syneq \synS n) }
 
-      \hypo{ [\eqref{eq:thm:peano_arithmetic_successor_and_addition}]^{a_1} }
+      \hypo{ [\eqref{eq:thm:peano_arithmetic_successor_via_addition}]^{a_1} }
       \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \synS n \syneq n \synplus \synS \syn0 }
       \infer1[\ref{inf:thm:fol_natural_deduction_equality/symm}]{ n \synplus \synS \syn0 \syneq \synS n }
       \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ \qexists a (n \synplus \synS a \syneq \synS n) }

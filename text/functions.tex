@@ -1062,19 +1062,22 @@
 \begin{definition}\label{def:disjoint_union}\mcite[19]{Хелемский2014ФункциональныйАнализ}
   We define the \term[ru=дизъюнктное произведение, en=disjoint union (\cite[198]{Knapp2016BasicAlgebra})]{disjoint union} of the \hyperref[def:indexed_family]{indexed family} \( \seq{ A_k }_{k \in \mscrK} \) of nonempty sets as
   \begin{equation*}
-    \coprod_{k \in \mscrK} A_k \coloneqq \set[\big]{ (k, a) \given k \in \mscrK \T{and} a \in A_k }.
+    \coprod_{k \in \mscrK} A_k \coloneqq \set[\big]{ \braket{ k, a } \given k \in \mscrK \T{and} a \in A_k },
   \end{equation*}
+  where \( \braket{ k, a } \) is a \hyperref[def:kuratowski_pair]{Kuratowski pair}.
 
   We associate with each \( k \in \mscrK \) the inclusion
   \begin{equation*}
     \begin{aligned}
       &\iota_k: A_k \to \coprod_{k \in \mscrK} A_k, \\
-      &\iota_k(a) \coloneqq (k, a).
+      &\iota_k(a) \coloneqq \braket{ k, a }.
     \end{aligned}
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item As discussed in \cref{rem:disjoint_unions}, outside this definition and \fullref{thm:disjoint_union_universal_property}, we work with the inclusion \( \iota_k(x) \) rather than with the concrete representation. We define \( \iota_k(a) \) as \( (k, a) \) because of our similar definition of indexed families in \cref{def:indexed_family}, however in general there is no compelling reason to prefer \( (k, a) \) to, say, \( (a, k) \), like \cite[19]{Хелемский2014ФункциональныйАнализ} and \cite[198]{Knapp2016BasicAlgebra} do.
+  \item As discussed in \cref{rem:disjoint_unions}, outside this definition and \fullref{thm:disjoint_union_universal_property}, we work with the inclusion \( \iota_k(x) \) rather than with the concrete representation. We define \( \iota_k(a) \) as \( \braket{ k, a } \) because of our similar definition of indexed families in \cref{def:indexed_family}, however in general there is no compelling reason to prefer \( \braket{ k, a } \) to, say, \( \braket{ a, k } \), like \cite[19]{Хелемский2014ФункциональныйАнализ} and \cite[198]{Knapp2016BasicAlgebra} do.
+
+  \item In \hyperref[def:zfc]{\logic{ZFC}}, the correctness of this definition is shown in \Cref{thm:zfc_existence_theorems/disjoint_union}.
 \end{comments}
 
 \begin{proposition}\label{thm:disjoint_product_inclusions_injective}
@@ -1362,4 +1365,44 @@
   \end{equation*}
 
   We have defined \( T_n(k) \) as \( k \oplus n \), so the above follows directly from \cref{thm:omega_recursion/step} because \( \odot_n(Sm) = T_n(\odot_n(m)) = \odot_n(m) \oplus n \).
+\end{proof}
+
+\begin{proposition}\label{thm:omega_natural_numbers_order}
+  Consider the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) as a model of \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+
+  Then the strict ordering defined in \cref{def:peano_arithmetic_ordering} coincides set membership \hyperref[def:relation/restriction]{restricted} to \( \omega \).
+\end{proposition}
+\begin{proof}
+  We must show show that \( n < m \) if and only if \( n \in m \).
+
+  \SufficiencySubProof First, suppose that \( n < m \), which, using the definition \eqref{eq:def:peano_arithmetic_ordering/strict}, can be expanded to
+  \begin{equation}\label{eq:thm:omega_natural_numbers_order/proof/order_definition}
+    \qexists* {k \in \omega} (n + S(k) = m).
+  \end{equation}
+
+  We will use \cref{thm:omega_induction} on \( k \), simultaneously on all \( n \), to show that \( n \) belongs to \( n + S(k) \)
+  \begin{itemize}
+    \item If \( k = 0 \), then \( n + S(0) = S(n) \) by \eqref{eq:def:peano_arithmetic/theory/PA5}, to which \( n \) belongs by definition.
+
+    \item Suppose that \( n \) belongs to \( n + S(k) \). Again by \eqref{eq:def:peano_arithmetic/theory/PA5}, we have
+    \begin{equation*}
+      n + S^2(k) = S(n + S(k)).
+    \end{equation*}
+
+    This is a superset of \( n + S(k) \), so \( n \) belongs to \( n + S^2(k) \).
+  \end{itemize}
+
+  \NecessitySubProof Now suppose that \( n \) is a member of \( m \). We can use \cref{thm:omega_induction} on \( m \), simultaneously on all \( n \), to show that there exists a \( k \) such that \( m = n + S(k) \).
+
+  \begin{itemize}
+    \item The base case \( m = 0 \) is vacuous.
+    \item Suppose that the inductive hypothesis holds for \( m \), and let \( n \) be a member of \( S(m) \).
+
+    If \( n \) belongs to \( m \), the inductive hypothesis gives us some \( k \) such that \( m = n + S(k) \) and hence, by \eqref{eq:def:peano_arithmetic/theory/PA5},
+    \begin{equation*}
+      S(m) = S(n + S(k)) = n + S^2(k).
+    \end{equation*}
+
+    Otherwise, \( n = m \), which contradicts \cref{thm:members_of_omega_do_not_contain_themselves}.
+  \end{itemize}
 \end{proof}

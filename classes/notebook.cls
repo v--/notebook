@@ -59,6 +59,7 @@
     block=ragged,
     style=alphabetic,
     citestyle=alphabetic,
+    useprefix=true,
     datamodel=classes/bibmodel
   ]
   {biblatex}

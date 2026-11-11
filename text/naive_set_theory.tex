@@ -19,6 +19,8 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 \begin{proposition}\label{thm:set_difference}
   \hyperref[def:set_difference]{Set difference} has the following basic properties:
   \begin{thmenum}
+    \thmitem{thm:set_difference/subset} We have \( A \subseteq B \) if and only if \( B \setminus A = \varnothing \).
+
     \thmitem{thm:set_difference/superset} If \( A \) and \( B \) are subsets of \( C \), then \( A \setminus B = A \cap (C \setminus B) \).
 
     \thmitem{thm:set_difference/intersection} For any two sets \( A \) and \( B \), we have \( A \setminus B = A \setminus (A \cap B) \).
@@ -29,6 +31,12 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
   \end{thmenum}
 \end{proposition}
 \begin{proof}
+  \SubProofOf{thm:set_difference/subset} We have
+  \begin{equation*}
+    B \setminus A = \set{ x \in B \given x \not\in A } = \varnothing
+  \end{equation*}
+  if and only if \( x \in B \) being a contradiction implies that \( x \not\in A \). \Cref{thm:propositional_semantic_mt} allows restating this --- \( B \setminus A = \varnothing \) if and only if \( x \in B \) implies \( x \in A \).
+
   \SubProofOf{thm:set_difference/superset} Since \( a \in A \) implies \( a \in C \), we have
   \begin{align*}
     A \setminus B
@@ -206,7 +214,7 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 \paragraph{Inductive sets}
 
 \begin{definition}\label{def:ordinal_successor}\mcite[132]{КолмогоровДрагалин2006ЛогикаВведение}
-  We introduce a unary \term[ru=операция следования, en=successor (\cite[43]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы})]{successor} operation \( S \) on sets that generalizes successors in Peano arithmetic (see \cref{def:peano_arithmetic/signature/succ}).
+  We introduce a unary \term[ru=операция следования, en=ordinal successor (\cite[17]{Kunen2013SetTheory})]{successor} operation \( S \) on sets that generalizes successors in Peano arithmetic (see \cref{def:peano_arithmetic/signature/succ}).
 
   In accordance with \cref{def:set_theory_definition}, we introduce a \hyperref[def:fol_signature/notation]{condensed} unary function symbol \( {\synS} \) using set-builder notation:
   \begin{equation*}
@@ -216,6 +224,56 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 \begin{comments}
   \item We also call \( Sa \) the \term{ordinal successor} of \( a \) since it is an important concept in the \hyperref[sec:ordinals]{theory of ordinals}. See \cref{rem:def:ordinal_successor} for an example of how it naturally arises. It should be distinguished from successor cardinals defined in \cref{def:successor_and_limit_cardinal}.
 \end{comments}
+
+\begin{proposition}\label{thm:successor_of_power_set}
+  The \hyperref[def:power_set]{power set} of a \hyperref[def:power_set]{transitive set} is also transitive.
+\end{proposition}
+\begin{comments}
+  \item This fails to generalize to \hyperref[def:hereditarily_transitive_set]{hereditarily transitive sets}, as discussed in \cref{ex:set_encoding_of_natural_numbers}.
+\end{comments}
+\begin{proof}
+  Suppose that \( A \) is transitive, and fix some member \( x \) of \( \pow(A) \). Let \( y \) be a member of \( x \).
+
+  Since \( x \) is a subset of \( A \), \( y \) is a member of \( A \). Since \( A \) is transitive, \( y \) is also a subset of \( A \), and hence it belong to \( \pow(A) \).
+
+  It follows that \( \pow(A) \) is a transitive set.
+\end{proof}
+
+\begin{definition}\label{def:transitive_set}\mcite[def. 6.1.3(i)]{Hinman2005Logic}
+  We say that a set \( A \) is \term[ru=транзитивное (множество) (\cite[86]{ШеньВерещагин2020НачалаТеорииМножеств})]{transitive} if the members of \( A \) are also subsets of \( A \).
+
+  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
+  \begin{equation*}
+    \synpred{transitive}(\syna) \coloneqq \qforall \synx (\synx \synin \syna \synimplies \synx \synsubseteq \syna).
+  \end{equation*}
+
+  We have used the subset predicate symbol \( {\synsubseteq} \) from \cref{def:subset}.
+\end{definition}
+\begin{comments}
+  \item We use transitive sets to define ordinals in \fullref{ch:ordinals} (based on \hyperref[def:hereditarily_transitive_set]{hereditarily transitive sets}) and Grothendieck universes in \fullref{def:grothendieck_universes}. We have also already mentioned transitive sets when defining transitive models of set theory in \cref{def:set_theory_model/transitive}.
+
+  \item As shown in \cref{thm:def:hereditarily_transitive_set/relation}, assuming the \hyperref[def:zfc/foundation]{axiom of foundation}, in a \hyperref[def:hereditarily_transitive_set]{hereditarily transitive set}, membership is a transitive relation.
+
+  \item \Textcite[132]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы} call transitive sets \enquote{\textru{прогрессивные множества}} (\enquote{progressive sets}).
+
+  \item We give some important examples related to transitive sets in \cref{ex:set_encoding_of_natural_numbers}.
+\end{comments}
+
+\begin{proposition}\label{thm:successor_of_transitive_set}
+  The \hyperref[def:ordinal_successor]{successor} of a \hyperref[def:transitive_set]{transitive set} is also transitive.
+\end{proposition}
+\begin{comments}
+  \item \Cref{thm:def:hereditarily_transitive_set/successor} strengthens this to \hyperref[def:hereditarily_transitive_set]{hereditarily transitive sets}.
+\end{comments}
+\begin{proof}
+  Suppose that \( A \) is transitive, and fix some member \( x \) of \( S(A) = A \cup \set{ A } \). We have two possibilities:
+  \begin{itemize}
+    \item If \( x \) belongs to \( A \), since \( A \) is transitive, \( x \) is a subset of \( A \), and hence of \( S(A) \).
+    \item If \( x \) equals \( A \), then \( x \) is trivially a subset of \( S(A) \).
+  \end{itemize}
+
+  It follows that \( S(A) \) is a transitive set.
+\end{proof}
 
 \begin{definition}\label{def:inductive_set}\mcite[def. I.5.1]{Kunen2013SetTheory}
   We call a set \term[ru=индуктивное (множество) (\cite[184]{Герасимов2014Вычислимость})]{inductive} if contains the \hyperref[def:empty_set]{empty set} and is closed under the \hyperref[def:ordinal_successor]{successor operator}.
@@ -227,6 +285,18 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 
   We have used the empty set constant symbol from \cref{def:empty_set} and the ordinal successor function symbol from \cref{def:ordinal_successor}.
 \end{definition}
+
+\begin{concept}\label{con:transfinitum}
+  \textcite[73]{Кантор1985Многообразия} attacks the maxima \enquote{\textla{infinitum actu non datur}} (Latin for \enquote{infinity does not actually exist}), which he himself traces back to Aristotle. With a subtle difference, from the original Greek, Aristotle's phrase has translated in \cite[3385]{Aristotle1984Metaphysics} as \enquote{nothing infinite can exist}. Cantor claims that Aristotle only acknowledged the existence of finite numbers because it was not known at his time how to operate on infinite sets.
+
+  Aristotle's distinction between \term[en=actual infinity (\cite[196]{Kleene2002Logic})]{actual} and \term[ru=потенциальная бесконечность, en=potential infinite (\cite[196]{Kleene2002Logic})]{potential infinity} could be reworded as the existence of sets which are not finite. We could, for example, starting with zero, generate new \hyperref[def:natural_numbers]{natural numbers} on demand --- if desired --- potentially forever. But no set of natural numbers could exist as it would be an instance of actual infinity. The latter was rejected as essentially undefinable.
+
+  Cantor suggested, based on the idea of \hyperref[def:dedekind_cut]{Dedekind cuts}, to introduce \enquote{number classes}, which would be sets of natural numbers and smaller number classes. These number classes are now known more concretely as \hyperref[def:ordinal]{ordinals}. Thus, Cantor did not aim to formalize actual infinity, but to introduce sets strictly between those that are finite and those that would be actually infinite.
+
+  He called this concept \term{transfinitum}\fnote{Cantor also suggested the term \enquote{suprafinitum} as an alternative, however it has not attracted attention.}. For the first number class, he introduced the symbol \( \omega \) to distinguish is from the \hyperref[rem:lemniscate_symbol]{lemniscate} used to denote actual infinity.
+
+  Today, the symbol \( \omega \) is widely used to denote the \hyperref[def:smallest_inductive_set]{smallest inductive set}, while prefix \enquote{transfinite} is used in relation to \fullref{thm:transfinite_induction} and \fullref{thm:bounded_transfinite_recursion}.
+\end{concept}
 
 \begin{definition}\label{def:smallest_inductive_set}\mcite[69]{Enderton1977SetTheory}
   We can single out an \hyperref[def:inductive_set]{inductive set} contained in all others. We call it the \term[en=smallest inductive set (\cite[13]{Jech2006SetTheory})]{smallest inductive set} and denote it by \( \omega \) --- Cantor's original notation, which, as explained in \cref{con:transfinitum}, has been chosen because it resembles the lower half of \( \infty \).
@@ -308,27 +378,13 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
   The theorem itself is a mere restatement.
 \end{proof}
 
-\begin{definition}\label{def:transitive_set}\mcite[def. 6.1.3(i)]{Hinman2005Logic}
-  We say that a set \( A \) is \term[ru=транзитивное (множество) (\cite[86]{ШеньВерещагин2020НачалаТеорииМножеств})]{transitive} if the members of \( A \) are also subsets of \( A \). As shown in \cref{thm:transitive_set_membership_is_transitive}, assuming the \hyperref[def:zfc/foundation]{axiom of foundation}, in a transitive set, membership is a transitive relation.
-
-  Formally, in accordance with \cref{def:set_theory_definition/predicate}, we can introduce a unary \hyperref[def:fol_signature/predicate]{predicate symbol}:
-  \begin{equation*}
-    \synpred{transitive}(a) \coloneqq \qforall x (x \synin a \synimplies x \synsubseteq a).
-  \end{equation*}
-
-  We have used the subset predicate symbol \( {\synsubseteq} \) from \cref{def:subset}.
-\end{definition}
-\begin{comments}
-  \item We use transitive sets to define ordinals in \cref{def:ordinal} and Grothendieck universes in \cref{def:grothendieck_universe}. We have also already mentioned transitive sets when defining transitive models of set theory in \cref{def:set_theory_model/transitive}.
-
-  \item \Textcite[132]{КолмогоровДрагалин2006ЛогикаДополнительныеГлавы} call transitive sets \enquote{\textru{прогрессивные множества}} (\enquote{progressive sets}).
-\end{comments}
-
-\begin{proposition}\label{thm:omega_is_transitive}
+\begin{proposition}\label{thm:omega_is_hereditarily_transitive}
   The \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) is transitive and every member of \( \omega \) is transitive.
 \end{proposition}
 \begin{comments}
   \item This proof demonstrates how \fullref{thm:omega_induction} can be used in practice.
+
+  \item The proposition can be restated by saying that is a \( \omega \) \hyperref[def:hereditarily_transitive_set]{hereditarily transitive set}, i.e., assuming the \hyperref[def:zfc/foundation]{axiom of foundation}, an \hyperref[def:ordinal]{ordinal}.
 \end{comments}
 \begin{proof}
   \SubProof{Proof that all members of \( \omega \) are transitive} We will use \fullref{thm:omega_induction}. For this, consider the set
@@ -340,13 +396,7 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
   \begin{itemize}
     \item Clearly \( \varnothing \) is transitive because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \). Thus, \( \varnothing \in T \).
 
-    \item Now suppose that \( n \in T \) and let \( m \in Sn \). We have two possibilities:
-    \begin{itemize}
-      \item If \( m \in n \), then \( m \subseteq n \) since \( n \) is transitive, and hence \( m \subseteq n \subseteq Sn \).
-      \item Otherwise, if \( m = n \), then \( m = n \subseteq Sn \).
-    \end{itemize}
-
-    Thus, \( Sn \) is also transitive.
+    \item If \( n \in T \), \cref{thm:successor_of_transitive_set} implies that \( Sn \) is also transitive, i.e. \( Sn \in T \).
   \end{itemize}
 
   We have shown that \( T \) is inductive. Therefore, \( T = \omega \), i.e. every member of \( \omega \) is transitive.
@@ -387,7 +437,7 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 
     \item If \( n \not\in n \) and \( Sn \in Sn \), we have two possibilities:
     \begin{itemize}
-      \item If \( Sn \in n \), then \( Sn \subseteq n \) since, by \cref{thm:omega_is_transitive}, \( n \) is transitive. Hence, \( n \in n \), which easily leads to a contradiction.
+      \item If \( Sn \in n \), then \( Sn \subseteq n \) since, by \cref{thm:omega_is_hereditarily_transitive}, \( n \) is transitive. Hence, \( n \in n \), which easily leads to a contradiction.
 
       \item Otherwise, if \( Sn = n \), then \( n \in n \) since \( n \in Sn \), which again leads to a contradiction.
     \end{itemize}
@@ -414,7 +464,7 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 
   Since \( n \in Sn \), either \( n = m \) or \( n \in m \). Aiming at a contradiction, suppose that the latter holds.
 
-  Then, since \( m \in Sm \) and \( n \neq m \), we have \( m \in n \). \Cref{thm:omega_is_transitive} implies that \( n \) is transitive and hence \( n \in m \in n \) collapses to \( n \in n \), which contradicts \cref{thm:members_of_omega_do_not_contain_themselves}.
+  Then, since \( m \in Sm \) and \( n \neq m \), we have \( m \in n \). \Cref{thm:omega_is_hereditarily_transitive} implies that \( n \) is transitive and hence \( n \in m \in n \) collapses to \( n \in n \), which contradicts \cref{thm:members_of_omega_do_not_contain_themselves}.
 
   The obtained contradiction shows that \( n = m \).
 
@@ -428,14 +478,16 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 \end{proof}
 
 \begin{remark}\label{rem:set_theory_natural_numbers_without_operations}
-  Due to \cref{thm:omega_is_model_of_pa_without_operations}, we will henceforth identify the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) with the set \( \BbbN \) of \hyperref[def:natural_numbers]{natural numbers} and use the familiar \hyperref[def:positional_number_system/decimal]{decimal notation}
+  Due to \cref{thm:omega_is_model_of_pa_without_operations}, we will henceforth identify the \hyperref[def:smallest_inductive_set]{smallest inductive set} with the set of \hyperref[def:natural_numbers]{natural numbers} and use the familiar \hyperref[def:positional_number_system/decimal]{decimal notation}
   \begin{align*}
-    0 &\coloneqq \synnothing,                   \\
-    1 &\coloneqq \synS \synnothing,             \\
-    2 &\coloneqq \synS \synS \synnothing,       \\
-    3 &\coloneqq \synS \synS \synS \synnothing, \\
-      &\vdots
+    \syn0 &\coloneqq \synnothing,                   \\
+    \syn1 &\coloneqq \synS \synnothing,             \\
+    \syn2 &\coloneqq \synS \synS \synnothing,       \\
+    \syn3 &\coloneqq \synS \synS \synS \synnothing, \\
+          &\vdots
   \end{align*}
+
+  Formally, we can introduce these as \hyperref[def:fol_signature/function]{constant symbols} in accordance with \cref{thm:fol_definitional_extension_equation}, or as \hyperref[con:syntactic_abbreviation]{metalingual abbreviations}.
 
   We are not yet able to formalize addition and multiplication natural numbers, nor rely on their well-foundedness. Furthermore, since the ordering in \cref{def:peano_arithmetic_ordering} is defined via addition, we must use some other ordering.
 
@@ -443,3 +495,23 @@ We continue the developments from \fullref{sec:formal_set_theory}, but in a more
 
   For now, natural numbers will be useful, for example, in \cref{def:sequence}.
 \end{remark}
+
+\begin{example}\label{ex:set_encoding_of_natural_numbers}
+  Natural numbers encoded in accordance with \cref{rem:set_theory_natural_numbers_without_operations} in \hyperref[def:axiomatic_set_theory]{axiomatic set theory} provide some examples for the concepts we will discuss in \fullref{sec:ordinals} and \fullref{sec:von_neumanns_cumulative_hierarchy}.
+
+  First, let us inspect the first few iterations of the \hyperref[def:power_set]{power set operation} applied to the \hyperref[def:empty_set]{empty set}:
+  \begin{align*}
+    \pow^0(\varnothing) &= \varnothing = 0, \\
+    \pow^1(\varnothing) &= \set{ \varnothing } = 1, \\
+    \pow^2(\varnothing) &= \set{ \varnothing, \set{ \varnothing } } = 2, \\
+    \pow^3(\varnothing) &= \set[\big]{ \varnothing, \set{ \varnothing }, \set{ \set{ \varnothing } }, \set{ \varnothing, \set{ \varnothing } } } = 3 \cup \set[\big] { \set{ \set{ \varnothing } } }.
+  \end{align*}
+
+  The first three stages coincide with the natural numbers, but the fourth is a strict superset of \( 3 = S(S(0)) \). Later stages become much more complicated --- \fullref{thm:cardinality_exponentiation_rule} implies that \( \pow^n(\varnothing) \) contains \( 2^n \) sets. These form the finite fragment of the \hyperref[def:cumulative_hierarchy]{cumulative hierarchy}, and their union is the universe \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)} of hereditarily finite sets.
+
+  On the other hand, \cref{thm:ordinal_is_set_of_smaller_ordinals} implies that, encoded as a set, the natural number \( n \) has only \( n \) members, and their union forms the much more humble \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \).
+
+  \Cref{thm:omega_is_hereditarily_transitive} shows that the natural numbers are \hyperref[def:transitive_set]{transitive sets}, and even \hyperref[def:hereditarily_transitive_set]{hereditarily transitive}, meaning that their members are not transitive. In fact, \cref{thm:def:hereditarily_transitive_set/successor} shows that \hyperref[def:ordinal_successor]{ordinal successor operation} preserves this property.
+
+  Contrarily, \cref{thm:successor_of_power_set} shows that the stages \( \pow^n(\varnothing) \) above are transitive, yet \( \pow^3(\varnothing) \) and later stages are not hereditarily transitive since they contain non-transitive members like \( \set{ \set{ \varnothing } } \).
+\end{example}
