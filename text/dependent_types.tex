@@ -266,6 +266,38 @@ This section is a detour; our purpose is to present some ideas without diving in
   \item For disambiguation, we will refer to this definition as the \enquote{dependent unit type}.
 \end{comments}
 
+\begin{remark}\label{rem:dependent_unit_type_induction}
+  Via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, \hyperref[con:dependent_type]{dependent types} can generalize \fullref{thm:induction_on_natural_numbers}, \fullref{thm:transfinite_induction} and inductive principles listed in \cref{con:induction}.
+
+  A simple (degenerate) example is given in \cite[29]{UnivalentFoundationsProgram2013HoTT} for the \hyperref[def:dependent_unit_type]{dependent unit type} \( \syn1 \):
+  \begin{equation*}
+    \synprod {f^{\syn1 \synimplies \BbbU}} (f \synU^+ \synimplies \synprod {x^{\syn1}} fx).
+  \end{equation*}
+
+  Informally, the principle can be restated as follows:
+  \begin{displayquote}
+    In order for \( f(x) \) to hold \emph{for every} value \( x \) of \( \syn1 \), it is sufficient for \( f(\synU^+) \) to hold.
+  \end{displayquote}
+
+  It is however more general because it allows \( f(x) \) to inhabit any type, not necessarily a \hyperref[def:mere_proposition]{mere proposition}. Furthermore, type theory emphasizes \hyperref[con:proof_relevance]{proof relevance}, so the principle may have multiple inhabitants. The authors call inhabitants of such functions \enquote{inductions}.
+
+  The following is a derivation of such an induction:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ f: \syn1 \synimplies \BbbU }
+      \infer0[\ref{inf:def:dependent_unit_type/intro}]{ \synU_+: \syn\Bbbone }
+      \infer2[\ref{inf:def:dependent_product/elim}]{ f \synU_+: \BbbU }
+
+      \hypo{ a: f \synU_+ }
+      \hypo{ x: \syn1 }
+      \infer3[\ref{inf:def:dependent_unit_type/elim}]{ \synanon: fx }
+      \infer[left label={\( x \)}]1[\ref{inf:def:dependent_product/intro}]{ \synanon: \synprod {x^{\syn1}} fx }
+      \infer[left label={\( a \)}]1[\ref{inf:def:dependent_product/intro}]{ \synanon: f \synU_+ \synimplies \synprod {x^{\syn1}} fx }
+      \infer[left label={\( f \)}]1[\ref{inf:def:dependent_product/intro}]{ \synanon: \synprod {f^{\syn1 \synimplies \BbbU}} (f \synU_+ \synimplies \synprod {x^{\syn1}} fx) }
+    \end{prooftree}
+  \end{equation*}
+\end{remark}
+
 \begin{definition}\label{def:type_of_booleans}\mcite[\S 8.3.6]{Mimram2020ProgramEqualsProof}
   Similarly to the dependent empty type \( \syn\Bbbzero \) defined in \cref{def:dependent_empty_type} and the dependent unit type \( \syn\Bbbone \) defined in \cref{def:dependent_unit_type}, we will introduce a type, denoted by \( \syn\Bbbtwo \), with two inhabitants. Such a type can be used to express Boolean values in the sense of \cref{def:truth_value_algebra}, and we will call it the \term{type of Booleans}\fnote{Not to be confused with the type of propositions from \cref{def:quantifiable_type}}.
 
@@ -339,7 +371,7 @@ This section is a detour; our purpose is to present some ideas without diving in
     \end{prooftree}
   \end{equation*}
 
-  Finally, we have the following \hyperref[rem:type_theory_rule_classification/equality/comp]{uniqueness rule}:
+  Finally, we have the following \hyperref[rem:type_theory_rule_classification/equality/uniq]{uniqueness rule}:
   \begin{equation*}\taglabel[\ensuremath{ \Bbbtwo_\eta }]{inf:def:type_of_booleans/uniq}
     \begin{prooftree}
       \hypo{ A: \syn\Bbbtwo }
