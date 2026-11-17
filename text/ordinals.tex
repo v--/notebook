@@ -233,7 +233,7 @@
 
     \thmitem{thm:def:ordinal/transitive_set} A \hyperref[def:transitive_set]{transitive set} is an ordinal if and only if its members are ordinals.
 
-    \thmitem{thm:def:ordinal/closure} The \hyperref[def:set_transitive_closure]{transitive closure} of a collection of ordinals is itself an ordinal.
+    \thmitem{thm:def:ordinal/closure} The \hyperref[def:set_transitive_closure]{transitive closure} of a set of ordinals is itself an ordinal.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -639,7 +639,7 @@
     \end{thmenum}
   \end{displayquote}
 
-  The proofs are often distinct in these three cases, so this splitting becomes useful. See \cref{thm:ordinal_bijection_and_choice} and \cref{def:cumulative_hierarchy} for concrete examples.
+  The proofs are often distinct in these three cases, so this splitting becomes useful. We present many examples in \fullref{sec:transfinite_arithmetic} and \fullref{sec:cumulative_hierarchy}.
 \end{remark}
 \begin{comments}
   \item This is akin to the relation between \fullref{thm:induction_on_natural_numbers} and \fullref{thm:strong_induction_on_natural_numbers}. Of course, as explained in \cref{thm:induction_on_natural_numbers}, we may need multiple base cases.
@@ -753,136 +753,169 @@
 
 \paragraph{Order types}
 
-\begin{proposition}\label{thm:ordinal_isomorphism}
-  Two ordinals are equal if and only if they are order-isomorphic.
-\end{proposition}
+\begin{lemma}\label{thm:ordinal_isomorphism}
+  Two \hyperref[def:ordinal]{ordinals} are equal if and only if they are \hyperref[def:partially_ordered_set/morphism]{order-isomorphic}.
+\end{lemma}
 \begin{proof}
   \SufficiencySubProof Trivial.
 
-  \NecessitySubProof Let \( \alpha \) and \( \beta \) be two ordinals. The case \( \alpha = \beta \) is clear. Without loss of generality, suppose that \( \beta < \alpha \). \Cref{thm:ordinal_subset_inclusion} implies that \( \beta \subsetneq \alpha \).
+  \NecessitySubProof Let \( f: \alpha \to \beta \) be an order isomorphism between ordinals. By \cref{thm:ordinal_trichotomy}, we have three possibilities:
+  \begin{itemize}
+    \item If \( \beta \in \alpha \), \cref{thm:ordinal_subset_inclusion} implies that \( \beta \subsetneq \alpha \). Let \( \gamma_0 \) be the smallest value in \( \alpha \setminus \beta \).
 
-  Let \( f: \alpha \to \beta \) be an order isomorphism. Let \( \gamma_0 \) be the smallest value in \( \alpha \setminus \beta \).
+    From \cref{thm:def:well_ordered_set/embedding_extensional} it follows that \( \gamma_0 \leq f(\gamma_0) \). But \( f(\gamma_0) \in \beta \), hence \( \gamma_0 < \beta \), contradicting our choice of \( \gamma_0 \).
 
-  From \cref{thm:def:well_ordered_set/embedding_extensional} it follows that \( \gamma_0 \leq f(\gamma_0) \). But \( f(\gamma_0) \in \beta \), hence \( \gamma_0 < \beta \). But this contradicts our choice of \( \gamma_0 \) as a member of \( \alpha \setminus \beta \).
+    \item If \( \beta \in \alpha \), we proceed similarly with \( f^{-1} \).
 
-  Therefore, \( \gamma_0 \in \beta \). Since \( \gamma_0 \) was arbitrary, we conclude that \( \beta < \alpha \) leads to a contradiction.
-
-  We can obtain an analogous contradiction for \( \alpha < \beta \), hence it only remains possible for \( \alpha \) and \( \beta \) to be equal.
+    \item It remains for \( \alpha \) and \( \beta \) to be equal.
+  \end{itemize}
 \end{proof}
 
-\begin{lemma}[Hartogs' lemma]\label{thm:hartogs_lemma}
-  For every set \( A \) there exists a smallest ordinal \( \alpha \) such that no function from \( \alpha \) to \( A \) is injective.
+\begin{lemma}\label{thm:order_type_existence_lemma}
+  Suppose that, for every \hyperref[def:order_interval/unbounded]{initial segment} \( P_{<x} \) of a \hyperref[def:well_ordered_set]{well-ordered set} \( (P, <) \), there exists an \hyperref[def:partially_ordered_set/morphism]{order isomorphism} \( \varphi_x: P_{<x} \to \beta_x \) into an ordinal \( \beta_x \).
+
+  Then
+  \begin{equation*}
+    \alpha \coloneqq \bigcup \set{ \beta_x \given x \in P }
+  \end{equation*}
+  is an ordinal isomorphic to \( P \) itself. More precisely:
+
+  \begin{thmenum}
+    \thmitem{thm:order_type_existence_lemma/ordinal} The set \( \alpha \) is well-defined, and is an ordinal.
+
+    \thmitem{thm:order_type_existence_lemma/recurrence} If \( x < y \), then \( \varphi_y(x) = \beta_x \).
+
+    \thmitem{thm:order_type_existence_lemma/isomorphism} The map
+    \begin{equation*}
+      \begin{aligned}
+        &\Phi: P \to \alpha, \\
+        &\Phi(x) \coloneqq \beta_x
+      \end{aligned}
+    \end{equation*}
+    is an order isomorphism.
+  \end{thmenum}
 \end{lemma}
 \begin{proof}
-  Define the set
+  \SubProofOf{thm:order_type_existence_lemma/ordinal} \Cref{thm:ordinal_isomorphism} implies that \( \beta_x \) is uniquely determined by \( P_{<x} \), so the set \( \set{ \beta_x \given x \in P } \) is a well-defined by the \hyperref[def:zfc/replacement]{axiom (schema) of replacement}, and its union \( \alpha \) is an ordinal by \cref{thm:def:ordinal_ordering/extrema}.
+
+  \SubProofOf{thm:order_type_existence_lemma/recurrence} \Cref{thm:def:well_ordered_set/unique_isomorphism} implies that \( \varphi_x \) is uniquely determined. Furthermore, if \( x < y \), then the restriction of \( \varphi_y \) to \( P_{<x} \) is an isomorphism, so it coincides with \( \varphi_x \).
+
+  Fix some members \( x < y \) of \( P \). Note that \( \varphi_y(x) \) belongs to \( \beta_y \) and is thus an ordinal. Then, \cref{thm:ordinal_trichotomy}, they are comparable, which gives us three options:
+  \begin{itemize}
+    \item If \( \varphi_y(x) \in \beta_x \), then
+    \begin{equation*}
+      \underbrace{\varphi_y^{-1}(\varphi_y(x))}_x \in P_{<x},
+    \end{equation*}
+    which contradicts irreflexivity of \( {<} \).
+
+    \item If \( \beta_x \in \varphi_y(x) \), then
+    \begin{equation*}
+      \varphi_y^{-1}(\beta_x) < \underbrace{\varphi_y^{-1}(\varphi_y(x))}_x,
+    \end{equation*}
+    so \( \varphi_y^{-1}(\beta_x) \) belongs to \( P_{<x} \) and thus
+    \begin{equation*}
+      \underbrace{\varphi_x(\varphi_y^{-1}(\beta_x))}_{\beta_x} \in \beta_x,
+    \end{equation*}
+    which contradicts irreflexivity of \( {\in} \).
+
+    \item It remains for \( \varphi_y(x) = \beta_y \) to hold.
+  \end{itemize}
+
+  \SubProofOf{thm:order_type_existence_lemma/isomorphism} To show that \( \Phi \) is an isomorphism, we need to prove that
   \begin{equation*}
-    W \coloneqq \set{ (P, \leq) \given P \subseteq A \T*{and} \leq \T*{well-orders} P }.
+    x < y \T{if and only if} \beta_x \in \beta_y.
   \end{equation*}
 
-  Let \( \beta \) be an ordinal for which there exists an injective function \( f: \beta \to A \). At least one such pair of a ordinal and function exists because \( \varnothing: 0 \to A \) is an injective function.
+  In one direction, if \( x < y \), then
+  \begin{equation*}
+    \beta_x
+    \reloset {\ref{thm:order_type_existence_lemma/recurrence}} =
+    \varphi_y(x)
+    \in
+    \beta_y,
+  \end{equation*}
 
-  The image of \( f \) can be well-ordered by
+  Conversely, if \( \beta_x \in \beta_y \), for \( x \) and \( y \) we have three options:
+  \begin{itemize}
+    \item If \( y < x \), then
+    \begin{equation*}
+      \beta_y
+      \reloset {\ref{thm:order_type_existence_lemma/recurrence}} =
+      \varphi_x(y)
+      \in
+      \beta_x,
+    \end{equation*}
+    which contradicts irreflexivity of \( {\in} \).
+
+    \item If \( y = x \), then \( \varphi_y \bincirc \varphi_x^{-1}: \beta_x \to \beta_y \) is an isomorphism between ordinals, and \cref{thm:ordinal_isomorphism} implies that \( \beta_x = \beta_y \). This contradicts our assumption \( \beta_x \in \beta_y \).
+
+    \item It remains for \( x < y \) to hold.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:order_type_existence}\mcite[thm. 2.12]{Jech2006SetTheory}
+  Every \hyperref[def:well_ordered_set]{well-ordered set} is \hyperref[def:partially_ordered_set/morphism]{order-isomorphic} to a unique \hyperref[def:ordinal]{ordinal}.
+\end{proposition}
+\begin{proof}
+  \ExistenceSubProof Fix a well-ordered set \( (P, <) \). With the aim to utilize \cref{thm:order_type_existence_lemma}, we will use \fullref{thm:well_founded_induction} on \( x \) to prove that every initial segment \( P_{<x} \) is order-isomorphic to an ordinal. In fact, for the inductive step, we can apply the same lemma to \( P_{<x} \).
+in
+  \UniquenessSubProof Suppose that \( (P, <) \) is isomorphic to both \( \alpha \) and \( \beta \). Then \( \alpha \) and \( \beta \) are isomorphic ordinals, and \cref{thm:ordinal_isomorphism} implies that they are equal.
+\end{proof}
+
+\begin{definition}\label{def:well_ordered_order_type}\mimprovised
+  By \cref{thm:order_type_existence}, every \hyperref[def:well_ordered_set]{well-ordered set} \( (P, \leq) \) is \hyperref[def:partially_ordered_set/morphism]{order-isomorphic} to a unique \hyperref[def:ordinal]{ordinal}. We denote this ordinal by \( \ord(P, \leq) \) and call it the \term[en=order type (\cite[5]{Engelking1989GeneralTopology})]{order type} of \( (P, \leq) \).
+\end{definition}
+\begin{comments}
+  \item Some authors like \textcite[def. 9.5]{Harzheim2005OrderedSets} use the term \enquote{order type} more generally for the \hyperref[con:set_theory_class]{class} of all \hyperref[def:partially_ordered_set]{partially ordered sets} isomorphic to a given one. Well-ordered sets have a canonical representative, which allows for this simpler definition.
+
+  Some authors like \textcite[thm. 2.12]{Jech2006SetTheory} prove \cref{thm:order_type_existence} without introducing related terminology, while others like \textcite[5]{Engelking1989GeneralTopology} introduce the terminology without delving into existence and uniqueness proofs.
+\end{comments}
+
+\begin{lemma}[Hartogs' lemma]\label{thm:hartogs_lemma}\mcite[thm. I.11.1]{Kunen2013SetTheory}
+  For a fixed set \( A \), let
+  \begin{equation*}
+    \alpha = \set{ \beta \given \text{there exists an injective function from the ordinal } \beta \T{into} A }.
+  \end{equation*}
+
+  Then \( \alpha \) is the smallest ordinal from which no function into \( A \) is injective. More precisely:
+  \begin{thmenum}
+    \thmitem{thm:hartogs_lemma/well_defined} \( \alpha \) is a well-defined set.
+    \thmitem{thm:hartogs_lemma/ordinal} \( \alpha \) is an ordinal.
+    \thmitem{thm:hartogs_lemma/injective} No function from \( \alpha \) to \( A \) is injective.
+    \thmitem{thm:hartogs_lemma/minimal} For every smaller ordinal, there exists an injective function into \( A \).
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  \SubProofOf{thm:hartogs_lemma/well_defined} Consider the set
+  \begin{equation*}
+    W \coloneqq \set{ (P, <) \given P \subseteq A \T*{and} < \T*{strictly well-orders} P }.
+  \end{equation*}
+
+  It is well-defined as a subset of \( \pow(A) \times \pow(A \times A) \). The \hyperref[def:well_ordered_order_type]{order types} of the members of \( W \) can then be used to define \( \alpha \) as
+  \begin{equation*}
+    \alpha = \set{ \ord(P, <) \given (P, <) \in W }.
+  \end{equation*}
+
+  Indeed, for every member \( (P, <) \) of \( W \), the order type \( \ord(P, <) \) is an ordinal whose order isomorphism can be regarded as an injective function into \( A \). Conversely, if \( f: \beta \to A \) is an injective function from an ordinal \( \beta \), then the image \( f[\beta] \) can be well-ordered by
   \begin{equation*}
     f(\delta) < f(\gamma) \T{if and only if} \delta \in \gamma,
   \end{equation*}
-  where \( \delta \) and \( \gamma \) are members of \( \beta \). Thus, if we restrict the codomain of \( f \) to its image, it would be an explicit order isomorphism of \( (\beta, \in) \) and \( (\img f, <) \).
+  so \( (f[\beta], <) \) belongs to \( W \).
 
-  We have shown that every ordinal \( \beta \) and every injective function \( f: \beta \to A \) induces a well-ordered set which belongs to \( W \). Furthermore, if \( f_1: \beta_1 \to A \) and \( f_2: \beta_2 \to A \) are two such injective functions and if the induced well-ordered sets \( (\img f_1, \leq_1) \) and \( (\img f_2, \leq_2) \) are order-isomorphic, then \( \beta_1 \) and \( \beta_2 \) are themselves order-isomorphic and thus \( \beta_1 = \beta_2 \) by \cref{thm:ordinal_isomorphism}.
+  Therefore, by the \hyperref[def:zfc/replacement]{axiom (schema) of replacement}, \( \alpha \) is a well-defined set.
 
-  Therefore, for any well-ordered set in \( W \) there exists at most one ordinal that induces it via some function. Let \( W' \) be the subset of all well-ordered sets in \( W \) induced by exactly one ordinal.
+  \SubProofOf{thm:hartogs_lemma/ordinal} Note that \( \alpha \) is a transitive set. Indeed, if \( \beta \in \alpha \), there is an injective function \( f: \beta \to A \), which can be restricted to any subset of \( \beta \). But, by \cref{thm:ordinal_subset_inclusion}, every member \( \gamma \) of \( \beta \) is a subset of \( \beta \), so \( \gamma \) itself belongs to \( \alpha \) since \( f\restr_\gamma: \gamma \to A \) is injective.
 
-  We have that \( W' \) is a set and for each member of \( W' \) there corresponds exactly one ordinal. It follows from the \hyperref[def:zfc/replacement]{axiom schema of replacement} that these ordinals form a set. Denote this set by \( B \).
+  As a transitive set of ordinals, \( \alpha \) is itself an ordinal due to \cref{thm:def:ordinal/transitive_set}.
 
-  There is no set of all ordinals by \fullref{thm:burali_forti_paradox}, hence there must exist an ordinal not in \( B \). But every ordinal that has an injective function into \( A \) belongs to \( B \). Hence, there exists some ordinal \( \alpha \) such that no function from \( \alpha \) to \( A \) is injective.
+  \SubProofOf{thm:hartogs_lemma/injective} If some function \( f: \alpha \to A \) was injective, then \( \alpha \) would belong to itself, contradicting the irreflexivity of ordinal ordering shown in \cref{thm:ordinal_ordering}.
 
-  If \( \alpha \) is not the smallest ordinal with this property, we can now easily take the smallest member of \( \alpha \) with this property.
+  \SubProofOf{thm:hartogs_lemma/minimal} Finally, if \( \beta < \alpha \) and no function \( f: \beta \to A \) is injective, this contradicts the definition of \( \alpha \). So \( \alpha \) is minimal with this property.
 \end{proof}
 
-\begin{lemma}\label{thm:ordinal_bijection_and_choice}\mcite{MathSE:order_type_existence}
-  Let \( A \) be a nonempty set and let \( c \) be a \hyperref[def:choice_function]{choice function} on \( A \). Then there exists an ordinal \( \alpha \) and a bijection between \( A \) and \( \alpha \).
-\end{lemma}
-\begin{proof}
-  We will explicitly build the desired ordinal. We will use \fullref{thm:transfinite_recursion} in its structured form presented in \cref{rem:transfinite_induction_with_limit_ordinals} to build a \hyperref[def:transfinite_sequence]{transfinite sequence} of injective maps from ordinals into \( A \).
-
-  Let \( \delta \) be the smallest ordinal such that no function from \( \delta \) to \( A \) is injective. Such an ordinal exists by \fullref{thm:hartogs_lemma}. Note that \( \delta \) cannot be zero because the empty function is always injective.
-
-  Any smaller than \( \delta \) ordinal has at least one injective function into \( A \). We will use recursion bounded by \( \delta \) to construct a \hyperref[def:transfinite_sequence]{transfinite sequence} \( \seq{ \iota_\beta }_{\beta < \delta} \) satisfying the invariant that for any \( \beta \in \delta \), the function \( \iota_\beta \) is injective and strictly contains \( \iota_\gamma \) for any \( \gamma < \beta \).
-
-  \begin{itemize}
-    \item The zero ordinal has only one possible injective function into \( A \), namely the empty function \( \varnothing: 0 \to P \).
-
-    \item Now let \( \iota_\beta: \beta \to A \) be an injective function.
-
-    If \( \iota_\beta \) is surjective, then it is the desired bijection and the rest of the construction is irrelevant.
-
-    If \( \iota_\beta \) is not surjective, define
-    \begin{equation*}
-      \begin{aligned}
-        &\iota_{S(\beta)}: S(\beta) \to P \\
-        &\iota_{S(\beta)}(\gamma) \coloneqq \begin{cases}
-          \iota_\beta(\gamma),         &\gamma < \beta \\
-          c(A \setminus \img(\iota_\beta)), &\gamma = \beta.
-        \end{cases}
-      \end{aligned}
-    \end{equation*}
-
-    This function is clearly injective.
-
-    \item Let \( \lambda \) be a limit ordinal and let \( \iota_\beta \) be an injective function for any \( \beta < \lambda \). Note that the domain of \( \iota_\beta \) is not necessarily \( \beta \) --- it may be a smaller ordinal \( \gamma \) in case \( \iota_\gamma \) is surjective (and thus the desired bijection).
-
-    In any case, we have a family \( \set{ \iota_\beta }_{\beta < \lambda} \) of functions such that \( \iota_\gamma \subseteq \iota_\beta \) if and only if \( \gamma < \beta \). We simply take their union
-    \begin{equation*}
-      \iota_\lambda \coloneqq \bigcup \set{ \iota_\beta \given \beta < \lambda }.
-    \end{equation*}
-
-    This function is injective because each of the constituent functions it injective.
-  \end{itemize}
-
-  We will now thoroughly build the order isomorphism itself.
-
-  Let \( \alpha \leq \delta \) be the (nonstrict) initial segment of \( \delta \) such that \( \iota_\beta \) is fully defined on \( \beta \) for every \( \beta \in \alpha \). More precisely, let
-  \begin{equation*}
-    \alpha \coloneqq \set{ \beta \in \delta \given \dom(\iota_\beta) = \beta }.
-  \end{equation*}
-
-  We will show that \( \alpha \) is a successor ordinal. Note that \( \alpha \) cannot be zero because \( \dom(\iota_0) = \varnothing = 0 \). Aiming at a contradiction, assume that \( \alpha \) is a limit ordinal.
-
-  Since for every \( \beta \in \alpha \) the value \( \iota_{S(\beta)}(\beta) \) is defined, we can conclude that the union
-  \begin{equation*}
-    \bigcup\set{ \iota_\beta \given \beta \in \alpha }
-  \end{equation*}
-  is an injective function from \( \alpha \) to \( A \).
-
-  If \( \alpha = \delta \), this contradicts our choice of \( \delta \). If \( \alpha \in \delta \), this means that the function \( \iota_\alpha \) is equal to \( \iota_\gamma \) for some \( \gamma < \alpha \). But then \( \iota_{S(\gamma)} \) is not defined on the entirely of \( \gamma \). This implies that \( \gamma \geq \alpha \), which contradicts our assumption that \( \gamma < \alpha \).
-
-  Therefore, \( \alpha \) cannot be a limit ordinal. It remains for \( \alpha \) to be a successor ordinal. Then there exists \( \beta \) such that \( \alpha = S(\beta) \).
-
-  Suppose that \( \iota_\beta \) is not surjective. We can then construct \( \iota_{S(\beta)} \) as in the corresponding recursion step. This will be an injective function from \( \alpha = S(\beta) \) to \( A \). But then we would have \( \alpha \in \alpha \), which contradicts \cref{thm:simple_foundation_theorems/member_of_itself}.
-
-  Therefore, \( \iota_\beta \) is a surjective function.
-\end{proof}
-
-\begin{theorem}\label{thm:well_ordered_order_type_existence}
-  Any \hyperref[def:well_ordered_set]{well-ordered set} \( (P, \leq) \) is \hyperref[def:partially_ordered_set/morphism]{order-isomorphic} to a unique ordinal. This ordinal is called the \term{order type} of \( (P, \leq) \) and is denoted by \( \ord(P, \leq) \) or simply \( \ord(P) \).
-
-  Furthermore, this isomorphism is unique.
-\end{theorem}
-\begin{proof}
-  For \( P = \varnothing \), then the empty function \( \iota: 0 \to P \) is the desired isomorphism.
-
-  We use \cref{thm:ordinal_bijection_and_choice} on \( P \) with the choice function
-  \begin{equation*}
-    \begin{aligned}
-      &c: \pow(P) \setminus \set{ \varnothing } \to P \\
-      &c(B) \coloneqq \min B
-    \end{aligned}
-  \end{equation*}
-  to obtain an ordinal \( \alpha \) and a bijection \( \iota: \alpha \to P \).
-
-  The function \( \iota \) is directly verified to be an order embedding in each of the recursion cases. Therefore, \( \iota \) is a surjective order embedding, that is, an order isomorphism.
-
-  Uniqueness of \( \iota \) follows from \cref{thm:def:well_ordered_set/unique_isomorphism}.
-\end{proof}
+\begin{definition}\label{def:hartogs_number}\mcite[157]{Jech1973AxiomOfChoice}
+  We call the ordinal \( \alpha \) from \fullref{thm:hartogs_lemma} the \term{Hartogs number} of \( A \).
+\end{definition}
 
 \begin{theorem}[Zermelo's well-ordering theorem]\label{thm:well_ordering_theorem}\mcite[thm. 6.4.18(i)]{Hinman2005Logic}
   Any \hyperref[def:set]{set} can be \hyperref[def:well_ordered_set]{well-ordered}.
@@ -893,9 +926,22 @@
 \begin{proof}
   \ImplicationSubProof[def:zfc/choice]{the axiom of choice}[thm:well_ordering_theorem]{well-ordering theorem} The empty set is trivially well-ordered.
 
-  Let \( A \) be any nonempty set. By the axiom of choice, there exists a \hyperref[def:choice_function]{choice function} \( c \) for \( A \). We use \cref{thm:ordinal_bijection_and_choice} on \( A \) and \( c \) to obtain an ordinal \( \alpha \) and a bijection \( \iota: \alpha \to A \). Since \( \alpha \) itself is well-ordered, then the relation
+  Let \( A \) be any nonempty set. We can use \fullref{thm:transfinite_recursion} on its \hyperref[def:hartogs_number]{Hartogs number} \( \alpha \) to construct a \hyperref[def:transfinite_sequence]{transfinite sequence} \( \seq{ x_\beta }_{\beta < \alpha} \) that exhausts \( A \).
+
+  By the axiom of choice, there exists a \hyperref[def:choice_function]{choice function} \( c: \pow(A) \setminus \set{ \varnothing } \to A \). Then, for every \( \beta < \alpha \), let
+  \begin{align*}
+    A_\beta &\coloneqq A \setminus \set{ x_\gamma \given \gamma < \beta }, \\
+    x_\beta &\coloneqq \begin{cases}
+     c(A_\beta), &A_\beta \neq \varnothing, \\
+     c(A),       &\T{otherwise.} \\
+    \end{cases}
+  \end{align*}
+
+  The value \( c(A) \) in the fallback case is simply a dummy we use in order to allow the recursion to continue. At the point we reach it, we have already exhausted \( A \). Note that this sequence inevitably exhausts \( A \) because otherwise we would have defined an injective function from \( \alpha \) to \( A \), which contradicts \fullref{thm:hartogs_lemma/injective}.
+
+  Since \( \alpha \) is well-ordered, the relation
   \begin{equation*}
-    x <_A y \T{if and only if} \iota^{-1}(x) <_\alpha \iota^{-1}(y)
+    a < b \T{if and only if} \min\set{ \beta \in \alpha \given x_\beta = a } < \min\set{ \beta \in \alpha \given x_\beta = b },
   \end{equation*}
   defines a well-order on \( A \).
 
@@ -909,7 +955,5 @@
     \end{aligned}
   \end{equation*}
 
-  In the case where \( A \) is the empty set, \( c \) is the empty function.
-
-  It is clear that \( c(B) \in B \) for every subset \( B \) of \( A \). Therefore, \( c \) is a choice function for \( A \).
+  In the case where \( A \) is the empty set, \( c \) is the empty function. It is clear that \( c(B) \in B \) for every subset \( B \) of \( A \). Therefore, \( c \) is a choice function for \( A \).
 \end{proof}
