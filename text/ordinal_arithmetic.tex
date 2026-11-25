@@ -1,0 +1,741 @@
+\section{Ordinal arithmetic}\label{sec:ordinal_arithmetic}
+
+We will use conventional digits and inequalities more often, mostly in statements of propositions, but still mostly work with (iterated) successors and set membership.
+
+\paragraph{Ordinal addition}
+
+\begin{definition}\label{def:ordinal_addition}\mcite[def. 6.3.16]{Hinman2005Logic}
+  We define \term[en=addition (\cite[def. 2.18]{Jech2006SetTheory})]{addition} for \hyperref[def:ordinal]{ordinals} based on axioms \eqref{eq:def:peano_arithmetic/theory/PA4} and \eqref{eq:def:peano_arithmetic/theory/PA5} for \hyperref[def:peano_arithmetic]{Peano arithmetic}, extended with a case for limit ordinals:
+  \begin{equation*}
+    \alpha + \beta \coloneqq \begin{cases}
+      \alpha,                                               &\beta = 0, \\
+      S(\alpha + \gamma),                                   &\beta = S(\gamma), \\
+      \bigcup\set{ \alpha + \gamma \given \gamma < \beta }, &\beta \T{is a nonzero limit ordinal.}
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Ordinal addition is associative, but not commutative --- see \cref{ex:ordinal_addition_commutativity}.
+\end{comments}
+
+\begin{proposition}\label{thm:ordinal_arithmetic_successor_via_addition}
+  We can express the \hyperref[def:ordinal_successor]{ordinal successor} operation by adding \( 1 = S(0) \):
+  \begin{equation*}
+    S(\alpha) = \alpha + 1.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Analogous to \cref{thm:peano_arithmetic_successor_via_addition}.
+\end{proof}
+
+\begin{lemma}\label{thm:ordinal_successor_strictly_monotone_on_ordinals}
+  If \( \alpha < \beta \), then \( S(\alpha) < S(\beta) \).
+\end{lemma}
+\begin{proof}
+  For every \( \gamma \) in \( S(\alpha) = \alpha \cup \set{ \alpha } \), we have two possibilities:
+  \begin{itemize}
+    \item If \( \gamma \in \alpha \), then \( \gamma \in \beta \) by transitivity of \( \beta \), and hence \( \gamma \in S(\beta) \) (again by transitivity).
+
+    \item If \( \gamma = \alpha \), then \( \gamma \in S(\beta) \), again by transitivity.
+  \end{itemize}
+
+  It follows that \( S(\alpha) \) is a subset of \( S(\beta) \). Furthermore, it is a strict subset because it does not contain \( \beta \). \Cref{thm:ordinal_subset_inclusion} implies that \( S(\alpha) \in S(\beta) \), as desired.
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_addition_is_monotone}
+  \hyperref[def:ordinal_addition]{Ordinal addition} has the following monotonicity properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_addition_is_monotone/first} Addition is \hyperref[def:order_function/preserving]{nonstrictly order-preserving} on the first parameter:
+    \begin{equation*}
+      \alpha < \beta \T{implies} \alpha + \gamma \leq \beta + \gamma.
+    \end{equation*}
+
+    Note that the inequality here is not strict --- see \cref{ex:ordinal_addition_commutativity} for counterexamples.
+
+    \thmitem{thm:ordinal_addition_is_monotone/second} Addition is \hyperref[eq:def:order_function/preserving/strict]{strictly order-preserving} in the second parameter:
+    \begin{equation*}
+      \alpha < \beta \T{implies} \gamma + \alpha < \gamma + \beta.
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_addition_is_monotone/first} We proceed by induction on \( \gamma \):
+  \begin{itemize}
+    \item The base case \( \gamma = 0 \) is vacuous.
+    \item Suppose that \( \gamma = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). Then
+    \begin{equation*}
+      \alpha + S(\delta)
+      \reloset {\ref{def:ordinal_addition}} =
+      S(\alpha + \delta)
+      \reloset {\ref{thm:ordinal_successor_strictly_monotone_on_ordinals}} \in
+      S(\beta + \delta)
+      \reloset {\ref{def:ordinal_addition}} =
+      \beta + S(\delta).
+    \end{equation*}
+
+    Note that we have not used the inductive hypothesis.
+
+    \item Suppose that \( \gamma \) is a limit ordinal and that the lemma holds for every \( \delta \in \gamma \). Then
+    \begin{equation*}
+      \alpha + \gamma
+      =
+      \bigcup\set{ \alpha + \delta \given \delta \in \alpha }
+      \reloset {\T{ind.}} \subseteq
+      \bigcup\set{ \beta + \delta \given \delta \in \beta }
+      =
+      \beta + \gamma.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf{thm:ordinal_addition_is_monotone/second} We proceed by induction on \( \beta \):
+  \begin{itemize}
+    \item The condition \( \alpha \in \beta \) is vacuously false for the base case \( \beta = 0 \), hence the conclusion holds due to \fullref{thm:propositional_semantic_efq}.
+
+    \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). We have two possibilities:
+    \begin{itemize}
+      \item If \( \alpha \in \delta \), then
+      \begin{equation*}
+        \gamma + \alpha
+        \reloset {\T{ind.}} \in
+        \gamma + \delta
+        \in
+        S(\gamma + \delta)
+        \reloset {\ref{def:ordinal_addition}} =
+        \gamma + S(\delta)
+        =
+        \gamma + \beta.
+      \end{equation*}
+
+      \item If \( \alpha = \delta \) then
+      \begin{equation*}
+        \gamma + \alpha
+        \in
+        S(\gamma + \alpha)
+        \reloset {\ref{def:ordinal_addition}} =
+        \gamma + S(\alpha)
+        =
+        \gamma + \beta.
+      \end{equation*}
+    \end{itemize}
+
+    \item Suppose that \( \beta \) is a limit ordinal and that the inductive hypothesis holds for all \( \delta \in \beta \). Then \( S(\alpha) \in \beta \) and hence
+    \begin{equation*}
+      \gamma + \alpha
+      \in
+      S(\gamma + \alpha)
+      \reloset {\ref{def:ordinal_addition}} =
+      \gamma + S(\alpha)
+      \leq
+      \sup\set{ \gamma + \delta \given \delta \in \beta }
+      =
+      \gamma + \beta.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_ordering_is_well_ordering_via_addition}
+  The definition \eqref{eq:def:peano_arithmetic_ordering/nonstrict} of \( {\synleq} \) in \hyperref[def:peano_arithmetic]{Peano arithmetic} holds as a property for \hyperref[def:ordinal_addition]{ordinal addition}:
+  \begin{equation*}
+    \alpha \leq \beta \T{if and only if} \qexists* \gamma (\alpha + \gamma = \beta).
+  \end{equation*}
+
+  The ordinal \( \gamma \) is unique.
+\end{proposition}
+\begin{comments}
+  \item For strict inequalities, we can restate \eqref{eq:def:peano_arithmetic_ordering/strict}:
+  \begin{equation*}
+    \alpha < \beta \T{if and only if} \qexists* \gamma (\alpha + S(\gamma) = \beta).
+  \end{equation*}
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof
+
+  \UniquenessSubProof* Suppose that \( \alpha + \gamma_1 = \beta = \alpha + \gamma_2 \). As ordinals, \( \gamma_1 \) and \( \gamma_2 \) are comparable, but \cref{thm:ordinal_addition_is_monotone/second} implies that both \( \gamma_1 < \gamma_2 \) and \( \gamma_1 > \gamma_2 \) would lead to a strict inequality. Hence, it only remains for \( \gamma_1 = \gamma_2 \) to hold.
+
+  \ExistenceSubProof* If \( \alpha = \beta \), then \( \alpha + 0 = \beta \) by definition, so the conclusion holds with \( \gamma = 0 \).
+
+  Suppose that \( \alpha \in \beta \). We now use induction on \( \beta \) on prove the existence of \( \gamma \).
+  \begin{itemize}
+    \item The condition \( \alpha \in \beta \) is vacuously false for the base case \( \beta = 0 \), hence the conclusion holds due to \fullref{thm:propositional_semantic_efq}.
+
+    \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). Let \( \alpha \in \beta \).
+    \begin{itemize}
+      \item If \( \alpha \in \delta \), by the inductive hypothesis there exists a unique ordinal \( \gamma \) such that \( \alpha + \gamma = \beta \) and \( \gamma \leq \beta \). Then
+      \begin{equation*}
+        \alpha + S(\gamma)
+        \reloset {\ref{def:ordinal_addition}} =
+        S(\alpha + \gamma)
+        =
+        S(\delta)
+        =
+        \beta.
+      \end{equation*}
+
+      \item If \( \alpha = \delta \), then \( \alpha \in S(\delta) = \beta \) and the conclusion holds with \( \gamma = 1 \).
+    \end{itemize}
+
+    \item Finally, suppose that \( \beta \) is a limit ordinal and that the inductive hypothesis holds for every \( \delta \in \beta \).
+
+    Let \( \alpha \in \beta \). For every \( \delta \in \beta \), if \( \alpha \in \delta \), by the inductive hypothesis there exists some \( \gamma_\beta \) such that \( \alpha + \gamma_\delta = \delta \). With the auxiliary value \( \gamma_\alpha = 0 \), we can define
+    \begin{equation*}
+      \gamma \coloneqq \set{ \gamma_\delta \given \alpha \in \delta \in \beta }.
+    \end{equation*}
+
+    Obviously \( \gamma \) is a set of ordinals. It is also transitive. Indeed, fix some \( \varepsilon \in \gamma_\delta \in \gamma \). \Cref{thm:ordinal_addition_is_monotone/first} implies that \( \alpha + \varepsilon \in \alpha + \gamma_\delta \), hence \( \alpha + \varepsilon \in \beta \) and \( \varepsilon \in \gamma \). Then, by \cref{thm:def:ordinal/transitive_set}, \( \gamma \) is an ordinal.
+
+    Furthermore, since \( \beta \) is a limit ordinal, \cref{thm:limit_ordinal_iff_unbounded} implies that it is unbounded. Then \( \gamma \) is also unbounded --- \( \gamma_\delta \in \gamma \) implies \( S(\gamma_\delta) \in \gamma \) because \( \alpha \in S(\delta) \in \beta \). Thus, \( \gamma \) is also a limit ordinal.
+
+    Therefore,
+    \begin{equation*}
+      \alpha + \gamma
+      \reloset {\ref{def:ordinal_addition}} =
+      \bigcup\set{ \alpha + \varepsilon \given \varepsilon \in \gamma }
+      =
+      \bigcup\set{ \alpha + \gamma_\delta \given \alpha \leq \delta < \beta }
+      =
+      \bigcup\set{ \delta \given \alpha \leq \delta < \beta }.
+    \end{equation*}
+
+    \Cref{thm:def:ordinal_ordering/supremum} implies that \( \alpha + \gamma \) is the supremum of \( \delta \) over \( \alpha \leq \delta < \beta \). By \cref{thm:def:ordinal_ordering/global_initial_segment}, \( \beta \) is by definition the smallest set that contains \( \delta \) for every \( \delta \in \beta \). So \( \alpha + \gamma = \beta \).
+  \end{itemize}
+
+  \NecessitySubProof \Cref{thm:ordinal_addition_is_monotone/first} implies that \( \alpha = \alpha + 0 \leq \alpha + \gamma = \beta \) for every ordinal \( \gamma \).
+\end{proof}
+
+\begin{lemma}\label{thm:ordinal_addition_limit_ordinal}
+  If \( \beta \) is a \hyperref[def:successor_and_limit_ordinal]{limit ordinal}, so is \( \alpha + \beta \) for every \( \alpha \).
+\end{lemma}
+\begin{proof}
+  By definition,
+  \begin{equation*}
+    \alpha + \beta = \bigcup\set{ \alpha + \gamma \given \gamma \in \beta }.
+  \end{equation*}
+
+  If \( \delta \in (\alpha + \beta) \), then there exists some \( \gamma \in \beta \) such that \( \delta \in (\alpha + \gamma) \).
+  \begin{itemize}
+    \item If \( S(\delta) \in (\alpha + \gamma) \), then \( S(\delta) \in (\alpha + \beta) \) by \cref{thm:unary_set_union_inequality}.
+    \item Otherwise, \( S(\delta) = (\alpha + \gamma) \) and hence \( S(\delta) \in S(\alpha + \gamma) \). The latter set equals \( \alpha + S(\gamma) \). Again by \cref{thm:unary_set_union_inequality}, \( S(\delta) \) belongs to the union because \( S(\gamma) \in \beta \).
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_addition_algebraic_properties}
+  Ordinal number addition is \hyperref[def:zerosumfree]{zerosumfree}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}.
+\end{proposition}
+\begin{comments}
+  \item Due to \fullref{thm:burali_forti_paradox}, we cannot treat addition as an operation on a set, so a more precise statement is that, in \hyperref[def:zfc]{\logic{ZFC}}, the axioms for zerosumfree, associative and left cancellative operations hold for the (inductively defined) ordinal addition.
+
+  \item This generalizes a similar statement for \hyperref[def:natural_numbers]{natural numbers} --- see \cref{thm:natural_number_addition_properties} --- and for \hyperref[def:cardinal]{cardinals} --- \cref{thm:cardinal_addition_algebraic_properties}.
+
+  Unlike those cases, ordinal addition is not commutative --- see \cref{ex:ordinal_addition_commutativity}.
+\end{comments}
+\begin{proof}
+  \SubProof{Proof that the ordinals are \hyperref[def:zerosumfree]{zerosumfree}} Suppose that \( \alpha + \beta = 0 \).
+
+  If \( \beta > 0 \), \cref{thm:ordinal_addition_is_monotone/first} implies that \( \alpha + 0 < \alpha + \beta \), which leads to the contradictory inequality \( \alpha + \beta > 0 \).
+
+  Then \( \beta = 0 \), hence \( 0 = \alpha + \beta = \alpha \), forcing \( \alpha \) to be \( 0 \).
+
+  Therefore, if \( \alpha + \beta = 0 \), both \( \alpha \) and \( \beta \) must be \( 0 \).
+
+  \SubProofOf[def:binary_operation/associative]{associativity} We will use \fullref{thm:transfinite_induction}  on \( \gamma \). \Cref{thm:natural_number_addition_properties} already proves the base and successor cases.
+
+  Suppose that \( \gamma \) is a limit ordinal, and that the inductive hypothesis holds for all \( \delta \in \gamma \). Then \( \beta + \gamma \) is also a limit ordinal due to \cref{thm:ordinal_addition_limit_ordinal}. Then
+  \begin{balign*}
+    \alpha + (\beta + \gamma)
+    &=
+    \bigcup\set{ \alpha + \varepsilon \given \varepsilon \in (\beta + \gamma) }
+    = \\ &=
+    \bigcup\set{ \alpha + \varepsilon \given \qexists* {\delta \in \gamma} \varepsilon \in (\beta + \delta) }
+    \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq \\ &\leq
+    \bigcup\set{ \alpha + (\beta + \delta) \given \delta \in \gamma }
+    \reloset {\T{ind.}} = \\ &=
+    \bigcup\set{ (\alpha + \beta) + \delta \given \delta \in \gamma }
+    \reloset {\ref{def:ordinal_addition}} = \\ &=
+    (\alpha + \beta) + \gamma.
+  \end{balign*}
+
+  On the other hand, \( \varepsilon = (\beta + \delta) \) belongs to \( \beta + S(\delta) \) so the above inequality is actually an equality.
+
+  \SubProofOf{thm:ordinal_addition_algebraic_properties/left_cancellative} Suppose that \( \alpha + \beta = \alpha + \gamma \). Since \( \beta \) and \( \gamma \) are comparable, we have three options:
+  \begin{itemize}
+    \item If \( \beta \in \gamma \), then \ref{thm:ordinal_addition_is_monotone/second} implies that \( \alpha + \beta \in \alpha \in \gamma \), leading to a contradiction.
+
+    \item Similarly, \( \gamma \in \beta \) leads to a contradiction.
+
+    \item It remains for \( \beta = \gamma \) to hold.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_addition_disjoin_union}
+  We can characterize the \hyperref[def:ordinal_addition]{ordinal sum} \( \alpha + \beta \) non-inductively as the  \hyperref[def:well_ordered_order_type]{order type} of the \hyperref[def:disjoint_union]{disjoint union} \( \alpha \amalg \beta \) endowed with the \hyperref[def:lexicographic_order]{lexicographic order} based on \( \set{ 0, 1 } \times (\alpha \cup \beta) \), under which
+  \begin{equation*}
+    \iota_{k_1}(\gamma_1) \prec \iota_{k_2}(\gamma_2) \T{if and only if} k_1 < k_2 \T{or otherwise both} k_1 = k_2 \T{and} \gamma_1 < \gamma_2.
+  \end{equation*}
+
+  More precisely, the following is an \hyperref[def:partially_ordered_set/morphism]{order isomorphism}:
+  \begin{equation*}
+    \begin{aligned}
+      &f: \alpha \amalg \beta \to \alpha + \beta, \\
+      &f(\iota_k(\gamma)) \coloneqq \alpha \cdot k + \gamma = \begin{cases}
+        \gamma,          &k = 0, \\
+        \alpha + \gamma, &k = 1.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item As for disjoint unions more generally, we use the more abstract inclusion \( \iota_k(\gamma) \) rather than a concrete tuple like \( (k, \gamma) \) --- see \cref{rem:disjoint_unions}.
+\end{comments}
+\begin{proof}
+  We will use \fullref{thm:transfinite_induction} on \( \beta \) to show that \( f \) is an order isomorphism. We will use the function \( f_\delta \), defined by substituting \( \beta \) with \( \delta \) in our definition of \( f \).
+
+  \begin{itemize}
+    \item If \( \beta = 0 \), we have
+    \begin{equation*}
+       \alpha \amalg \beta = \set{ \iota_0(\gamma) \given \gamma \in \alpha } = \set{ 0 } \times \alpha,
+    \end{equation*}
+    and \( f(\iota_0(\gamma)) = \gamma \) is obviously an isomorphism.
+
+    \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( f_\delta \).
+
+    We have
+    \begin{equation*}
+      \alpha \amalg \beta = \alpha \amalg \delta \cup \set{ \iota_1(\delta) }
+    \end{equation*}
+    and
+    \begin{equation*}
+      (\alpha + \beta) = (\alpha + \delta) \cup \set{ \alpha + \delta }.
+    \end{equation*}
+
+    Furthermore,
+    \begin{equation*}
+      f_\beta(\iota_k(\gamma)) = \begin{cases}
+        f_\delta(\iota_0(\gamma)), &k = 0, \\
+        f_\delta(\iota_1(\gamma)), &k = 1 \T{and} \gamma \in \beta, \\
+        \alpha + \beta,            &k = 1 \T{and} \gamma = \beta,
+      \end{cases}
+    \end{equation*}
+    hence \( f_\beta \) coincides with \( f_\delta \) but has one additional tuple added that maps \( \iota_1(\beta) \) to \( \alpha + \beta \).
+
+    Therefore, since \( f_\delta \) is an isomorphism, \( f_\beta \) also is.
+
+    \item Suppose that \( \beta \) is a limit ordinal and that the inductive hypothesis holds for \( f_\delta \) whenever \( \delta \in \beta \).
+
+    We have
+    \begin{equation*}
+      \gr f_\beta = \bigcup_{\delta \in \beta} \gr f_\delta.
+    \end{equation*}
+
+    Hence, for every argument, \( f_\beta \) coincides with one of the maps we have assumed are isomorphisms:
+    \begin{equation*}
+      f_\beta(\iota_k(\gamma)) = \begin{cases}
+        f_\alpha(\iota_0(\gamma)),      &k = 0, \\
+        f_{S(\gamma)}(\iota_1(\gamma)), &k = 1 \T{and} \gamma \in \beta,
+      \end{cases}
+    \end{equation*}
+
+    Since these maps are all extensions of each other, we conclude that their union \( f_\beta \) is also an order isomorphism.
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:ordinal_addition_commutativity}
+  For ordinal addition as defined in \cref{def:ordinal_addition} and characterized in \cref{thm:ordinal_addition_disjoin_union}, the distinction between \( \alpha + \beta \) and \( \beta + \alpha \) is important.
+
+  A simple example is provided by any limit ordinal, in particular by \( \omega \). Adding one ordinal to another, in an informal sense, appends a copy of the second to a copy the first.
+
+  Namely, \( n + \omega \) equals \( \omega \) for every natural number \( n = m + 1 \) because of the correspondence
+  \begin{equation*}
+    \underbrace{\iota_0(0)}_0 < \underbrace{\iota_0(1)}_1 < \cdots < \underbrace{\iota_0(m)}_m < \underbrace{\iota_1(0)}_n < \underbrace{\iota_1(1)}_{n + 1} < \underbrace{\iota_1(2)}_{n + 2} < \cdots
+  \end{equation*}
+
+  More formally, we have the order isomorphism
+  \begin{equation*}
+    \begin{aligned}
+      &f: n \amalg \omega \to \omega \\
+      &f(\iota_k(p)) \coloneqq \begin{cases}
+        p,     &k = 0, \\
+        n + p, &k = 1.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  Note that \cref{thm:ordinal_addition_is_monotone/right} guarantees that \( \omega \leq n + \omega \), but does not exclude the possibility that they are equal.
+
+  On the other hand, \( \omega + n \) appends \( n \) to \( \omega \). Since \( \omega \) is unbounded, we cannot use the above trick, and in fact \( \omega + n \) is distinct for every \( n \). This follows from \cref{thm:ordinal_addition_is_monotone/second}.
+
+  As a consequence of this example, addition of ordinals is not commutative and also not right cancellable.
+
+  As discussed in our proof of \cref{thm:cardinal_addition_algebraic_properties}, this is only a restriction of well-orders and not of the resulting sets themselves.
+\end{example}
+
+\paragraph{Ordinal multiplication}
+
+\begin{definition}\label{def:ordinal_arithmetic}
+  We recursively define arithmetic operations for arbitrary \hyperref[def:ordinal]{ordinals} as extensions of the corresponding operations of \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+
+  \begin{thmenum}
+    \thmitem{def:ordinal_arithmetic/multiplication}\mcite[def. 6.3.16]{Hinman2005Logic} Analogously, the \term{product} of \( \alpha \) and \( \beta \) extends \eqref{eq:def:peano_arithmetic/theory/PA6} and \eqref{eq:def:peano_arithmetic/theory/PA7}:
+    \begin{equation}\label{eq:def:ordinal_arithmetic/multiplication}
+      \alpha \cdot \beta \coloneqq \begin{cases}
+        0,                                                     &\beta = 0 \\
+        \alpha \cdot \gamma + \alpha,                          &\beta = S(\gamma) \\
+        \sup\set{ \alpha \cdot \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal} \\
+      \end{cases}
+    \end{equation}
+
+    \thmitem{def:ordinal_arithmetic/exponentiation}\mcite[exerc. 6.3.34]{Hinman2005Logic} Exponentiation extends \cref{def:monoid/exponentiation}:
+    \begin{equation}\label{eq:def:ordinal_arithmetic/exponentiation}
+      \alpha^\beta \coloneqq \begin{cases}
+        1,                                               &\beta = 0 \\
+        \alpha^\gamma \cdot \alpha,                      &\beta = S(\gamma) \\
+        \sup\set{ \alpha^\gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal} \\
+      \end{cases}
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:ordinal_multiplication_is_monotone}
+  \hyperref[def:ordinal_arithmetic/multiplication]{Ordinal multiplication} has the following monotonicity properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_multiplication_is_monotone/left} Left multiplication is \hyperref[eq:def:order_function/preserving]{order-preserving}:
+    \begin{equation}\label{eq:thm:ordinal_multiplication_is_monotone/left}
+      \alpha < \beta \T{implies} \gamma \cdot \alpha \leq \gamma \cdot \beta.
+    \end{equation}
+
+    The inequality is strict if \( \gamma \) is not zero.
+
+    \thmitem{thm:ordinal_multiplication_is_monotone/right} Right multiplication is \hyperref[def:order_function/preserving]{order-preserving}:
+    \begin{equation}\label{eq:thm:ordinal_multiplication_is_monotone/right}
+      \alpha < \beta \T{implies} \alpha \cdot \gamma \leq \beta \cdot \gamma.
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_multiplication_is_monotone/left} Similarly to \cref{thm:ordinal_addition_is_monotone/second}, we proceed by induction on \( \beta \):
+  \begin{itemize}
+    \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \ref{inf:def:propositional_natural_deduction/bot/efq} the statement vacuously holds.
+
+    \item If \( \beta = 1 \), then \( \alpha = 0 \), and
+    \begin{equation}\label{thm:ordinal_multiplication_is_monotone/left/ind_base}
+      \gamma \cdot \alpha = 0 \leq \gamma = \gamma \cdot 1 = \gamma \cdot \beta.
+    \end{equation}
+
+    If \( \gamma > 0 \), the inequality is strict.
+
+    \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). We have two possibilities:
+    \begin{itemize}
+      \item If \( \alpha < \delta \), then
+      \begin{equation*}
+        \gamma \cdot \alpha
+        \reloset {\T{ind.}} <
+        \gamma \cdot \delta,
+        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq
+        \underbrace{\gamma \cdot \delta + \gamma}_{S(\delta)}
+        =
+        \gamma \cdot \beta.
+      \end{equation*}
+
+      Again, if \( \gamma > 0 \), the inequality is strict.
+
+      \item If \( \alpha = \delta \) then
+      \begin{equation*}
+        \gamma \cdot \alpha
+        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq
+        \underbrace{\gamma \cdot \alpha + \gamma}_{S(\alpha)}
+        =
+        \gamma \cdot \beta
+      \end{equation*}
+
+      Once again, if \( \gamma > 0 \), the inequality is strict.
+    \end{itemize}
+
+    \item Suppose that \( \beta \) is a limit ordinal and that \eqref{eq:thm:ordinal_multiplication_is_monotone/left} holds for all \( \delta < \beta \). Then
+    \begin{equation*}
+      \gamma \cdot \alpha
+      =
+      \sup\set{ \gamma \cdot \delta \given \delta < \alpha }
+      \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq
+      \sup\set{ \underbrace{\gamma \cdot \delta + \gamma}_{S(\delta)} \given \delta < \alpha }
+      \leq
+      \sup\set{ \gamma \cdot \delta \given \delta < \beta }
+      =
+      \gamma \cdot \beta.
+    \end{equation*}
+
+    As in the other cases, if \( \gamma > 0 \), the inequality is strict.
+  \end{itemize}
+
+  \SubProofOf{thm:ordinal_multiplication_is_monotone/right} Similarly to \cref{thm:ordinal_addition_is_monotone/first}, we proceed by induction on \( \gamma \):
+  \begin{itemize}
+    \item The base case \( \gamma = 0 \) is vacuous.
+    \item Suppose that \( \gamma = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). Then
+    \begin{equation*}
+      \alpha \cdot S(\delta)
+      \reloset {\eqref{eq:def:ordinal_arithmetic/multiplication}} =
+      \alpha \cdot \delta + \alpha
+      \reloset {\ref{thm:ordinal_addition_is_monotone/first}} \leq
+      \beta \cdot \delta + \alpha
+      \reloset {\ref{thm:ordinal_addition_is_monotone/second}} <
+      \beta \cdot \delta + \beta
+      \reloset {\eqref{eq:def:ordinal_arithmetic/multiplication}} =
+      \beta \cdot S(\delta).
+    \end{equation*}
+
+    \item Suppose that \( \gamma \) is a limit ordinal and that the lemma holds for every \( \delta < \gamma \). Then
+    \begin{equation*}
+      \alpha \cdot \gamma
+      =
+      \sup\set{ \alpha \cdot \delta \given \delta < \alpha }
+      \reloset {\T{ind.}} \leq
+      \sup\set{ \beta \cdot \delta \given \delta < \beta }
+      =
+      \beta \cdot \gamma.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_multiplication_algebraic_properties}
+  Similarly to \cref{thm:ordinal_addition_algebraic_properties} for ordinal number addition, multiplication is \hyperref[def:entire_semiring]{entire}, \hyperref[def:semigroup_absorbing_element]{absorbing}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/entire} If \( \alpha \cdot \beta = 0 \), then \( \alpha = 0 \) or \( \beta = 0 \).
+
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/absorption} If \( \alpha = 0 \) or \( \beta = 0 \), then \( \alpha \cdot \beta = 0 \).
+
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/associative} For any three ordinals \( (\alpha \cdot \beta) \cdot \gamma = \alpha \cdot (\beta \cdot \gamma) \).
+
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/left_cancellative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \gamma \cdot \alpha = \gamma \cdot \beta \), we have \( \alpha = \beta \).
+  \end{thmenum}
+
+  Compare this with \cref{thm:natural_number_multiplication_properties} and \cref{thm:cardinal_multiplication_algebraic_properties}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/entire} Suppose that \( \alpha \cdot \beta = 0 \).
+
+  If \( \beta > 0 \), by \cref{thm:ordinal_multiplication_is_monotone/left} we have
+  \begin{equation*}
+    0 = \alpha \cdot 0 \leq \alpha \cdot \beta = 0,
+  \end{equation*}
+  which forces \( \alpha \) to be \( 0 \) because otherwise a strict inequality holds.
+
+  If \( \alpha > 0 \), then \( \beta > 0 \) entails \( \alpha = 0 \), and to avoid a contradiction, \( \beta \) must be \( 0 \).
+
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/absorbing} We have \( \alpha \cdot 0 = 0 \) by definition and \( 0 \cdot \beta = 0 \) is a straightforward application of induction.
+
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/associative} Associativity follows easily from the obvious isomorphisms between \( (\alpha \times \beta) \times \gamma \) and \( \alpha \times (\beta \times \gamma) \).
+
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/left_cancellative} Now suppose that \( \gamma \cdot \alpha = \gamma \cdot \beta \). Let \( f \) the unique order isomorphism between \( \gamma \times \alpha \) and \( \gamma \times \beta \).
+
+  Suppose that \( \alpha \neq \beta \). Without loss of generality, suppose that \( \beta \subsetneq \alpha \). Then \( f\restr_{\gamma \times \alpha} \) is the identity mapping and hence any set from \( \gamma \times (\beta \setminus \alpha) \) would make \( f \) not injective.
+
+  The obtained contradiction shows that \( \alpha = \beta \).
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_multiplication_cartesian_product}
+  For the \hyperref[def:ordinal_arithmetic/multiplication]{product} of two ordinals \( \alpha \) and \( \beta \), the following is an \hyperref[def:partially_ordered_set/morphism]{order isomorphism}:
+  \begin{equation*}
+    \begin{aligned}
+      &f: \alpha \times \beta \to \alpha \cdot \beta, \\
+      &f(\gamma, \delta) \coloneqq \alpha \cdot \delta + \gamma,
+    \end{aligned}
+  \end{equation*}
+  where for the \hyperref[def:cartesian_product]{Cartesian product} \( \alpha \times \beta \) we use the \hyperref[def:lexicographic_order]{reverse lexicographic order}, under which \( (\gamma_1, \delta_1) \prec (\gamma_2, \delta_2) \) if either \( \delta_1 < \delta_2 \) or both \( \delta_1 = \delta_2 \) and \( \gamma_1 < \gamma_2 \).
+\end{proposition}
+\begin{comments}
+  \item The order of the multiplicands is such that \( \gamma < \alpha \) and \( \delta < \beta \).
+\end{comments}
+\begin{proof}
+  Similarly to \cref{thm:ordinal_addition_disjoin_union}, we will use induction on \( \beta \) to show that
+  \begin{equation*}
+    \begin{aligned}
+      &f_\beta: \alpha \times \beta \to \alpha \cdot \beta, \\
+      &f_\beta(\gamma, \delta) \coloneqq \alpha \cdot \delta + \gamma
+    \end{aligned}
+  \end{equation*}
+  is an order isomorphism.
+
+  \begin{itemize}
+    \item If \( \beta = 0 \), both \( \alpha \times \beta \) and \( \alpha \cdot \beta \) are empty, and so \( f_0 \) is vacuously an isomorphism.
+
+    \item Suppose that \( \beta = S(\varepsilon) \) and that the inductive hypothesis holds for \( f_\delta \).
+
+    We have
+    \begin{equation*}
+      \alpha \times \beta = (\alpha \times \varepsilon) \cup (\alpha \times \set{ \varepsilon })
+    \end{equation*}
+    and
+    \begin{equation*}
+      \alpha \cdot \beta = (\alpha \cdot \varepsilon) \cup [\alpha \cdot \varepsilon, \alpha \cdot \beta).
+    \end{equation*}
+
+    Note that \( (\alpha \cdot \varepsilon) \) is simply a parenthesized expression for the ordinal \( \alpha \cdot \varepsilon \) regarded as a set, while \( [\alpha \cdot \varepsilon, \alpha \cdot \beta) \) is a \hyperref[def:order_interval/half_open]{half-open interval}.
+
+    Furthermore,
+    \begin{equation*}
+      f_\beta(\gamma, \delta) = \begin{cases}
+        f_\delta(\gamma, \delta),     &\delta < \varepsilon, \\
+        \alpha \cdot \delta + \gamma, &\delta = \varepsilon,
+      \end{cases}
+    \end{equation*}
+    hence \( f_\beta \) coincides with \( f_\varepsilon \) but additionally maps the set \( \alpha \times \set{ \varepsilon } \) to the interval \( [\alpha \cdot \varepsilon, \alpha \cdot \beta) \).
+
+    Therefore, since \( f_\delta \) is an isomorphism, \( f_\beta \) also is.
+
+    \item Suppose that \( \beta \) is a limit ordinal and that the inductive hypothesis holds for \( f_\delta \) whenever \( \delta < \beta \).
+
+    We have
+    \begin{equation*}
+      f_\beta = \bigcup_{\delta < \beta} f_\delta.
+    \end{equation*}
+
+    Hence, for every argument, \( f_\beta \) coincides with one of the maps we have assumed are isomorphisms:
+    \begin{equation*}
+      f_\beta(\gamma, \delta) = f_{S(\delta)}(\gamma, \delta).
+    \end{equation*}
+
+    Since these maps are all extensions of each other, we conclude that their union \( f_\beta \) is also an order isomorphism.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:ordinal_division}
+  For every ordinal \( \alpha \) and every nonzero ordinal \( \beta \), there exists a unique pair of ordinals \( \delta \) and \( \rho \) such that \( \rho < \beta \) and
+  \begin{equation*}
+    \alpha = \beta \cdot \delta + \rho.
+  \end{equation*}
+\end{corollary}
+\begin{proof}
+  \SubProof{Proof if \( \alpha \) is zero} \Cref{thm:ordinal_addition_algebraic_properties/zerosumfree} implies that in order for \( \beta \cdot \delta + \rho \) to be zero, both \( \delta \cdot \beta \) and \( \rho \) must be zero.
+
+  \Cref{thm:ordinal_multiplication_algebraic_properties/entire} implies that in order for \( \delta \cdot \beta \) to be zero, \( \beta \) or \( \delta \) must be zero. But \( \beta \) is nonzero by assumption, so \( \delta \) must be zero.
+
+  Therefore, if \( \alpha \) is zero, both \( \delta \) and \( \rho \) must be zero.
+
+  \SubProof{Proof if \( \alpha \) is nonzero} From \cref{thm:ordinal_multiplication_cartesian_product} it follows that the following is an isomorphism:
+  \begin{equation*}
+    \begin{aligned}
+      &f: \beta \times S(\alpha) \to \beta \cdot S(\alpha), \\
+      &f(\rho, \delta) \coloneqq \beta \cdot \delta + \rho.
+    \end{aligned}
+  \end{equation*}
+
+  \Cref{thm:ordinal_multiplication_is_monotone/right} implies that \( \alpha \leq \beta \cdot \alpha \), thus we can take \( \delta \) and \( \rho \) to be the corresponding elements of the preimage \( f^{-1}(\alpha) \).
+\end{proof}
+
+\begin{corollary}\label{thm:ordinal_division_omega}
+  Every ordinal \( \alpha \) can be represented as \( \omega \cdot \delta + n \), where \( \omega \) is the \hyperref[thm:omega_is_an_ordinal]{smallest infinite ordinal} and \( n \) is a natural number (i.e. a finite ordinal).
+\end{corollary}
+\begin{proof}
+  Follows from \cref{thm:ordinal_division} with \( \beta = \omega \).
+\end{proof}
+
+\begin{proposition}\label{thm:limit_ordinal_division_characterization}
+  The nonzero ordinal \( \alpha \) is a limit ordinal if and only if it is a right multiple of \( \omega \), that is, if there exists some \( \delta \) such that \( \alpha = \omega \cdot \delta \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \alpha \) is a limit ordinal. \Cref{thm:ordinal_division_omega} gives us an ordinal \( \delta \) and a natural number \( n \) such that \( \alpha = \omega \cdot \delta + n \).
+
+  Suppose that \( n > 0 \) and let \( m \) be its \hyperref[thm:peano_arithmetic_predecessor_existence]{predecessor} so that \( n = S(m) \). Then, by definition of ordinal addition,
+  \begin{equation*}
+    \alpha
+    =
+    \omega \cdot \delta + n
+    =
+    \omega \cdot \delta + S(m)
+    =
+    S(\omega \cdot \delta + m),
+  \end{equation*}
+  implying that \( \alpha \) is a successor ordinal.
+
+  The obtained contradiction demonstrates that \( n = 0 \).
+
+  \NecessitySubProof If \( \alpha = \omega \cdot \delta \), consider any strictly smaller ordinal \( \beta \). \Cref{thm:ordinal_division_omega} gives us an ordinal \( \varepsilon \) and a natural number \( m \) such that \( \beta = \omega \cdot \varepsilon + m \).
+
+  \Cref{thm:ordinal_addition_is_monotone/second} implies that
+  \begin{equation*}
+    \omega \cdot \varepsilon < \omega \cdot \varepsilon + m = \beta.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \omega \cdot \varepsilon < \omega \cdot \delta = \alpha
+  \end{equation*}
+  and \cref{thm:def:totally_ordered_set/embedding_iff_strict} applied to \cref{thm:ordinal_multiplication_is_monotone/left} implies that \( \varepsilon < \delta \).
+
+  Therefore,
+  \begin{equation*}
+    S(\beta)
+    =
+    \omega \cdot \varepsilon + S(m)
+    \reloset {\ref{thm:ordinal_addition_is_monotone/second}} <
+    \omega \cdot \varepsilon + \omega
+    =
+    \omega \cdot S(\varepsilon)
+    \reloset {\eqref{eq:thm:ordinal_multiplication_is_monotone/left}} \leq
+    \omega \cdot \delta
+    =
+    \alpha.
+  \end{equation*}
+
+  Since the successor of every ordinal less than \( \alpha \) is also less than \( \alpha \), it is a limit ordinal.
+\end{proof}
+
+\begin{example}\label{ex:countable_limit_ordinals}
+  We already know that \( \omega \) is a limit ordinal. It is clear from \cref{ex:ordinal_addition_commutativity} that \( \omega + n \) is a successor ordinal for every natural number \( n \).
+
+  What about \( \omega + \omega \)? This corresponds to \enquote{placing} two copies of the natural numbers one after another.
+
+  Suppose that \( \omega + \omega = \omega \cdot 2 \) is the successor of \( \alpha \). Then \( \alpha < \omega + \omega \) and we can show by induction on the natural numbers that \( \alpha + n < \omega + \omega \). But \( \alpha + 1 = \omega \) by assumption, which contradicts trichotomy of ordinals.
+
+  Therefore, \( \omega + \omega \) is a limit ordinal. Furthermore, \( \omega + \omega \) is the second smallest limit ordinal since only ordinals of the form \( \omega + n \) for nonzero finite \( n \) satisfy \( \omega < \omega + n < \omega + \omega \).
+
+  Both ordinals \( \omega \) and \( \omega + \omega \) are countable by \cref{thm:omega_equinumerous_with_omega_squared}.
+
+  Another limit ordinal is \( \omega \cdot \omega = \omega^2 \). It is also countable by \cref{thm:countable_product_of_countable_sets}. Actually \( \omega^n \) for any natural number \( n \) is countable by the same theorem.
+
+  Therefore, any \enquote{\hyperref[def:polynomial_algebra/polynomials]{polynomial}} of the form
+  \begin{equation*}
+    \alpha_n \omega^n + \alpha_{n-1} \omega^{n-1} + \cdots + \alpha_1 \omega + \alpha_0
+  \end{equation*}
+  with countable coefficients is also countable.
+\end{example}
+
+\begin{proposition}\label{thm:square_of_infinite_ordinal}
+  If \( \alpha \) is an infinite ordinal, then \( \alpha = \alpha^2 \).
+\end{proposition}
+\begin{proof}
+  We will show that \( \alpha \) is order isomorphic to its \hyperref[def:lexicographic_order]{lexicographically ordered} square
+  \begin{equation*}
+    S \coloneqq \alpha \times \alpha.
+  \end{equation*}
+
+  Aiming at a contradiction, suppose that \( \alpha \) is the smallest ordinal for which this does not hold. \Cref{thm:omega_equinumerous_with_omega_squared} implies that \( \alpha \geq \omega \).
+
+  Since \( \alpha < \ord(\alpha \times \alpha) \), there \cref{thm:def:ordinal_ordering/bounded_initial_segment} implies the existence of some segment \( S_{<(\beta_1, \beta_2)} \) such that
+  \begin{equation*}
+    \alpha = \ord(S_{<(\beta_1, \beta_2)}),
+  \end{equation*}
+  where
+  \begin{equation*}
+    S_{<(\beta_1, \beta_2)} = \set[\Big]{ (\gamma_1, \gamma_2) \in \alpha \times \alpha \given* \gamma_1 < \beta_1 \T{or} (\gamma_1 = \beta_1 \T{and} \gamma_2 < \beta_2) }
+  \end{equation*}
+  is the corresponding \hyperref[def:order_interval/unbounded]{initial segment}.
+
+  Let \( \beta \coloneqq \max\set{ \beta_1, \beta_2 } \). Then
+  \begin{equation*}
+    S_{<(\beta_1, \beta_2)} \subsetneq \beta \times \beta.
+  \end{equation*}
+
+  Since \( \beta < \alpha \), the lemma holds for \( \beta \), and thus
+  \begin{equation*}
+    \alpha
+    =
+    \ord(S_{<(\beta_1, \beta_2)})
+    \leq
+    \ord(\beta \times \beta)
+    =
+    \beta
+    <
+    \alpha.
+  \end{equation*}
+
+  The obtained contradiction shows that \( \alpha = \ord(\alpha \times \alpha) \) for every infinite ordinal \( \alpha \).
+\end{proof}
