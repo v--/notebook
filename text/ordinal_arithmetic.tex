@@ -403,6 +403,36 @@ We will use conventional digits and inequalities more often, mostly in statement
   \item Ordinal multiplication is associative, but not commutative --- see \cref{ex:ordinal_addition_commutativity}.
 \end{comments}
 
+\begin{lemma}\label{thm:ordinal_multiplication_zero_absorbing}
+  Zero is an \hyperref[def:semigroup_absorbing_element]{absorbing element} with respect to \hyperref[def:ordinal_multiplication]{ordinal multiplication}.
+\end{lemma}
+\begin{proof}
+  We have \( \alpha \cdot 0 = 0 \) by definition. We will use \fullref{thm:transfinite_induction} on \( \beta \) to prove \( 0 \cdot \beta = 0 \).
+  \begin{itemize}
+    \item The case \( \beta = 0 \) is obvious.
+    \item If \( \beta = S(\gamma) \) and the inductive hypothesis holds for \( \gamma \), then
+    \begin{equation*}
+      0 \cdot \beta
+        \reloset {\ref{def:ordinal_multiplication}} =
+        0 \cdot \gamma + 0
+        \reloset {\T{ind.}} =
+        0 + 0
+        \reloset {\ref{def:ordinal_addition}} =
+        0.
+      \end{equation*}
+    \item If \( \beta \) is a nonzero limit ordinal and if the inductive hypothesis holds for every \( \gamma \in \beta \), then
+    \begin{equation*}
+      0 \cdot \beta
+        \reloset {\ref{def:ordinal_multiplication}} =
+        \bigcup\set{ 0 \cdot \gamma \given \gamma \in \beta }
+        \reloset {\T{ind.}} =
+        \bigcup\set{ 0 \given \gamma \in \beta }
+        =
+        0.
+      \end{equation*}
+  \end{itemize}
+\end{proof}
+
 \begin{proposition}\label{thm:ordinal_multiplication_is_monotone}
   \hyperref[def:ordinal_multiplication]{Ordinal multiplication} has the following monotonicity properties:
   \begin{thmenum}
@@ -448,43 +478,53 @@ We will use conventional digits and inequalities more often, mostly in statement
     \end{equation*}
   \end{itemize}
 
-  \SubProofOf{thm:ordinal_multiplication_is_monotone/second} Similarly to \cref{thm:ordinal_addition_is_monotone/second}, we proceed by induction on \( \beta \):
+  \SubProofOf{thm:ordinal_multiplication_is_monotone/second} The case \( \gamma = 0 \) is trivial because \cref{thm:ordinal_multiplication_zero_absorbing} implies that, for any \( \alpha \) and \( \beta \), we have
+  \begin{equation*}
+    \gamma \cdot \alpha = 0 = \gamma \cdot \beta.
+  \end{equation*}
+
+  For \( \gamma \ni 0 \), we proceed by induction on \( \beta \) to show the strict inequality
+  \begin{equation*}
+    \alpha \in \beta \T{implies} \gamma \cdot \alpha \in \gamma \cdot \beta.
+  \end{equation*}
+
   \begin{itemize}
     \item The condition \( \alpha \in \beta \) is vacuously false for the base case \( \beta = 0 \), hence the conclusion holds due to \fullref{thm:propositional_semantic_efq}.
 
     \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( \delta \). We have two possibilities:
     \begin{itemize}
-      \item If \( \alpha < \delta \), then
+      \item If \( \alpha \in \delta \), we have
       \begin{equation*}
         \gamma \cdot \alpha
-        \reloset {\T{ind.}} \in
+        \reloset {\T{ind.}} \leq
         \gamma \cdot \delta
-        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq
+        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \in
         \underbrace{\gamma \cdot \delta + \gamma}_{\gamma \cdot S(\delta)}
         =
         \gamma \cdot \beta.
       \end{equation*}
 
-      If \( \gamma > 0 \), the inequality is strict.
-
-      \item If \( \alpha = \delta \) then
+      \item If \( \alpha = \delta \), we have
       \begin{equation*}
         \gamma \cdot \alpha
-        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \leq
-        \underbrace{\gamma \cdot \alpha + \gamma}_{S(\alpha)}
+        \reloset {\ref{thm:ordinal_addition_is_monotone/second}} \in
+        \underbrace{\gamma \cdot \alpha + \gamma}_{\gamma \cdot S(\alpha)}
         =
         \gamma \cdot \beta
       \end{equation*}
-
-      Again, if \( \gamma > 0 \), the inequality is strict.
     \end{itemize}
 
-    \item Suppose that \( \beta \) is a nonzero limit ordinal and that the inductive hypothesis holds for all \( \delta \in \beta \). Then it holds for \( \alpha \in \beta \) in particular, so \( \gamma \cdot \alpha \) is less than the supremum \( \gamma \cdot \beta \) of \( \gamma \cdot \delta \) over \( \delta \in \beta \). Thus,
+    \item Suppose that \( \beta \) is a nonzero limit ordinal and that the inductive hypothesis holds for all \( \delta \in \beta \). Then it holds for \( \alpha \in \beta \) in particular, so
     \begin{equation*}
-      \gamma \cdot \alpha \leq \gamma \cdot \beta.
+      \gamma \cdot \alpha \in \gamma \cdot S(\alpha).
     \end{equation*}
 
-    As in the other cases, if \( \gamma > 0 \), the inequality is strict.
+    Both belong to the set
+    \begin{equation*}
+      \set{ \gamma \cdot \delta \given \delta \in \beta }.
+    \end{equation*}
+
+    By definition, \( \gamma \cdot \beta \) is the union of this set, so, as a member of \( \gamma \cdot S(\alpha) \), \( \gamma \cdot \alpha \) belongs to \( \gamma \cdot \beta \).
   \end{itemize}
 \end{proof}
 
@@ -498,7 +538,7 @@ We will use conventional digits and inequalities more often, mostly in statement
 \end{proof}
 
 \begin{proposition}\label{thm:ordinal_multiplication_algebraic_properties}
-  \hyperref[def:ordinal_multiplication]{Ordinal multiplication} is \hyperref[def:entire_semiring]{entire}, \hyperref[def:semigroup_absorbing_element]{absorbing}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:semiring/theory/axioms/distributivity]{left distributive} over \hyperref[def:ordinal_addition]{addition}, with \( 1 \) as a \hyperref[def:semigroup_neutral_element]{neutral element}. Furthermore, it is \hyperref[def:ordered_semiring]{compatible} with \hyperref[def:ordinal_ordering]{ordinal ordering}.
+  \hyperref[def:ordinal_multiplication]{Ordinal multiplication} is \hyperref[def:entire_semiring]{entire}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:semiring/theory/axioms/distributivity]{left distributive} over \hyperref[def:ordinal_addition]{addition}, with \( 0 \) as an \hyperref[def:semigroup_absorbing_element]{absorbing element} and \( 1 \) as a \hyperref[def:semigroup_neutral_element]{neutral element}. Furthermore, it is \hyperref[def:ordered_semiring]{compatible} with \hyperref[def:ordinal_ordering]{ordinal ordering}.
 \end{proposition}
 \begin{comments}
   \item Due to \fullref{thm:burali_forti_paradox}, we cannot treat multiplication as an operation on a set, so a more precise statement is that, in \hyperref[def:zfc]{\logic{ZFC}}, the axioms for entire, absorbing associative and left cancellative operations hold for the (inductively defined) ordinal multiplication.
@@ -521,33 +561,6 @@ We will use conventional digits and inequalities more often, mostly in statement
   \end{itemize}
 
   Therefore, \( \alpha \) or \( \beta \) (or both) must be zero.
-
-  \SubProofOf[def:semigroup_absorbing_element]{absorption} We have \( \alpha \cdot 0 = 0 \) by definition. We will use \fullref{thm:transfinite_induction} on \( \beta \) to prove \( 0 \cdot \beta = 0 \).
-
-  \begin{itemize}
-    \item The case \( \beta = 0 \) is obvious.
-    \item If \( \beta = S(\gamma) \) and the inductive hypothesis holds for \( \gamma \), then
-    \begin{equation*}
-      0 \cdot \beta
-      \reloset {\ref{def:ordinal_multiplication}} =
-      0 \cdot \gamma + 0
-      \reloset {\T{ind.}} =
-      0 + 0
-      \reloset {\ref{def:ordinal_addition}} =
-      0.
-    \end{equation*}
-
-    \item If \( \beta \) is a nonzero limit ordinal and if the inductive hypothesis holds for every \( \gamma \in \beta \), then
-    \begin{equation*}
-      0 \cdot \beta
-      \reloset {\ref{def:ordinal_multiplication}} =
-      \bigcup\set{ 0 \cdot \gamma \given \gamma \in \beta }
-      \reloset {\T{ind.}} =
-      \bigcup\set{ 0 \given \gamma \in \beta }
-      =
-      0.
-    \end{equation*}
-  \end{itemize}
 
   \SubProofOf[def:binary_operation/associative]{associativity} We will use \fullref{thm:transfinite_induction} on \( \gamma \) to prove
   \begin{equation*}
@@ -642,6 +655,8 @@ We will use conventional digits and inequalities more often, mostly in statement
 
     It remains to apply the inductive hypothesis for \( \delta \).
   \end{itemize}
+
+  \SubProofOf[def:semigroup_absorbing_element]{absorption} Restatement of \cref{thm:ordinal_multiplication_zero_absorbing}.
 
   \SubProofOf[def:semigroup_neutral_element]{neutral element} We have \( \alpha \cdot 1 = \alpha \cdot 0 + \alpha = \alpha \) by definition. Using \fullref{thm:transfinite_induction} on \( \alpha \), we will show that \( 1 \cdot \alpha = \alpha \).
   \begin{itemize}
@@ -870,6 +885,190 @@ We will use conventional digits and inequalities more often, mostly in statement
   \end{equation*}
 \end{definition}
 
+\begin{proposition}\label{thm:ordinal_exponentiation_fixed_points}
+  \hyperref[def:ordinal_exponentiation]{Ordinal exponentiation} have two special bases:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_exponentiation_fixed_points/one} \( 1^\alpha = 1 \) for every \( \alpha \).
+
+    \thmitem{thm:ordinal_exponentiation_fixed_points/zero} Zero has a special case at \( \alpha = 0 \):
+    \begin{equation*}
+      0^\alpha = \begin{cases}
+        1, &\alpha = 0, \\
+        0, &\alpha = 0.
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:transfinite_induction} on \( \alpha \):
+  \begin{itemize}
+    \item In the base case \( \alpha = 0 \), for both \( \beta = 0 \) and \( \beta = 1 \) we have \( \beta^0 = 1 \) by definition.
+
+    \item We have an additional base case for \( \beta = 0 \) at \( \alpha = 1 \):
+    \begin{equation*}
+      0^1
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      0^0 \cdot 0
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      1 \cdot 0
+      \reloset {\ref{def:ordinal_multiplication}} =
+      0.
+    \end{equation*}
+
+    \item If \( \alpha = S(\alpha) \) and if the inductive hypothesis holds for \( \alpha \), then
+    \begin{equation*}
+      0^\alpha
+      =
+      0^{S(\alpha)}
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      0^\alpha \cdot 0
+      \reloset {\ref{def:ordinal_multiplication}} =
+      0
+    \end{equation*}
+    and
+    \begin{equation*}
+      1^\alpha
+      =
+      1^{S(\alpha)}
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      1^\alpha \cdot 1
+      \reloset {\ref{def:ordinal_multiplication}} =
+      1^\alpha \cdot 0 + 1^\alpha
+      \reloset {\ref{def:ordinal_multiplication}} =
+      0 + 1^\alpha
+      \reloset {\ref{def:ordinal_addition}} =
+      1^\alpha
+      \reloset {\T{ind.}} =
+      1.
+    \end{equation*}
+
+    \item Finally, if \( \alpha \) is a nonzero limit ordinal and if the inductive hypothesis holds for every \( \alpha \in \alpha \), then, for both \( \beta = 0 \) and \( \beta = 1 \), we have
+    \begin{equation*}
+      \beta^\alpha
+      =
+      \bigcup\set{ \beta^\alpha \given \alpha \in \alpha }
+      \reloset {\T{ind.}} =
+      \bigcup\set{ \beta \given \alpha \in \alpha }
+      =
+      \beta.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_exponentiation_is_monotone}
+  \hyperref[def:ordinal_exponentiation]{Ordinal exponentiation} has the following monotonicity properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_exponentiation_is_monotone/base} Addition is \hyperref[def:order_function/preserving]{nonstrictly order-preserving} on the base:
+    \begin{equation*}
+      \alpha < \beta \T{implies} \alpha^\gamma \leq \beta^\gamma.
+    \end{equation*}
+
+    The inequality is strict if \( \gamma \) is a successor ordinal.
+
+    \thmitem{thm:ordinal_exponentiation_is_monotone/exponent} Addition is \hyperref[eq:def:order_function/preserving/strict]{strictly order-preserving} in the exponent for \( \gamma > 1 \):
+    \begin{equation*}
+      \alpha < \beta \T{implies} \gamma^\alpha < \gamma^\beta.
+    \end{equation*}
+
+    For \( \gamma = 1 \), we instead have equality, as shown in \cref{thm:ordinal_exponentiation_fixed_points/one}. For \( \gamma = 0 \) we also have equality, as long as \( \alpha > 0 \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_exponentiation_is_monotone/base} We proceed by induction on \( \gamma \).
+  \begin{itemize}
+    \item The case \( \gamma = 0 \) is vacuous.
+    \item Suppose that \( \gamma = S(\delta) \) and that the inductive hypothesis holds for \( \delta \).
+
+    The case \( \beta = 0 \) is vacuous, so suppose that \( \beta \) is nonzero. By the inductive hypothesis, we have
+    \begin{equation*}
+      1 = 0^\delta \leq \beta^\delta,
+    \end{equation*}
+    so \( \beta^\delta \) is also nonzero.
+
+    Then we can use the strict case in \cref{thm:ordinal_multiplication_is_monotone/second} in the following chain:
+    \begin{equation*}
+      \alpha^\gamma
+      =
+      \alpha^{S(\delta)}
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      \alpha^\delta \cdot \alpha
+      \reloset {\T{ind.}} \leq
+      \beta^\delta \cdot \alpha
+      \reloset {\ref{thm:ordinal_multiplication_is_monotone/second}} \in
+      \beta^\delta \cdot \beta
+      \reloset {\ref{def:ordinal_exponentiation}} \in
+      \beta^{S(\delta)}
+      =
+      \beta^\gamma.
+    \end{equation*}
+
+    Note that the inequality is strict in this case.
+
+    \item Suppose that \( \gamma \) is a nonzero limit ordinal and that the inductive hypothesis holds for all \( \delta \in \gamma \). Then
+    \begin{equation*}
+      \alpha^\gamma
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      \bigcup\set{ \alpha^\delta \given \delta \in \gamma }
+      \reloset {\T{ind.}} \leq
+      \bigcup\set{ \beta^\delta \given \delta \in \gamma }
+      \reloset {\ref{def:ordinal_exponentiation}} =
+      \beta^\gamma.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf{thm:ordinal_exponentiation_is_monotone/exponent} We proceed by induction on \( \beta \):
+  \begin{itemize}
+    \item The condition \( \alpha \in \beta \) is vacuously false for the base case \( \beta = 0 \), hence the conclusion holds due to \fullref{thm:propositional_semantic_efq}.
+
+    \item Suppose that \( \beta = S(\delta) \) and that the inductive hypothesis holds for \( \delta \).
+
+    The assumption \( \gamma \ni 1 \) allows us to derive
+    \begin{equation}\label{eq:thm:ordinal_exponentiation_is_monotone/exponent/proof/fixed}
+      \gamma^\delta
+      \reloset {\ref{thm:ordinal_exponentiation_fixed_points/one}} =
+      \gamma^\delta \cdot 1
+      \reloset {\ref{thm:ordinal_multiplication_is_monotone/second}} \in
+      \gamma^\delta \cdot \gamma.
+    \end{equation}
+
+    We have two possibilities:
+    \begin{itemize}
+      \item If \( \alpha \in \delta \), then
+      \begin{equation*}
+        \gamma^\alpha
+        \reloset {\T{ind.}} \leq
+        \gamma^\delta
+        \reloset {\ref{eq:thm:ordinal_exponentiation_is_monotone/exponent/proof/fixed}} \in
+        \gamma^\delta \cdot \gamma
+        \reloset {\ref{def:ordinal_exponentiation}} =
+        \gamma^{S(\delta)}
+        =
+        \gamma^\beta.
+      \end{equation*}
+
+      \item If \( \alpha = \delta \) then
+      \begin{equation*}
+        \gamma^\alpha
+        \reloset {\ref{eq:thm:ordinal_exponentiation_is_monotone/exponent/proof/fixed}} \in
+        \gamma^\alpha \cdot \gamma
+        \reloset {\ref{def:ordinal_exponentiation}} =
+        \gamma^{S(\alpha)}
+        =
+        \beta.
+      \end{equation*}
+    \end{itemize}
+
+    \item Finally, if \( \beta \) is a nonzero limit ordinal and if the inductive hypothesis holds for every \( \delta \in \beta \), then
+    \begin{equation*}
+      \gamma^\alpha
+      \reloset {\ref{eq:thm:ordinal_exponentiation_is_monotone/exponent/proof/fixed}} \in
+      \gamma^{S(\alpha)}
+      \reloset {\T{ind.}} \in
+      \gamma^\beta.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
 \begin{example}\label{ex:ordinal_polynomials}
   We already know from \cref{thm:omega_is_limit_ordinal} that the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \) is a \hyperref[def:successor_and_limit_ordinal]{limit ordinal}. It is clear from \cref{ex:ordinal_addition_commutativity} that \( \omega + n \) is a successor ordinal for every natural number \( n \).
 
@@ -899,4 +1098,84 @@ We will use conventional digits and inequalities more often, mostly in statement
   \end{equation*}
 
   Note that \( \delta \) must be finite because otherwise \( \beta \) would not be minimal. It remains for use to apply the inductive hypothesis for \( \rho \), which would produce strictly smaller powers of \( \omega \).
+\end{proof}
+
+\begin{definition}\label{def:epsilon_number}\mcite[240]{Enderton1977SetTheory}
+  An \term{epsilon number} is a \hyperref[def:dynamical_system_fixed_point]{fixed point} of \hyperref[def:ordinal_exponentiation]{ordinal exponentiation}, i.e. an ordinal \( \alpha \) that satisfies \( \omega^\alpha = \alpha \).
+
+  When ordered by set membership, the epsilon numbers themselves form a hierarchy, whose \( \alpha \)-th element we denote by \( \varepsilon_\alpha \).
+\end{definition}
+\begin{comments}
+  \item In \cref{thm:epsilon_number_existence}, we give an explicit construction for the smallest epsilon number \( \varepsilon_0 \).
+\end{comments}
+
+\begin{lemma}\label{thm:epsilon_number_limit_ordinal}
+  Every \hyperref[def:epsilon_number]{epsilon number} is a nonzero \hyperref[def:successor_and_limit_ordinal]{limit ordinal}.
+\end{lemma}
+\begin{proof}
+  If \( \alpha = S(\beta) \), then
+  \begin{equation*}
+    \omega^\alpha
+    =
+    \omega^\beta \cdot \beta
+  \end{equation*}
+  and \cref{thm:limit_ordinal_division_characterization} implies that \( \omega^\alpha \) is a limit ordinal.
+
+  Then \( \alpha \) itself must be a limit ordinal if \( \alpha = \omega^\alpha \).
+\end{proof}
+
+\begin{proposition}\label{thm:epsilon_number_existence}\mcite[exerc. 2.12]{Jech2006SetTheory}
+  There exists at least one \hyperref[def:epsilon_number]{epsilon number}.
+\end{proposition}
+\begin{comments}
+  \item We will formalize the construction
+  \begin{equation*}
+    \varepsilon_0 = \bigcup\set{ \omega, \omega^\omega, \omega^{\omega^\omega}, \ldots }.
+  \end{equation*}
+\end{comments}
+\begin{proof}
+  \Fullref{thm:omega_recursion} allows us to construct the \hyperref[def:sequence]{sequence}
+  \begin{equation*}
+    \alpha_n \coloneqq \begin{cases}
+      \omega,            &n = 0, \\
+      \omega^{\alpha_m}, &n = S(m).
+    \end{cases}
+  \end{equation*}
+
+  Define
+  \begin{equation*}
+    \varepsilon_0 \coloneqq \bigcup\set{ \alpha_n \given n \in \omega }.
+  \end{equation*}
+
+  This is a union by \cref{thm:def:ordinal/union}. Then
+  \begin{equation*}
+    \omega^{\varepsilon_0}
+    =
+    \bigcup\set{ \omega^{\alpha_n} \given n \in \omega }
+    =
+    \bigcup\set{ \alpha_{S(n)} \given n \in \omega }.
+  \end{equation*}
+
+  It is immaterial whether \( \alpha_0 = \omega \) is used in this union because all members of \( \omega \) are also members of every larger ordinal. Thus, \( \omega^{\varepsilon_0} = \varepsilon_0 \), i.e. \( \varepsilon_0 \) is really an epsilon number.
+
+  Furthermore, it is the smallest epsilon number\fnote{This is not part of the statement of the proposition, we will prove it anyway just to highlight that \( \varepsilon_0 \) is indeed the smallest epsilon number.}. Indeed, suppose that \( \beta \in \varepsilon_0 \) also satisfies \( \omega^\beta = \beta \). Then \( \beta \) belongs to \( \alpha_n \) for some \( n \in \omega \). We will use \fullref{thm:omega_induction} on \( n \) to derive contradictions.
+  \begin{itemize}
+    \item If \( n = 0 \), then \( \beta \in \omega \). But \cref{thm:epsilon_number_limit_ordinal} implies that \( \beta \) is a nonzero limit ordinal --- a contradiction.
+
+    \item If \( n = S(m) \) and the inductive hypothesis holds for \( m \), then \( \beta = \omega^\beta \) belongs to
+    \begin{equation*}
+      \alpha_n
+      =
+      \omega^{\alpha_m}.
+    \end{equation*}
+
+    Comparing \( \beta \) and \( \alpha_m \) gives us three options:
+    \begin{itemize}
+      \item If \( \alpha_m \in \beta \), \cref{thm:ordinal_exponentiation_is_monotone/exponent} implies that \( \omega^{\alpha_m} \in \omega^\beta \), i.e. \( \alpha_n \in \beta \), which contradicts \( \beta \in \alpha_n \).
+
+      \item If \( \beta = \alpha_m \), then \( \beta \in \omega^{\alpha_m} = \omega^\beta = \beta \) and we again obtain a contradiction.
+
+      \item If \( \beta \in \alpha_m \), the contradiction follows from inductive hypothesis.
+    \end{itemize}
+  \end{itemize}
 \end{proof}
