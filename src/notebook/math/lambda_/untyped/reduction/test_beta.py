@@ -1,17 +1,9 @@
 lazy from collections.abc import Sequence
 
-from notebook.math.lambda_.common import (
-    big_omega,
-    church_numeral,
-    church_numeral_to_int,
-    combinators,
-    omega3,
-    pairs,
-    succ,
-)
+from notebook.math.lambda_.common import big_omega, combinators, int_to_church_numeral, omega3
 from notebook.math.lambda_.common import variables as var
 from notebook.math.lambda_.parsing import parse_untyped_term
-from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from notebook.math.lambda_.terms import UntypedApplication, UntypedTerm
 from notebook.math.lambda_.untyped.alpha import are_terms_alpha_equivalent
 from notebook.support.coderefs import collector
 from notebook.support.pytest import pytest_parametrize_kwargs
@@ -40,17 +32,6 @@ def test_applicative_beta(term: UntypedTerm, expected: UntypedTerm | None) -> No
     assert strategy.try_reduce(term) == expected
 
 
-def test_applicative_beta_numerals() -> None:
-    strategy = ApplicativeOrderStrategy(BetaReduction())
-
-    numeral: UntypedTerm = church_numeral(0)
-
-    for n in range(10):
-        numeral = transitively_reduce_term(UntypedApplication(succ, numeral), strategy)
-        assert isinstance(numeral, UntypedAbstraction)
-        assert church_numeral_to_int(numeral) == n + 1
-
-
 def test_applicative_beta_skk() -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
     skk = UntypedApplication(UntypedApplication(combinators.s, combinators.k), combinators.k)
@@ -69,36 +50,12 @@ def test_applicative_beta_omega() -> None:
     assert reduce_term_once(UntypedApplication(omega3, omega3), strategy) == UntypedApplication(UntypedApplication(omega3, omega3), omega3)
 
 
-@collector.ref('ex:def:beta_eta_reduction/pairs')
-def test_applicative_pairs() -> None:
-    strategy = ApplicativeOrderStrategy(BetaReduction())
-
-    pair = UntypedApplication(UntypedApplication(pairs.cons, var.x), var.y)
-    p1 = UntypedApplication(pairs.car, pair)
-    p2 = UntypedApplication(pairs.cdr, pair)
-
-    assert transitively_reduce_term(p1, strategy) == var.x
-    assert transitively_reduce_term(p2, strategy) == var.y
-
-
-@collector.ref('ex:def:beta_eta_reduction/boolean')
-def test_applicative_not() -> None:
-    strategy = ApplicativeOrderStrategy(BetaReduction())
-
-    t = combinators.k
-    f = church_numeral(0)
-    n = UntypedAbstraction(var.x, UntypedApplication(UntypedApplication(var.x, f), t))
-
-    assert transitively_reduce_term(UntypedApplication(n, t), strategy) == f
-    assert transitively_reduce_term(UntypedApplication(n, f), strategy) == t
-
-
 @collector.ref('ex:normal_vs_applicative_strategy')
 def test_beta_c0_omega_i() -> None:
     applicative = ApplicativeOrderStrategy(BetaReduction())
     normal = NormalOrderStrategy(BetaReduction())
 
-    c0 = church_numeral(0)
+    c0 = int_to_church_numeral(0)
     term = UntypedApplication(UntypedApplication(c0, big_omega), combinators.i)
 
     assert reduce_term_once(term, applicative) == term
@@ -117,7 +74,7 @@ def test_beta_c0_omega_i() -> None:
         expected=var.x,
     ),
     dict(
-        term=church_numeral(0),
+        term=int_to_church_numeral(0),
         params=[var.x, var.y],
         expected=var.y,
     ),

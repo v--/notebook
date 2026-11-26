@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, Self
 
 from notebook.math.lambda_.terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 
@@ -14,6 +14,10 @@ class Reduction(Protocol):
 class ReductionStrategy(Protocol):
     reduction: Reduction
 
+    @classmethod
+    def from_reduction(cls, red: Reduction) -> Self:
+        ...
+
     def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         ...
 
@@ -27,11 +31,16 @@ def reduce_term_once(term: UntypedTerm, strategy: ReductionStrategy) -> UntypedT
     return reduction
 
 
-def transitively_reduce_term(term: UntypedTerm, strategy: ReductionStrategy) -> UntypedTerm:
+def transitively_reduce_term(term: UntypedTerm, *strategies: ReductionStrategy) -> UntypedTerm:
+    last_reduction: UntypedTerm | None = None
     reduction = term
 
-    while next_reduction := strategy.try_reduce(reduction):
-        reduction = next_reduction
+    while last_reduction != reduction:
+        last_reduction = reduction
+
+        for strategy in strategies:
+            while next_reduction := strategy.try_reduce(reduction):
+                reduction = next_reduction
 
     return reduction
 
@@ -39,6 +48,10 @@ def transitively_reduce_term(term: UntypedTerm, strategy: ReductionStrategy) -> 
 @dataclass(frozen=True)
 class NormalOrderStrategy(ReductionStrategy):
     reduction: Reduction
+
+    @classmethod
+    def from_reduction(cls, red: Reduction) -> Self:
+        return cls(red)
 
     def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         if contractum := self.reduction.try_contract_redex(term):
@@ -60,6 +73,10 @@ class NormalOrderStrategy(ReductionStrategy):
 @dataclass(frozen=True)
 class ApplicativeOrderStrategy(ReductionStrategy):
     reduction: Reduction
+
+    @classmethod
+    def from_reduction(cls, red: Reduction) -> Self:
+        return cls(red)
 
     def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         if isinstance(term, UntypedApplication):
