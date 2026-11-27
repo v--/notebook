@@ -1,47 +1,228 @@
 \section{Cardinal arithmetic}\label{sec:cardinal_arithmetic}
 
-\paragraph{Cardinal arithmetic}
+\paragraph{Cardinal addition}
 
-\begin{definition}\label{def:cardinal_arithmetic}
-  We will define arithmetic operations for them. Unlike in \cref{def:ordinal_arithmetic}, we will directly define the operations as \hyperref[def:cardinality]{cardinal numbers} of some sets rather than via some form of recursion.
-
-  Fix two ordinals \( \kappa \) and \( \mu \).
-  \begin{thmenum}
-    \thmitem{def:cardinal_arithmetic/addition}\mcite[def. 6.4.29]{Hinman2005Logic} Based on \cref{thm:ordinal_addition_disjoin_union}, we define their \term{sum} as
-    \begin{equation*}
-      \kappa + \mu \coloneqq \card(\kappa \amalg \mu),
-    \end{equation*}
-    where \( \kappa \amalg \mu \) is their \hyperref[def:disjoint_union]{disjoint union}.
-
-    \thmitem{def:cardinal_arithmetic/multiplication}\mcite[def. 6.4.29]{Hinman2005Logic} Based on \cref{thm:ordinal_multiplication_cartesian_product}, we define their \term{product} as
-    \begin{equation*}
-      \kappa \cdot \mu \coloneqq \card(\kappa \times \mu).
-    \end{equation*}
-
-    \thmitem{def:cardinal_arithmetic/exponentiation}\mcite[exerc. 6.4.46]{Hinman2005Logic} We define \term{exponentiation} as
-    \begin{equation*}
-      \kappa^\mu \coloneqq \card(\fun(\kappa, \mu)).
-    \end{equation*}
-  \end{thmenum}
+\begin{definition}\label{def:cardinal_addition}\mcite[def. I.13.1]{Kunen2013SetTheory}
+  We define \term{addition} for \hyperref[def:cardinal]{cardinals} based on the characterization \cref{thm:ordinal_addition_disjoin_union} of the \hyperref[def:ordinal_addition]{addition of ordinals} via \hyperref[def:disjoint_union]{disjoint unions}:
+  \begin{equation*}
+    \kappa + \mu \coloneqq \card(\kappa \amalg \mu).
+  \end{equation*}
 \end{definition}
+\begin{comments}
+  \item A more workable formulation is \fullref{thm:cardinality_sum_rule}.
+\end{comments}
 
-\begin{proposition}\label{thm:cardinal_addition_algebraic_properties}
-  Cardinal number addition is \hyperref[def:binary_operation/associative]{associative}, \hyperref[def:binary_operation/associative]{commutative} and \hyperref[def:binary_operation/cancellative]{cancellative}.
-
-  Compare this with \cref{thm:natural_number_addition_properties} and \cref{thm:ordinal_addition_algebraic_properties}.
+\begin{proposition}\label{thm:cardinal_addition_is_monotone}
+  \hyperref[def:cardinal_addition]{Cardinal addition} is \hyperref[def:order_function/preserving]{nonstrictly order-preserving} in both arguments.
 \end{proposition}
 \begin{proof}
-  Associativity and left cancellation is inherited from the ordinals. Commutativity and right cancellation hold because we are considering arbitrary bijective functions rather than the more restrictive order isomorphisms. Indeed, \( \kappa \amalg \mu \) and \( \mu \amalg \kappa \) may have different order types as demonstrated in \cref{ex:ordinal_addition_commutativity}, however there is an obvious bijective function between them.
+  If \( \mu < \nu \), we have an injective function \( f: \mu \to \nu \), so
+  \begin{align*}
+    \kappa \amalg \mu &= \set{ \iota_0(k) \given k \in \kappa } \cup \set{ \iota_1(m) \given m \in \mu }, \\
+  \intertext{is clearly dominated by}
+    \kappa \amalg \nu &= \set{ \iota_0(k) \given k \in \kappa } \cup \set{ \iota_1(n) \given n \in f[\mu] } \cup \set{ \iota_1(n) \given n \in \nu \setminus f[\mu] }.
+  \end{align*}
+
+  Thus, we have \( \kappa \amalg \mu \leq \kappa \amalg \nu \). Note that it is possible for the two sets to be equinumerous, as shown in \cref{thm:simplified_cardinal_addition/infinite}.
+\end{proof}
+
+\begin{proposition}\label{thm:cardinal_addition_algebraic_properties}
+  \hyperref[def:cardinal_addition]{Cardinal addition} is \hyperref[def:binary_operation/associative]{associative}, \hyperref[def:binary_operation/associative]{commutative} and \hyperref[def:zerosumfree]{zerosumfree}, with \( 0 \) as a \hyperref[def:semigroup_neutral_element]{neutral element}. Furthermore, it acts as a \hyperref[def:ordered_semigroup]{ordered semigroup} under \hyperref[def:cardinal_ordering]{cardinal ordering}.
+\end{proposition}
+\begin{comments}
+  \item This is a symmetric counterpart of the analogous result for \hyperref[def:ordinal]{ordinals} --- see \cref{thm:ordinal_addition_algebraic_properties} --- and a generalization of the analogous result for \hyperref[def:natural_numbers]{natural numbers} --- see \cref{thm:natural_number_addition_properties}.
+
+  \item Note that cardinal addition is not \hyperref[def:binary_operation/cancellative]{cancellative}.
+\end{comments}
+\begin{proof}
+  \SubProofOf[def:binary_operation/associative]{associativity} \Cref{thm:category_of_small_sets_is_cocartesian} implies that the \hyperref[def:category_of_small_sets]{category of small sets} is \hyperref[def:cocartesian_monoidal_category]{cocartesian}, so its \hyperref[def:monoidal_category/associator]{associator}
+  \begin{equation*}
+     \alpha_{\kappa,\mu,\nu}: (\kappa \amalg \mu) \amalg \nu \to \kappa \amalg (\mu \amalg \nu)
+  \end{equation*}
+  is a \hyperref[thm:natural_isomorphism]{natural isomorphism} for all \hyperref[def:small_set]{small} cardinals \( \kappa \), \( \mu \) and \( \nu \). \Fullref{thm:humes_principle} then implies that
+  \begin{equation*}
+    \card((\kappa \amalg \mu) \amalg \nu) = \card(\kappa \amalg (\mu \amalg \nu)).
+  \end{equation*}
+
+  If the cardinals are not small, we can extend the definition of \( \alpha_{\kappa,\mu,\nu} \) according to the explicit (but cumbersome) definition we discuss in \cref{ex:def:natural_transformation/disjoint_union}.
+
+  \SubProofOf[def:binary_operation/commutative]{commutativity} Similarly to the above, we can utilize the \hyperref[def:symmetric_monoidal_category]{braiding} isomorphism
+  \begin{equation*}
+    \beta_{\kappa,\mu}: \kappa \amalg \mu \to \mu \amalg \kappa.
+  \end{equation*}
+
+  It is also straightforward to define this function explicitly:
+  \begin{equation*}
+    \beta_{\kappa,\mu}(x) \coloneqq \begin{cases}
+      \iota_\kappa^{\mu \amalg \kappa}(k), &x = \iota_\kappa^{\kappa \amalg \mu}(k) \T{for} k \in \kappa, \\
+      \iota_\mu^{\mu \amalg \kappa}(m),    &x = \iota_\mu^{\kappa \amalg \mu}(m) \T{for} m \in \mu.
+    \end{cases}
+  \end{equation*}
+
+  \SubProofOf[def:semigroup_neutral_element]{neutral element} Similarly, we can utilize the \hyperref[def:monoidal_category/unitors]{unitors}
+  \begin{align*}
+    &\lambda_\kappa: 0 \amalg \kappa \to \kappa, \\
+    &\rho_\kappa: \kappa \amalg 0 \to \kappa.
+  \end{align*}
+
+  Both are trivial to define explicitly --- \( \lambda_\kappa \) is the inverse of the inclusion \( \iota_\kappa^{0 \amalg \kappa} \), and similarly for \( \rho_\rho \).
+
+  \SubProof{Proof that cardinals are \hyperref[def:zerosumfree]{zerosumfree}} If \( \kappa + \mu = 0 \), then there is a bijective function from \( \kappa \amalg \mu \) to the empty set, so \cref{thm:empty_function_invertibility} implies that \( \kappa \amalg \mu \) is itself empty. Then both \( \kappa \) and \( \mu \) must be empty sets, i.e. must be equal to the cardinal \( 0 \).
+
+  \SubProofOf[def:ordered_semigroup]{ordering compatibility} Follows from \cref{thm:cardinal_addition_is_monotone}.
+\end{proof}
+
+\begin{proposition}\label{thm:simplified_cardinal_addition}
+  \hyperref[def:cardinal_addition]{Cardinal addition} behaves fairly straightforwardly, with two cases:
+  \begin{thmenum}
+    \thmitem{thm:simplified_cardinal_addition/finite} If \( \kappa \) and \( \mu \) are \hyperref[def:aleph_zero_related_cardinalities]{finite}, then \( \kappa + \mu \) coincides with the recursively defined addition from \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+
+    As a consequence, it satisfies the properties studied in \fullref{sec:natural_numbers}.
+
+    \thmitem{thm:simplified_cardinal_addition/infinite}\mcite[thm. 6.4.36]{Hinman2005Logic} If either \( \kappa \) or \( \mu \) is infinite, then
+    \begin{equation*}
+      \kappa + \mu = \max\set{ \kappa, \mu }.
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:simplified_cardinal_addition/finite} If \( \kappa \) and \( \mu \) are finite cardinals, \cref{thm:cardinal_is_finite_iff_natural_number} implies that they are natural numbers, i.e. members of the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \).
+
+  \begin{itemize}
+    \item We have shown in \cref{thm:cardinal_addition_algebraic_properties} that \( 0 \) is a neutral element with respect to addition, so \( \kappa + 0 = 0 \), which shows \eqref{eq:def:peano_arithmetic/theory/PA4}.
+
+    \item Otherwise, treating \( \widehat{S}(\nu) \coloneqq \nu + 1 \) as a successor operation, from associativity we have
+    \begin{equation*}
+      \kappa + \widehat{S}(\mu)
+      =
+      \kappa + (\mu + 1)
+      =
+      (\kappa + \mu) + 1
+      =
+      \widehat{S}(\kappa + \mu).
+    \end{equation*}
+
+    This demonstrates \eqref{eq:def:peano_arithmetic/theory/PA5}.
+  \end{itemize}
+
+  \SubProofOf{thm:simplified_cardinal_addition/infinite} Suppose that \( \kappa \leq \mu \) and that \( \mu \) is infinite. We will treat \( \kappa \) and \( \mu \) are initial ordinals, where, due to \cref{thm:cardinal_ordering_compatibility}, we have \( \kappa \subseteq \mu \). We will denote ordinal addition using \( {\oplus} \).
+
+  For every \( \alpha \in \mu \setminus \kappa \), \cref{thm:ordinal_ordering_via_addition} gives us a unique ordinal \( \beta_\alpha \) such that \( \alpha = \kappa \oplus \beta_\alpha \). Furthermore, by the same proposition, either \( \beta_\alpha = \alpha \) or \( \beta_\alpha \in \alpha \), both of which lead to \( \beta_\alpha \in \mu \).
+
+  This allows us to define the function
+  \begin{equation*}
+    \begin{aligned}
+      &f: \mu \to \kappa \amalg \mu, \\
+      &f(\alpha) \coloneqq \begin{cases}
+        \iota_\kappa(\alpha),    &\alpha \in \kappa, \\
+        \iota_\mu(\beta_\alpha), &\alpha \in \mu \setminus \kappa.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  \SubProofOf*[def:function_invertibility/injective]{injectivity} If \( g(\alpha) = g(\alpha') \), we have several possibilities:
+  \begin{itemize}
+    \item If \( \alpha \in \kappa \) and \( \alpha' \in \kappa \), then \( \alpha = \alpha' \) since \( \iota_\kappa \) is injective.
+    \item If \( \alpha \in \kappa \) and \( \alpha' \not\in \kappa \), then \( \iota_\kappa(\alpha) = \iota_\mu(\alpha') \), which is not possible since \( \iota_\kappa \) and \( \iota_\mu \) have disjoint images.
+    \item If \( \alpha \not\in \kappa \) and \( \alpha' \in \kappa \), we similarly obtain a contradiction.
+    \item Finally, if \( \alpha \not\in \kappa \) and \( \alpha' \not\in \kappa \), then \( \beta_\alpha = \beta_{\alpha'} \) since \( \iota_\mu \) is injective, and hence
+    \begin{equation*}
+      \alpha = \kappa \oplus \beta_\alpha = \kappa \oplus \beta_{\alpha'} = \alpha'.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf*[def:function_invertibility/surjective]{surjectivity} \todo{Finish proof}
+\end{proof}
+
+\paragraph{Cardinal multiplication}
+
+\begin{definition}\label{def:cardinal_multiplication}\mcite[def. I.13.1]{Kunen2013SetTheory}
+  We define \term{multiplication} for \hyperref[def:cardinal]{cardinals} based on the characterization \cref{thm:ordinal_multiplication_cartesian_product} of the \hyperref[def:multiplication_addition]{multiplication of ordinals} via \hyperref[def:cartesian_product]{Cartesian products}:
+  \begin{equation*}
+    \kappa \cdot \mu \coloneqq \card(\kappa \times \mu).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item A more workable formulation is \fullref{thm:cardinality_product_rule}.
+\end{comments}
+
+\begin{proposition}\label{thm:cardinal_multiplication_is_monotone}
+  \hyperref[def:cardinal_multiplication]{Cardinal multiplication} is \hyperref[def:order_function/preserving]{strictly order-preserving} in both arguments.
+\end{proposition}
+\begin{proof}
+  We proceed analogously to \cref{thm:cardinal_addition_is_monotone}. If \( \mu < \nu \), we have an injective function \( f: \mu \to \nu \), so
+  \begin{align*}
+    \kappa \times \mu &= \set{ (k, m) \given k \in \kappa \T{and} m \in \mu }, \\
+  \intertext{is clearly dominated by}
+    \kappa \times \nu &= \set{ (k, n) \given k \in \kappa \T{and} n \in f[\mu] } \cup \set{ (k, n) \given k \in \kappa \T{and} n \in \nu }.
+  \end{align*}
+
+  Thus, we have \( \kappa \times \mu \leq \kappa \times \nu \). Note that it is possible for the two sets to be equinumerous, as shown in \cref{thm:simplified_cardinal_multiplication/infinite}.
 \end{proof}
 
 \begin{proposition}\label{thm:cardinal_multiplication_algebraic_properties}
-  Cardinal number multiplication is \hyperref[def:binary_operation/associative]{associative}, \hyperref[def:binary_operation/associative]{commutative} and \hyperref[def:binary_operation/cancellative]{cancellative}.
-
-  Compare this with \cref{thm:natural_number_multiplication_properties} and \cref{thm:ordinal_addition_algebraic_properties}.
+  \hyperref[def:cardinal_multiplication]{Cardinal multiplication} is \hyperref[def:binary_operation/associative]{associative}, \hyperref[def:binary_operation/associative]{commutative} and \hyperref[def:entire_semiring]{entire}, with \( 1 \) as a \hyperref[def:semigroup_neutral_element]{neutral element}. Furthermore, it is \hyperref[def:ordered_semigroup]{compatible} with \hyperref[def:cardinal_ordering]{cardinal ordering}.
 \end{proposition}
+\begin{comments}
+  \item This is a symmetric counterpart of the analogous result for \hyperref[def:ordinal]{ordinals} --- see \cref{thm:ordinal_multiplication_algebraic_properties} --- and a generalization of the analogous result for \hyperref[def:natural_numbers]{natural numbers} --- see \cref{thm:natural_number_multiplication_properties}.
+\end{comments}
 \begin{proof}
-  The result follows from the same considerations as in \cref{thm:cardinal_addition_algebraic_properties}.
+  \SubProofOf[def:binary_operation/associative]{associativity} The following function is clearly bijective:
+  \begin{equation*}
+    \begin{aligned}
+      &\alpha_{\kappa, \mu, \nu}: (\kappa \times \mu) \times \nu \to \kappa \times (\mu \times \nu), \\
+      &\alpha_{\kappa, \mu, \nu}\parens[\big]{ ((k, m), n) } \coloneqq (k, (m, n)).
+    \end{aligned}
+  \end{equation*}
+
+  We discuss the function in more detail in \cref{ex:def:natural_transformation/set_associator}, since, parametrized on \hyperref[def:small_set]{small sets}, it is the \hyperref[def:monoidal_category/associator]{associator} in the \hyperref[def:category_of_small_sets]{category of small sets}.
+
+  \SubProofOf[def:binary_operation/commutative]{commutativity} Similarly, the following function is also clearly bijective:
+  \begin{equation*}
+    \begin{aligned}
+      &\beta_{\kappa, \mu}: \kappa \times \mu \to \mu \times \kappa, \\
+      &\beta_{\kappa, \mu}\parens[\big]{ (k, m) } \coloneqq (m, k).
+    \end{aligned}
+  \end{equation*}
+
+  It generalizes to a \hyperref[def:symmetric_monoidal_category]{braiding} in the category of small sets --- see \cref{ex:category_of_small_sets_is_symmetric}.
+
+  \SubProofOf[def:semigroup_neutral_element]{neutral element} Similarly, as an ordinal, \( 1 \) only has one element, so the projections \( \pi_\kappa^{1 \times \kappa} \) and \( \pi_\kappa^{\kappa \times 1} \) are bijective.
+
+  They correspond to \hyperref[def:monoidal_category/unitors]{unitors} in the category of small sets --- see \cref{ex:def:natural_transformation/set_left_unitor}.
+
+  \SubProofOf[def:entire_semiring]{entireness} Suppose that \( \kappa \cdot \mu = 0 \). Then \( \kappa \times \mu \) is an empty set, which requires \( \kappa \) or \( \mu \) (or both) to be empty.
+
+  \SubProofOf[def:ordered_semiring]{ordering compatibility} Follows from \cref{thm:cardinal_multiplication_is_monotone}.
 \end{proof}
+
+\begin{proposition}\label{thm:simplified_cardinal_multiplication}
+  \hyperref[def:cardinal_multiplication]{Cardinal multiplication} behaves fairly straightforwardly, with two cases:
+  \begin{thmenum}
+    \thmitem{thm:simplified_cardinal_multiplication/finite} If \( \kappa \) and \( \mu \) are \hyperref[def:aleph_zero_related_cardinalities]{finite}, then \( \kappa \cdot \mu \) coincides with the recursively defined multiplication from \hyperref[def:peano_arithmetic]{Peano arithmetic}.
+
+    As a consequence, it satisfies the properties studied in \fullref{sec:natural_numbers}.
+
+    \thmitem{thm:simplified_cardinal_multiplication/infinite}\mcite[thm. 6.4.36]{Hinman2005Logic} If both \( \kappa \) and \( \mu \) are nonzero, and at least one is infinite, then
+    \begin{equation*}
+      \kappa \cdot \mu = \max\set{ \kappa, \mu }.
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+
+\paragraph{Cardinal exponentiation}
+
+\begin{definition}\label{def:cardinal_exponentiation}\mcite[def. I.13.1]{Kunen2013SetTheory}
+  We define \term{exponentiation} for \hyperref[def:cardinal]{cardinals} based on the \hyperref[def:set_of_all_functions]{set of all functions} between them:
+  \begin{equation*}
+    \kappa^\mu \coloneqq \card(\fun(\mu, \kappa)).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item A more workable formulation is \fullref{thm:cardinality_exponentiation_rule}.
+\end{comments}
+
+\paragraph{Further arithmetic}
 
 \begin{proposition}\label{thm:double_and_square_of_cardinal}
   For every cardinal \( \kappa \) we have
@@ -63,9 +244,9 @@
   \begin{equation*}
     \begin{aligned}
       &f: 2 \to \kappa \\
-      &f(k) \coloneqq \begin{cases}
-        \gamma, k = 0 \\
-        \delta, k = 1
+      &f(\alpha) \coloneqq \begin{cases}
+        \gamma, \alpha = 0 \\
+        \delta, \alpha = 1
       \end{cases}
     \end{aligned}
   \end{equation*}
@@ -73,53 +254,11 @@
   Then \( T(f) = (\gamma, \delta) \).
 \end{proof}
 
-\begin{proposition}\label{thm:simplified_cardinal_arithmetic}
-  Unlike \hyperref[def:ordinal_arithmetic]{ordinal arithmetic} with its intricacies like \cref{ex:ordinal_addition_commutativity}, \hyperref[def:cardinal_arithmetic]{cardinal arithmetic} has a simpler behavior:
-  \begin{thmenum}
-    \thmitem{thm:simplified_cardinal_arithmetic/finite} If \( \kappa \) and \( \mu \) are finite cardinals, then \( \kappa + \mu \) and \( \kappa \cdot \mu \) are the familiar operations on \hyperref[def:natural_numbers]{natural numbers}.
-
-    \thmitem{thm:simplified_cardinal_arithmetic/infinite}\mcite[6.4.35]{Hinman2005Logic} If either \( \kappa \) or \( \mu \) is infinite, then
-    \begin{equation*}
-      \kappa + \mu = \max\set{ \kappa, \mu }.
-    \end{equation*}
-
-    If, additionally, both are nonzero, then
-    \begin{equation*}
-      \kappa \cdot \mu = \max\set{ \kappa, \mu }.
-    \end{equation*}
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:simplified_cardinal_arithmetic/finite} The addition of ordinals defined in \cref{def:ordinal_addition} is an extension of addition of natural numbers, hence the two are equivalent for finite ordinals. The equivalence with cardinal addition defined in \cref{def:cardinal_arithmetic/addition} comes from \cref{thm:ordinal_addition_disjoin_union} and the fact that every finite ordinal is a cardinal as demonstrated in \cref{thm:members_of_omega_are_cardinals}.
-
-  Analogously, equivalence of cardinal and ordinal multiplication follows from \cref{thm:ordinal_multiplication_cartesian_product}.
-
-  \SubProofOf{thm:simplified_cardinal_arithmetic/infinite} Suppose that either \( \kappa \) or \( \mu \) is infinite and let \( \nu \coloneqq \max\set{ \kappa, \mu } \). The cases where either of them is zero are trivial, hence suppose that both are nonzero.
-
-  We have
-  \begin{equation*}
-    \kappa \amalg \mu \subseteq \nu \amalg \nu = 2 \amalg \nu \subseteq \nu \times \nu,
-  \end{equation*}
-  hence \( \kappa + \mu \leq \nu \cdot \nu = \nu^2 \).
-
-  Furthermore there exists an obvious injective function from \( \nu \) to \( \kappa \amalg \mu \) (which is different depending on whether \( \nu = \kappa \) or \( \nu = \mu \)). Therefore,
-  \begin{equation*}
-    \nu \leq \kappa + \mu \leq \nu^2.
-  \end{equation*}
-
-  For multiplication we have \( \kappa \times \mu \subseteq \nu \times \nu \), hence
-  \begin{equation*}
-    \nu \leq \kappa \cdot \mu \leq \nu^2.
-  \end{equation*}
-
-  \todo{Revise proof}
-\end{proof}
-
 \begin{corollary}\label{thm:finite_cardinal_exponent}
-  For any infinite cardinal \( \kappa \), we have \( \kappa^n = \kappa \) for every positive natural number \( n \).
+  For any infinite cardinal \( \kappa \), we have \( \kappa^\gamma = \kappa \) for every positive natural number \( \gamma \).
 \end{corollary}
 \begin{proof}
-  Induction on \( n \), using \cref{thm:simplified_cardinal_arithmetic/infinite} at each step.
+  Induction on \( \gamma \), using \cref{thm:simplified_cardinal_multiplication/infinite} at each step.
 \end{proof}
 
 \begin{definition}\label{def:strong_limit_cardinal}
@@ -132,38 +271,38 @@
   \item See also \cref{thm:aleph_zero_is_regular}
 \end{comments}
 \begin{proof}
-  \Cref{thm:simplified_cardinal_arithmetic/finite} states that cardinal exponentiation extends natural number exponentiation. Hence, we can conclude that \( 2^n < \aleph_0 \) for any \( n < \aleph_0 \) since the former are finite and the latter is not.
+  \Cref{thm:simplified_cardinal_multiplication/finite} states that cardinal exponentiation extends natural number exponentiation. Hence, we can conclude that \( 2^\gamma < \aleph_0 \) for any \( \gamma < \aleph_0 \) since the former are finite and the latter is not.
 \end{proof}
 
 \begin{proposition}\label{thm:cardinality_of_disjoint_union}
-  If \( \mscrK \) has cardinality \( \kappa \) an if \( \mu \) bounds the cardinality of \( A_k \) for all indices \( k \), then the \hyperref[def:disjoint_union]{disjoint union} \( \coprod_{k \in \mscrK} A_k \) has cardinality at most \( \kappa \cdot \mu \).
+  If \( \mscrK \) has cardinality \( \kappa \) an if \( \mu \) bounds the cardinality of \( A_k \) for all indices \( \alpha \), then the \hyperref[def:disjoint_union]{disjoint union} \( \coprod_{\alpha \in \mscrK} A_k \) has cardinality at most \( \kappa \cdot \mu \).
 
-  If the cardinality of \( A_k \) is exactly \( \mu \) for every index \( k \), then \( \coprod_{k \in \mscrK} A_k \) has cardinality \( \kappa \cdot \mu \).
+  If the cardinality of \( A_k \) is exactly \( \mu \) for every index \( \alpha \), then \( \coprod_{\alpha \in \mscrK} A_k \) has cardinality \( \kappa \cdot \mu \).
 \end{proposition}
 \begin{comments}
   \item This generalizes the familiar characterization of multiplication as repeated addition.
 \end{comments}
 \begin{proof}
-  By the definition of cardinality, there exist bijective functions \( \iota_\mscrK: \mscrK \to \kappa \) and \( \iota_{A_k}: A_k \to \mu \) for every \( k \) in \( \mscrK \). In case where the cardinality of \( A_k \) is only bounded by \( \mu \), the function \( \iota_{A_k} \) is injective but not necessarily surjective.
+  By the definition of cardinality, there exist bijective functions \( \iota_\mscrK: \mscrK \to \kappa \) and \( \iota_{A_k}: A_k \to \mu \) for every \( \alpha \) in \( \mscrK \). In case where the cardinality of \( A_k \) is only bounded by \( \mu \), the function \( \iota_{A_k} \) is injective but not necessarily surjective.
 
   Consider the function
   \begin{equation*}
     \begin{aligned}
-      &\Phi:\coprod_{k \in \mscrK} A_k \to \aleph_0 \times \kappa, \\
-      &\Phi(k, a_k) \coloneqq (\iota_\mscrK(k), \iota_{A_k}(a_k)).
+      &\Phi:\coprod_{\alpha \in \mscrK} A_k \to \aleph_0 \times \kappa, \\
+      &\Phi(\alpha, a_k) \coloneqq (\iota_\mscrK(\alpha), \iota_{A_k}(a_k)).
     \end{aligned}
   \end{equation*}
 
-  It is injective. Indeed, if \( \Phi(k, a_k) = \Phi(m, a_m) \), then \( k = m \) since \( \iota_\mscrK \) is injective, and \( a_k = a_m \) since \( \iota_{A_k} \) is injective. This shows that \( \Phi \) is injective.
+  It is injective. Indeed, if \( \Phi(\alpha, a_k) = \Phi(\beta, a_m) \), then \( \alpha = \beta \) since \( \iota_\mscrK \) is injective, and \( a_k = a_m \) since \( \iota_{A_k} \) is injective. This shows that \( \Phi \) is injective.
 
-  Therefore, \( \coprod_{k \in \mscrK} A_k \) is bounded by \( \aleph_0 \times \kappa \), which is in turn equinumerous with
+  Therefore, \( \coprod_{\alpha \in \mscrK} A_k \) is bounded by \( \aleph_0 \times \kappa \), which is in turn equinumerous with
   \begin{equation*}
     \kappa \cdot \mu = \card(\aleph_0 \times \kappa).
   \end{equation*}
 
-  In the case where \( A_k \) has cardinality exactly \( \mu \) for every \( k \), \( \Phi \) is also surjective. Indeed, fix any natural number \( n \) and any ordinal \( \alpha \) in \( \kappa \). Let \( k \) be the preimage \( \iota_\mscrK^{-1}(n) \) and let \( a_k \) be the preimage \( \iota_{A_k}^{-1}(\alpha) \). Then \( \Phi(k, a_k) = (n, \alpha) \).
+  In the case where \( A_k \) has cardinality exactly \( \mu \) for every \( \alpha \), \( \Phi \) is also surjective. Indeed, fix any natural number \( \gamma \) and any ordinal \( \alpha \) in \( \kappa \). Let \( \alpha \) be the preimage \( \iota_\mscrK^{-1}(\gamma) \) and let \( a_k \) be the preimage \( \iota_{A_k}^{-1}(\alpha) \). Then \( \Phi(\alpha, a_k) = (\gamma, \alpha) \).
 
-  In this case \( \coprod_{k \in \mscrK} A_k \) is equinumerous with \( \kappa \cdot \mu \).
+  In this case \( \coprod_{\alpha \in \mscrK} A_k \) is equinumerous with \( \kappa \cdot \mu \).
 \end{proof}
 
 \begin{lemma}\label{thm:power_set_via_subsets}
@@ -235,7 +374,7 @@
   A set is \hyperref[def:aleph_zero_related_cardinalities]{finite} if and only if its \hyperref[def:power_set]{power set} is finite.
 \end{corollary}
 \begin{proof}
-  \SufficiencySubProof If \( A \) has cardinality \( n < \aleph_0 \), \cref{thm:cardinal_exponentiation_power_set} implies that the cardinality of \( \pow(A) \) is \( 2^n \). \Cref{thm:simplified_cardinal_arithmetic/finite} implies that \( 2^n \) coincides with natural number exponentiation, and is hence a finite cardinal.
+  \SufficiencySubProof If \( A \) has cardinality \( \gamma < \aleph_0 \), \cref{thm:cardinal_exponentiation_power_set} implies that the cardinality of \( \pow(A) \) is \( 2^\gamma \). \Cref{thm:simplified_cardinal_multiplication/finite} implies that \( 2^\gamma \) coincides with natural number exponentiation, and is hence a finite cardinal.
 
   \NecessitySubProof Conversely, if \( \pow(A) \) is finite, since \( \pow(A) \) obviously dominates \( A \), then \( A \) is also finite.
 \end{proof}
